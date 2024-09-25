@@ -1,4 +1,4 @@
-# Are-we-there-yet
+# Are We There Yet?
 
 ## Motivation
 
