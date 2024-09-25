@@ -6,9 +6,7 @@
 
 ## Code Style
 
-### Backend
-
-#### Backend File Structure
+#### File Structure
 
     ├── backend
     │   ├── src
@@ -19,18 +17,22 @@
     │   |   ├── routes
     │   |   ├── services
     │   |   ├── app.js
-    |   .env
-    |   .gitignore
-    |   package.json
-    |   README.md
+    |   ├── .env
+    |   ├── .gitignore
+    |   ├── package.json
+    |
+    ├── frontend
+    │   ├── modules
+    │   |   ├── auth
+    │   |   ├── shared
+    │
+    ├── README.md
+    ├── .ignore
+    ├── .prettierrc
 
 #### Backend .env template
 
     MONGO_URI = your_mongodb_connection_string
-
-### Frontend
-
-#### Frontend File Structure
 
 ### Branch naming convention
 
