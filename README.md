@@ -11,12 +11,17 @@
     ├── backend
     │   ├── src
     │   |   ├── controllers
-    │   |   ├── middleware
+    │   |   ├── middlewares
     │   │   |   ├── auth
-    │   |   ├── models
+    │   |   ├── database
+    │   │   |   ├── repositories
+    │   |   |   ├── models
+    │   |   ├── exceptions
     │   |   ├── routes
     │   |   ├── services
+    │   |   ├── types
     │   |   ├── app.js
+    │   ├── tests
     |   ├── .env
     |   ├── .gitignore
     |   ├── package.json
