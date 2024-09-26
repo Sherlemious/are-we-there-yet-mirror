@@ -1,16 +1,17 @@
 import { Router } from 'express';
 import { getItinerary } from '../database/repositories/itineraryRepo';
 import { logger } from '../middlewares/logger';
+import { ResponseStatusCodes } from '../types/ResponseStatusCodes';
 
 const itineraryController = Router();
 
 itineraryController.get('/:id', async (req, res) => {
   try {
     const itineraries = await getItinerary(req.params.id);
-    res.json({ message: 'Itinerary fetched successfully', data: itineraries });
+    res.status(ResponseStatusCodes.OK).json({ message: 'Itinerary fetched successfully', data: itineraries });
   } catch (error: any) {
     logger.error(`Error fetching itinerary: ${error.message}`);
-    res.status(400).json({ message: error.message, data: [] });
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
 });
 
