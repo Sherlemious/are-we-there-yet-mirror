@@ -1,6 +1,7 @@
+import { Request, Response, NextFunction } from 'express';
 import winston from 'winston';
 
-export const logger = winston.createLogger({
+const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
   defaultMeta: { service: 'user-service' },
@@ -21,3 +22,10 @@ logger.add(
     ),
   })
 );
+
+const logHttpRequests = (req: Request, res: Response, next: NextFunction) => {
+  logger.log('info', `${req.method} ${req.url}`);
+  next();
+};
+
+export { logger, logHttpRequests };

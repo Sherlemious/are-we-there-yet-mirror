@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import { routes } from './routes/routes';
-import { logger } from './middlewares/logger';
+import { logger, logHttpRequests } from './middlewares/logger';
 import mongoose from 'mongoose';
 
 const app = express();
@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000;
 const mongoConnectionString = process.env.MONGO_URI || '';
 
 app.use(express.json());
+app.use(logHttpRequests);
 app.use('/api', routes);
 
 app.listen(port, () => {

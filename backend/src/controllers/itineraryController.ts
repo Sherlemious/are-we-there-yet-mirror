@@ -10,7 +10,7 @@ itineraryController.get('/:id', async (req, res) => {
     res.json({ message: 'Itinerary fetched successfully', data: itineraries });
   } catch (error: any) {
     logger.error(`Error fetching itinerary: ${error.message}`);
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message, data: [] });
   }
 });
 
