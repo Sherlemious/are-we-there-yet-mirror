@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getItinerary, deleteItinerary } from '../database/repositories/itineraryRepo';
+import { getItinerary, deleteItinerary, createItinerary } from '../database/repositories/itineraryRepo';
 import { logger } from '../middlewares/logger';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes';
 
@@ -20,8 +20,21 @@ itineraryController.get('/:id', async (req, res) => {
   }
 });
 
-itineraryController.post('/', (req, res) => {
-  res.json({ message: 'Create Itinerary' });
+itineraryController.post('/', async (req, res) => {
+  const itinerary = req.body;
+
+  try {
+    const newItinerary = await createItinerary(itinerary);
+    const response = {
+      message: 'Itinerary created successfully',
+      data: { itineraryId: newItinerary._id },
+    };
+
+    res.status(ResponseStatusCodes.CREATED).json(response);
+  } catch (error: any) {
+    logger.error(`Error creating itinerary: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
 });
 
 itineraryController.put('/:id', (req, res) => {

@@ -32,7 +32,7 @@ const itinerarySchema = new Schema({
   price: {
     type: Number,
   },
-  available_dates: {
+  available_datetimes: {
     type: [String],
   },
   accessibility: {
