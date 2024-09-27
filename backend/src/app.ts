@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
-import { routes } from './routes/routes';
+import { routes } from './routes/index';
 import { logger, logHttpRequests } from './middlewares/logger.middleware';
 import mongoose from 'mongoose';
 

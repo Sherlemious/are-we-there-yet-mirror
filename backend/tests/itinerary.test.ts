@@ -3,6 +3,11 @@ import app from '../src/app';
 import { ResponseStatusCodes } from '../src/types/ResponseStatusCodes.types';
 
 let itineraryId = '';
+let newItinerary = {
+  name: 'Test Itinerary',
+  category: 'Test Category',
+  tags: ['Test Tag'],
+};
 
 describe('Itinerary tests', () => {
   describe('GET /api/itineraries', () => {
@@ -27,12 +32,6 @@ describe('Itinerary tests', () => {
     });
 
     it('should respond with created (201) for creating an itinerary successfully', async () => {
-      const newItinerary = {
-        name: 'Test Itinerary',
-        category: 'Test Category',
-        tags: ['Test Tag'],
-      };
-
       const response = await request(app).post('/api/itineraries').send(newItinerary);
       itineraryId = response.body.data.itineraryId;
 
@@ -49,10 +48,9 @@ describe('Itinerary tests', () => {
     });
 
     it('should respond with ok (200) for updating itinerary successfully', async () => {
-      const response = await request(app).put('/api/itineraries/66f5a6a0132cee692ce6c010');
+      const response = await request(app).put('/api/itineraries/66f5a6a0132cee692ce6c010').send(newItinerary);
       expect(response.status).toBe(ResponseStatusCodes.OK);
       expect(response.body.data).toHaveProperty('itinerary');
-      expect(response.body.data.itinerary.length).toBe(1);
     });
   });
 

@@ -1,14 +1,11 @@
 import { ObjectId } from 'mongodb';
 import { Itinerary } from '../models/itinerary.model';
-import { ValidationException } from '../../exceptions/ValidationException';
 import { ItineraryType } from '../../types/Itinerary.types';
+import Validator from '../../utils/Validator.utils';
 
 class ItineraryRepo {
   async findItineraryById(id: string) {
-    if (!ObjectId.isValid(id)) {
-      throw new ValidationException('Invalid itinerary ID');
-    }
-
+    Validator.validateId(id, 'Invalid itinerary ID');
     return await Itinerary.find({ _id: new ObjectId(id) });
   }
 
@@ -17,11 +14,13 @@ class ItineraryRepo {
     return itineraryRes;
   }
 
-  async deleteItinerary(id: string) {
-    if (!ObjectId.isValid(id)) {
-      throw new ValidationException('Invalid itinerary ID');
-    }
+  async updateItinerary(id: string, itinerary: ItineraryType) {
+    Validator.validateId(id, 'Invalid itinerary ID');
+    return await Itinerary.updateOne({ _id: new ObjectId(id) }, itinerary);
+  }
 
+  async deleteItinerary(id: string) {
+    Validator.validateId(id, 'Invalid itinerary ID');
     return await Itinerary.deleteOne({ _id: new ObjectId(id) });
   }
 }

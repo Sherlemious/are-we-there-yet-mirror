@@ -35,8 +35,19 @@ const createItinerary = async (req: Request, res: Response) => {
   }
 };
 
-const updateItinerary = (req: Request, res: Response) => {
-  res.json({ message: 'Update Itinerary' });
+const updateItinerary = async (req: Request, res: Response) => {
+  try {
+    const updatedItinerary = await ItineraryRepo.updateItinerary(req.params.id, req.body);
+    const response = {
+      message: 'Update Itinerary',
+      data: { itinerary: updatedItinerary },
+    };
+
+    res.json(response);
+  } catch (error: any) {
+    logger.error(`Error updating itinerary: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
 };
 
 const deleteItinerary = async (req: Request, res: Response) => {
