@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { locationSchema } from './location';
+import { locationSchema } from './location.model';
 
 /**
  * TODO: modify types of tags, activities when their schemas are created
@@ -32,7 +32,7 @@ const itinerarySchema = new Schema({
   price: {
     type: Number,
   },
-  available_dates: {
+  available_datetimes: {
     type: [String],
   },
   accessibility: {
