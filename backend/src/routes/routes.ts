@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { itineraryController } from '../controllers/itineraryController';
+import itineraryRouter from './itinerary.route';
 
 const routes = Router();
 
-routes.use('/itineraries', itineraryController);
+routes.use('/itineraries', itineraryRouter);
 
 export { routes };

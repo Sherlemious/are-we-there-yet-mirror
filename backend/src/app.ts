@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import { routes } from './routes/routes';
-import { logger, logHttpRequests } from './middlewares/logger';
+import { logger, logHttpRequests } from './middlewares/logger.middleware';
 import mongoose from 'mongoose';
 
 const app = express();

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../src/app';
-import { ResponseStatusCodes } from '../src/types/ResponseStatusCodes';
+import { ResponseStatusCodes } from '../src/types/ResponseStatusCodes.types';
 
 let itineraryId = '';
 

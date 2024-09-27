@@ -1,13 +1,11 @@
-import { Router } from 'express';
-import { getItinerary, deleteItinerary, createItinerary } from '../database/repositories/itineraryRepo';
-import { logger } from '../middlewares/logger';
-import { ResponseStatusCodes } from '../types/ResponseStatusCodes';
+import { Request, Response } from 'express';
+import ItineraryRepo from '../database/repositories/itinerary.repo';
+import { logger } from '../middlewares/logger.middleware';
+import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 
-const itineraryController = Router();
-
-itineraryController.get('/:id', async (req, res) => {
+const findItineraryById = async (req: Request, res: Response) => {
   try {
-    const itinerary = await getItinerary(req.params.id);
+    const itinerary = await ItineraryRepo.findItineraryById(req.params.id);
     const response = {
       message: 'Itinerary fetched successfully',
       data: { itinerary: itinerary },
@@ -18,13 +16,13 @@ itineraryController.get('/:id', async (req, res) => {
     logger.error(`Error fetching itinerary: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
-});
+};
 
-itineraryController.post('/', async (req, res) => {
+const createItinerary = async (req: Request, res: Response) => {
   const itinerary = req.body;
 
   try {
-    const newItinerary = await createItinerary(itinerary);
+    const newItinerary = await ItineraryRepo.createItinerary(itinerary);
     const response = {
       message: 'Itinerary created successfully',
       data: { itineraryId: newItinerary._id },
@@ -35,15 +33,15 @@ itineraryController.post('/', async (req, res) => {
     logger.error(`Error creating itinerary: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
-});
+};
 
-itineraryController.put('/:id', (req, res) => {
+const updateItinerary = (req: Request, res: Response) => {
   res.json({ message: 'Update Itinerary' });
-});
+};
 
-itineraryController.delete('/:id', async (req, res) => {
+const deleteItinerary = async (req: Request, res: Response) => {
   try {
-    const deleteRes = await deleteItinerary(req.params.id);
+    const deleteRes = await ItineraryRepo.deleteItinerary(req.params.id);
     const response = {
       message: 'Itinerary deleted successfully',
       data: { itinerary: deleteRes },
@@ -54,6 +52,6 @@ itineraryController.delete('/:id', async (req, res) => {
     logger.error(`Error deleting itinerary: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
-});
+};
 
-export { itineraryController };
+export { findItineraryById, createItinerary, updateItinerary, deleteItinerary };
