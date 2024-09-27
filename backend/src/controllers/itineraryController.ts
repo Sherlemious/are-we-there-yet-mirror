@@ -7,8 +7,13 @@ const itineraryController = Router();
 
 itineraryController.get('/:id', async (req, res) => {
   try {
-    const itineraries = await getItinerary(req.params.id);
-    res.status(ResponseStatusCodes.OK).json({ message: 'Itinerary fetched successfully', data: itineraries });
+    const itinerary = await getItinerary(req.params.id);
+    const response = {
+      message: 'Itinerary fetched successfully',
+      data: { itinerary: itinerary },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
   } catch (error: any) {
     logger.error(`Error fetching itinerary: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });

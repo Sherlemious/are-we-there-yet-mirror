@@ -4,7 +4,7 @@ import { ValidationException } from '../../exceptions/ValidationException';
 
 const getItinerary = async (id: string) => {
   if (!ObjectId.isValid(id)) {
-    throw new ValidationException('Invalid ID');
+    throw new ValidationException('Invalid itinerary ID');
   }
 
   return await Itinerary.find({ _id: new ObjectId(id) });
