@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getItinerary } from '../database/repositories/itineraryRepo';
+import { getItinerary, deleteItinerary } from '../database/repositories/itineraryRepo';
 import { logger } from '../middlewares/logger';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes';
 
@@ -28,8 +28,19 @@ itineraryController.put('/:id', (req, res) => {
   res.json({ message: 'Update Itinerary' });
 });
 
-itineraryController.delete('/:id', (req, res) => {
-  res.json({ message: 'Delete Itinerary' });
+itineraryController.delete('/:id', async (req, res) => {
+  try {
+    const deleteRes = await deleteItinerary(req.params.id);
+    const response = {
+      message: 'Itinerary deleted successfully',
+      data: { itinerary: deleteRes },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error deleting itinerary: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
 });
 
 export { itineraryController };

@@ -10,4 +10,12 @@ const getItinerary = async (id: string) => {
   return await Itinerary.find({ _id: new ObjectId(id) });
 };
 
-export { getItinerary };
+const deleteItinerary = async (id: string) => {
+  if (!ObjectId.isValid(id)) {
+    throw new ValidationException('Invalid itinerary ID');
+  }
+
+  return await Itinerary.deleteOne({ _id: new ObjectId(id) });
+};
+
+export { getItinerary, deleteItinerary };
