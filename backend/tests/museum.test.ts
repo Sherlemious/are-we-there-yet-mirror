@@ -25,7 +25,7 @@ describe('MuseumTests', () => {
         it('should respond with bad request (400) for fetching museum with invalid id', async () => {
             const response = await request(app).get('/api/museums/1');
             expect(response.status).toBe(ResponseStatusCodes.BAD_REQUEST);
-            expect(response.body.message).toBe('Invalid itinerary ID'); // Update message if needed
+            expect(response.body.message).toBe('Invalid museum ID'); // Update message if needed
         });
 
         it('should respond with ok (200) for fetching museum successfully', async () => {
@@ -54,7 +54,7 @@ describe('MuseumTests', () => {
         it('should respond with bad request (400) for updating museum with invalid id', async () => {
             const response = await request(app).put('/api/museums/1');
             expect(response.status).toBe(ResponseStatusCodes.BAD_REQUEST);
-            expect(response.body.message).toBe('Invalid itinerary ID'); // Update message if needed
+            expect(response.body.message).toBe('Invalid museum ID'); // Update message if needed
         });
 
         it('should respond with ok (200) for updating museum successfully', async () => {
@@ -68,7 +68,7 @@ describe('MuseumTests', () => {
         it('should respond with bad request (400) for deleting museum with invalid id', async () => {
             const response = await request(app).delete('/api/museums/1');
             expect(response.status).toBe(ResponseStatusCodes.BAD_REQUEST);
-            expect(response.body.message).toBe('Invalid itinerary ID'); // Update message if needed
+            expect(response.body.message).toBe('Invalid museum ID'); // Update message if needed
         });
 
         it('should respond with ok (200) for deleting museum successfully', async () => {
