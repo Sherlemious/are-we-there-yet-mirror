@@ -2,10 +2,15 @@ import { LocationType } from "./Location.types";
 export interface MuseumType {
     id: number;
     name: string;
+    tags: string[];
     description: string;
     pictures: string[];
     location: LocationType;
     opening_hours: string;
-    ticket_prices: number;
+    ticket_prices: {
+      foreigner: number;
+      native: number;
+      student: number;
+  };
   }
   

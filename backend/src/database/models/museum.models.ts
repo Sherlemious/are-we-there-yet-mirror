@@ -6,26 +6,33 @@ const museumSchema = new Schema({
         type: String,
         required: true,
     },
+    tags: {
+        type: [String],
+    },
     description: {
         type: String,
         required: true,
     },
     pictures: {
         type: [String],
-        required: true,
     },
     location: {
         type: locationSchema,
-        required: true,
     },
     opening_hours: {
         type: String,
-        required: true,
     },
     ticket_prices: {
-        type: Number,
-        required: true,
-    },
+        foreigner: {
+            type: Number,
+        },
+        native: {
+            type: Number,
+        },
+        student: {
+            type: Number,
+        }
+    }
     });
 
 export const Museum = model('museum', museumSchema);
