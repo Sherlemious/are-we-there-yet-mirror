@@ -1,3 +1,4 @@
+import { LocationType } from "./Location.types";
 export interface ItineraryType {
   name: string;
   category: string;
@@ -13,8 +14,4 @@ export interface ItineraryType {
   drop_off_location: LocationType;
 }
 
-interface LocationType {
-  name: string;
-  latitude: number;
-  longitude: number;
-}
+
