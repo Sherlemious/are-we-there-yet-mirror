@@ -5,7 +5,11 @@ import { ResponseStatusCodes } from '../src/types/ResponseStatusCodes.types';
 let museumId = '';
 let newMuseum = {
     name: 'Test Museum',
-    tags: ['Test Tag'],
+    tag: {
+        name: 'Test Tag',
+        type: 'Museum',
+        historical_period: 'Test Period',
+    },
     description: 'Test Description',
     pictures: ['Test Picture'],
     location: {

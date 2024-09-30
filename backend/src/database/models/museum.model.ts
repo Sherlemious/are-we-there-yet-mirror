@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { locationSchema } from './location.model';
+import { tagSchema } from './tag.model';
 
 const museumSchema = new Schema({
     name: {
@@ -7,7 +8,7 @@ const museumSchema = new Schema({
         required: true,
     },
     tags: {
-        type: [String],
+        type: [tagSchema],
     },
     description: {
         type: String,
