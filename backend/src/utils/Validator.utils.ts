@@ -4,7 +4,7 @@ import { ValidationException } from '../exceptions/ValidationException';
 class Validator {
   static validateId(id: string, msg: string): boolean {
     if (!ObjectId.isValid(id)) {
-      throw new ValidationException('Invalid itinerary ID');
+      throw new ValidationException(msg);
     }
 
     return true;
