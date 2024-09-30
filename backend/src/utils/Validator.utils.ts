@@ -11,7 +11,7 @@ class Validator {
   }
 
   static validatePassword(password: string): boolean {
-    if (password.length < 8) {
+    if (password === undefined || password.length < 8) {
       throw new ValidationException('Password must be at least 8 characters long');
     }
 
