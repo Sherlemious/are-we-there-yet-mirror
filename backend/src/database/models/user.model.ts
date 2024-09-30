@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { accountType } from '../../types/User.types';
+import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
   account_type: {
@@ -64,6 +65,23 @@ const userSchema = new mongoose.Schema({
   picture_path: {
     type: String,
   },
+});
+
+userSchema.pre('save', function (next) {
+  var user = this;
+
+  if (!user.isModified('password')) return next();
+
+  bcrypt.genSalt(function (err, salt) {
+    if (err) return next(err);
+
+    bcrypt.hash(user.password, salt, function (err, hash) {
+      if (err) return next(err);
+
+      user.password = hash;
+      next();
+    });
+  });
 });
 
 export const User = mongoose.model('User', userSchema);
