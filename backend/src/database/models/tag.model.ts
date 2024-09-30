@@ -17,3 +17,4 @@ const tagSchema = new Schema({
         required: true,
     },
 });
+export const Tag = model('tag', tagSchema);
