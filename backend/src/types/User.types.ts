@@ -7,7 +7,7 @@ export enum accountType {
   TourismGovernor = 'TourismGovernor',
 }
 
-export interface User {
+export interface UserType {
   password: string;
   username: string;
   accountType: accountType;

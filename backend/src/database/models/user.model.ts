@@ -3,7 +3,8 @@ import { accountType } from '../../types/User.types';
 
 const userSchema = new mongoose.Schema({
   account_type: {
-    type: accountType,
+    type: String,
+    enum: Object.values(accountType),
     required: true,
   },
   accepted: {
