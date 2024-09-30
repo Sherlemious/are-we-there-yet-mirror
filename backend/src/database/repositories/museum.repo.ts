@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Museum } from "../models/museum.models";
+import { Museum } from "../models/museum.model";
 import { MuseumType } from "../../types/Museum.types";
 import Validator from '../../utils/Validator.utils';
 

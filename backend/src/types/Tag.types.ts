@@ -1,5 +1,6 @@
 export interface Tag {
     id: number;
+    name: string;
     type: type;
     historical_period: string;
   }
