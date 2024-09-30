@@ -65,4 +65,4 @@ const deleteTag = async (req: Request, res: Response) => {
   }
 };
 
-export default { findTagById, createTag, updateTag, deleteTag };
+export { findTagById, createTag, updateTag, deleteTag };
