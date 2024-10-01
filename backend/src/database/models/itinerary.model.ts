@@ -1,8 +1,10 @@
 import { Schema, model } from 'mongoose';
 import { locationSchema } from './location.model';
+import { Tag } from './tag.model';
+import { ValidationException } from '../../exceptions/ValidationException';
 
 /**
- * TODO: modify types of tags, activities when their schemas are created
+ * TODO: modify types of activities when its schema is created
  */
 const itinerarySchema = new Schema({
   name: {
@@ -14,7 +16,7 @@ const itinerarySchema = new Schema({
     required: true,
   },
   tags: {
-    type: [String],
+    type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
     required: true,
   },
   activities: {
@@ -46,4 +48,32 @@ const itinerarySchema = new Schema({
   },
 });
 
-export const Itinerary = model('itinerary', itinerarySchema);
+async function replaceItineraryTagsDataWithIds(itineraryData: any) {
+  const tagIds = [];
+
+  if (!itineraryData.tags) {
+    return itineraryData;
+  }
+
+  for (const tagData of itineraryData.tags) {
+    let tag = await Tag.findOne({
+      name: tagData.name,
+      type: tagData.type,
+      historical_period: tagData.historical_period,
+    });
+
+    if (!tag) {
+      throw new ValidationException('One or more tags are invalid');
+    }
+
+    tagIds.push(tag._id);
+  }
+
+  itineraryData.tags = tagIds;
+
+  return itineraryData;
+}
+
+const Itinerary = model('itinerary', itinerarySchema);
+
+export { Itinerary, itinerarySchema, replaceItineraryTagsDataWithIds };

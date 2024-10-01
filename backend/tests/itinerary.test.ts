@@ -3,10 +3,16 @@ import app from '../src/app';
 import { ResponseStatusCodes } from '../src/types/ResponseStatusCodes.types';
 
 let itineraryId = '';
+let tag = {
+  name: 'Test Tag',
+  type: 'Museum',
+  historical_period: 'Test Historical Period',
+};
+
 let newItinerary = {
   name: 'Test Itinerary',
   category: 'Test Category',
-  tags: ['Test Tag'],
+  tags: [tag],
 };
 
 describe('Itinerary tests', () => {
@@ -32,6 +38,7 @@ describe('Itinerary tests', () => {
     });
 
     it('should respond with created (201) for creating an itinerary successfully', async () => {
+      await request(app).post('/api/tags').send(tag);
       const response = await request(app).post('/api/itineraries').send(newItinerary);
       itineraryId = response.body.data.itineraryId;
 

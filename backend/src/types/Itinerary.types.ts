@@ -1,8 +1,10 @@
-import { LocationType } from "./Location.types";
+import { LocationType } from './Location.types';
+import { TagType } from './Tag.types';
+
 export interface ItineraryType {
   name: string;
   category: string;
-  tags: string[];
+  tags: TagType[];
   activities: string[];
   locations: LocationType[];
   timeline: string;
@@ -13,5 +15,3 @@ export interface ItineraryType {
   pick_up_location: LocationType;
   drop_off_location: LocationType;
 }
-
-
