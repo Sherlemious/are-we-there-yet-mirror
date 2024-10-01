@@ -3,8 +3,8 @@ import { createAdvertiser, updateAdvertiser, getAdvertisers } from '../controlle
 
 const router = Router();
 
-router.get('/', getAdvertisers);
-router.post('/', createAdvertiser);
+router.get('', getAdvertisers);
+router.post('', createAdvertiser);
 router.put('/:id', updateAdvertiser);
 
 export default router;
