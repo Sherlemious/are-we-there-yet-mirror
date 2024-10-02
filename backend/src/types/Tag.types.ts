@@ -10,4 +10,5 @@ export enum type {
   ReligiousSight = 'Religious Sight',
   Palace = 'Palace',
   Castle = 'Castle',
+  Preference = 'Preference',
 }

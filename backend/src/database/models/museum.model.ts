@@ -8,11 +8,12 @@ const museumSchema = new Schema({
         required: true,
     },
     tags: {
-        type: [tagSchema],
-    },
+        type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
+      },
     description: {
         type: String,
         required: true,
+
     },
     pictures: {
         type: [String],
@@ -22,16 +23,23 @@ const museumSchema = new Schema({
     },
     opening_hours: {
         type: String,
+        required: true,
     },
     ticket_prices: {
         foreigner: {
             type: Number,
+            required: true,
+            min: 0
         },
         native: {
             type: Number,
+            required: true,
+            min: 0
         },
         student: {
             type: Number,
+            required: true,
+            min: 0
         }
     }
     });
