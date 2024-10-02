@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose';
 import { locationSchema } from './location.model';
-import { tagSchema } from './tag.model';
 
 const museumSchema = new Schema({
     name: {
@@ -13,7 +12,6 @@ const museumSchema = new Schema({
     description: {
         type: String,
         required: true,
-
     },
     category:{
         type: String,
@@ -33,17 +31,17 @@ const museumSchema = new Schema({
         foreigner: {
             type: Number,
             required: true,
-            min: 0
+            min: 0,
         },
         native: {
             type: Number,
             required: true,
-            min: 0
+            min: 0,
         },
         student: {
             type: Number,
             required: true,
-            min: 0
+            min: 0,
         }
     }
     });
