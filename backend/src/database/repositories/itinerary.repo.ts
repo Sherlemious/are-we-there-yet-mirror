@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { Itinerary, replaceItineraryTagsDataWithIds } from '../models/itinerary.model';
+import { Itinerary } from '../models/itinerary.model';
+import { getTagIds } from '../models/tag.model';
 import { ItineraryType } from '../../types/Itinerary.types';
 import Validator from '../../utils/Validator.utils';
 
@@ -10,13 +11,15 @@ class ItineraryRepo {
   }
 
   async createItinerary(itinerary: ItineraryType) {
-    itinerary = await replaceItineraryTagsDataWithIds(itinerary);
+    const tagIds = await getTagIds(itinerary.tags);
+    itinerary.tags = tagIds;
     return await Itinerary.create(itinerary);
   }
 
   async updateItinerary(id: string, itinerary: ItineraryType) {
     Validator.validateId(id, 'Invalid itinerary ID');
-    itinerary = await replaceItineraryTagsDataWithIds(itinerary);
+    const tagIds = await getTagIds(itinerary.tags);
+    itinerary.tags = tagIds;
     return await Itinerary.findByIdAndUpdate(id, itinerary);
   }
 

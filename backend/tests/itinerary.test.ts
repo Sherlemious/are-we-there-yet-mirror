@@ -9,10 +9,22 @@ let tag = {
   historical_period: 'Test Historical Period',
 };
 
+let location = {
+  name: 'Test Location',
+  latitude: 0,
+  longitude: 0,
+};
+
 let newItinerary = {
   name: 'Test Itinerary',
   category: 'Test Category',
   tags: [tag],
+  language: 'Test Language',
+  price: 0,
+  available_datetimes: ['Test Datetime'],
+  accessibility: true,
+  pick_up_location: location,
+  drop_off_location: location,
 };
 
 describe('Itinerary tests', () => {
