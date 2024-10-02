@@ -3,13 +3,15 @@ import app from '../src/app';
 import { ResponseStatusCodes } from '../src/types/ResponseStatusCodes.types';
 
 let museumId = '';
+let tag = {
+    name: 'Test Tag',
+    type: 'Museum',
+    historical_period: 'Test Historical Period',
+  };
 let newMuseum = {
     name: 'Test Museum',
-    tag: {
-        name: 'Test Tag',
-        type: 'Museum',
-        historical_period: 'Test Period',
-    },
+    tags: [tag],
+    category: 'Test Category',
     description: 'Test Description',
     pictures: ['Test Picture'],
     location: {
