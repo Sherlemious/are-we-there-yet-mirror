@@ -15,6 +15,10 @@ const museumSchema = new Schema({
         required: true,
 
     },
+    category:{
+        type: String,
+        required: true,
+    },
     pictures: {
         type: [String],
     },

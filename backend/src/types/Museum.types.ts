@@ -5,6 +5,7 @@ export interface MuseumType {
     name: string;
     tags: TagType[];
     description: string;
+    category: string;
     pictures: string[];
     location: LocationType;
     opening_hours: string;
