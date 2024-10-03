@@ -4,6 +4,7 @@ import authRouter from './auth.route';
 import museumRouter from './museum.route';
 import tagRouter from './tag.route';
 import userRouter from './user.route';
+import activityRouter from './activity.route';
 
 const routes = Router();
 
@@ -12,5 +13,6 @@ routes.use('/itineraries', itineraryRouter);
 routes.use('/museums', museumRouter);
 routes.use('/tags', tagRouter);
 routes.use('/users', userRouter);
+routes.use('/activities', activityRouter);
 
 export { routes };
