@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import RootLayout from './modules/layout/pages/Root';
-import { TourGuideProfile } from './modules/Tour Guide/App';
-import { generalSettingAction } from './modules/Tour Guide/App';
+import RootLayout from './modules/shared/pages/RootLayout';
+import { TourGuideProfile } from './modules/TourGuide/App';
+import { generalSettingAction } from './modules/TourGuide/App';
 import { AdvertiserProfile } from './modules/Advertiser/App';
 import { SellerProfile } from './modules/Seller/App';
 
