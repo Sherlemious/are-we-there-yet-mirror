@@ -18,7 +18,7 @@ const customStyles = {
   sliderWrapper: "flex transition-all duration-600 ease-in-out",
   slide: "w-[25%] flex-shrink-0 px-2 transition-all duration-600",
   slideContent:
-    "h-full w-80 overflow-auto border-2 border-gray-300 bg-white p-8 relative",
+    "h-full w-80 overflow-auto border-2 border-gray-300 bg-white p-8 relative cursor-pointer",
   slideTitle: "mb-2 font-bold",
   slideText: "text-sm",
   navButton:
@@ -82,9 +82,12 @@ const Slider = ({
     }
   };
 
-  const removeSlide = (index: number) => {
+  const removeSlide = (index: number, event: React.MouseEvent) => {
+    event.stopPropagation();
     setWorks((prevWorks) => prevWorks.filter((_, i) => i !== index));
-    if (currentIndex >= index && currentIndex > 0) {
+    if (currentIndex > index + 1) {
+      setCurrentIndex((prevIndex) => prevIndex - 1);
+    } else if (currentIndex === index + 1 && index === works.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
     }
   };
@@ -97,9 +100,16 @@ const Slider = ({
   };
 
   const goToEnd = () => {
-    if (!isTransitioning && currentIndex !== works.length - 1) {
+    if (!isTransitioning && currentIndex !== works.length) {
       setIsTransitioning(true);
-      setCurrentIndex(works.length - 1);
+      setCurrentIndex(works.length);
+    }
+  };
+
+  const focusSlide = (index: number) => {
+    if (!isTransitioning) {
+      setIsTransitioning(true);
+      setCurrentIndex(index);
     }
   };
 
@@ -122,18 +132,30 @@ const Slider = ({
               transition: "transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)",
             }}
           >
+            <div
+              className={customStyles.slide}
+              style={{
+                transform: `scale(${currentIndex === 0 ? 1 : 0.9})`,
+                opacity: currentIndex === 0 ? 1 : 0.7,
+              }}
+            >
+              <div className={customStyles.addSlideDiv} onClick={onAddSlide}>
+                <Plus className={customStyles.addSlideIcon} />
+              </div>
+            </div>
             {works.map((work, index) => (
               <div
                 key={index}
                 className={customStyles.slide}
                 style={{
-                  transform: `scale(${index === currentIndex ? 1 : 0.9})`,
-                  opacity: index === currentIndex ? 1 : 0.7,
+                  transform: `scale(${index + 1 === currentIndex ? 1 : 0.9})`,
+                  opacity: index + 1 === currentIndex ? 1 : 0.7,
                 }}
+                onClick={() => focusSlide(index + 1)}
               >
                 <div className={customStyles.slideContent}>
                   <button
-                    onClick={() => removeSlide(index)}
+                    onClick={(e) => removeSlide(index, e)}
                     className={customStyles.removeButton}
                   >
                     <Minus
@@ -146,17 +168,6 @@ const Slider = ({
                 </div>
               </div>
             ))}
-            <div
-              className={customStyles.slide}
-              style={{
-                transform: `scale(${currentIndex === works.length ? 1 : 0.9})`,
-                opacity: currentIndex === works.length ? 1 : 0.7,
-              }}
-            >
-              <div className={customStyles.addSlideDiv} onClick={onAddSlide}>
-                <Plus className={customStyles.addSlideIcon} />
-              </div>
-            </div>
           </div>
         </div>
         <button
@@ -188,7 +199,7 @@ const Slider = ({
           className={customStyles.endBeginButton}
           onClick={goToEnd}
           type="button"
-          disabled={currentIndex === works.length - 1 || isTransitioning}
+          disabled={currentIndex === works.length || isTransitioning}
         >
           Go to End
           <ChevronsRight className="ml-2" size={20} />
