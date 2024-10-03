@@ -8,8 +8,6 @@ export default function Profile() {
       <div className=" flex justify-between">
         <Greeting name="John Doe" />
         <GeneralSettings inputFields={['Mobile Number', 'Years of Experience']} />
-        {/* <GeneralSettings inputFields={['Hotline', 'Link']} /> */}
-        {/* <GeneralSettings inputFields={['Name']} /> */}
       </div>
       <Slider title="Previous Works" />
     </div>
