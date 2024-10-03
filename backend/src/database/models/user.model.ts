@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
-import { accountType } from '../../types/User.types';
 import bcrypt from 'bcrypt';
+import { attachmentSchema } from './attachment.model';
+import { accountType } from '../../types/User.types';
 
 const userSchema = new mongoose.Schema({
   account_type: {
@@ -62,8 +63,8 @@ const userSchema = new mongoose.Schema({
   wallet: {
     type: Number,
   },
-  picture_path: {
-    type: String,
+  profile_pic: {
+    type: attachmentSchema,
   },
 });
 

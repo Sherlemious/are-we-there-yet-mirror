@@ -22,6 +22,30 @@ class ProductRepo {
     Validator.validateId(id, 'Invalid product ID');
     return await Product.deleteOne({ _id: new ObjectId(id) });
   }
+
+  async getProducts() {
+    return await Product.find();
+  }
+
+  async getPriceMinMax() {
+    return await Product.aggregate([
+      {
+        $group: {
+          _id: null,
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+    ]);
+  }
+
+  async getProductsByPriceRange(minPrice: number, maxPrice: number) {
+    return await Product.find({ price: { $gte: minPrice, $lte: maxPrice } });
+  }
+
+  async filterProductsBySeller(seller: string) {
+    return await Product.find({ seller });
+  }
 }
 
 export default new ProductRepo();

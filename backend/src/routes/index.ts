@@ -5,6 +5,7 @@ import museumRouter from './museum.route';
 import tagRouter from './tag.route';
 import userRouter from './user.route';
 import activityRouter from './activity.route';
+import productRouter from './product.route';
 
 const routes = Router();
 
@@ -14,5 +15,6 @@ routes.use('/museums', museumRouter);
 routes.use('/tags', tagRouter);
 routes.use('/users', userRouter);
 routes.use('/activities', activityRouter);
+routes.use('/products', productRouter);
 
 export { routes };

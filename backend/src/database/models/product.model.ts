@@ -1,4 +1,6 @@
 import { Schema, model } from 'mongoose';
+import { attachmentSchema } from './attachment.model';
+import { reviewSchema } from './review.model';
 
 const productSchema = new Schema({
   name: {
@@ -11,10 +13,20 @@ const productSchema = new Schema({
   },
   price: {
     type: Number,
-    required: true,
   },
   available_quantity: {
     type: Number,
+  },
+  attachments: {
+    type: [attachmentSchema],
+    required: true,
+  },
+  reviews: {
+    type: [reviewSchema],
+  },
+  seller: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
     required: true,
   },
   timestamp: {
