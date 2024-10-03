@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 
 const locationSchema = new Schema({
   name: {
@@ -15,6 +15,4 @@ const locationSchema = new Schema({
   },
 });
 
-const location = model('location', locationSchema);
-
-export { location, locationSchema };
+export { locationSchema };
