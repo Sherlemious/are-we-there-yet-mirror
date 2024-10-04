@@ -12,7 +12,6 @@ export async function getOrderBy(sortBy: string | undefined): Promise<Array<[Str
       return orderBy;
     }
 
-
     return [[parts[0], parts[1].toLowerCase()]];
   } catch (e) {
     console.error(e);
