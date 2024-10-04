@@ -45,6 +45,15 @@ export default function GeneralSettings() {
     submit(e.currentTarget);
     // reset form
     e.currentTarget.reset();
+    //reset form state
+    setFormValues({
+      username: "",
+      email: "",
+      password: "",
+      dateOfBirth: "",
+      occupation: "",
+      mobileNumber: "",
+    });
   }
 
   return (
