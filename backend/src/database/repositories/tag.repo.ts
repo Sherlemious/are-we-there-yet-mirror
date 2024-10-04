@@ -1,27 +1,27 @@
-import { ObjectId } from "mongodb";
-import { Tag } from "../models/tag.model"; 
-import { TagType } from "../../types/Tag.types";
-import Validator from "../../utils/Validator.utils";
+import { ObjectId } from 'mongodb';
+import { Tag } from '../models/tag.model';
+import { TagType } from '../../types/Tag.types';
+import Validator from '../../utils/Validator.utils';
 
-class TagRepo{
-    async findTagById(id: string){
-        Validator.validateId(id, 'Invalid tag ID');
-        return await Tag.find({ _id: new ObjectId(id) });
-    }
+class TagRepo {
+  async findTagById(id: string) {
+    Validator.validateId(id, 'Invalid tag ID');
+    return await Tag.find({ _id: new ObjectId(id) });
+  }
 
-    async createTag(tag: TagType){
-        const tagRes = await Tag.create(tag);
-        return tagRes;
-    }
+  async createTag(tag: TagType) {
+    const tagRes = await Tag.create(tag);
+    return tagRes;
+  }
 
-    async updateTag(id: string, tag: TagType){
-        Validator.validateId(id, 'Invalid tag ID');
-        return await Tag.updateOne({ _id: new ObjectId(id) }, tag);
-    }
+  async updateTag(id: string, tag: TagType) {
+    Validator.validateId(id, 'Invalid tag ID');
+    return await Tag.updateOne({ _id: new ObjectId(id) }, tag);
+  }
 
-    async deleteTag(id: string){
-        Validator.validateId(id, 'Invalid tag ID');
-        return await Tag.deleteOne({ _id: new ObjectId(id) });
-    }
+  async deleteTag(id: string) {
+    Validator.validateId(id, 'Invalid tag ID');
+    return await Tag.deleteOne({ _id: new ObjectId(id) });
+  }
 }
 export default new TagRepo();

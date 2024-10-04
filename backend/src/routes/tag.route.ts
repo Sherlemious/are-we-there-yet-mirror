@@ -1,10 +1,5 @@
 import { Router } from 'express';
-import {
-    findTagById,
-    createTag,
-    updateTag,
-    deleteTag,
-    } from '../controllers/tag.controller';
+import { findTagById, createTag, updateTag, deleteTag } from '../controllers/tag.controller';
 
 const tagRouter = Router();
 
