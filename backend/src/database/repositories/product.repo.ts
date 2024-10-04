@@ -23,8 +23,9 @@ class ProductRepo {
     return await Product.deleteOne({ _id: new ObjectId(id) });
   }
 
-  async getProducts() {
-    return await Product.find();
+  async getProducts(attributeName?: string, attributeValue?: string) {
+    const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
+    return await Product.find(query);
   }
 
   async getPriceMinMax() {

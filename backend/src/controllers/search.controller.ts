@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
+import productRepo from '../database/repositories/product.repo';
 
 const searchFunctions = {
   product: searchProduct,
@@ -9,9 +10,9 @@ const searchFunctions = {
 };
 
 async function search(req: Request, res: Response) {
-  const { type, attribute } = req.query;
+  const { type, attributeName, attributeValue } = req.query;
 
-  if (!type || !attribute) {
+  if (!type || !attributeName) {
     return res.status(ResponseStatusCodes.BAD_REQUEST).send({ error: 'Type and attribute are required' });
   }
 
@@ -22,26 +23,27 @@ async function search(req: Request, res: Response) {
   }
 
   try {
-    const query = await searchFunction(attribute as string);
-    res.send({ data: query });
+    const query = await searchFunction(attributeName as string, attributeValue as string);
+    res.send({ message: 'search is successful', data: query });
   } catch (error) {
     res.status(500).send({ error: 'An error occurred during the search' });
   }
 }
 
-async function searchProduct(attribute: string) {
-  return { product: {} };
+async function searchProduct(attributeName: string, attributeValue: string) {
+  const products = await productRepo.getProducts(attributeName, attributeValue);
+  return { products: products };
 }
 
-async function searchHistoricalPlace(attribute: string) {
+async function searchHistoricalPlace(attributeName: string, attributeValue: string) {
   return { historicalPlace: {} };
 }
 
-async function searchActivity(attribute: string) {
+async function searchActivity(attributeName: string, attributeValue: string) {
   return { activity: {} };
 }
 
-async function searchItinerary(attribute: string) {
+async function searchItinerary(attributeName: string, attributeValue: string) {
   return { itinerary: {} };
 }
 

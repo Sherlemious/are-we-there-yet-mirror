@@ -37,8 +37,10 @@ const deleteProduct = async (req: Request, res: Response) => {
 };
 
 const getProducts = async (req: Request, res: Response) => {
+  const { attributeName, attributeValue } = req.query;
+
   try {
-    const products = await productRepo.getProducts();
+    const products = await productRepo.getProducts(attributeName as string, attributeValue as string);
     const response = {
       message: 'Products fetched successfully',
       data: { products },
