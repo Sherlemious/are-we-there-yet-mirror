@@ -5,8 +5,9 @@ import { MuseumType } from '../../types/Museum.types';
 import Validator from '../../utils/Validator.utils';
 
 class MuseumRepo {
-  async getAllMuseums() {
-    return Museum.find().populate('tags');
+  async getAllMuseums(attributeName?: string, attributeValue?: RegExp | string) {
+    const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
+    return Museum.find(query).populate('tags');
   }
   async findMuseumById(id: string) {
     Validator.validateId(id, 'Invalid museum ID');

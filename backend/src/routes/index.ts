@@ -6,6 +6,7 @@ import tagRouter from './tag.route';
 import userRouter from './user.route';
 import activityRouter from './activity.route';
 import productRouter from './product.route';
+import searchRouter from './search.route';
 
 const routes = Router();
 
@@ -16,5 +17,6 @@ routes.use('/tags', tagRouter);
 routes.use('/users', userRouter);
 routes.use('/activities', activityRouter);
 routes.use('/products', productRouter);
+routes.use('/search', searchRouter);
 
 export { routes };
