@@ -1,4 +1,7 @@
-import { Form, useNavigation } from "react-router-dom";
+"use client";
+
+import { useState, useEffect, FormEvent } from "react";
+import { Form, useNavigation, useSubmit } from "react-router-dom";
 import { CircleUserRound } from "lucide-react";
 import Button from "./Button";
 import InputField from "./InputField";
@@ -13,14 +16,58 @@ export default function GeneralSettings({
   description?: string;
 }) {
   const navigation = useNavigation();
+  const submit = useSubmit();
   const isSubmitting = navigation.state === "submitting";
 
   const isSeller = inputFields.includes(fieldNames.name);
   const fieldsLength = inputFields.length;
 
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const initialValues = inputFields.reduce(
+      (acc, field) => {
+        acc[field] = "";
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+    setInputValues(initialValues);
+  }, [inputFields]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setInputValues((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const areAllFieldsEmpty = () => {
+    return Object.values(inputValues).every((value) => value.trim() === "");
+  };
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    // submit the form to action
+    submit(e.currentTarget);
+    // reset the form
+    e.currentTarget.reset();
+    // reset input values to disable button
+    setInputValues((prev) =>
+      Object.keys(prev).reduce(
+        (acc, key) => {
+          acc[key] = "";
+          return acc;
+        },
+        {} as Record<string, string>,
+      ),
+    );
+  }
+
   return (
     <div className={customStyles.outerContainer}>
-      <Form method="PATCH" className={customStyles.form}>
+      <Form
+        method="PATCH"
+        className={customStyles.form}
+        onSubmit={(e) => handleSubmit(e)}
+      >
         <h1 className={customStyles.h1}>General Settings</h1>
 
         <div className={`flex gap-3 ${fieldsLength <= 1 ? "flex-col" : ""}`}>
@@ -35,10 +82,13 @@ export default function GeneralSettings({
                     inputField={inputField}
                     signedIn={true}
                     hasLabel={true}
+                    onChange={(e) =>
+                      handleInputChange(inputField, e.target.value)
+                    }
                   />
                   {fieldsLength <= 1 && (
                     <Button
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || areAllFieldsEmpty()}
                       onClick={() => console.log("clicked", isSubmitting)}
                       className="w-full rounded-lg bg-background-button px-2 py-2 font-bold text-white duration-200 hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-50"
                       type="submit"
@@ -53,7 +103,7 @@ export default function GeneralSettings({
               <Button
                 type="submit"
                 onClick={() => console.log("clicked", isSubmitting)}
-                disabled={isSubmitting}
+                disabled={isSubmitting || areAllFieldsEmpty()}
                 className="mt-1 rounded-lg px-2 py-2 font-bold duration-200 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Update
@@ -77,7 +127,6 @@ export default function GeneralSettings({
 
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
-
   const data = Object.fromEntries(formData);
   console.log(data);
 
