@@ -10,18 +10,31 @@ let tag = {
 };
 
 let location = {
+  _id: '670063d1606bb753ef896806',
   name: 'Test Location',
   latitude: 0,
   longitude: 0,
 };
 
+let activity = {
+  date: '2023-10-01',
+  time: '14:00',
+  price: 50,
+  category: 'Outdoor',
+  tags: [tag, tag],
+  specialDiscounts: '10% off for students',
+  bookingOpen: true,
+  location: location,
+};
+
 let newItinerary = {
   name: 'Test Itinerary',
   category: 'Test Category',
-  tags: [tag],
+  tags: [tag, tag],
+  activities: [activity, activity],
   language: 'Test Language',
   price: 0,
-  available_datetimes: ['Test Datetime'],
+  available_datetimes: ['2022-01-01T00:00:00.000Z', '2022-01-02T00:00:00.000Z'],
   accessibility: true,
   pick_up_location: location,
   drop_off_location: location,
@@ -51,6 +64,7 @@ describe('Itinerary tests', () => {
 
     it('should respond with created (201) for creating an itinerary successfully', async () => {
       await request(app).post('/api/tags').send(tag);
+      await request(app).post('/api/activities').send(activity);
       const response = await request(app).post('/api/itineraries').send(newItinerary);
       itineraryId = response.body.data.itineraryId;
 

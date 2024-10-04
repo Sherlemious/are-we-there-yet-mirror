@@ -1,9 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { locationSchema } from './location.model';
 
-/**
- * TODO: modify types of activities when its schema is created
- */
 const itinerarySchema = new Schema({
   name: {
     type: String,
@@ -17,7 +14,7 @@ const itinerarySchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
   },
   activities: {
-    type: [String],
+    type: [{ type: Schema.Types.ObjectId, ref: 'activity' }],
   },
   locations: {
     type: [locationSchema],
@@ -35,7 +32,7 @@ const itinerarySchema = new Schema({
     min: 0,
   },
   available_datetimes: {
-    type: [String],
+    type: [Date],
     required: true,
   },
   accessibility: {
