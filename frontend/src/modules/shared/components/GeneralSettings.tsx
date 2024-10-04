@@ -1,7 +1,9 @@
 import { Form, useNavigation } from "react-router-dom";
-import { getPlaceholder } from "../utils/helpers";
 import { CircleUserRound } from "lucide-react";
 import Button from "./Button";
+import InputField from "./InputField";
+import { capitalizeFirstLetter } from "../utils/helpers";
+import { fieldNames } from "../constants/inputNames";
 
 export default function GeneralSettings({
   inputFields,
@@ -13,7 +15,7 @@ export default function GeneralSettings({
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
-  const isSeller = inputFields.includes("Name");
+  const isSeller = inputFields.includes(fieldNames.name);
   const fieldsLength = inputFields.length;
 
   return (
@@ -25,22 +27,20 @@ export default function GeneralSettings({
           <div className={`flex gap-1 ${fieldsLength > 1 ? "flex-col" : ""}`}>
             {inputFields.map((inputField) => (
               <div key={inputField} className={customStyles.inputContainer}>
-                <label className="w-fit">{inputField}</label>
+                <label className="w-fit">
+                  {capitalizeFirstLetter(inputField)}
+                </label>
                 <div className="flex gap-2">
-                  <input
-                    name={inputField}
-                    type="text"
-                    className={customStyles.input}
-                    placeholder={getPlaceholder(inputField)}
-                  />
+                  <InputField inputField={inputField} signedIn={true} />
                   {fieldsLength <= 1 && (
-                    <button
+                    <Button
                       disabled={isSubmitting}
-                      type="submit"
+                      onClick={() => console.log("clicked", isSubmitting)}
                       className="w-full rounded-lg bg-background-button px-2 py-2 font-bold text-white duration-200 hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-50"
+                      type="submit"
                     >
                       Update
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -65,7 +65,7 @@ export default function GeneralSettings({
         </div>
       </Form>
       {!isSeller && (
-        <CircleUserRound size={350} color="#d1d5db" strokeWidth={1.25} />
+        <CircleUserRound size={300} color="#d1d5db" strokeWidth={1.25} />
       )}
     </div>
   );
@@ -83,8 +83,7 @@ export async function action({ request }: { request: Request }) {
 const customStyles = {
   outerContainer:
     "flex items-center gap-40 border-2 border-borders-primary px-16 py-8",
-  h1: "w-fit border-b-2 border-b-borders-primary pb-1 ",
+  h1: "w-fit border-b-2 border-b-borders-bottomBorder pb-1 ",
   form: "flex flex-col justify-between gap-10 text-text-primary",
   inputContainer: "flex max-w-fit flex-col justify-center gap-2 mt-4",
-  input: "rounded-lg border-2 border-gray-200 px-4 py-2 text-text-primary",
 };

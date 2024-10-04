@@ -38,7 +38,7 @@ const Slider = ({
   onAddSlide,
 }: {
   title: string;
-  onAddSlide: () => void;
+  onAddSlide?: () => void;
 }) => {
   const [works, setWorks] = useState([
     {
