@@ -8,7 +8,9 @@
     "start-nodemon": "nodemon",
     "build": "tsc",
     "start": "tsx ./src/server.ts",
-    "test": "jest"
+    "test": "jest",
+    "lint": "prettier --check . --config ../.prettierrc",
+    "format": "prettier --write . --config ../.prettierrc"
   },
   "author": "",
   "license": "ISC",
