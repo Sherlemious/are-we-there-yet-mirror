@@ -48,7 +48,7 @@ const TouristGoverner = () => {
   ];
   const [places] = useState<Place[]>(sampleMuseums);
   return (
-    <div>
+    <div className="p-16 gap-2">
       <PlaceForm />
       <PlacesList places={places} />
     </div>

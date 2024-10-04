@@ -65,7 +65,7 @@ const PlaceForm = () => {
       {/* You can add the file input for pictures here */}
 
       <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">
-        add Museum
+        +add Museum
       </button>
     </form>
   );
