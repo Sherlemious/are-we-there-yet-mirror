@@ -29,6 +29,9 @@ const productSchema = new Schema({
     ref: 'user',
     required: true,
   },
+  tags: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
+  },
   timestamp: {
     type: Date,
     default: Date.now,
