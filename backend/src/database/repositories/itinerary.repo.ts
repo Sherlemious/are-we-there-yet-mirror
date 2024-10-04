@@ -5,6 +5,11 @@ import { ItineraryType } from '../../types/Itinerary.types';
 import Validator from '../../utils/Validator.utils';
 
 class ItineraryRepo {
+  async getItineraries(attributeName: string, attributeValue: RegExp) {
+    const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
+    return await Itinerary.find(query).populate('tags');
+  }
+
   async findItineraryById(id: string) {
     Validator.validateId(id, 'Invalid itinerary ID');
     return await Itinerary.findById(id).populate('tags');

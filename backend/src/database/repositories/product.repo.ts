@@ -23,7 +23,7 @@ class ProductRepo {
     return await Product.deleteOne({ _id: new ObjectId(id) });
   }
 
-  async getProducts(attributeName?: string, attributeValue?: string) {
+  async getProducts(attributeName?: string, attributeValue?: RegExp) {
     const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
     return await Product.find(query);
   }
