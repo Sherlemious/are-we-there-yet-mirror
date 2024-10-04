@@ -1,9 +1,12 @@
 import { Schema, model } from 'mongoose';
 import { locationSchema } from './location.model';
+import { ActivityType } from '../../types/Activity.types';
+import { ValidationException } from '../../exceptions/ValidationException';
+import { getTagIds } from './tag.model';
 
 const activitySchema = new Schema({
   date: {
-    type: String,
+    type: Date,
     required: true,
   },
   time: {
@@ -35,6 +38,27 @@ const activitySchema = new Schema({
   },
 });
 
+async function getActivityIds(activitiesData: ActivityType[]): Promise<ActivityType[]> {
+  const activityIds: ActivityType[] = [];
+
+  if (!activitiesData) {
+    return activityIds;
+  }
+
+  for (const activityData of activitiesData) {
+    const tagIds = await getTagIds(activityData.tags);
+    activityData.tags = tagIds;
+    let activity = await Activity.findOne(activityData);
+
+    if (!activity) {
+      throw new ValidationException('One or more activities are invalid');
+    }
+    activityIds.push(activity.id);
+  }
+
+  return activityIds;
+}
+
 const Activity = model('activity', activitySchema);
 
-export { Activity, activitySchema };
+export { Activity, activitySchema, getActivityIds };
