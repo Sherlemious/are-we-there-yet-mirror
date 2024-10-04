@@ -5,7 +5,7 @@ import { MuseumType } from '../../types/Museum.types';
 import Validator from '../../utils/Validator.utils';
 
 class MuseumRepo {
-  async getAllMuseums(attributeName?: string, attributeValue?: RegExp) {
+  async getAllMuseums(attributeName?: string, attributeValue?: RegExp | string) {
     const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
     return Museum.find(query).populate('tags');
   }
