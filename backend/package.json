@@ -7,8 +7,8 @@
     "dev": "tsx watch src/server.ts",
     "start-nodemon": "nodemon",
     "build": "tsc",
-    "start": "tsx ./src/server.ts",
-    "test": "jest",
+    "start": "tsx ./dist/server.js",
+    "test": "tsc --project tsconfig.test.json && jest",
     "lint": "prettier --check . --config ../.prettierrc",
     "format": "prettier --write . --config ../.prettierrc"
   },
