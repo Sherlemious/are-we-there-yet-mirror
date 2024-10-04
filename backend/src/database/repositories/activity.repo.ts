@@ -28,8 +28,9 @@ class ActivityRepo {
     return await Activity.deleteOne({ _id: new ObjectId(id) });
   }
 
-  async getAllActivities() {
-    return await Activity.find().populate('tags');
+  async getAllActivities(attributeName?: string, attributeValue?: string) {
+    const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
+    return await Activity.find(query).populate('tags');
   }
 }
 

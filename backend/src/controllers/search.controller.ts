@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import productRepo from '../database/repositories/product.repo';
+import MuseumRepo from '../database/repositories/museum.repo';
+import ActivityRepo from '../database/repositories/activity.repo';
 
 const searchFunctions = {
   product: searchProduct,
@@ -36,11 +38,13 @@ async function searchProduct(attributeName: string, attributeValue: string) {
 }
 
 async function searchHistoricalPlace(attributeName: string, attributeValue: string) {
-  return { historicalPlace: {} };
+  const historicalPlaces = await MuseumRepo.getAllMuseums(attributeName, attributeValue);
+  return { historicalPlaces: historicalPlaces };
 }
 
 async function searchActivity(attributeName: string, attributeValue: string) {
-  return { activity: {} };
+  const activities = await ActivityRepo.getAllActivities(attributeName, attributeValue);
+  return { activities: activities };
 }
 
 async function searchItinerary(attributeName: string, attributeValue: string) {
