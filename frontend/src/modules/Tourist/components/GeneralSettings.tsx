@@ -1,7 +1,7 @@
 import { useLoaderData, useNavigation } from "react-router";
 import { fieldNames } from "../../shared/constants/inputNames";
 import InputField from "../../shared/components/InputField";
-import { Form } from "react-router-dom";
+import { Form, useSubmit } from "react-router-dom";
 import { CircleUserRound } from "lucide-react";
 import GenericDropdown from "../../shared/components/GenericDropdown";
 import { useState, useEffect } from "react";
@@ -9,6 +9,7 @@ import Button from "../../shared/components/Button";
 
 export default function GeneralSettings() {
   const navigation = useNavigation();
+  const submit = useSubmit();
   const [nationality, setNationality] = useState<string>("");
   const [formValues, setFormValues] = useState({
     username: "",
@@ -38,6 +39,14 @@ export default function GeneralSettings() {
     setIsFormEmpty(isEmpty);
   }, [formValues, nationality]);
 
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    //submit form
+    submit(e.currentTarget);
+    // reset form
+    e.currentTarget.reset();
+  }
+
   return (
     <div className={customStyles.outerContainer}>
       <div className="flex justify-evenly">
@@ -45,7 +54,11 @@ export default function GeneralSettings() {
           <h1 className={customStyles.h1}>General Settings</h1>
         </div>
 
-        <Form method="PATCH" className={customStyles.form}>
+        <Form
+          method="PATCH"
+          className={customStyles.form}
+          onSubmit={(e) => handleSubmit(e)}
+        >
           <CircleUserRound size={300} color="#d1d5db" strokeWidth={1.25} />
 
           <InputField
