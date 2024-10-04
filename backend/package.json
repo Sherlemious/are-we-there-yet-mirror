@@ -2,24 +2,41 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.ts",
-  "type": "module",
+  "main": "src/server.ts",
   "scripts": {
-    "dev": "tsx watch src/app.ts",
+    "dev": "tsx watch src/server.ts",
+    "start-nodemon": "nodemon",
     "build": "tsc",
-    "start": "tsx ./src/app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx ./src/server.ts",
+    "test": "jest",
+    "lint": "prettier --check . --config ../.prettierrc",
+    "format": "prettier --write . --config ../.prettierrc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
-    "mongoose": "^8.6.3"
+    "mongoose": "^8.6.3",
+    "multer": "^1.4.5-lts.1",
+    "winston": "^3.14.2"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.13",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.7.2",
+    "@types/supertest": "^6.0.2",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.3.3",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^1.1.8",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2"
   }
