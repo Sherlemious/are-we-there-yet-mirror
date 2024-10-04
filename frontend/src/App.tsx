@@ -9,6 +9,7 @@ import {
   registerAction,
   registerLoader,
 } from "./modules/Register/App";
+import { TouristAction, TouristProfile } from "./modules/Tourist/App";
 
 const BrowserRouter = createBrowserRouter([
   { path: "/", element: <RootLayout />, children: [] },
@@ -32,6 +33,12 @@ const BrowserRouter = createBrowserRouter([
     path: "/seller-profile",
     element: <SellerProfile />,
     action: generalSettingAction,
+  },
+  {
+    path: "/tourist-profile",
+    element: <TouristProfile />,
+    loader: registerLoader,
+    action: TouristAction,
   },
 ]);
 

@@ -31,7 +31,11 @@ export default function GeneralSettings({
                   {capitalizeFirstLetter(inputField)}
                 </label>
                 <div className="flex gap-2">
-                  <InputField inputField={inputField} signedIn={true} />
+                  <InputField
+                    inputField={inputField}
+                    signedIn={true}
+                    hasLabel={true}
+                  />
                   {fieldsLength <= 1 && (
                     <Button
                       disabled={isSubmitting}

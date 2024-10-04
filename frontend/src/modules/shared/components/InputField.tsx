@@ -3,34 +3,41 @@ import { capitalizeFirstLetter, getPlaceholder } from "../utils/helpers";
 export default function InputField({
   inputField,
   signedIn,
+  hasLabel,
+  onChange,
 }: {
   inputField: string;
   signedIn?: boolean;
+  hasLabel?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
-  if (!signedIn) {
+  if (hasLabel && signedIn) {
     return (
-      <div className="flex flex-col">
-        <label className={customStyles.label} htmlFor={inputField}>
-          {capitalizeFirstLetter(inputField)}
-        </label>
+      <>
         <input
+          onChange={onChange}
           name={inputField}
           type="text"
           className={customStyles.input}
           placeholder={getPlaceholder(inputField)}
         />
-      </div>
+      </>
     );
   }
+
   return (
-    <>
+    <div className="flex flex-col">
+      <label className={customStyles.label} htmlFor={inputField}>
+        {capitalizeFirstLetter(inputField)}
+      </label>
       <input
+        onChange={onChange}
         name={inputField}
         type="text"
         className={customStyles.input}
         placeholder={getPlaceholder(inputField)}
       />
-    </>
+    </div>
   );
 }
 
