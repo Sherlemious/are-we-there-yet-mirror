@@ -1,11 +1,14 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import { routes } from './routes/index';
 import { logger, logHttpRequests } from './middlewares/logger.middleware';
 import mongoose from 'mongoose';
 
 const app = express();
 const mongoConnectionString = process.env.MONGO_URI || '';
+
+app.use(cors()); // Enable CORS
 
 // Middleware
 app.use(express.json());
