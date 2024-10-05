@@ -1,55 +1,54 @@
-import React, { useEffect, useState } from "react";
-import ProfileTable from "../components/ProfileTable";
-import ProfileForm from "../components/ProfileForm";
-import { Profile } from "../types/Profile";
-import Header from "../components/Header";
+import React, { useEffect, useState } from 'react';
+import ProfileTable from '../components/ProfileTable';
+import ProfileForm from '../components/ProfileForm';
+import { Profile } from '../types/Profile';
+import Header from '../components/Header';
 
 const Dashboard = () => {
-    const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
 
-    const handleAddProfile = (newProfile: Profile) => {
-      setProfiles([...profiles, newProfile]);
-    };
-    const fetchProfiles = async () => {
-      const response = await fetch("http://localhost:5173/api/users/sellers");
+  // Fetch profiles (GET request)
+  const fetchProfiles = async () => {
+    try {
+      const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/users');
       const data = await response.json();
-      setProfiles(data);
-    };
-    useEffect(() => {
-      fetchProfiles();
-    }, []);
-  // i want to store these profiles in array and display them in the table
-//   const profiles = [
-//     { username: "User123", password: "pass123", accountType: "Tourists" },
-//     { username: "John Doe", password: "pa$$word", accountType: "Tour Guide" },
-//     { username: "Jane Doe", password: "123456789", accountType: "Seller" },
-//     {
-//       username: "Professio...",
-//       password: "987654321",
-//       accountType: "Advertiser",
-//     },
-//     {
-//       username: "Professio...",
-//       password: "987654321",
-//       accountType: "Advertiser",
-//     },
-//     {
-//       username: "Professio...",
-//       password: "987654321",
-//       accountType: "Advertiser",
-//     },
-//     {
-//       username: "Professio...",
-//       password: "987654321",
-//       accountType: "Advertiser",
-//     },
-//   ];
+      setProfiles(data.data);
+    } catch (error) {
+      console.error('Error fetching profiles:', error);
+    }
+  };
+
+  // Add profile (for frontend state)
+  const handleAddProfile = (newProfile: Profile) => {
+    setProfiles([...profiles, newProfile]);
+  };
+
+  // Delete profile by _id (DELETE request)
+  const handleDeleteProfile = async (id: string) => {
+    try {
+      const response = await fetch(`https://are-we-there-yet-mirror.onrender.com/api/users/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setProfiles(profiles.filter((profile) => profile._id !== id));
+      } else {
+        console.error('Failed to delete profile');
+      }
+    } catch (error) {
+      console.error('Error deleting profile:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfiles(); // Fetch profiles when the component mounts
+  }, []);
 
   return (
     <div className="container mx-auto">
       <Header />
-      <ProfileTable profiles={profiles} />
-      <ProfileForm onAddProfile={handleAddProfile} />
+      <ProfileTable profiles={profiles} onDeleteProfile={handleDeleteProfile} />
+      {/* <ProfileForm onAddProfile={handleAddProfile} /> */}
     </div>
   );
 };

@@ -1,33 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 interface AddUserProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (username: string, password: string) => void;
+  onAdd: (username: string, password: string ,email:string) => void;
   title: string;
 }
 
-const AddUserPopup: React.FC<AddUserProps> = ({
-  isOpen,
-  onClose,
-  onAdd,
-  title,
-}) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const AddUserPopup: React.FC<AddUserProps> = ({ isOpen, onClose, onAdd, title }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
-    setIsFormValid(username.trim() !== "" && password.trim() !== "");
-  }, [username, password]);
+    setIsFormValid(username.trim() !== '' && password.trim() !== '' && email.trim() !== '');
+  }, [username, password, email]);
 
   if (!isOpen) return null;
 
   const handleButtonClick = () => {
     if (isFormValid) {
-      onAdd(username, password);
-      setUsername("");
-      setPassword("");
+      onAdd(username, password, email);
+      setUsername('');
+      setPassword('');
     }
     onClose();
   };
@@ -50,16 +46,23 @@ const AddUserPopup: React.FC<AddUserProps> = ({
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <input
+          type="email"
+          placeholder="Email"
+          className="mb-6 w-full rounded border border-gray-300 px-3 py-2"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
         <div className="flex justify-center">
           <button
             className={`rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
               isFormValid
-                ? "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500"
-                : "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500"
+                ? 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500'
+                : 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500'
             }`}
             onClick={handleButtonClick}
           >
-            {isFormValid ? "Add" : "Cancel"}
+            {isFormValid ? 'Add' : 'Cancel'}
           </button>
         </div>
       </div>
