@@ -3,6 +3,21 @@ import ItineraryRepo from '../database/repositories/itinerary.repo';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 
+const getItineraries = async (req: Request, res: Response) => {
+  try {
+    const itineraries = await ItineraryRepo.getItineraries();
+    const response = {
+      message: 'Itineraries fetched successfully',
+      data: { itineraries: itineraries },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching itineraries: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 const findItineraryById = async (req: Request, res: Response) => {
   try {
     const itinerary = await ItineraryRepo.findItineraryById(req.params.id);
@@ -65,4 +80,4 @@ const deleteItinerary = async (req: Request, res: Response) => {
   }
 };
 
-export { findItineraryById, createItinerary, updateItinerary, deleteItinerary };
+export { getItineraries, findItineraryById, createItinerary, updateItinerary, deleteItinerary };
