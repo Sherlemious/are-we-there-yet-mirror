@@ -16,7 +16,7 @@ const getAllTags = async (req: Request, res: Response) => {
     logger.error(`Error fetching tags: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
-}
+};
 
 const findTagById = async (req: Request, res: Response) => {
   try {

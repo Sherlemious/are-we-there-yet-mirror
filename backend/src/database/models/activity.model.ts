@@ -4,39 +4,52 @@ import { ActivityType } from '../../types/Activity.types';
 import { ValidationException } from '../../exceptions/ValidationException';
 import { getTagIds } from './tag.model';
 
-const activitySchema = new Schema({
-  date: {
-    type: Date,
-    required: true,
+const activitySchema = new Schema(
+  {
+    date: {
+      type: Date,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
+    location: {
+      type: locationSchema,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    tags: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
+    },
+    specialDiscounts: {
+      type: String,
+    },
+    bookingOpen: {
+      type: Boolean,
+      required: true,
+    },
+    created_by: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    modified_by: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
   },
-  time: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: locationSchema,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
-  tags: {
-    type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
-  },
-  specialDiscounts: {
-    type: String,
-  },
-  bookingOpen: {
-    type: Boolean,
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 async function getActivityIds(activitiesData: ActivityType[]): Promise<ActivityType[]> {
   const activityIds: ActivityType[] = [];

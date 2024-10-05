@@ -19,16 +19,12 @@ class MuseumRepo {
   }
 
   async createMuseum(museum: MuseumType) {
-    const tagIds = await getTagIds(museum.tags);
-    museum.tags = tagIds;
     const museumRes = await Museum.create(museum);
     return museumRes;
   }
 
   async updateMuseum(id: string, museum: MuseumType) {
     Validator.validateId(id, 'Invalid museum ID');
-    const tagIds = await getTagIds(museum.tags);
-    museum.tags = tagIds;
     return await Museum.findByIdAndUpdate(id, museum);
   }
 

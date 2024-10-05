@@ -14,7 +14,6 @@ class ProductRepo {
 
   async updateProduct(id: string, details: string, price: number) {
     Validator.validateId(id, 'Invalid product ID');
-
     return await Product.updateOne({ _id: new ObjectId(id) }, { details, price });
   }
 
