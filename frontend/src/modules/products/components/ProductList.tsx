@@ -3,6 +3,7 @@ import { Product } from '../types/product';
 import { Minus, Plus } from 'lucide-react';
 import Modal, { ModalRef } from './modal';
 import ProductForm, { ProductFormData } from './ProductForm';
+import defaultPhoto from '../assets/defaultPhoto.png';
 
 interface ProductListProps {
   products: Product[]; // All products
@@ -11,6 +12,8 @@ interface ProductListProps {
   onDelete?: (productId: string) => void; // Admin/Seller functionality
   onCreate?: (productData: ProductFormData) => void; // Admin/Seller functionality
 }
+
+const defaultImage = defaultPhoto;
 
 const ProductList: React.FC<ProductListProps> = ({ products, role, onCreate, onEdit, onDelete }) => {
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
@@ -115,11 +118,16 @@ const ProductList: React.FC<ProductListProps> = ({ products, role, onCreate, onE
                       <Minus size={16} className="duration-150 group-hover:stroke-black" />
                     </button>
                   )}
+                  <img
+                    src={product.attachments?.length > 0 ? product.attachments[0] : defaultImage}
+                    alt={product.name}
+                    className={customStyles.productImage} // Add your styles here
+                  />
                   <h3 className={customStyles.slideTitle}>{product.name}</h3>
                   <p className={customStyles.slideText}>{product.description}</p>
                   <p className={customStyles.slideText}>Price: {product.price}</p>
                   <p className={customStyles.slideText}>Quantity: {product.available_quantity}</p>
-                  {/* <p className={customStyles.slideText}>Rating: {product.rating}</p> */}
+                  <strong>Rating:</strong>5
                 </div>
               </div>
             ))}
@@ -146,7 +154,9 @@ const ProductList: React.FC<ProductListProps> = ({ products, role, onCreate, onE
                 <p>
                   <strong>Quantity:</strong> {selectedProduct.available_quantity}
                 </p>
-                <p>{/* <strong>Rating:</strong> {selectedProduct.rating} */}</p>
+                <p>
+                  <strong>Rating:</strong>5
+                </p>
               </>
             )}
 
@@ -192,9 +202,9 @@ const customStyles = {
   sortButton: 'px-4 py-2 border border-gray-300 rounded-lg bg-blue-500 text-white',
   sliderContainer: 'relative',
   sliderContent: 'overflow-hidden',
-  sliderWrapper: 'grid grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto', // Set a max height and make it scrollable
+  sliderWrapper: 'grid grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto', // Set a max height and make it scrollable
   slide: 'w-[22%] h-[100%] flex-shrink-0 px-2 transition-all duration-600 m-6',
-  slideContent: 'h-[40vh] w-[35vh] overflow-auto border-2 border-gray-300 bg-white p-6 relative cursor-pointer',
+  slideContent: 'h-[50vh] w-[35vh] overflow-auto border-2 border-gray-300 bg-white p-6 relative cursor-pointer',
   slideTitle: 'mb-2 font-bold',
   slideText: 'text-sm',
   navButton:
@@ -202,13 +212,14 @@ const customStyles = {
   removeButton:
     'absolute group top-2 right-2 z-10 rounded-full border border-gray-500 bg-background-button p-1 hover:bg-red-600 focus:outline-none duration-150',
   addSlideDiv:
-    'flex items-center justify-center h-[40vh] w-[35vh] border-2 border-dashed border-gray-300 bg-white cursor-pointer hover:bg-gray-50',
+    'flex items-center justify-center h-[50vh] w-[35vh] border-2 border-dashed border-gray-300 bg-white cursor-pointer hover:bg-gray-50',
   addSlideIcon: 'text-gray-400 w-16 h-16',
   navigationButtons: 'flex justify-between mt-4',
   endBeginButton:
     'px-4 py-2 rounded hover:opacity-70 focus:outline-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed',
   editButton: 'px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600',
   editSection: 'mt-4',
+  productImage: 'w-full h-[55%] object-cover mb-4',
 };
 
 export default ProductList;
