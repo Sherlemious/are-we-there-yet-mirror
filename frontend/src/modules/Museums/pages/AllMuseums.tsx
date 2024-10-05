@@ -1,4 +1,5 @@
 import MuseumList from '../components/MuseumList';
+import MuseumForm from '../components/MuseumForm';
 const AllMuseums = () => {
     const museumsExample = [
         {
@@ -166,7 +167,7 @@ const AllMuseums = () => {
         <h3 className="py-2 text-2xl font-bold">Museums & Historical Places</h3>
       </div>
       {/* <MuseumForm onSubmit={handleCreate} /> */}
-      <MuseumList museums={museumsExample} role="tourist" />
+      <MuseumList museums={museumsExample} role="tourismGovernor" />
     </div>
   );
 };
