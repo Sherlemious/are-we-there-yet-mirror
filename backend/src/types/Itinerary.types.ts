@@ -6,7 +6,7 @@ export interface ItineraryType {
   name: string;
   category: string;
   tags: TagType[];
-  activities: ActivityType[];
+  activities: String[];
   locations: LocationType[];
   timeline: string;
   language: string;
