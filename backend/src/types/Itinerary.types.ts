@@ -1,12 +1,11 @@
-import { ActivityType } from './Activity.types';
+import { ActivityRefType } from './Activity.types';
 import { LocationType } from './Location.types';
-import { TagType } from './Tag.types';
 
 export interface ItineraryType {
   name: string;
   category: string;
-  tags: TagType[];
-  activities: String[];
+  tags: String[];
+  activities: ActivityRefType[];
   locations: LocationType[];
   timeline: string;
   language: string;

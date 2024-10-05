@@ -7,7 +7,6 @@ import {
   deleteItinerary,
   filterItineraries,
 } from '../controllers/itinerary.controller';
-import { it } from 'node:test';
 
 const itineraryRouter = Router();
 
