@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { ModalRef } from './modal';
 
 interface ProductFormProps {
-  onSubmit: (productData: ProductFormData) => void;
+  onSubmit?: (productData: ProductFormData) => void;
+  addModalRef: React.RefObject<ModalRef>;
+  initialData?: ProductFormData;
 }
 
 export interface ProductFormData {
@@ -12,13 +15,15 @@ export interface ProductFormData {
   attachments: File[]; // Assuming you will implement file handling
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState<Omit<ProductFormData, 'attachments'>>({
-    name: '',
-    description: '',
-    price: 0,
-    available_quantity: 0,
-  });
+const ProductForm: React.FC<ProductFormProps> = ({ onSubmit, addModalRef, initialData }) => {
+  const [formData, setFormData] = useState<Omit<ProductFormData, 'attachments'>>(
+    initialData || {
+      name: '',
+      description: '',
+      price: 0,
+      available_quantity: 0,
+    }
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -32,7 +37,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ onSubmit }) => {
     e.preventDefault();
     const formDataWithAttachments = { ...formData, attachments: [] };
 
-    onSubmit(formDataWithAttachments);
+    if (onSubmit) {
+      onSubmit(formDataWithAttachments);
+    }
+    addModalRef.current?.close();
   };
 
   return (
@@ -41,6 +49,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ onSubmit }) => {
       <input
         type="text"
         name="name"
+        required
         value={formData.name}
         onChange={handleInputChange}
         placeholder="Product Name"
@@ -57,6 +66,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ onSubmit }) => {
       <label htmlFor="price">Price</label>
       <input
         type="number"
+        required
         name="price"
         value={formData.price}
         onChange={handleInputChange}
@@ -67,6 +77,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ onSubmit }) => {
       <input
         type="number"
         name="available_quantity"
+        required
         value={formData.available_quantity}
         onChange={handleInputChange}
         placeholder="Available Quantity"
@@ -74,7 +85,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ onSubmit }) => {
       />
       {/* You can add file upload input for attachments */}
       <button type="submit" className={styles.button}>
-        Submit
+        {initialData?.name ? 'Update' : 'submit'}
       </button>
     </form>
   );
