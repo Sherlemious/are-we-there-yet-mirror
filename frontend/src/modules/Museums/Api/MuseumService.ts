@@ -1,24 +1,59 @@
 import axios from 'axios';
-import { MuseumFormData } from '../components/MuseumForm';
 import { Museum } from '../types/museum';
 
-const API_URL = 'https://api.example.com/museums';
+const API_URL = 'https://are-we-there-yet-mirror.onrender.com/api';
 
-export const createMuseum = async (museumData: MuseumFormData): Promise<Museum> => {
-    const response = await axios.post(API_URL, museumData);
-    return response.data;
-  };
-  
-  export const deleteMuseum = async (museumId: string): Promise<void> => {
-    await axios.delete(`${API_URL}/${museumId}`);
-  };
-  
-  export const updateMuseum = async (museumId: string, museumData: MuseumFormData): Promise<Museum> => {
-    const response = await axios.put(`${API_URL}/${museumId}`, museumData);
-    return response.data;
-  };
-  
-  export const getMuseums = async (): Promise<Museum[]> => {
-    const response = await axios.get(API_URL);
-    return response.data;
-  };
+export const createMuseum = async (museumData: Omit<Museum, '_id'>): Promise<Museum> => {
+  try {
+    const response = await axios.post<{ data: { museum: Museum } }>(`${API_URL}/museums`, museumData);
+    return response.data.data.museum;
+  } catch (error) {
+    console.log('Error not working');
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || 'Error creating museum');
+    } else {
+      throw new Error('Error creating museum');
+    }
+  }
+};
+
+export const deleteMuseum = async (museumId: string): Promise<void> => {
+  try {
+    await axios.delete(`${API_URL}/museums/${museumId}`);
+  } catch (error) {
+    console.log('Error not working');
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || 'Error deleting museum');
+    } else {
+      throw new Error('Error deleting museum');
+    }
+  }
+};
+
+export const updateMuseum = async (museumId: string, museumData: Museum): Promise<Museum> => {
+  try {
+    const response = await axios.patch<{ data: { museum: Museum } }>(`${API_URL}/museums/${museumId}`, museumData);
+    return response.data.data.museum;
+  } catch (error) {
+    console.log('Error not working');
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || 'Error updating museum');
+    } else {
+      throw new Error('Error updating museum');
+    }
+  }
+};
+
+export const getMuseums = async (): Promise<Museum[]> => {
+  try {
+    const response = await axios.get<{ data: { museums: Museum[] } }>(`${API_URL}/museums`);
+    return response.data.data.museums;
+  } catch (error) {
+    console.log('Error not working');
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || 'Error fetching museum');
+    } else {
+      throw new Error('Error fetching museum');
+    }
+  }
+};

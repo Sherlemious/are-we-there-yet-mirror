@@ -23,7 +23,7 @@ const BrowserRouter = createBrowserRouter([
     element: <SellerProfile />,
   },
   {
-    path: '/all-musuems',
+    path: '/all-museums',
     element: <AllMuseums />,
   }
 ]);

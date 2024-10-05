@@ -1,21 +1,24 @@
 import React, { useState, useRef } from 'react';
-import { type } from '../types/museum';
+import { ModalRef } from './modal';
 
 interface MuseumFormProps {
   onSubmit: (museumData: MuseumFormData) => void;
+  addModalRef: React.RefObject<ModalRef>;
+  initialData?: MuseumFormData;
 }
 
 export interface MuseumFormData {
+  _id: string;
   name: string;
   description: string;
   category: string;
-  tags: {
-    _id: string; // Unique identifier for the tag
-    name: string; // Name of the tag
-    type: type; // Type of the tag (using the defined enum)
-    historical_period: string; // Historical period related to the tag
-  }[];
-  pictures: File[]; // Array to hold multiple pictures
+  tags: string[];
+  location: {
+    name: string;
+    latitude: number;
+    longitude: number;
+  }
+  pictures: string[]; // Array to hold multiple pictures
   opening_hours: string;
   ticket_prices: {
     foreigner: number;
@@ -24,19 +27,18 @@ export interface MuseumFormData {
   };
 }
 
-const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState<Omit<MuseumFormData, 'pictures'>>({
+const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialData }) => {
+  const [formData, setFormData] = useState<Omit<MuseumFormData, 'pictures'>>( initialData || {
+    _id: '',
     name: '',
     description: '',
     category: '',
-    tags: [
-      {
-        _id: '',
-        name: '',
-        type: type.Museum, // Assign the default type here
-        historical_period: '',
-      },
-    ],
+    tags: [''],
+    location: {
+      name: '',
+      latitude: 0,
+      longitude: 0,
+    },
     opening_hours: '',
     ticket_prices: {
       foreigner: 0,
@@ -45,7 +47,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
     },
   });
 
-  const [pictures, setPictures] = useState<File[]>([]); // Separate state for file uploads
+  const [pictures, setPictures] = useState<string[]>([]); // Separate state for file uploads
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Create a ref for the file input
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -72,41 +74,29 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setPictures(files); // Store the selected files
+    setPictures(files.map(file => URL.createObjectURL(file))); // Store the file URLs
   };
 
   // Handling tags
   const handleTagChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     const updatedTags = [...formData.tags];
-
-    // Using type assertion to ensure proper type for 'type'
-    if (name === 'type') {
-      updatedTags[index][name] = value as type; // Ensure the value is of type 'type'
-    } else {
-      updatedTags[index][name as keyof typeof updatedTags[number]] = value;
-    }
+    updatedTags[index] = value; 
 
     setFormData((prevData) => ({
       ...prevData,
       tags: updatedTags,
     }));
   };
-
   const addTag = () => {
     setFormData((prevData) => ({
       ...prevData,
       tags: [
         ...prevData.tags,
-        {
-          _id: '',
-          name: '',
-          type: type.Museum, // Default type for new tag
-          historical_period: '',
-        },
       ],
     }));
   };
+
 
   const removeTag = (index: number) => {
     setFormData((prevData) => ({
@@ -117,49 +107,41 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const formDataWithAttachments = { ...formData, pictures: [] };
 
-    // Perform validation checks if necessary
-    if (!formData.name || !formData.description || !formData.category || !formData.opening_hours || !formData.tags.length) {
-      alert("Please fill in all required fields and add at least one tag.");
-      return;
+    if (onSubmit) {
+      onSubmit(formDataWithAttachments);
     }
-
-    // Prepare the form data
-    const formDataWithAttachments: MuseumFormData = {
-      ...formData,
-      pictures, // Include the selected pictures
-    };
-
-    // Call the onSubmit function passed as a prop
-    onSubmit(formDataWithAttachments);
-    
-    // Reset the form after submission
-    resetForm();
+    addModalRef.current?.close();
   };
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      description: '',
-      category: '',
-      tags: [{
-        _id: '',
-        name: '',
-        type: type.Museum,
-        historical_period: '',
-      }],
-      opening_hours: '',
-      ticket_prices: {
-        foreigner: 0,
-        native: 0,
-        student: 0,
-      },
-    });
-    setPictures([]); // Clear the selected pictures
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // Reset the file input field
-    }
-  };
+  // const resetForm = () => {
+  //   setFormData({
+  //     name: '',
+  //     description: '',
+  //     category: '',
+  //     tags: [{
+  //       _id: '',
+  //       name: '',
+  //       type: type.Museum,
+  //       historical_period: '',
+  //     }],
+  //     location:{
+  //       name: '',
+  //       latitude: 0,
+  //       longitude: 0,
+  //     },
+  //     opening_hours: '',
+  //     ticket_prices: {
+  //       foreigner: 0,
+  //       native: 0,
+  //       student: 0,
+  //     },
+  //   });
+  //   setPictures([]); // Clear the selected pictures
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = ''; // Reset the file input field
+  //   }
+  // };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col w-1/3 mx-auto">
@@ -193,35 +175,13 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
         <h3 className="mt-4">Tags</h3>
       {formData.tags.map((tag, index) => (
         <div key={index} className="flex flex-col mb-2">
-          <label htmlFor={`tag-name-${index}`}>Tag Name</label>
+          <label htmlFor={`tag-name-${index}`}>Tag</label>
           <input
             type="text"
             name="name"
-            value={tag.name}
+            value={tag}
             onChange={(e) => handleTagChange(index, e)}
             placeholder="Tag Name"
-            className={styles.inputClass}
-          />
-          <label htmlFor={`tag-type-${index}`}>Tag Type</label>
-          <select
-            name="type"
-            value={tag.type}
-            onChange={(e) => handleTagChange(index, e)}
-            className={styles.inputClass}
-          >
-            {Object.values(type).map((tagType) => (
-              <option key={tagType} value={tagType}>
-                {tagType}
-              </option>
-            ))}
-          </select>
-          <label htmlFor={`tag-historical-period-${index}`}>Historical Period</label>
-          <input
-            type="text"
-            name="historical_period"
-            value={tag.historical_period}
-            onChange={(e) => handleTagChange(index, e)}
-            placeholder="Historical Period"
             className={styles.inputClass}
           />
           <button
@@ -247,6 +207,15 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
         value={formData.opening_hours}
         onChange={handleInputChange}
         placeholder="Opening Hours"
+        className={styles.inputClass}
+      />
+      <label htmlFor="location">Location</label>
+      <input
+        type="text"
+        name="location"
+        value={formData.location.name}
+        onChange={handleInputChange}
+        placeholder="Location"
         className={styles.inputClass}
       />
       <label htmlFor="price-foreigner">Ticket Price for a foreigner</label>
