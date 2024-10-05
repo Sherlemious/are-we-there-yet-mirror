@@ -1,19 +1,23 @@
 import request from 'supertest';
 import app from '../src/app';
 import { ResponseStatusCodes } from '../src/types/ResponseStatusCodes.types';
+import { MuseumType } from '../src/types/Museum.types';
 
 let museumId = '';
+
 let tag = {
   name: 'Test Tag',
   type: 'Museum',
   historical_period: 'Test Historical Period',
 };
-let newMuseum = {
+
+let newMuseum: MuseumType = {
+  id: 1,
   name: 'Test Museum',
-  tags: [tag],
+  tags: [],
   category: 'Test Category',
   description: 'Test Description',
-  pictures: ['Test Picture'],
+  pictures: [],
   location: {
     name: 'Test Location',
     latitude: 1.0,
@@ -26,6 +30,7 @@ let newMuseum = {
     student: 2,
   },
 };
+
 describe('MuseumTests', () => {
   describe('GET /api/museums', () => {
     it('should respond with bad request (400) for fetching museum with invalid id', async () => {
@@ -49,7 +54,8 @@ describe('MuseumTests', () => {
     });
 
     it('should respond with created (201) for creating a museum successfully', async () => {
-      await request(app).post('/api/tags').send(tag);
+      const newTag = await request(app).post('/api/tags').send(tag);
+      newMuseum.tags.push(newTag.body.data.tagId);
       const response = await request(app).post('/api/museums').send(newMuseum);
       museumId = response.body.data.museumId;
       expect(response.status).toBe(ResponseStatusCodes.CREATED); // Ensure API returns 201

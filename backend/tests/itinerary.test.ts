@@ -1,6 +1,8 @@
 import request from 'supertest';
 import app from '../src/app';
 import { ResponseStatusCodes } from '../src/types/ResponseStatusCodes.types';
+import { ActivityType } from '../src/types/Activity.types';
+import { ItineraryType } from '../src/types/Itinerary.types';
 
 let itineraryId = '';
 let tag = {
@@ -16,25 +18,32 @@ let location = {
   longitude: 0,
 };
 
-let activity = {
+let activity: ActivityType = {
   date: '2023-10-01',
   time: '14:00',
   price: 50,
   category: 'Outdoor',
-  tags: [tag, tag],
+  tags: [],
   specialDiscounts: '10% off for students',
   bookingOpen: true,
   location: location,
 };
 
-let newItinerary = {
+let activityRef = {
+  activity: '',
+  duration: 90,
+};
+
+let newItinerary: ItineraryType = {
   name: 'Test Itinerary',
   category: 'Test Category',
-  tags: [tag, tag],
-  activities: [activity, activity],
+  tags: [],
+  activities: [],
+  locations: [location],
+  timeline: 'Test Timeline',
   language: 'Test Language',
   price: 0,
-  available_datetimes: ['2022-01-01T00:00:00.000Z', '2022-01-02T00:00:00.000Z'],
+  available_datetimes: [new Date('2022-01-01T00:00:00.000Z')],
   accessibility: true,
   pick_up_location: location,
   drop_off_location: location,
@@ -63,9 +72,16 @@ describe('Itinerary tests', () => {
     });
 
     it('should respond with created (201) for creating an itinerary successfully', async () => {
-      await request(app).post('/api/tags').send(tag);
-      await request(app).post('/api/activities').send(activity);
+      const newTag = await request(app).post('/api/tags').send(tag);
+
+      activity.tags.push(newTag.body.data.tagId);
+      const newActivity = await request(app).post('/api/activities').send(activity);
+
+      activityRef.activity = newActivity.body.data.activityId;
+      newItinerary.tags.push(newTag.body.data.tagId);
+      newItinerary.activities.push(activityRef);
       const response = await request(app).post('/api/itineraries').send(newItinerary);
+
       itineraryId = response.body.data.itineraryId;
 
       expect(response.status).toBe(ResponseStatusCodes.CREATED);
