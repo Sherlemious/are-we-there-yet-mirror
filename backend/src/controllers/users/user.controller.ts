@@ -3,6 +3,16 @@ import userRepo from '../../database/repositories/user.repo';
 import { logger } from '../../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../../types/ResponseStatusCodes.types';
 
+const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await userRepo.getUsers();
+    res.status(ResponseStatusCodes.OK).json({ message: 'Users fetched successfully', data: users });
+  } catch (error: any) {
+    logger.error(`Error fetching users: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
@@ -82,4 +92,4 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-export { deleteUser, acceptUser, findUserById, updateUser, createUser };
+export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser };
