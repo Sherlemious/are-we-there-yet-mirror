@@ -34,7 +34,7 @@ const AllMuseums = () => {
     setMuseums(Museums);
   };
 
-  const handleEdit = async (museumData: MuseumFormData) => {
+  const handleEdit = async (museumData: Museum) => {
     const museum = {
         _id: museumData._id,
         name: museumData.name,

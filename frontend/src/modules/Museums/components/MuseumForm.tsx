@@ -2,13 +2,12 @@ import React, { useState, useRef } from 'react';
 import { ModalRef } from './modal';
 
 interface MuseumFormProps {
-  onSubmit: (museumData: MuseumFormData) => void;
+  onSubmit?: (museumData: MuseumFormData) => void;
   addModalRef: React.RefObject<ModalRef>;
   initialData?: MuseumFormData;
 }
 
 export interface MuseumFormData {
-  _id: string;
   name: string;
   description: string;
   category: string;
@@ -29,7 +28,6 @@ export interface MuseumFormData {
 
 const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialData }) => {
   const [formData, setFormData] = useState<Omit<MuseumFormData, 'pictures'>>( initialData || {
-    _id: '',
     name: '',
     description: '',
     category: '',

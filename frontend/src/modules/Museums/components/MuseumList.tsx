@@ -95,7 +95,6 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
                 addModalRef={EditmodalRef}
                 onSubmit={() => onEdit && onEdit(selectedMuseum)}
                 initialData={{
-                  _id: selectedMuseum._id,
                   name: selectedMuseum.name,
                   description: selectedMuseum.description,
                   category: selectedMuseum.category,
