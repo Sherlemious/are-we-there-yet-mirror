@@ -1,7 +1,10 @@
 import MuseumList from '../components/MuseumList';
-import MuseumForm from '../components/MuseumForm';
+import { useState, useEffect } from 'react';
+import { createMuseum, updateMuseum, deleteMuseum} from '../Api/MuseumService';
+import MuseumForm, { MuseumFormData } from '../components/MuseumForm';
+import { Museum, type } from '../types/museum';
 const AllMuseums = () => {
-    const museumsExample = [
+    const museumsExample: Museum[] = [
         {
           _id: '1',
           name: 'Louvre Museum',
@@ -9,7 +12,7 @@ const AllMuseums = () => {
             {
               _id: '1',
               name: 'Renaissance Art',
-              type: 'Museum',
+              type: type.Museum,
               historical_period: '1400-1600'
             }
           ],
@@ -35,7 +38,7 @@ const AllMuseums = () => {
             {
               _id: '2',
               name: '19th Century Monument',
-              type: 'Monument',
+              type: type.Monument,
               historical_period: '1889-Present'
             }
           ],
@@ -61,7 +64,7 @@ const AllMuseums = () => {
             {
               _id: '3',
               name: 'Gothic Architecture',
-              type: 'ReligiousSight',
+              type: type.ReligiousSight,
               historical_period: '1163-1345'
             }
           ],
@@ -87,7 +90,7 @@ const AllMuseums = () => {
             {
               _id: '4',
               name: 'British Royalty',
-              type: 'Palace',
+              type: type.Palace,
               historical_period: '1703-Present'
             }
           ],
@@ -113,7 +116,7 @@ const AllMuseums = () => {
             {
               _id: '5',
               name: 'Scottish History',
-              type: 'Castle',
+              type: type.Castle,
               historical_period: '12th Century-Present'
             }
           ],
@@ -139,7 +142,7 @@ const AllMuseums = () => {
             {
               _id: '6',
               name: 'Ancient Civilizations',
-              type: 'Museum',
+              type: type.Museum,
               historical_period: '1753-Present'
             }
           ],
@@ -159,15 +162,38 @@ const AllMuseums = () => {
           }
         }
       ];
-      
+      const [museums, setMuseums] = useState<Museum[]>(museumsExample);
+
+    //   useEffect(() => {
+  //     const fetchMuseums = async () => {
+  //       const data = await getMuseums();
+  //       setMuseums(data);
+  //     };
+  //     fetchMuseums();
+  //   }, []);
+
+      const handleCreate = async (museumData: MuseumFormData) => {
+        const newMuseum = await createMuseum(museumData);
+        setMuseums([...museums, newMuseum]);
+      };
+    
+      const handleEdit = async (museumData: MuseumFormData, museumId: string) => {
+        const updatedMuseum = await updateMuseum(museumId, museumData);
+        setMuseums(museums.map((p) => (p._id === museumId ? updatedMuseum : p)));
+      };
+    
+      const handleDelete = async (museumId: string) => {
+        await deleteMuseum(museumId);
+        setMuseums(museums.filter((p) => p._id !== museumId));
+      };    
   return (
     <div>
       <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-9 text-text-primary">
-        <h1 className="py-2 text-4xl font-bold">Welcome 3abSamad</h1>
+        <h1 className="py-2 text-4xl font-bold">Welcome Tourism Governor</h1>
         <h3 className="py-2 text-2xl font-bold">Museums & Historical Places</h3>
       </div>
-      {/* <MuseumForm onSubmit={handleCreate} /> */}
-      <MuseumList museums={museumsExample} role="tourismGovernor" />
+      <MuseumList museums={museumsExample} role="tourismGovernor" onDelete={handleDelete}/>
+      <MuseumForm onSubmit={handleCreate} />
     </div>
   );
 };

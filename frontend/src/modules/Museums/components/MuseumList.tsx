@@ -42,7 +42,7 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onDelete }) => {
               <div key={index} className={customStyles.slide}>
                 <div className={customStyles.slideContent}>
                   {(role === 'tourismGovernor') && (
-                    <button onClick={() => onDelete && handleDelete(museum._id)} className={customStyles.removeButton}>
+                    <button onClick={() => onDelete && onDelete(museum._id)} className={customStyles.removeButton}>
                       <Minus size={16} className="duration-150 group-hover:stroke-black" />
                     </button>
                   )}
