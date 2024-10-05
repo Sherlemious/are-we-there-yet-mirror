@@ -2,21 +2,34 @@ import { Schema, model } from 'mongoose';
 import { TagType, type } from '../../types/Tag.types';
 import { ValidationException } from '../../exceptions/ValidationException';
 
-const tagSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const tagSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: Object.values(type),
+      required: true,
+    },
+    historical_period: {
+      type: String,
+      required: true,
+    },
+    created_by: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    modified_by: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
   },
-  type: {
-    type: String,
-    enum: Object.values(type),
-    required: true,
-  },
-  historical_period: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 async function getTagIds(tagsData: TagType[]): Promise<TagType[]> {
   const tagIds: TagType[] = [];

@@ -1,40 +1,77 @@
 import { Schema, model } from 'mongoose';
 import { locationSchema } from './location.model';
+import { ActivityType } from '../../types/Activity.types';
+import { ValidationException } from '../../exceptions/ValidationException';
+import { getTagIds } from './tag.model';
 
-const activitySchema = new Schema({
-  date: {
-    type: String,
-    required: true,
+const activitySchema = new Schema(
+  {
+    date: {
+      type: Date,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
+    location: {
+      type: locationSchema,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    tags: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
+    },
+    specialDiscounts: {
+      type: String,
+    },
+    bookingOpen: {
+      type: Boolean,
+      required: true,
+    },
+    created_by: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
+    modified_by: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    },
   },
-  time: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: locationSchema,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
-  tags: {
-    type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
-  },
-  specialDiscounts: {
-    type: String,
-  },
-  bookingOpen: {
-    type: Boolean,
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
+
+async function getActivityIds(activitiesData: ActivityType[]): Promise<ActivityType[]> {
+  const activityIds: ActivityType[] = [];
+
+  if (!activitiesData) {
+    return activityIds;
+  }
+
+  for (const activityData of activitiesData) {
+    const tagIds = await getTagIds(activityData.tags);
+    activityData.tags = tagIds;
+    let activity = await Activity.findOne(activityData);
+
+    if (!activity) {
+      throw new ValidationException('One or more activities are invalid');
+    }
+    activityIds.push(activity.id);
+  }
+
+  return activityIds;
+}
 
 const Activity = model('activity', activitySchema);
 
-export { Activity, activitySchema };
+export { Activity, activitySchema, getActivityIds };

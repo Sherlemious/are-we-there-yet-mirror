@@ -11,15 +11,11 @@ class ActivityRepo {
   }
 
   async createActivity(activity: ActivityType) {
-    const tagIds = await getTagIds(activity.tags);
-    activity.tags = tagIds;
     return await Activity.create(activity);
   }
 
   async updateActivity(id: string, activity: ActivityType) {
     Validator.validateId(id, 'Invalid activity ID');
-    const tagIds = await getTagIds(activity.tags);
-    activity.tags = tagIds;
     return await Activity.findByIdAndUpdate(id, activity);
   }
 

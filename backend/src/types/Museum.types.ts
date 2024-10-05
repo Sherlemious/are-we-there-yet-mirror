@@ -1,9 +1,8 @@
 import { LocationType } from './Location.types';
-import { TagType } from './Tag.types';
 export interface MuseumType {
   id: number;
   name: string;
-  tags: TagType[];
+  tags: string[];
   description: string;
   category: string;
   pictures: string[];

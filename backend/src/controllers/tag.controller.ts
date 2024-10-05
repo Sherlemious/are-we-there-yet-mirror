@@ -3,6 +3,21 @@ import tagRepo from '../database/repositories/tag.repo';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 
+const getAllTags = async (req: Request, res: Response) => {
+  try {
+    const tags = await tagRepo.getAllTags();
+    const response = {
+      message: 'Tags fetched successfully',
+      data: { tags: tags },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching tags: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 const findTagById = async (req: Request, res: Response) => {
   try {
     const tag = await tagRepo.findTagById(req.params.id);
@@ -65,4 +80,4 @@ const deleteTag = async (req: Request, res: Response) => {
   }
 };
 
-export { findTagById, createTag, updateTag, deleteTag };
+export { getAllTags, findTagById, createTag, updateTag, deleteTag };

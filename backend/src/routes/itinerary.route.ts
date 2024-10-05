@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  getItineraries,
   findItineraryById,
   createItinerary,
   updateItinerary,
@@ -10,6 +11,7 @@ import { it } from 'node:test';
 
 const itineraryRouter = Router();
 
+itineraryRouter.get('/', getItineraries);
 itineraryRouter.get('/:id', findItineraryById);
 itineraryRouter.post('/', createItinerary);
 itineraryRouter.put('/:id', updateItinerary);
