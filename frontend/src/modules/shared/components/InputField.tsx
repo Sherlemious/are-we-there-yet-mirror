@@ -1,15 +1,24 @@
-import { capitalizeFirstLetter, getPlaceholder } from "../utils/helpers";
+import { fieldNames } from "../constants/inputNames";
+import {
+  capitalizeFirstLetter,
+  getPlaceholder,
+  getType,
+} from "../utils/helpers";
 
 export default function InputField({
   inputField,
   hasLabel,
   onChange,
   value,
+  className,
+  defaultValue,
 }: {
   inputField: string;
   hasLabel?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value?: string;
+  className?: string;
+  defaultValue?: string;
 }) {
   if (hasLabel) {
     return (
@@ -17,8 +26,10 @@ export default function InputField({
         onChange={onChange}
         name={inputField}
         value={value}
-        type="text"
-        className={customStyles.input}
+        defaultValue={defaultValue}
+        type={getType(inputField)}
+        min={inputField === fieldNames.yearsOfExperience ? "0" : undefined}
+        className={`${customStyles.input} ${className}`}
         placeholder={getPlaceholder(inputField)}
       />
     );
@@ -33,8 +44,14 @@ export default function InputField({
         onChange={onChange}
         name={inputField}
         value={value}
-        type="text"
-        className={customStyles.input}
+        defaultValue={defaultValue}
+        type={getType(inputField)}
+        className={`${customStyles.input} ${className}`}
+        max={
+          inputField === fieldNames.dateOfBirth
+            ? new Date().toISOString().slice(0, 10)
+            : ""
+        }
         placeholder={getPlaceholder(inputField)}
       />
     </div>

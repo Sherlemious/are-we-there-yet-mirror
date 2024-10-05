@@ -8,11 +8,19 @@ import InputField from "../../shared/components/InputField";
 import { fieldNames } from "../../shared/constants/inputNames";
 import Button from "../../shared/components/Button";
 import GenericDropdown from "../../shared/components/GenericDropdown";
+
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { handleUserRegistration } from "../services/apiHandleUserRegistration";
+import { validateFormDataValue } from "../utils/helpers";
+import { useDispatch } from "react-redux";
+import { setUser } from "../userSlice";
 
 export default function RegisterForm({ userRole }: { userRole: string }) {
   const navigation = useNavigation();
   const submit = useSubmit();
+  const dispatch = useDispatch();
+
   const countries = useLoaderData() as { name: { common: string } }[];
   const countryNames = countries.map((country) => country.name.common);
   // sort country names alphabetically
@@ -31,6 +39,27 @@ export default function RegisterForm({ userRole }: { userRole: string }) {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    //validation  /////////////////////////
+    if (!validateFormDataValue(fieldNames.email, data.email as string)) {
+      toast.error("Invalid email address");
+      return;
+    }
+
+    if (!validateFormDataValue(fieldNames.password, data.password as string)) {
+      toast.error(
+        "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+      );
+      return;
+    }
+
+    ////////////////////////////////////////
+    //save user data to redux store
+    dispatch(setUser(data));
+
     //submit form
     submit(e.currentTarget);
     // reset form
@@ -127,7 +156,55 @@ export default function RegisterForm({ userRole }: { userRole: string }) {
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  console.log(data);
+
+  if (data.userRole === "Tourist") {
+    return await handleUserRegistration({
+      url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
+      requestData: {
+        account_type: data.userRole,
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        job: data.occupation,
+        nationality: data.nationality,
+        dob: data.dateOfBirth,
+      },
+      successRedirect: "/tourist-profile",
+    });
+  } else if (data.userRole === "Tour Guide") {
+    return await handleUserRegistration({
+      url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
+      requestData: {
+        account_type: data.userRole,
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      },
+      successRedirect: "/tour-guide-profile",
+    });
+  } else if (data.userRole === "Adviser") {
+    return await handleUserRegistration({
+      url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
+      requestData: {
+        account_type: data.userRole,
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      },
+      successRedirect: "/adviser-profile",
+    });
+  } else {
+    return await handleUserRegistration({
+      url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
+      requestData: {
+        account_type: data.userRole,
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      },
+      successRedirect: "/seller-profile",
+    });
+  }
 
   return null;
 }

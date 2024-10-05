@@ -21,15 +21,19 @@ const GenericDropdown = ({
   setNationality,
   shouldReset,
   onResetComplete,
+  defaultValue,
 }: {
   countryNames: string[];
   label: string;
   setNationality?: (nationality: string) => void;
   shouldReset: boolean;
   onResetComplete: () => void;
+  defaultValue?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
+  console.log(defaultValue);
+
+  const [selectedOption, setSelectedOption] = useState(defaultValue || "");
 
   useEffect(() => {
     if (shouldReset) {

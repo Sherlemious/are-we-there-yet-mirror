@@ -6,6 +6,7 @@ import { CircleUserRound } from "lucide-react";
 import GenericDropdown from "../../shared/components/GenericDropdown";
 import { useState } from "react";
 import Button from "../../shared/components/Button";
+import { useSelector } from "react-redux";
 
 export default function GeneralSettings() {
   const navigation = useNavigation();
@@ -20,6 +21,26 @@ export default function GeneralSettings() {
   const countryNames = countries.map((country) => country.name.common);
   // sort country names alphabetically
   countryNames.sort();
+
+  interface UserState {
+    username: string;
+    email: string;
+    password: string;
+    dateOfBirth: string;
+    occupation: string;
+    mobileNumber: string;
+    nationality: string;
+  }
+
+  const {
+    username,
+    email,
+    password,
+    dateOfBirth,
+    occupation,
+    mobileNumber,
+    nationality: userNationality,
+  } = useSelector((state: { user: UserState }) => state.user);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -74,25 +95,46 @@ export default function GeneralSettings() {
         >
           <CircleUserRound size={300} color="#d1d5db" strokeWidth={1.25} />
 
-          <InputField inputField={fieldNames.username} hasLabel={false} />
+          <InputField
+            defaultValue={username}
+            inputField={fieldNames.username}
+            hasLabel={false}
+          />
           <div className="flex flex-col gap-2">
             <div className="flex gap-4">
-              <InputField inputField={fieldNames.email} hasLabel={false} />
-              <InputField inputField={fieldNames.password} hasLabel={false} />
-            </div>
-            <div className="flex gap-4">
               <InputField
+                defaultValue={email}
+                inputField={fieldNames.email}
+                hasLabel={false}
+              />
+              <InputField
+                defaultValue={password}
+                inputField={fieldNames.password}
+                hasLabel={false}
+              />
+            </div>
+            <div className="flex flex-col gap-4">
+              <InputField
+                className="w-full"
+                defaultValue={dateOfBirth}
                 inputField={fieldNames.dateOfBirth}
                 hasLabel={false}
               />
-              <InputField inputField={fieldNames.occupation} hasLabel={false} />
+              <InputField
+                className="w-full"
+                defaultValue={occupation}
+                inputField={fieldNames.occupation}
+                hasLabel={false}
+              />
             </div>
             <div className="flex gap-4">
               <InputField
+                defaultValue={mobileNumber}
                 inputField={fieldNames.mobileNumber}
                 hasLabel={false}
               />
               <GenericDropdown
+                defaultValue={userNationality}
                 setNationality={handleNationalityChange}
                 countryNames={countryNames}
                 label={fieldNames.nationality}

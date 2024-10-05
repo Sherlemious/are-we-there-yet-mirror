@@ -32,7 +32,7 @@ export default function Dropdown({
     userRoles.tourist,
     userRoles.advertiser,
     userRoles.seller,
-    userRoles.tourGuide,
+    "Tour Guide",
   ];
 
   const toggleDropdown = () => setIsOpen(!isOpen);

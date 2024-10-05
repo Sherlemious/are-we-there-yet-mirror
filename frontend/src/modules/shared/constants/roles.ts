@@ -1,6 +1,6 @@
 export const userRoles = {
   tourist: "Tourist",
-  tourGuide: "Tour Guide",
+  tourGuide: "TourGuide",
   seller: "Seller",
   advertiser: "Advertiser",
 };
