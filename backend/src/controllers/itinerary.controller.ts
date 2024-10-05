@@ -96,20 +96,19 @@ const filterItineraries = async (req: Request, res: Response) => {
       query.price = { ...query.price, $lte: maxPriceValue };
     }
 
-    const now = new Date().toISOString();
+    const now = new Date();
 
     if (startDate || endDate) {
       let dateQuery: any = {};
 
-      if (startDate) {
-        const startISO = new Date(startDate as string).toISOString();
+      if (startDate && new Date(startDate as string) >= now) {
+        const startISO = new Date(startDate as string);
         dateQuery.$gte = startISO;
       }
-      if (endDate) {
-        const endISO = new Date(endDate as string).toISOString();
+      if (endDate && new Date(endDate as string) >= now) {
+        const endISO = new Date(endDate as string);
         dateQuery.$lte = endISO;
       }
-
       query.available_datetimes = { $elemMatch: { $gte: now, ...dateQuery } };
     } else {
       query.available_datetimes = { $elemMatch: { $gte: now } };
