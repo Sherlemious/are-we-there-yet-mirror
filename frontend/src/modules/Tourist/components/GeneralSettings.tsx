@@ -4,56 +4,59 @@ import InputField from "../../shared/components/InputField";
 import { Form, useSubmit } from "react-router-dom";
 import { CircleUserRound } from "lucide-react";
 import GenericDropdown from "../../shared/components/GenericDropdown";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Button from "../../shared/components/Button";
 
 export default function GeneralSettings() {
   const navigation = useNavigation();
   const submit = useSubmit();
   const [nationality, setNationality] = useState<string>("");
-  const [formValues, setFormValues] = useState({
-    username: "",
-    email: "",
-    password: "",
-    dateOfBirth: "",
-    occupation: "",
-    mobileNumber: "",
-  });
-  const [isFormEmpty, setIsFormEmpty] = useState(true);
+  const [atLeastOneFilled, setAtLeastOneFilled] = useState(false);
+  const [resetDropdown, setResetDropdown] = useState(false);
 
   const isSubmitting = navigation.state === "submitting";
 
   const countries = useLoaderData() as { name: { common: string } }[];
   const countryNames = countries.map((country) => country.name.common);
-
-  const handleInputChange = (fieldName: string, value: string) => {
-    setFormValues((prev) => ({
-      ...prev,
-      [fieldName]: value,
-    }));
-  };
-
-  useEffect(() => {
-    const isEmpty =
-      Object.values(formValues).every((value) => !value.trim()) && !nationality;
-    setIsFormEmpty(isEmpty);
-  }, [formValues, nationality]);
+  // sort country names alphabetically
+  countryNames.sort();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    //submit form
     submit(e.currentTarget);
-    // reset form
     e.currentTarget.reset();
-    //reset form state
-    setFormValues({
-      username: "",
-      email: "",
-      password: "",
-      dateOfBirth: "",
-      occupation: "",
-      mobileNumber: "",
-    });
+    setResetDropdown(true);
+    setNationality("");
+    setAtLeastOneFilled(false);
+  }
+
+  const handleResetComplete = () => {
+    setResetDropdown(false);
+  };
+
+  function handleFormChange(e: React.FormEvent<HTMLFormElement>) {
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    // Include nationality in the form change check
+    if (nationality) {
+      setAtLeastOneFilled(true);
+      return;
+    }
+
+    for (const key in data) {
+      if (data[key] !== "") {
+        setAtLeastOneFilled(true);
+        return;
+      }
+    }
+    setAtLeastOneFilled(false);
+  }
+
+  // Handle nationality change separately
+  function handleNationalityChange(value: string) {
+    setNationality(value);
+    setAtLeastOneFilled(value !== "");
   }
 
   return (
@@ -64,66 +67,43 @@ export default function GeneralSettings() {
         </div>
 
         <Form
+          onChange={(e) => handleFormChange(e)}
           method="PATCH"
           className={customStyles.form}
           onSubmit={(e) => handleSubmit(e)}
         >
           <CircleUserRound size={300} color="#d1d5db" strokeWidth={1.25} />
 
-          <InputField
-            inputField={fieldNames.username}
-            hasLabel={false}
-            onChange={(e) => handleInputChange("username", e.target.value)}
-          />
+          <InputField inputField={fieldNames.username} hasLabel={false} />
           <div className="flex flex-col gap-2">
             <div className="flex gap-4">
-              <InputField
-                inputField={fieldNames.email}
-                hasLabel={false}
-                signedIn={true}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-              />
-              <InputField
-                inputField={fieldNames.password}
-                hasLabel={false}
-                signedIn={true}
-                onChange={(e) => handleInputChange("password", e.target.value)}
-              />
+              <InputField inputField={fieldNames.email} hasLabel={false} />
+              <InputField inputField={fieldNames.password} hasLabel={false} />
             </div>
             <div className="flex gap-4">
               <InputField
                 inputField={fieldNames.dateOfBirth}
                 hasLabel={false}
-                onChange={(e) =>
-                  handleInputChange("dateOfBirth", e.target.value)
-                }
               />
-              <InputField
-                inputField={fieldNames.occupation}
-                hasLabel={false}
-                onChange={(e) =>
-                  handleInputChange("occupation", e.target.value)
-                }
-              />
+              <InputField inputField={fieldNames.occupation} hasLabel={false} />
             </div>
             <div className="flex gap-4">
               <InputField
                 inputField={fieldNames.mobileNumber}
                 hasLabel={false}
-                onChange={(e) =>
-                  handleInputChange("mobileNumber", e.target.value)
-                }
               />
               <GenericDropdown
-                setNationality={setNationality}
+                setNationality={handleNationalityChange}
                 countryNames={countryNames}
                 label={fieldNames.nationality}
+                shouldReset={resetDropdown}
+                onResetComplete={handleResetComplete}
               />
             </div>
           </div>
           <input type="hidden" name="nationality" value={nationality} />
           <Button
-            disabled={isSubmitting || isFormEmpty}
+            disabled={isSubmitting || !atLeastOneFilled}
             type="submit"
             onClick={() => {}}
             className={customStyles.button}

@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useEffect, FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { Form, useNavigation, useSubmit } from "react-router-dom";
 import { CircleUserRound } from "lucide-react";
 import Button from "./Button";
@@ -18,52 +16,37 @@ export default function GeneralSettings({
   const navigation = useNavigation();
   const submit = useSubmit();
   const isSubmitting = navigation.state === "submitting";
+  const [atleastOneFilled, setAtleastOneFilled] = useState(false);
 
   const isSeller = inputFields.includes(fieldNames.name);
   const fieldsLength = inputFields.length;
 
-  const [inputValues, setInputValues] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    const initialValues = inputFields.reduce(
-      (acc, field) => {
-        acc[field] = "";
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-    setInputValues(initialValues);
-  }, [inputFields]);
-
-  const handleInputChange = (field: string, value: string) => {
-    setInputValues((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const areAllFieldsEmpty = () => {
-    return Object.values(inputValues).every((value) => value.trim() === "");
-  };
-
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // submit the form to action
+
     submit(e.currentTarget);
-    // reset the form
     e.currentTarget.reset();
-    // reset input values to disable button
-    setInputValues((prev) =>
-      Object.keys(prev).reduce(
-        (acc, key) => {
-          acc[key] = "";
-          return acc;
-        },
-        {} as Record<string, string>,
-      ),
-    );
+    setAtleastOneFilled(false);
+  }
+
+  function handleFormChange(e: FormEvent<HTMLFormElement>) {
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    for (const key in data) {
+      if (data[key] !== "") {
+        setAtleastOneFilled(true);
+        return;
+      }
+
+      setAtleastOneFilled(false);
+    }
   }
 
   return (
     <div className={customStyles.outerContainer}>
       <Form
+        onChange={(e) => handleFormChange(e)}
         method="PATCH"
         className={customStyles.form}
         onSubmit={(e) => handleSubmit(e)}
@@ -78,17 +61,10 @@ export default function GeneralSettings({
                   {capitalizeFirstLetter(inputField)}
                 </label>
                 <div className="flex gap-2">
-                  <InputField
-                    inputField={inputField}
-                    signedIn={true}
-                    hasLabel={true}
-                    onChange={(e) =>
-                      handleInputChange(inputField, e.target.value)
-                    }
-                  />
+                  <InputField inputField={inputField} hasLabel={true} />
                   {fieldsLength <= 1 && (
                     <Button
-                      disabled={isSubmitting || areAllFieldsEmpty()}
+                      disabled={isSubmitting || !atleastOneFilled}
                       onClick={() => console.log("clicked", isSubmitting)}
                       className="w-full rounded-lg bg-background-button px-2 py-2 font-bold text-white duration-200 hover:opacity-60 disabled:cursor-not-allowed disabled:opacity-50"
                       type="submit"
@@ -103,7 +79,7 @@ export default function GeneralSettings({
               <Button
                 type="submit"
                 onClick={() => console.log("clicked", isSubmitting)}
-                disabled={isSubmitting || areAllFieldsEmpty()}
+                disabled={isSubmitting || !atleastOneFilled}
                 className="mt-1 rounded-lg px-2 py-2 font-bold duration-200 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Update

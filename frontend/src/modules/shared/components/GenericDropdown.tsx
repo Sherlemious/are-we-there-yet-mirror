@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "../../Register/styles/GenericDropdown.module.css";
 import { capitalizeFirstLetter } from "../utils/helpers";
 
@@ -19,13 +19,27 @@ const GenericDropdown = ({
   countryNames,
   label,
   setNationality,
+  shouldReset,
+  onResetComplete,
 }: {
   countryNames: string[];
   label: string;
-  setNationality: (nationality: string) => void;
+  setNationality?: (nationality: string) => void;
+  shouldReset: boolean;
+  onResetComplete: () => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+
+  useEffect(() => {
+    if (shouldReset) {
+      setSelectedOption("");
+      if (setNationality) {
+        setNationality("");
+      }
+      onResetComplete();
+    }
+  }, [shouldReset, setNationality, onResetComplete]);
 
   return (
     <div className={customStyles.container}>
@@ -41,8 +55,7 @@ const GenericDropdown = ({
         >
           {selectedOption || `Select a ${label}`}
           <span className={customStyles.chevronWrapper}>
-            {isOpen && <ChevronUp size={20} />}
-            {!isOpen && <ChevronDown size={20} />}
+            {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
           </span>
         </button>
 
@@ -54,7 +67,9 @@ const GenericDropdown = ({
                 className={customStyles.option}
                 onClick={() => {
                   setSelectedOption(name);
-                  setNationality(name);
+                  if (setNationality) {
+                    setNationality(name);
+                  }
                   setIsOpen(false);
                 }}
               >

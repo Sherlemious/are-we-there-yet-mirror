@@ -2,26 +2,25 @@ import { capitalizeFirstLetter, getPlaceholder } from "../utils/helpers";
 
 export default function InputField({
   inputField,
-  signedIn,
   hasLabel,
   onChange,
+  value,
 }: {
   inputField: string;
-  signedIn?: boolean;
   hasLabel?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
 }) {
-  if (hasLabel && signedIn) {
+  if (hasLabel) {
     return (
-      <>
-        <input
-          onChange={onChange}
-          name={inputField}
-          type="text"
-          className={customStyles.input}
-          placeholder={getPlaceholder(inputField)}
-        />
-      </>
+      <input
+        onChange={onChange}
+        name={inputField}
+        value={value}
+        type="text"
+        className={customStyles.input}
+        placeholder={getPlaceholder(inputField)}
+      />
     );
   }
 
@@ -33,6 +32,7 @@ export default function InputField({
       <input
         onChange={onChange}
         name={inputField}
+        value={value}
         type="text"
         className={customStyles.input}
         placeholder={getPlaceholder(inputField)}
