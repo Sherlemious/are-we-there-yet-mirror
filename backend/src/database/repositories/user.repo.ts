@@ -4,6 +4,10 @@ import { UserType } from '../../types/User.types';
 import { accountType } from '../../types/User.types';
 
 class UserRepository {
+  async getUsers() {
+    return await User.find();
+  }
+
   async findUserById(id: string) {
     return await User.find({ _id: new ObjectId(id) });
   }

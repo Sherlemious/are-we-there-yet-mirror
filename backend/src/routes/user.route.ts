@@ -3,7 +3,14 @@ import advertiserRouter from './advertiser.route';
 import sellerRouter from './seller.route';
 import adminRouter from './admin.route';
 import tourGuideRouter from './tourGuide.route';
-import { createUser, deleteUser, acceptUser, findUserById, updateUser } from '../controllers/users/user.controller';
+import {
+  getUsers,
+  createUser,
+  deleteUser,
+  acceptUser,
+  findUserById,
+  updateUser,
+} from '../controllers/users/user.controller';
 
 const router = Router();
 
@@ -14,6 +21,7 @@ router.use('/sellers', sellerRouter);
 router.use('/admins', adminRouter);
 
 // User routes
+router.get('/', getUsers);
 router.patch('/:id/accept-user', acceptUser);
 router.delete('/:id', deleteUser);
 router.patch('/:id', updateUser);
