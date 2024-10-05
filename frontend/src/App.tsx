@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import RootLayout from './modules/shared/pages/RootLayout';
+import {UsersAssets} from './modules/shared/pages/UsersAssets';
 import { TourGuideProfile } from './modules/TourGuide/App';
 import { generalSettingAction } from './modules/TourGuide/App';
 import { AdvertiserProfile } from './modules/Advertiser/App';
@@ -20,6 +21,10 @@ const BrowserRouter = createBrowserRouter([
   {
     path: '/seller-profile',
     element: <SellerProfile />,
+  },
+  {
+    path: '/users-assets',
+    element: <UsersAssets />,
   },
 ]);
 
