@@ -4,6 +4,7 @@ import { TourGuideProfile } from './modules/TourGuide/App';
 import { generalSettingAction } from './modules/TourGuide/App';
 import { AdvertiserProfile } from './modules/Advertiser/App';
 import { SellerProfile } from './modules/Seller/App';
+import { AllMuseums } from './modules/Museums/App';
 
 const BrowserRouter = createBrowserRouter([
   { path: '/', element: <RootLayout />, children: [] },
@@ -21,6 +22,10 @@ const BrowserRouter = createBrowserRouter([
     path: '/seller-profile',
     element: <SellerProfile />,
   },
+  {
+    path: '/all-musuems',
+    element: <AllMuseums />,
+  }
 ]);
 
 function App() {
