@@ -15,7 +15,7 @@ export function UsersAssets() {
   };
 
   return (
-    <div className="h-dvh mx-7 flex flex-col gap-8">
+    <div className="mx-7 flex flex-col gap-8">
       <div className="w-fit-content">
         <Greeting name="John Doe" sectionName={sectionName} />
       </div>
@@ -41,7 +41,7 @@ export function UsersAssets() {
         </button>
       </div>
       {/* This is the main content */}
-      <div className="w-full h-full border-black border-2 mb-16 flex flex-col">
+      <div className="w-full h-fit border-black border-2 mb-16 flex flex-col">
         {currentTab === 'activities' && <ActivityList />}
         {currentTab === 'itinerary' && <ItineraryList />}
         {currentTab === 'museum' && <MuseumList />}
