@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { findTagById, createTag, updateTag, deleteTag } from '../controllers/tag.controller';
+import { getAllTags, findTagById, createTag, updateTag, deleteTag } from '../controllers/tag.controller';
 
 const tagRouter = Router();
 
+tagRouter.get('/', getAllTags);
 tagRouter.get('/:id', findTagById);
 tagRouter.post('/', createTag);
 tagRouter.put('/:id', updateTag);

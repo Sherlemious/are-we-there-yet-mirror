@@ -4,6 +4,10 @@ import { TagType } from '../../types/Tag.types';
 import Validator from '../../utils/Validator.utils';
 
 class TagRepo {
+  async getAllTags() {
+    return await Tag.find();
+  }
+
   async findTagById(id: string) {
     Validator.validateId(id, 'Invalid tag ID');
     return await Tag.find({ _id: new ObjectId(id) });
