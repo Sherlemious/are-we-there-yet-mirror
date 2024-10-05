@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { type } from '../types/museum';
 
 interface MuseumFormProps {
@@ -46,6 +46,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
   });
 
   const [pictures, setPictures] = useState<File[]>([]); // Separate state for file uploads
+  const fileInputRef = useRef<HTMLInputElement | null>(null); // Create a ref for the file input
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -57,16 +58,17 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const priceValue = Number(value);
-
+    const priceValue = Math.max(0, Number(value)); // Ensure the price is not negative
+  
     setFormData((prevData) => ({
       ...prevData,
       ticket_prices: {
         ...prevData.ticket_prices,
-        [name]: priceValue,
+        [name]: priceValue, // Assign the validated price
       },
     }));
   };
+  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -115,9 +117,48 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formDataWithAttachments = { ...formData, pictures }; // Include pictures
 
-    onSubmit(formDataWithAttachments); // Pass the complete data
+    // Perform validation checks if necessary
+    if (!formData.name || !formData.description || !formData.category || !formData.opening_hours || !formData.tags.length) {
+      alert("Please fill in all required fields and add at least one tag.");
+      return;
+    }
+
+    // Prepare the form data
+    const formDataWithAttachments: MuseumFormData = {
+      ...formData,
+      pictures, // Include the selected pictures
+    };
+
+    // Call the onSubmit function passed as a prop
+    onSubmit(formDataWithAttachments);
+    
+    // Reset the form after submission
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      category: '',
+      tags: [{
+        _id: '',
+        name: '',
+        type: type.Museum,
+        historical_period: '',
+      }],
+      opening_hours: '',
+      ticket_prices: {
+        foreigner: 0,
+        native: 0,
+        student: 0,
+      },
+    });
+    setPictures([]); // Clear the selected pictures
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Reset the file input field
+    }
   };
 
   return (
@@ -148,45 +189,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
         placeholder="Category"
         className={styles.inputClass}
       />
-      <label htmlFor="opening_hours">Opening Hours</label>
-      <input
-        type="text"
-        name="opening_hours"
-        value={formData.opening_hours}
-        onChange={handleInputChange}
-        placeholder="Opening Hours"
-        className={styles.inputClass}
-      />
-      <label htmlFor="price-foreigner">Price for a foreigner</label>
-      <input
-        type="number"
-        name="foreigner" // Unique name for the ticket price field
-        value={formData.ticket_prices.foreigner}
-        onChange={handlePriceChange}
-        placeholder="Price for Foreigners"
-        className={styles.inputClass}
-      />
-      <label htmlFor="price-native">Price for a native</label>
-      <input
-        type="number"
-        name="native" // Unique name for the ticket price field
-        value={formData.ticket_prices.native}
-        onChange={handlePriceChange}
-        placeholder="Price for Natives"
-        className={styles.inputClass}
-      />
-      <label htmlFor="price-student">Price for a student</label>
-      <input
-        type="number"
-        name="student" // Unique name for the ticket price field
-        value={formData.ticket_prices.student}
-        onChange={handlePriceChange}
-        placeholder="Price for Students"
-        className={styles.inputClass}
-      />
-      
-      {/* Tags Section */}
-      <h3 className="mt-4">Tags</h3>
+        {/* Tags Section */}
+        <h3 className="mt-4">Tags</h3>
       {formData.tags.map((tag, index) => (
         <div key={index} className="flex flex-col mb-2">
           <label htmlFor={`tag-name-${index}`}>Tag Name</label>
@@ -236,7 +240,44 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
       >
         Add Tag
       </button>
+      <label htmlFor="opening_hours">Opening Hours</label>
+      <input
+        type="text"
+        name="opening_hours"
+        value={formData.opening_hours}
+        onChange={handleInputChange}
+        placeholder="Opening Hours"
+        className={styles.inputClass}
+      />
+      <label htmlFor="price-foreigner">Ticket Price for a foreigner</label>
+      <input
+        type="number"
+        name="foreigner" // Unique name for the ticket price field
+        value={formData.ticket_prices.foreigner}
+        onChange={handlePriceChange}
+        placeholder="Price for Foreigners"
+        className={styles.inputClass}
+      />
+      <label htmlFor="price-native">Ticket Price for a native</label>
+      <input
+        type="number"
+        name="native" // Unique name for the ticket price field
+        value={formData.ticket_prices.native}
+        onChange={handlePriceChange}
+        placeholder="Price for Natives"
+        className={styles.inputClass}
+      />
+      <label htmlFor="price-student">Ticket Price for a student</label>
+      <input
+        type="number"
+        name="student" // Unique name for the ticket price field
+        value={formData.ticket_prices.student}
+        onChange={handlePriceChange}
+        placeholder="Price for Students"
+        className={styles.inputClass}
+      />
       
+    
       {/* File Upload */}
       <label htmlFor="pictures">Upload Pictures</label>
       <input
@@ -244,6 +285,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit }) => {
         multiple // Allow multiple file uploads
         onChange={handleFileChange}
         className={styles.inputClass}
+        ref={fileInputRef} // Attach the ref here
       />
       <button type="submit" className={styles.button}>
         Submit

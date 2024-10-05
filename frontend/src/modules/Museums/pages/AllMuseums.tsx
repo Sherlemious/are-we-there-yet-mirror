@@ -1,6 +1,6 @@
 import MuseumList from '../components/MuseumList';
-import { useState, useEffect } from 'react';
-import { createMuseum, updateMuseum, deleteMuseum} from '../Api/MuseumService';
+import { useState } from 'react';
+import { createMuseum, deleteMuseum} from '../Api/MuseumService';
 import MuseumForm, { MuseumFormData } from '../components/MuseumForm';
 import { Museum, type } from '../types/museum';
 const AllMuseums = () => {
@@ -163,6 +163,9 @@ const AllMuseums = () => {
         }
       ];
       const [museums, setMuseums] = useState<Museum[]>(museumsExample);
+      const [isFormVisible, setIsFormVisible] = useState(false);
+
+    //   const [isFormVisible, setIsFormVisible] = useState(false);
 
     //   useEffect(() => {
   //     const fetchMuseums = async () => {
@@ -172,28 +175,38 @@ const AllMuseums = () => {
   //     fetchMuseums();
   //   }, []);
 
-      const handleCreate = async (museumData: MuseumFormData) => {
-        const newMuseum = await createMuseum(museumData);
-        setMuseums([...museums, newMuseum]);
-      };
-    
-      const handleEdit = async (museumData: MuseumFormData, museumId: string) => {
-        const updatedMuseum = await updateMuseum(museumId, museumData);
-        setMuseums(museums.map((p) => (p._id === museumId ? updatedMuseum : p)));
-      };
-    
-      const handleDelete = async (museumId: string) => {
-        await deleteMuseum(museumId);
-        setMuseums(museums.filter((p) => p._id !== museumId));
-      };    
+  const handleCreate = async (museumData: MuseumFormData) => {
+    const newMuseum = await createMuseum(museumData);
+    setMuseums([...museums, newMuseum]);
+    setIsFormVisible((prev) => !prev);
+  };
+
+//   const handleEdit = async (museumData: MuseumFormData, museumId: string) => {
+//     const updatedMuseum = await updateMuseum(museumId, museumData);
+//     setMuseums(museums.map((p) => (p._id === museumId ? updatedMuseum : p)));
+//     setIsFormVisible(false); // Hide the form after editing a museum
+//   };
+
+  const handleDelete = async (museumId: string) => {
+    await deleteMuseum(museumId);
+    setMuseums(museums.filter((p) => p._id !== museumId));
+  };
+
+  // Function to toggle the visibility of the form
+  const toggleFormVisibility = () => {
+    setIsFormVisible((prev) => !prev);
+  };
+
   return (
     <div>
       <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-9 text-text-primary">
         <h1 className="py-2 text-4xl font-bold">Welcome Tourism Governor</h1>
         <h3 className="py-2 text-2xl font-bold">Museums & Historical Places</h3>
       </div>
-      <MuseumList museums={museumsExample} role="tourismGovernor" onDelete={handleDelete}/>
-      <MuseumForm onSubmit={handleCreate} />
+      <MuseumList museums={museums} role="TourismGovernor" onDelete={handleDelete} onAddMuseum={toggleFormVisibility} />
+      {isFormVisible && (
+        <MuseumForm onSubmit={handleCreate} />
+      )}
     </div>
   );
 };
