@@ -27,8 +27,8 @@ const Header = () => {
     }
   };
 
-  const handleAddTag = (name:string,type:string,historical_period:string) => {
-    addTag(name,type,historical_period);
+  const handleAddTag = (name:string,historical_period:string) => {
+    addTag(name,"Preference",historical_period);
     setIsTagPopupOpen(false); // Close the popup after adding
   };
 
@@ -39,19 +39,19 @@ const Header = () => {
       <div className="flex flex-col justify-end p-14 text-text-primary">
         <div className="w-full max-w-[50vw] divide-y-2 divide-borders-bottomBorder">
           <h1 className="py-4 text-4xl font-bold">Welcome Sawy</h1>
-          <h3 className="py-4 text-2xl font-bold">Tags</h3>
+          <h3 className="py-4 text-2xl font-bold">Preference Tags</h3>
         </div>
       </div>
       <div className="h-1/2 max-w-fit border-2 border-gray-300 p-14">
-        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">Add an Tag</h3>
+        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">Add a Preference Tag</h3>
         <div className="flex space-x-4">
-          <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>Add Tag</OpenPopupButton>
+          <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>Add Preference Tag</OpenPopupButton>
 
           <AddTagPopup
             isOpen={isTagPopupOpen}
             onClose={() => setIsTagPopupOpen(false)}
             onAdd={handleAddTag}
-            title="Add an Tag"
+            title="Add a Preference Tag"
           />
         </div>
       </div>

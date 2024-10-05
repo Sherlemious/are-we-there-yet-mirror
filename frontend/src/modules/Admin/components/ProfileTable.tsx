@@ -8,7 +8,7 @@ interface ProfileTableProps {
 
 function ProfileTable({ profiles, onDeleteProfile }: ProfileTableProps) {
   return (
-    <div className="container mx-auto max-w-3xl p-4">
+    <div className="container mx-auto max-w-5xl p-4">
       <div className="rounded-md border p-4">
         <div className="mb-4 rounded-md border">
           <div className="grid grid-cols-12 bg-gray-100 p-3 font-semibold">

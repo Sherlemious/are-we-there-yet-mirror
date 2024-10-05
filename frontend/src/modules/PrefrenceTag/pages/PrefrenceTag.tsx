@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import TagTable from '../component/TagTable';
 // import TagForm from '../component/TagForm';
-import { Tag } from '../types/Tag';
+import { prefrenceTag } from '../types/PrefrenceTag';
 import Header from '../component/Header';
 
 const Dashboard = () => {
-  const [Tags, setTags] = useState<Tag[]>([]);
+  const [Tags, setTags] = useState<prefrenceTag[]>([]);
 
   // Fetch profiles (GET request)
   const fetchTags = async () => {
@@ -20,7 +20,7 @@ const Dashboard = () => {
   };
 
   // Add tag (for frontend state)
-  const handleAddTag = (newTag: Tag) => {
+  const handleAddTag = (newTag: prefrenceTag) => {
     setTags([...Tags, newTag]);
   };
 
@@ -40,7 +40,6 @@ const Dashboard = () => {
       console.error('Error deleting tag:', error);
     }
   };
-  
 
   useEffect(() => {
     fetchTags(); // Fetch profiles when the component mounts

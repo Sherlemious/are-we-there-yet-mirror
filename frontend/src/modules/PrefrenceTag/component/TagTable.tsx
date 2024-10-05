@@ -1,8 +1,8 @@
 import { Pencil, X } from 'lucide-react';
-import { Tag } from '../types/Tag';
+import { prefrenceTag } from '../types/PrefrenceTag';
 
 interface TagTableProps {
-  Tags: Tag[];
+  Tags: prefrenceTag[];
   onDeleteTag: (id: string) => void;
 }
 
@@ -18,13 +18,16 @@ function TagTable({ Tags, onDeleteTag }: TagTableProps) {
             <div className="col-span-2 flex justify-end">Actions</div>
           </div>
         </div>
-        {Tags.map((Tag, index) => (
+        {Tags.filter((Tag) => Tag.type === 'Preference').map((Tag) => (
           <div key={Tag._id} className="mb-2 rounded-md border last:mb-0">
             <div className="grid grid-cols-12 items-center p-3">
               <div className="col-span-3">{Tag.name}</div>
               <div className="col-span-3">{Tag.type}</div>
               <div className="col-span-4">{Tag.historical_period}</div>
               <div className="col-span-2 flex justify-end">
+                <button className="text-gray-600 hover:text-gray-800">
+                  <Pencil size={20} />
+                </button>
                 <button
                   onClick={() => onDeleteTag(Tag._id)} // Delete based on _id
                   className="text-gray-600 hover:text-gray-800"

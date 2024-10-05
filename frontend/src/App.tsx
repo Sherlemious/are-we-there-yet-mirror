@@ -1,8 +1,9 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Dashboard } from './modules/Admin/App';
 import RootLayout from './modules/layout/pages/Root';
-import Activity from './modules/ActivityCategory/pages/Activity';
+import Activity from './modules/Activity/pages/Activity';
 import { Tag } from './modules/Tags/App';
+import { PrefrenceTag } from './modules/PrefrenceTag/App';
 
 const BrowserRouter = createBrowserRouter([
   { path: '/', element: <RootLayout />, children: [] },
@@ -18,6 +19,9 @@ const BrowserRouter = createBrowserRouter([
     path: '/Tag',
     element: <Tag />,
   },
+  {
+    path: '/PrefrenceTag',
+    element: <PrefrenceTag />,},
 ]);
 
 function App() {

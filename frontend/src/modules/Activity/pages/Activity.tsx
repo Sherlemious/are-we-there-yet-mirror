@@ -10,8 +10,9 @@ const Dashboard = () => {
   // Fetch profiles (GET request)
   const fetchActivities = async () => {
     try {
-      const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/users');
+      const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/activities');
       const data = await response.json();
+      console.log(data);
       setActivities(data.data);
     } catch (error) {
       console.error('Error fetching activities:', error);
