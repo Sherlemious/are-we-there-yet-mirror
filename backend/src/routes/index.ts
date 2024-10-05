@@ -8,6 +8,7 @@ import activityRouter from './activity.route';
 import productRouter from './product.route';
 import searchRouter from './search.route';
 import attachmentRouter from './attachment.route';
+import categoryRouter from './category.route';
 
 const routes = Router();
 
@@ -20,5 +21,6 @@ routes.use('/users', userRouter);
 routes.use('/activities', activityRouter);
 routes.use('/products', productRouter);
 routes.use('/search', searchRouter);
+routes.use('/categories', categoryRouter);
 
 export { routes };
