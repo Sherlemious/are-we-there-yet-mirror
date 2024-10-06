@@ -24,7 +24,7 @@ let activity: ActivityType = {
   price: 50,
   category: 'Outdoor',
   tags: [],
-  specialDiscounts: '10% off for students',
+  specialDiscounts: 10,
   bookingOpen: true,
   location: location,
 };

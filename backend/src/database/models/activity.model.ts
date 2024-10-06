@@ -32,6 +32,8 @@ const activitySchema = new Schema(
     },
     specialDiscounts: {
       type: Number,
+      min: 0,
+      max: 100,
     },
     bookingOpen: {
       type: Boolean,
