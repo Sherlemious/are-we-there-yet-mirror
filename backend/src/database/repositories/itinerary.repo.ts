@@ -31,6 +31,11 @@ class ItineraryRepo {
   async filterItineraries(query: any) {
     return await Itinerary.find(query).populate('tags');
   }
+
+  async getItinerariesByCreator(creator: string) {
+    return await Itinerary.find({ created_by: creator });
+  }
+
 }
 
 export default new ItineraryRepo();

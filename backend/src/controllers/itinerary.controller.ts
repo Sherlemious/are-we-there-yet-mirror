@@ -34,6 +34,21 @@ const findItineraryById = async (req: Request, res: Response) => {
   }
 };
 
+const getItinerariesCreatedByUser = async (req: Request, res: Response) => {
+  try {
+    const itineraries = await ItineraryRepo.getItinerariesByCreator(req.params.id);
+    const response = {
+      message: 'Itineraries fetched successfully',
+      data: { itineraries: itineraries },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching itineraries: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 const createItinerary = async (req: Request, res: Response) => {
   const itinerary = req.body;
 
@@ -132,4 +147,12 @@ const filterItineraries = async (req: Request, res: Response) => {
   }
 };
 
-export { getItineraries, findItineraryById, createItinerary, updateItinerary, deleteItinerary, filterItineraries };
+export {
+  getItineraries,
+  findItineraryById,
+  createItinerary,
+  updateItinerary,
+  deleteItinerary,
+  filterItineraries,
+  getItinerariesCreatedByUser,
+};
