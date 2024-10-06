@@ -4,6 +4,7 @@ import { TourGuideProfile } from './modules/TourGuide/App';
 import { generalSettingAction } from './modules/TourGuide/App';
 import { AdvertiserProfile } from './modules/Advertiser/App';
 import { SellerProfile } from './modules/Seller/App';
+import TourGuide from './modules/TourGuide/pages/TourGuide';
 
 const BrowserRouter = createBrowserRouter([
   { path: '/', element: <RootLayout />, children: [] },
@@ -20,6 +21,10 @@ const BrowserRouter = createBrowserRouter([
   {
     path: '/seller-profile',
     element: <SellerProfile />,
+  },
+  {
+    path: '/itineraries',
+    element: <TourGuide />,
   },
 ]);
 
