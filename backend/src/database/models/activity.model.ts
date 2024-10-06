@@ -3,16 +3,12 @@ import { locationSchema } from './location.model';
 import { ActivityType } from '../../types/Activity.types';
 import { ValidationException } from '../../exceptions/ValidationException';
 import { getTagIds } from './tag.model';
-import { CategoryType } from '../../types/Category.types';
+import { categorySchema } from './category.model';
 
 const activitySchema = new Schema(
   {
-    date: {
+    datetime: {
       type: Date,
-      required: true,
-    },
-    time: {
-      type: String,
       required: true,
     },
     location: {
@@ -25,7 +21,7 @@ const activitySchema = new Schema(
       min: 0,
     },
     category: {
-      type: Schema.Types.ObjectId,
+      type: categorySchema,
       required: true,
     },
     tags: {
