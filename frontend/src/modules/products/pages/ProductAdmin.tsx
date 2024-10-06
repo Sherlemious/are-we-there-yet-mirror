@@ -23,7 +23,7 @@ const AdminPage: React.FC = () => {
       available_quantity: productData.available_quantity,
       attachments: [],
       reviews: [],
-      seller: '60a7d6d2e6e6c40015b3a6d7',
+      seller: '60a7d6d2e6e6c40015b3a6d1',
     };
     await createProduct(product);
     const Products = await getProducts();

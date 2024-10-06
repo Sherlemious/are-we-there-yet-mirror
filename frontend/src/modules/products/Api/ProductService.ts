@@ -25,6 +25,7 @@ export const deleteProduct = async (productId: string): Promise<void> => {
 export const updateProduct = async (productId: string, productData: Product): Promise<Product> => {
   try {
     const response = await axios.patch<{ data: { product: Product } }>(`${API_URL}/products/${productId}`, productData);
+    console.log(response.data.data.product);
     return response.data.data.product;
   } catch (error) {
     console.log('msh sh8ala sa7');
@@ -35,6 +36,17 @@ export const updateProduct = async (productId: string, productData: Product): Pr
 export const getProducts = async (): Promise<Product[]> => {
   try {
     const response = await axios.get<{ data: { products: Product[] } }>(`${API_URL}/products`);
+    return response.data.data.products;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error fetching products');
+  }
+};
+
+export const getProductBySeller = async (sellerId: string): Promise<Product[]> => {
+  try {
+    const response = await axios.get<{ data: { products: Product[] } }>(
+      `${API_URL}/products/filter-by-seller?seller=${sellerId}`
+    );
     return response.data.data.products;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Error fetching products');

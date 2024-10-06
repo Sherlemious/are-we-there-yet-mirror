@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { ModalRef } from './modal';
+import { Product } from '../types/product';
 
 interface ProductFormProps {
   onSubmit?: (productData: ProductFormData) => void;
+  onUpdate?: (productData: Product) => void;
   addModalRef: React.RefObject<ModalRef>;
   initialData?: ProductFormData;
+  selectedProduct?: Product;
 }
 
 export interface ProductFormData {
@@ -15,7 +18,7 @@ export interface ProductFormData {
   attachments: File[]; // Assuming you will implement file handling
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({ onSubmit, addModalRef, initialData }) => {
+const ProductForm: React.FC<ProductFormProps> = ({ onSubmit, onUpdate, selectedProduct, addModalRef, initialData }) => {
   const [formData, setFormData] = useState<Omit<ProductFormData, 'attachments'>>(
     initialData || {
       name: '',
@@ -39,6 +42,19 @@ const ProductForm: React.FC<ProductFormProps> = ({ onSubmit, addModalRef, initia
 
     if (onSubmit) {
       onSubmit(formDataWithAttachments);
+    }
+    if (onUpdate) {
+      const product: Product = {
+        _id: selectedProduct?._id || '',
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        available_quantity: formData.available_quantity,
+        attachments: [],
+        reviews: [],
+        seller: selectedProduct?.seller || '',
+      };
+      onUpdate(product);
     }
     addModalRef.current?.close();
   };

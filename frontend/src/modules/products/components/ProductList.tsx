@@ -42,21 +42,26 @@ const ProductList: React.FC<ProductListProps> = ({ products, role, onCreate, onE
     EditmodalRef.current?.open(); // Open the modal
   };
   // Filter and sort products
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPrice =
-      (minPrice === '' || product.price >= minPrice) && (maxPrice === '' || product.price <= maxPrice);
-    return matchesSearch && matchesPrice;
-  });
-  // .sort((a, b) => {
-  //   if (sortByRating === 'asc') {
-  //     return a.rating - b.rating;
-  //   }
-  //   if (sortByRating === 'desc') {
-  //     return b.rating - a.rating;
-  //   }
-  //   return 0; // No sorting
-  // });
+  const filteredProducts = products
+    .filter((product) => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPrice =
+        (minPrice === '' || product.price >= minPrice) && (maxPrice === '' || product.price <= maxPrice);
+      return matchesSearch && matchesPrice;
+    })
+    .sort((a, b) => {
+      const averageRatingA =
+        a.reviews.length > 0 ? a.reviews.reduce((sum, review) => sum + review.rating, 0) / a.reviews.length : 0;
+      const averageRatingB =
+        b.reviews.length > 0 ? b.reviews.reduce((sum, review) => sum + review.rating, 0) / b.reviews.length : 0;
+      if (sortByRating === 'asc') {
+        return averageRatingA - averageRatingB;
+      }
+      if (sortByRating === 'desc') {
+        return averageRatingB - averageRatingA;
+      }
+      return 0; // No sorting
+    });
 
   return (
     <div className={customStyles.container}>
@@ -127,7 +132,13 @@ const ProductList: React.FC<ProductListProps> = ({ products, role, onCreate, onE
                   <p className={customStyles.slideText}>{product.description}</p>
                   <p className={customStyles.slideText}>Price: {product.price}</p>
                   <p className={customStyles.slideText}>Quantity: {product.available_quantity}</p>
-                  <strong>Rating:</strong>5
+                  <strong>Rating:</strong>
+                  {product.reviews.length > 0
+                    ? (
+                        product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
+                      ).toFixed(1)
+                    : '0'}
+                  /5
                 </div>
               </div>
             ))}
@@ -155,21 +166,33 @@ const ProductList: React.FC<ProductListProps> = ({ products, role, onCreate, onE
                   <strong>Quantity:</strong> {selectedProduct.available_quantity}
                 </p>
                 <p>
-                  <strong>Rating:</strong>5
+                  <strong>Rating:</strong>
+                  {selectedProduct.reviews.length > 0
+                    ? (
+                        selectedProduct.reviews.reduce((sum, review) => sum + review.rating, 0) /
+                        selectedProduct.reviews.length
+                      ).toFixed(1)
+                    : '0'}
+                  /5
                 </p>
+                <p>
+                  <strong>reviews:</strong>
+                </p>
+                {selectedProduct.reviews.map((review, index) => (
+                  <>
+                    <p key={index}>
+                      {index + 1}.Rating : {review.rating}/5
+                    </p>
+                    <p className="ml-2"> Comment : {review.comment}</p>
+                  </>
+                ))}
               </>
             )}
 
             {role === 'admin' || role === 'seller' ? (
-              // <div className={customStyles.editSection}>
-              //   {/* Include an edit form if the role is admin/seller */}
-              //   <button className={customStyles.editButton} onClick={() => onEdit && onEdit(selectedProduct)}>
-              //     Edit Product
-              //   </button>
-              // </div>
               <ProductForm
                 addModalRef={EditmodalRef}
-                onSubmit={() => onEdit && onEdit(selectedProduct)}
+                onUpdate={onEdit}
                 initialData={{
                   name: selectedProduct.name,
                   description: selectedProduct.description,
@@ -177,6 +200,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, role, onCreate, onE
                   available_quantity: selectedProduct.available_quantity,
                   attachments: [], // Add an empty array or appropriate initial value for attachments
                 }}
+                selectedProduct={selectedProduct}
               />
             ) : null}
           </div>
