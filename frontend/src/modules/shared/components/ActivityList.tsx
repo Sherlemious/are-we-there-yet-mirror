@@ -1,148 +1,123 @@
+import { useEffect, useState } from 'react';
+
 interface Activity {
   date: string;
   time: string;
-  location: string;
-  price: string;
+  location: {
+    name: string;
+    latitude: number;
+    longitude: number;
+  };
+  price: number;
   category: string;
-  tags: string[];
-  discount: string;
+  tags: {
+    name: string;
+    type: string;
+    historical_period: string;
+  }[];
+  specialDiscounts: number;
   bookingOpen: boolean;
 }
 
-const data: Activity[] = [
-  {
-    date: '2021/09/01',
-    time: '10:00',
-    location: 'Cairo, Egypt',
-    price: '100',
-    category: 'Sport',
-    tags: ['football', 'soccer'],
-    discount: '10%',
-    bookingOpen: true,
-  },
-  {
-    date: '2021/10/05',
-    time: '14:00',
-    location: 'London, UK',
-    price: '150',
-    category: 'Concert',
-    tags: ['music', 'live'],
-    discount: '15%',
-    bookingOpen: false,
-  },
-  {
-    date: '2021/11/12',
-    time: '18:30',
-    location: 'Paris, France',
-    price: '200',
-    category: 'Theater',
-    tags: ['drama', 'performance'],
-    discount: '20%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/01/15',
-    time: '09:00',
-    location: 'New York, USA',
-    price: '120',
-    category: 'Workshop',
-    tags: ['art', 'painting'],
-    discount: '5%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/03/20',
-    time: '16:00',
-    location: 'Tokyo, Japan',
-    price: '300',
-    category: 'Festival',
-    tags: ['culture', 'food'],
-    discount: '25%',
-    bookingOpen: false,
-  },
-  {
-    date: '2022/05/10',
-    time: '11:00',
-    location: 'Sydney, Australia',
-    price: '180',
-    category: 'Exhibition',
-    tags: ['art', 'sculpture'],
-    discount: '0%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/07/08',
-    time: '20:00',
-    location: 'Berlin, Germany',
-    price: '250',
-    category: 'Sport',
-    tags: ['tennis', 'competition'],
-    discount: '10%',
-    bookingOpen: false,
-  },
-  {
-    date: '2022/08/12',
-    time: '13:30',
-    location: 'Dubai, UAE',
-    price: '220',
-    category: 'Conference',
-    tags: ['tech', 'innovation'],
-    discount: '30%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/10/25',
-    time: '17:00',
-    location: 'Rome, Italy',
-    price: '170',
-    category: 'Food & Drink',
-    tags: ['wine', 'tasting'],
-    discount: '12%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/12/05',
-    time: '15:00',
-    location: 'Bangkok, Thailand',
-    price: '90',
-    category: 'Tour',
-    tags: ['sightseeing', 'adventure'],
-    discount: '20%',
-    bookingOpen: false,
-  },
-];
+const formatText = (text: string) => {
+  const maxLength = 5 * 3;
+  return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+}
+
+function useGetMyActivities() {
+  // init the states
+  const [data, setData] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // fetch the data
+  useEffect(() => {
+    const runner = async () => {
+      // init the url
+      const userId = '6702970588d93fa6bce6432b';
+      const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
+      const url = `${baseUrl}/activities/created_by/${userId}`;
+
+      // main logic
+      try {
+        // fetch the data
+        const response = await fetch(url, {
+          method: 'GET',
+        });
+
+        // check if the response is ok
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        // parse the response
+        const parsedData = await response.json();
+
+        // format the data
+        const tempData: Activity[] = await parsedData.data.map((item: any) => ({
+          date: item.date === null ? 'N/A' : item.date,
+          time: item.time === null ? 'N/A' : item.time,
+          location: {
+            name: item.location.name === null ? 'N/A' : item.location.name,
+            latitude: item.location.latitude === null ? 0 : item.location.latitude,
+            longitude: item.location.longitude === null ? 0 : item.location.longitude,
+          },
+          price: item.price === null ? 0 : item.price,
+          category: item.category === null ? 'N/A' : item.category,
+          tags: item.tags === null ? [] : item.tags,
+          specialDiscounts: item.specialDiscounts === undefined ? 0 : item.specialDiscounts,
+          bookingOpen: item.bookingOpen === null ? false : item.bookingOpen,
+        }));
+        // set the data
+        setData(tempData);
+        setLoading(false);
+        console.log(tempData);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    runner();
+  }, []);
+
+  return { data, loading, error };
+}
 
 function ActivityCard({ activity }: { activity: Activity }) {
   return (
-    <div className="w-full h-fit border-black border-2 grid grid-cols-7 py-8 px-2">
-      <div className="text-center">{activity.date}</div>
-      <div className="text-center">{activity.time}</div>
-      <div className="text-center">{activity.location}</div>
-      <div className="text-center">{activity.price}</div>
-      <div className="text-center">{activity.category}</div>
-      <div className="text-center">{activity.tags.join(', ')}</div>
-      <div className="text-center">{activity.discount}</div>
+    <div className="w-full h-fit border-black border-2 grid grid-cols-8 py-8 px-2">
+      <div className="text-left">{activity.date}</div>
+      <div className="text-left">{activity.time}</div>
+      <div className="text-left">{activity.location.name}</div>
+      <div className="text-left">{activity.price}</div>
+      <div className="text-left">{activity.category}</div>
+      <div className="text-left">{activity.tags.map(formatText).join(', ')}</div>
+      <div className="text-left">{activity.specialDiscounts}</div>
+      <div className="text-left">{activity.bookingOpen ? 'Open' : 'Closed'}</div>
     </div>
   );
 }
 
 export function ActivityList() {
-  // return fake data
+  // get the data
+  const { data, loading, error } = useGetMyActivities();
   return (
     <div className="flex flex-col gap-8 p-8">
       {/* header */}
-      <div className="w-full h-fit border-black border-2 grid grid-cols-7 py-4 px-2">
-        <div className="text-center font-bold text-xl">Date</div>
-        <div className="text-center font-bold text-xl">Time</div>
-        <div className="text-center font-bold text-xl">Location</div>
-        <div className="text-center font-bold text-xl">Price</div>
-        <div className="text-center font-bold text-xl">Category</div>
-        <div className="text-center font-bold text-xl">Tags</div>
-        <div className="text-center font-bold text-xl">Discount</div>
+      <div className="w-full h-fit border-black border-2 grid grid-cols-8 py-4 px-2">
+        <div className="text-left font-bold text-xl">Date</div>
+        <div className="text-left font-bold text-xl">Time</div>
+        <div className="text-left font-bold text-xl">Location</div>
+        <div className="text-left font-bold text-xl">Price</div>
+        <div className="text-left font-bold text-xl">Category</div>
+        <div className="text-left font-bold text-xl">Tags</div>
+        <div className="text-left font-bold text-xl">Discount</div>
+        <div className="text-left font-bold text-xl">Booking</div>
       </div>
       {/* body */}
-      {data.map((activity) => (
-        <ActivityCard key={activity.date} activity={activity} />
+      {data.map((activity, index) => (
+        <ActivityCard key={index} activity={activity} />
       ))}
     </div>
   );
