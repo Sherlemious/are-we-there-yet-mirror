@@ -22,7 +22,7 @@ interface Activity {
 const formatText = (text: string) => {
   const maxLength = 5 * 3;
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
-}
+};
 
 function useGetMyActivities() {
   // init the states
@@ -34,9 +34,8 @@ function useGetMyActivities() {
   useEffect(() => {
     const runner = async () => {
       // init the url
-      const userId = '6702970588d93fa6bce6432b';
       const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
-      const url = `${baseUrl}/activities/created_by/${userId}`;
+      const url = `${baseUrl}/activities/`;
 
       // main logic
       try {
@@ -116,9 +115,9 @@ export function ActivityList() {
         <div className="text-left font-bold text-xl">Booking</div>
       </div>
       {/* body */}
-      {data.map((activity, index) => (
-        <ActivityCard key={index} activity={activity} />
-      ))}
+      {loading && <div className="text-center text-2xl font-bold">Loading...</div>}
+      {error && <div className="text-center text-2xl font-bold text-red-500">{error}</div>}
+      {!loading && !error && data.map((activity, index) => <ActivityCard key={index} activity={activity} />)}
     </div>
   );
 }
