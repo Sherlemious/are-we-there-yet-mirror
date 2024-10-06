@@ -238,20 +238,9 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
             className={styles.inputClass}
           />
         </div>
-        <div className="col-span-1">
-          <label htmlFor="location" className="mb-2 block">Location</label>
-          <input
-            type="text"
-            name="location"
-            value={formData.location.name}
-            onChange={handleInputChange}
-            placeholder="Location"
-            className={styles.inputClass}
-          />
-        </div>
   
         {/* Opening Hours (Full width) */}
-        <div className="col-span-2">
+        <div className="col-span-1">
           <label htmlFor="opening_hours" className="mb-2 block">Opening Hours</label>
           <input
             type="text"
@@ -297,7 +286,19 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
             className={styles.inputClass}
           />
         </div>
+        <div className="col-span-1">
+          <label htmlFor="location" className="mb-2 block">Location</label>
+          <input
+            type="text"
+            name="location"
+            value={formData.location.name}
+            onChange={handleInputChange}
+            placeholder="Location"
+            className={styles.inputClass}
+          />
+        </div>
       </div>
+      
   
       {/* Right Side */}
       <div className="col-span-1 flex flex-col"> {/* Centering the column */}
