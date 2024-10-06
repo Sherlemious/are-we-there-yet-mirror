@@ -66,4 +66,14 @@ const getAllActivities = async (req: Request, res: Response) => {
   }
 };
 
-export { getAllActivities, createActivity, getActivityById, updateActivity, deleteActivity };
+const getActivitiesByCreator = async (req: Request, res: Response) => {
+  try {
+    const activities = await activityRepo.getActivitiesByCreator(req.params.id);
+    res.status(ResponseStatusCodes.OK).json({ message: 'Activities fetched successfully', data: activities });
+  } catch (error: any) {
+    logger.error(`Error fetching activities: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+export { getAllActivities, createActivity, getActivityById, updateActivity, deleteActivity, getActivitiesByCreator };

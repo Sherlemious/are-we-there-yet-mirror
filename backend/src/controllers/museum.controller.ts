@@ -19,6 +19,21 @@ const getAllMuseums = async (req: Request, res: Response) => {
   }
 };
 
+const getMuseumsCreatedByUser = async (req: Request, res: Response) => {
+  try {
+    const museums = await MuseumRepo.getMuseumsByCreator(req.params.id);
+    const response = {
+      message: 'Museums fetched successfully',
+      data: { museums: museums },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching museums: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 const findMuseumById = async (req: Request, res: Response) => {
   try {
     const museum = await MuseumRepo.findMuseumById(req.params.id);
@@ -104,4 +119,12 @@ const deleteMuseum = async (req: Request, res: Response) => {
   }
 };
 
-export { getAllMuseums, findMuseumById, findMuseumsByTags, createMuseum, updateMuseum, deleteMuseum };
+export {
+  getAllMuseums,
+  findMuseumById,
+  findMuseumsByTags,
+  createMuseum,
+  updateMuseum,
+  deleteMuseum,
+  getMuseumsCreatedByUser,
+};

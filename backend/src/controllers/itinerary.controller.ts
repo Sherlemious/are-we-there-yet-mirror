@@ -33,6 +33,21 @@ const findItineraryById = async (req: Request, res: Response) => {
   }
 };
 
+const getItinerariesCreatedByUser = async (req: Request, res: Response) => {
+  try {
+    const itineraries = await ItineraryRepo.getItinerariesByCreator(req.params.id);
+    const response = {
+      message: 'Itineraries fetched successfully',
+      data: { itineraries: itineraries },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching itineraries: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 const createItinerary = async (req: Request, res: Response) => {
   const itinerary = req.body;
 
@@ -81,3 +96,59 @@ const deleteItinerary = async (req: Request, res: Response) => {
 };
 
 export { getItineraries, findItineraryById, createItinerary, updateItinerary, deleteItinerary };
+
+    if (minPrice) {
+      const minPriceValue = parseFloat(minPrice as string);
+      query.price = { $gte: minPriceValue };
+    }
+
+    if (maxPrice) {
+      const maxPriceValue = parseFloat(maxPrice as string);
+      query.price = { ...query.price, $lte: maxPriceValue };
+    }
+
+    const now = new Date();
+
+    if (startDate || endDate) {
+      let dateQuery: any = {};
+
+      if (startDate && new Date(startDate as string) >= now) {
+        const startISO = new Date(startDate as string);
+        dateQuery.$gte = startISO;
+      }
+      if (endDate && new Date(endDate as string) >= now) {
+        const endISO = new Date(endDate as string);
+        dateQuery.$lte = endISO;
+      }
+      query.available_datetimes = { $elemMatch: { $gte: now, ...dateQuery } };
+    } else {
+      query.available_datetimes = { $elemMatch: { $gte: now } };
+    }
+
+    if (language) {
+      query.language = language as string;
+    }
+
+    if (tags && typeof tags === 'string') {
+      const tagIds = tags.split(',');
+      const objectIds = tagIds.map((id) => new mongoose.Types.ObjectId(id));
+      query.tags = { $all: objectIds };
+    }
+
+    const itineraries = await ItineraryRepo.filterItineraries(query);
+
+    res.status(ResponseStatusCodes.OK).json({ message: 'Itineraries fetched successfully', data: { itineraries } });
+  } catch (error: any) {
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+export {
+  getItineraries,
+  findItineraryById,
+  createItinerary,
+  updateItinerary,
+  deleteItinerary,
+  filterItineraries,
+  getItinerariesCreatedByUser,
+};
