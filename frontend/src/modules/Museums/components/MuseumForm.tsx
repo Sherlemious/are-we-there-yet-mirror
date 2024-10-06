@@ -3,6 +3,7 @@ import { ModalRef } from './modal';
 import defaultPhoto from '../assets/defaultPhoto.png';
 import { Museum } from '../types/museum';
 import Map,{Location} from '../../shared/utils/map';
+import axios from 'axios';
 
 
 interface MuseumFormProps {
@@ -51,9 +52,9 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
     },
   });
 
-  const [pictures, setPictures] = useState<string[]>([]); // Separate state for file uploads
+  const [pictures, setPictures] = useState<File[]>([]); // Separate state for file uploads
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Create a ref for the file input
-  const [imagePreview, setImagePreview] = useState<string>(defaultPhoto); // State for image preview
+  const [imagePreview, setImagePreview] = useState<File>(); // State for image preview
   const [imageIndex, setImageIndex] = useState(0); // State to keep track of the current image index
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null); // To track location from the map
 
@@ -72,8 +73,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
           latitude: selectedMuseum.location.latitude,
           longitude: selectedMuseum.location.longitude,
         },
+        pictures: selectedMuseum.pictures,
       }));
-
       // Load the selected location for the map
       setSelectedLocation({
         lat: selectedMuseum.location.latitude,
@@ -144,16 +145,16 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
-      setPictures(files.map(file => URL.createObjectURL(file))); // Store the file URLs
+      setPictures(files); // Store the file URLs
       setImageIndex(0); // Reset to the first image
-      setImagePreview(URL.createObjectURL(files[0])); // Display the first uploaded image
+      setImagePreview(files[0]); // Display the first uploaded image
     }
   };
 
 
   // Handling tags
   const handleTagChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { value } = e.target;
     const updatedTags = [...formData.tags];
     updatedTags[index] = value;
   
@@ -180,10 +181,20 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e : React.FormEvent) => {
     e.preventDefault();
-    const formDataWithAttachments = { ...formData, pictures: [], };
-
+    const ids = [];
+    for(let i=0;i<pictures.length;i++) {
+        const formData = new FormData();
+        formData.append('file', pictures[i]);
+        console.log(formData);
+        console.log(pictures[i]);
+        const response = await axios.post(`https://are-we-there-yet-mirror.onrender.com/api/attachments`,formData, {headers: { "Content-Type": "multipart/form-data" },
+        },);
+        ids.push(response.data._id);
+    }
+    console.log(ids);
+    const formDataWithAttachments = { ...formData, pictures: ids, };
     if (onSubmit) {
       onSubmit(formDataWithAttachments);
     }
@@ -194,7 +205,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
         description: formData.description,
         category: formData.category,
         tags: formData.tags,
-        pictures: [],
+        pictures: ids,
         location: formData.location,
         opening_hours: formData.opening_hours,
         ticket_prices: formData.ticket_prices,
@@ -354,7 +365,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
         <div>
         <label htmlFor="pictures" className="mb-2 block">Upload Pictures</label>
           <img 
-            src={imagePreview} 
+            src={imagePreview ? URL.createObjectURL(imagePreview) : defaultPhoto} 
             alt="Preview" 
             className="mt-4-gray-300 rounded-md w-full h-64 object-cover" 
           />
@@ -386,8 +397,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
 
   
         {/* Tags Section (Below Pictures) */}
-        <div className="mt-6">
-          <h3 className="mt-6 mb-4">Tags</h3>
+        <div className="mt-2">
+          <h3 className="mt-2 mb-2">Tags</h3>
           {formData.tags.map((tag, index) => (
             <div key={index} className="flex items-center mb-2">
               <input
@@ -410,19 +421,20 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
           <button
             type="button"
             onClick={addTag}
-            className="mt-4 bg-green-500 text-white rounded-md p-2"
+            className=" bg-green-500 text-white rounded-md p-2"
           >
             Add Tag
           </button>
         </div>
+
       </div>
   
-      {/* Submit Button (Full width) */}
       <div className="col-span-2 flex justify-end">
         <button type="submit" className={`${styles.button} w-1/4 p-4`}>
-        {initialData?.name ? 'Update' : 'submit'}
+        {initialData?.name ? 'Update' : 'Submit'}
         </button>
       </div>
+      {/* Submit Button (Full width) */}
     </form>
   );  
 };

@@ -50,7 +50,7 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
 
                   {/* Image */}
                   <div className={customStyles.imageContainer}>
-                  <img src={museum.pictures.length > 0 ? (typeof museum.pictures[0] === 'string' ? museum.pictures[0] : URL.createObjectURL(museum.pictures[0])) : defaultImage} alt={museum.name} className={customStyles.image} />
+                  <img src={museum.pictures.length > 0 ? museum.pictures[0] : defaultImage} alt={museum.name} className={customStyles.image} />
                   </div>
 
                   <h3 className={customStyles.slideTitle}>{museum.name}</h3>

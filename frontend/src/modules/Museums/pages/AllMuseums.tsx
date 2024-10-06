@@ -21,7 +21,7 @@ const AllMuseums = () => {
         description: museumData.description,
         category: museumData.category,
         tags: museumData.tags,
-        pictures: [],
+        pictures: museumData.pictures,
         location: museumData.location,  
         opening_hours: museumData.opening_hours,
         ticket_prices: {
@@ -43,7 +43,7 @@ const AllMuseums = () => {
         description: museumData.description,
         category: museumData.category,
         tags: museumData.tags,
-        pictures: [],
+        pictures: museumData.pictures,
         location: museumData.location,
         opening_hours: museumData.opening_hours,
         ticket_prices: {
