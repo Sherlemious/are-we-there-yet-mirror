@@ -3,8 +3,7 @@ import { TagType } from './Tag.types';
 import { CategoryType } from './Category.types';
 
 export interface ActivityType {
-  date: string;
-  time: string;
+  date: Date;
   location: LocationType;
   price: number;
   category: CategoryType;
