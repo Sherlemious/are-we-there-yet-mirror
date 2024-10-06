@@ -18,11 +18,14 @@ let location = {
   longitude: 0,
 };
 
+let category = {
+  name: 'Art',
+};
+
 let activity: ActivityType = {
-  date: '2023-10-01',
-  time: '14:00',
+  datetime: new Date('2022-01-01T00:00:00.000Z'),
   price: 50,
-  category: 'Outdoor',
+  category: category,
   tags: [],
   specialDiscounts: 10,
   bookingOpen: true,
