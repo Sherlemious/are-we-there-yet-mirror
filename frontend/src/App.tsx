@@ -4,11 +4,11 @@ import { TourGuideProfile } from './modules/TourGuide/App';
 import { generalSettingAction } from './modules/TourGuide/App';
 import { AdvertiserProfile } from './modules/Advertiser/App';
 import { SellerProfile } from './modules/Seller/App';
-import Map from './modules/shared/utils/map';
+import { MapTest } from './modules/shared/utils/map';
 
 const BrowserRouter = createBrowserRouter([
   { path: '/', element: <RootLayout />, children: [] },
-  { path: '/map', element: <Map /> },
+  { path: '/map', element: <MapTest /> },
   {
     path: '/tour-guide-profile',
     element: <TourGuideProfile />,
