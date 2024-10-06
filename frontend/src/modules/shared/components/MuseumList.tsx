@@ -18,191 +18,85 @@ interface Museum {
     native: number;
     student: number;
   };
-  created_by: string;
-  modified_by: string;
 }
-const data: Museum[] = [
-  {
-    name: 'National Art Gallery',
-    tags: ['64db0f774b5e3f6dc2b9c1a1'],
-    description: 'A gallery showcasing national art pieces from various artists.A gallery showcasing national art pieces from various artists.A gallery showcasing national art pieces from various artists.A gallery showcasing national art pieces from various artists.A gallery showcasing national art pieces from various artists.A gallery showcasing national art pieces from various artists.A gallery showcasing national art pieces from various artists.A gallery showcasing national art pieces from various artists.',
-    category: 'Art',
-    pictures: ['64db0f774b5e3f6dc2b9c1b2'],
-    location: {
-      name: '123 Art St, Cityville',
-      latitude: 40.712776,
-      longitude: -74.005974,
-    },
-    opening_hours: '9:00 AM - 5:00 PM',
-    ticket_prices: {
-      foreigner: 20,
-      native: 10,
-      student: 5,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1c3',
-    modified_by: '64db0f774b5e3f6dc2b9c1c3',
-  },
-  {
-    name: 'History Museum of Cityville',
-    tags: ['64db0f774b5e3f6dc2b9c1a2', '64db0f774b5e3f6dc2b9c1a3'],
-    description: 'Exploring the rich history of Cityville.',
-    category: 'History',
-    pictures: ['64db0f774b5e3f6dc2b9c1b3', '64db0f774b5e3f6dc2b9c1b4'],
-    location: {
-      name: '456 History Lane, Cityville',
-      latitude: 40.712345,
-      longitude: -74.004567,
-    },
-    opening_hours: '10:00 AM - 6:00 PM',
-    ticket_prices: {
-      foreigner: 25,
-      native: 15,
-      student: 8,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1c4',
-    modified_by: '64db0f774b5e3f6dc2b9c1c5',
-  },
-  {
-    name: 'Science Discovery Center',
-    tags: ['64db0f774b5e3f6dc2b9c1a4'],
-    description: 'A museum dedicated to interactive science exhibits for all ages.',
-    category: 'Science',
-    pictures: ['64db0f774b5e3f6dc2b9c1b5'],
-    location: {
-      name: '789 Science Ave, Cityville',
-      latitude: 40.713678,
-      longitude: -74.006789,
-    },
-    opening_hours: '9:00 AM - 7:00 PM',
-    ticket_prices: {
-      foreigner: 30,
-      native: 20,
-      student: 10,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1c6',
-    modified_by: '64db0f774b5e3f6dc2b9c1c6',
-  },
-  {
-    name: "Children's Exploration Museum",
-    tags: ['64db0f774b5e3f6dc2b9c1a5'],
-    description: 'An interactive museum designed for children to learn and play.',
-    category: 'Children',
-    pictures: ['64db0f774b5e3f6dc2b9c1b6'],
-    location: {
-      name: '101 Kids Road, Cityville',
-      latitude: 40.714123,
-      longitude: -74.00789,
-    },
-    opening_hours: '10:00 AM - 4:00 PM',
-    ticket_prices: {
-      foreigner: 15,
-      native: 8,
-      student: 5,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1c7',
-    modified_by: '64db0f774b5e3f6dc2b9c1c8',
-  },
-  {
-    name: 'Museum of Modern Culture',
-    tags: ['64db0f774b5e3f6dc2b9c1a6', '64db0f774b5e3f6dc2b9c1a7'],
-    description: 'Celebrating contemporary culture and lifestyles.',
-    category: 'Culture',
-    pictures: ['64db0f774b5e3f6dc2b9c1b7', '64db0f774b5e3f6dc2b9c1b8'],
-    location: {
-      name: '202 Modern St, Cityville',
-      latitude: 40.715678,
-      longitude: -74.008901,
-    },
-    opening_hours: '11:00 AM - 8:00 PM',
-    ticket_prices: {
-      foreigner: 18,
-      native: 10,
-      student: 6,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1c9',
-    modified_by: '64db0f774b5e3f6dc2b9c1ca',
-  },
-  {
-    name: 'Ancient History Museum',
-    tags: ['64db0f774b5e3f6dc2b9c1a8'],
-    description: 'Explore artifacts from ancient civilizations across the world.',
-    category: 'History',
-    pictures: ['64db0f774b5e3f6dc2b9c1b9'],
-    location: {
-      name: '303 Ancient Ave, Cityville',
-      latitude: 40.716123,
-      longitude: -74.009123,
-    },
-    opening_hours: '10:00 AM - 5:00 PM',
-    ticket_prices: {
-      foreigner: 22,
-      native: 12,
-      student: 7,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1cb',
-    modified_by: '64db0f774b5e3f6dc2b9c1cb',
-  },
-  {
-    name: 'Cityville Natural History Museum',
-    tags: ['64db0f774b5e3f6dc2b9c1a9'],
-    description: 'Learn about the natural history of Cityville and its surroundings.',
-    category: 'Natural History',
-    pictures: ['64db0f774b5e3f6dc2b9c1ba'],
-    location: {
-      name: '404 Nature Blvd, Cityville',
-      latitude: 40.717345,
-      longitude: -74.010234,
-    },
-    opening_hours: '9:00 AM - 6:00 PM',
-    ticket_prices: {
-      foreigner: 25,
-      native: 14,
-      student: 10,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1cc',
-    modified_by: '64db0f774b5e3f6dc2b9c1cc',
-  },
-  {
-    name: 'Railroad Heritage Museum',
-    tags: ['64db0f774b5e3f6dc2b9c1aa'],
-    description: 'Experience the evolution of railway transportation.',
-    category: 'Transportation',
-    pictures: ['64db0f774b5e3f6dc2b9c1bb'],
-    location: {
-      name: '505 Rails St, Cityville',
-      latitude: 40.718456,
-      longitude: -74.011345,
-    },
-    opening_hours: '10:00 AM - 5:30 PM',
-    ticket_prices: {
-      foreigner: 15,
-      native: 10,
-      student: 5,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1cd',
-    modified_by: '64db0f774b5e3f6dc2b9c1cd',
-  },
-  {
-    name: 'Aviation and Space Museum',
-    tags: ['64db0f774b5e3f6dc2b9c1ab'],
-    description: 'A tribute to the evolution of aviation and space travel.',
-    category: 'Science',
-    pictures: ['64db0f774b5e3f6dc2b9c1bc'],
-    location: {
-      name: '606 Skyway St, Cityville',
-      latitude: 40.719567,
-      longitude: -74.012456,
-    },
-    opening_hours: '11:00 AM - 6:00 PM',
-    ticket_prices: {
-      foreigner: 20,
-      native: 15,
-      student: 10,
-    },
-    created_by: '64db0f774b5e3f6dc2b9c1ce',
-    modified_by: '64db0f774b5e3f6dc2b9c1ce',
-  },
-];
+
+function useGetMuseums() {
+  // init the states
+  const [data, setData] = useState<Museum[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // fetch the data
+  useEffect(() => {
+    const runner = async () => {
+      // init the url
+      const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
+      const url = `${baseUrl}/museums/getall`;
+
+      // main logic
+      try {
+        // fetch the data
+        const response = await fetch(url, {
+          method: 'GET',
+        });
+
+        // check if the response is ok
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        // parse the response
+        const parsedData = await response.json();
+
+        // format the data
+        const tempData: Museum[] = await parsedData.data.museums.map((item) => {
+          const name = item.name ?? 'N/A';
+
+          let tags = item.tags ?? [];
+          tags = tags.map((tag) => tag.name ?? 'N/A');
+
+          const description = item.description ?? 'N/A';
+          const category = item.category ?? 'N/A';
+          const pictures = item.pictures ?? [];
+          const location = {
+            name: item.location.name ?? 'N/A',
+            latitude: item.location.latitude ?? 0,
+            longitude: item.location.longitude ?? 0,
+          };
+          const opening_hours = item.opening_hours ?? 'N/A';
+          const ticket_prices = {
+            foreigner: item.ticket_prices.foreigner ?? 0,
+            native: item.ticket_prices.native ?? 0,
+            student: item.ticket_prices.student ?? 0,
+          };
+
+          return {
+            name,
+            tags,
+            description,
+            category,
+            pictures,
+            location,
+            opening_hours,
+            ticket_prices,
+          };
+        });
+
+        // set the data
+        setData(tempData);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    // run the function
+    runner();
+  }, []);
+
+  return { data, loading, error };
+}
 
 // helper functions
 const formatLocation = (location: string) => {
@@ -218,7 +112,7 @@ const formatDescription = (description: string) => {
     return `${description.substring(0, maxLength)}...`;
   }
   return description;
-}
+};
 
 // main components
 function MuseumModal({ Museum, onClose }: { Museum: Museum; onClose: () => void }) {
@@ -275,7 +169,7 @@ function MuseumModal({ Museum, onClose }: { Museum: Museum; onClose: () => void 
               {/* tags */}
               <div>
                 <div className="text-left font-bold">Tags</div>
-                <div className="">{Museum.tags.join(', ')}</div>
+                <div className="">{Museum.tags.length === 0 ? 'N/A' : Museum.tags.join(', ')}</div>
               </div>
 
               {/* description */}
@@ -306,16 +200,20 @@ function MuseumModal({ Museum, onClose }: { Museum: Museum; onClose: () => void 
               <div>
                 <div className="text-left font-bold">Ticket Prices</div>
                 <table className="border-collapse border border-black">
-                  <tr className="border border-b-2">
-                    <th className="p-2">Foreigner</th>
-                    <th className="p-2">Native</th>
-                    <th className="p-2">Student</th>
-                  </tr>
-                  <tr className="border border-b-2">
-                    <td>{Museum.ticket_prices.foreigner}</td>
-                    <td>{Museum.ticket_prices.native}</td>
-                    <td>{Museum.ticket_prices.student}</td>
-                  </tr>
+                  <thead>
+                    <tr className="border border-b-2">
+                      <th className="p-2">Foreigner</th>
+                      <th className="p-2">Native</th>
+                      <th className="p-2">Student</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border border-b-2">
+                      <td>{Museum.ticket_prices.foreigner}</td>
+                      <td>{Museum.ticket_prices.native}</td>
+                      <td>{Museum.ticket_prices.student}</td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -350,14 +248,24 @@ export function MuseumList() {
     setSelectedMuseum(null);
   };
 
+  // get the data
+  const { data, loading, error } = useGetMuseums();
+  console.log(data);
+
   return (
     <>
-      <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
-        {data.map((Museum, index) => (
-          <MuseumCard Museum={Museum} key={index} onCardClick={() => handleCardClick(Museum)} />
-        ))}
-      </div>
-      {selectedMuseum && <MuseumModal Museum={selectedMuseum} onClose={handleCloseModal} />}
+      {loading && <div className="text-center text-2xl font-bold">Loading...</div>}
+      {error && <div className="text-center text-2xl font-bold">{error}</div>}
+      {!loading && !error && (
+        <>
+          <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
+            {data.map((Museum, index) => (
+              <MuseumCard Museum={Museum} key={index} onCardClick={() => handleCardClick(Museum)} />
+            ))}
+          </div>
+          {selectedMuseum && <MuseumModal Museum={selectedMuseum} onClose={handleCloseModal} />}
+        </>
+      )}
     </>
-  )
+  );
 }
