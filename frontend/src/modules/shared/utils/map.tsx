@@ -23,15 +23,18 @@ export type Location = { lat: number; lng: number; name: string; address: string
 export default function Map({
   className = 'w-full h-full',
   markedLocationState,
+  center = null,
 }: {
   className?: string;
   markedLocationState: [Location | null, React.Dispatch<React.SetStateAction<Location | null>>];
+  center?: google.maps.LatLngLiteral | null;
 }) {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>();
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(center);
   const [selectedLocation, setSelectedLocation] = markedLocationState;
 
   useEffect(() => {
+    if (userLocation) return;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
