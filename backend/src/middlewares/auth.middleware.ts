@@ -19,4 +19,13 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-export { authenticateToken };
+const openPaths = ['/api/auth'];
+
+const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
+  if (openPaths.some((path) => req.path.startsWith(path))) {
+    return next();
+  }
+  return authenticateToken(req, res, next);
+};
+
+export { authenticateToken, authenticateUnlessOpen };

@@ -9,19 +9,18 @@ import productRouter from './product.route';
 import searchRouter from './search.route';
 import attachmentRouter from './attachment.route';
 import categoryRouter from './category.route';
-import { authenticateToken } from '../middlewares/auth.middleware';
 
 const routes = Router();
 
 routes.use('/auth', authRouter);
-routes.use('/attachments', authenticateToken, attachmentRouter);
-routes.use('/itineraries', authenticateToken, itineraryRouter);
-routes.use('/museums', authenticateToken, museumRouter);
-routes.use('/tags', authenticateToken, tagRouter);
-routes.use('/users', authenticateToken, userRouter);
-routes.use('/activities', authenticateToken, activityRouter);
-routes.use('/products', authenticateToken, productRouter);
-routes.use('/search', authenticateToken, searchRouter);
-routes.use('/categories', authenticateToken, categoryRouter);
+routes.use('/attachments', attachmentRouter);
+routes.use('/itineraries', itineraryRouter);
+routes.use('/museums', museumRouter);
+routes.use('/tags', tagRouter);
+routes.use('/users', userRouter);
+routes.use('/activities', activityRouter);
+routes.use('/products', productRouter);
+routes.use('/search', searchRouter);
+routes.use('/categories', categoryRouter);
 
 export { routes };

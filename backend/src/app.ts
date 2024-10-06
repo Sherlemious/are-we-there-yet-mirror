@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { routes } from './routes/index';
 import { logger, logHttpRequests } from './middlewares/logger.middleware';
+import { authenticateUnlessOpen } from './middlewares/auth.middleware';
 import mongoose from 'mongoose';
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(cors()); // Enable CORS
 // Middleware
 app.use(express.json());
 app.use(logHttpRequests);
+app.use(authenticateUnlessOpen);
 app.use('/api', routes);
 
 // MongoDB connection
