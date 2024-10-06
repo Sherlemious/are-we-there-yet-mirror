@@ -111,13 +111,11 @@ const formatActivity = (activity: Activity) => {
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
   return parsedDate.toLocaleDateString('en-GB');
-}
+};
 const formatTime = (time: string) => {
   const parsedTime = new Date(time);
   return parsedTime.toLocaleTimeString('en-GB');
-}
-
-
+};
 
 // main components
 function ItineraryModal({ itinerary, onClose }: { itinerary: Itinerary; onClose: () => void }) {
