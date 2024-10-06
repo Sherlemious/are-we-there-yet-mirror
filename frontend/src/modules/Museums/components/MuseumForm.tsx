@@ -58,6 +58,33 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null); // To track location from the map
 
   useEffect(() => {
+    if (selectedMuseum) {
+      setFormData((prevData) => ({
+        ...prevData,
+        name: selectedMuseum.name,
+        description: selectedMuseum.description,
+        category: selectedMuseum.category,
+        tags: selectedMuseum.tags,
+        opening_hours: selectedMuseum.opening_hours,
+        ticket_prices: selectedMuseum.ticket_prices,
+        location: {
+          name: selectedMuseum.location.name,
+          latitude: selectedMuseum.location.latitude,
+          longitude: selectedMuseum.location.longitude,
+        },
+      }));
+
+      // Load the selected location for the map
+      setSelectedLocation({
+        lat: selectedMuseum.location.latitude,
+        lng: selectedMuseum.location.longitude,
+        name: selectedMuseum.location.name,
+        address: '', // You can add logic to fetch the address if needed
+      });
+    }
+  }, [selectedMuseum]);
+
+  useEffect(() => {
     // If a location is selected from the map, update the form's location data
     if (selectedLocation) {
       setFormData((prevData) => ({
@@ -71,6 +98,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
       }));
     }
   }, [selectedLocation]);
+
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -315,7 +343,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
           />
         </div>
         <div className="col-span-2 h-96"> {/* Ensure the map has a fixed height */}
-        <Map markedLocationState={[selectedLocation, setSelectedLocation]} className="h-full w-full" />
+        <Map markedLocationState={[selectedLocation, setSelectedLocation]} center={selectedLocation ? { lat: selectedLocation.lat, lng: selectedLocation.lng } : null} className="h-full w-full" />
         </div>
       </div>
       
