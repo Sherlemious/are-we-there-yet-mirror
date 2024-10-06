@@ -1,14 +1,20 @@
 import { Request, Response } from 'express';
+var mongoose = require('mongoose');
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import { range } from '../utils/Rangify.utils';
 import { generateRanges } from '../utils/Rangify.utils';
+import { ProductType } from '../types/Product.types';
 
 import productRepo from '../database/repositories/product.repo';
+import { ReviewType } from '../types/Review.types';
 
 const findProductById = async (req: Request, res: Response) => {
   try {
     const product = await productRepo.findProductById(req.params.id);
+    if (!product) {
+      throw new Error('Product not found');
+    }
     const response = {
       message: 'Product fetched successfully',
       data: { product: product },
@@ -39,6 +45,7 @@ const deleteProduct = async (req: Request, res: Response) => {
 const getProducts = async (req: Request, res: Response) => {
   try {
     const products = await productRepo.getProducts();
+
     const response = {
       message: 'Products fetched successfully',
       data: { products },
@@ -124,11 +131,10 @@ async function filterProductsBySeller(req: Request, res: Response) {
 }
 
 async function updateProduct(req: Request, res: Response) {
-  const productId = req.params.id;
-  const product = req.body;
-
   try {
-    await productRepo.updateProduct(productId, product.details, product.price);
+    const productId = req.params.id;
+    const product = req.body;
+    await productRepo.updateProduct(productId, product);
     const response = {
       message: 'Product updated successfully',
       data: { productId },
@@ -137,6 +143,74 @@ async function updateProduct(req: Request, res: Response) {
     res.status(ResponseStatusCodes.OK).json(response);
   } catch (error: any) {
     logger.error(`Error updating product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function addProductReview(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const review = req.body;
+
+    const product: ProductType | null = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+
+    const reviews: ReviewType[] = product.reviews || [];
+    const previousRating = product.average_rating || 0;
+    const newRating: number = (previousRating * reviews.length + review.rating) / (reviews.length + 1);
+    await productRepo.addReview(productId, review);
+    await productRepo.updateProduct(productId, { average_rating: newRating });
+    const response = {
+      message: 'Review added successfully',
+      data: { productId },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error adding review: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function deleteProductReview(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const reviewId = new mongoose.Types.ObjectId(req.params.review_id);
+
+    const product: ProductType | null = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+
+    const reviews: ReviewType[] = product.reviews || [];
+    const reviewIndex = reviews.findIndex((review) => review._id.toString() === reviewId.toString());
+    if (reviewIndex === -1) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Review not found', data: [] });
+      return;
+    }
+    if (!reviews.length) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'No reviews found', data: [] });
+      return;
+    }
+
+    const previousRating = product.average_rating || 0;
+    const newRating: number =
+      (previousRating * reviews.length - (reviews[reviewIndex].rating ? reviews[reviewIndex].rating : 0)) /
+      (reviews.length - 1);
+    await productRepo.deleteReview(productId, reviewId);
+    await productRepo.updateProduct(productId, { average_rating: newRating });
+    const response = {
+      message: 'Review deleted successfully',
+      data: { productId },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error deleting review: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
 }
@@ -150,4 +224,6 @@ export {
   updateProduct,
   getProducts,
   deleteProduct,
+  addProductReview,
+  deleteProductReview,
 };
