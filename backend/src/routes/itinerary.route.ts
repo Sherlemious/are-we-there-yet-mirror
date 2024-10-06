@@ -17,5 +17,6 @@ itineraryRouter.get('/created_by/:id', getItinerariesCreatedByUser);
 itineraryRouter.post('/', createItinerary);
 itineraryRouter.put('/:id', updateItinerary);
 itineraryRouter.delete('/:id', deleteItinerary);
+itineraryRouter.get('/', filterItineraries);
 
 export default itineraryRouter;

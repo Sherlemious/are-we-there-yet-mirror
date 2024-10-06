@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import ItineraryRepo from '../database/repositories/itinerary.repo';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
+import mongoose from 'mongoose';
 
 const getItineraries = async (req: Request, res: Response) => {
   try {
@@ -95,7 +96,10 @@ const deleteItinerary = async (req: Request, res: Response) => {
   }
 };
 
-export { getItineraries, findItineraryById, createItinerary, updateItinerary, deleteItinerary };
+const filterItineraries = async (req: Request, res: Response) => {
+  try {
+    const { minPrice, maxPrice, startDate, endDate, tags, language } = req.query;
+    let query: any = {};
 
     if (minPrice) {
       const minPriceValue = parseFloat(minPrice as string);
