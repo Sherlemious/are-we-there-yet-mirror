@@ -37,8 +37,7 @@ describe('Authentication Tests', () => {
       const response = await request(app).post('/api/auth/register').send(newUser);
       expect(response.status).toBe(ResponseStatusCodes.OK);
       expect(response.body.data).toMatchObject({
-        userId: expect.anything(),
-        jwt: null,
+        jwt: expect.any(String),
       });
     });
   });
