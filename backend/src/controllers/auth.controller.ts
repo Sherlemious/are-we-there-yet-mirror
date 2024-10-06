@@ -10,10 +10,10 @@ class AuthController {
     try {
       Validator.validatePassword(req.body.password);
 
-      const userId = await AuthRepo.register(req.body);
-      const token = AuthService.generateAccessToken({ userId: userId, accountType: req.body.account_type });
+      const user = await AuthRepo.register(req.body);
+      const token = AuthService.generateAccessToken({ userId: user.id, accountType: req.body.account_type });
 
-      res.send({ message: 'User registered successfully', data: { jwt: token } });
+      res.send({ message: 'User registered successfully', data: { user: user, jwt: token } });
     } catch (error: any) {
       logger.error(`Error creating user: ${error}`);
       res.status(ResponseStatusCodes.BAD_REQUEST).send({ message: error.message, data: null });
