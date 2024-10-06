@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ActivityTable from '../component/ActivityTable';
-import ActivityForm from '../component/ActivityForm';
 import { Activity } from '../types/Activity';
 import Header from '../component/Header';
 
@@ -16,12 +15,8 @@ const Dashboard = () => {
       setActivities(data.data);
     } catch (error) {
       console.error('Error fetching activities:', error);
+      alert('Error fetching activities');
     }
-  };
-
-  // Add activity (for frontend state)
-  const handleAddActivity = (newActivity: Activity) => {
-    setActivities([...Activities, newActivity]);
   };
 
   // Delete profile by _id (DELETE request)
@@ -32,12 +27,14 @@ const Dashboard = () => {
       });
 
       if (response.ok) {
-        setActivities(Activities.filter((Activity) => Activity._id !== id));
+        setActivities((prev) => prev.filter((Activity) => Activity._id !== id));
       } else {
-        console.error('Failed to delete activity');
+        console.error('Failed to delete activity response:', response);
+        alert('Failed to delete activity');
       }
     } catch (error) {
-      console.error('Error deleting activity:', error);
+      console.error('Error deleting activity error:', error);
+      alert('Error deleting activity');
     }
   };
 
@@ -46,10 +43,9 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="container mx-auto">
+    <div className="w-full">
       <Header />
       <ActivityTable Activities={Activities} onDeleteActivity={handleDeleteActivity} />
-      {/* <ProfileForm onAddProfile={handleAddProfile} /> */}
     </div>
   );
 };

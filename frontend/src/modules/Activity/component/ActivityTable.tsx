@@ -19,42 +19,43 @@ function ActivityTable({ Activities, onDeleteActivity }: ActivityTableProps) {
   const formatTime = (isoDate: string): string => {
     const date = new Date(isoDate);
     return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric',
     });
   };
+
   return (
-    <div className="container mx-auto p-4">
-      <div className="rounded-md border p-4">
-        <div className="mb-4 rounded-md border">
-          <div className="grid grid-cols-12 bg-gray-100 p-3 font-semibold">
-            <div className="col-span-2">Date</div>
-            <div className="col-span-1">Time</div>
-            <div className="col-span-2">Location</div>
-            <div className="col-span-1">Price</div>
-            <div className="col-span-1">Category</div>
-            {/* <div className="col-span-2">Tags</div> */}
-            <div className="col-span-2">Special Discount</div>
-            <div className="col-span-2 flex justify-end">Actions</div>
-          </div>
-        </div>
-        {/* {Tags.filter((Tag) => Tag.type === 'Preference').map((Tag) => ( */}
-        {/* {Activities.map((Activity, index) => ( */}
-        {Activities.filter((Activity) => Activity.bookingOpen).map((Activity) => (
-          <div key={Activity._id} className="mb-2 rounded-md border last:mb-0">
-            <div className="grid grid-cols-12 items-center p-3">
-              <div className="col-span-2">{formatDate(Activity.date)}</div>
-              <div className="col-span-1">{Activity.time}</div>
-              {/* <div className="col-span-2">{Activity.location}</div> */}
-              <div className="col-span-1">{Activity.price}</div>
-              <div className="col-span-1">{Activity.category}</div>
-              {/* <div className="col-span-2">{Activity.tags}</div> */}
-              <div className="col-span-2">{Activity.specialDiscount}</div>
-              <div className="col-span-2 flex justify-end">
-              <button
-                 className="text-gray-600 hover:text-gray-800">
-                  <Pencil size={20}/>
+    <div className="p-4">
+      <table className="w-full rounded-md border p-4">
+        <thead>
+          <tr className="bg-gray-100 text-start">
+            <th className="py-2">Date</th>
+            <th className="py-2">Time</th>
+            <th className="py-2">Location</th>
+            <th className="py-2">Price</th>
+            <th className="py-2">Category</th>
+            <th className="py-2">Tags</th>
+            <th className="py-2">Special Discount</th>
+            <th className="py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Activities.filter((Activity) => Activity.bookingOpen).map((Activity) => (
+            <tr key={Activity._id} className="text-center">
+              <td className="p-2">{formatDate(Activity.datetime)}</td>
+              <td className="p-2">{formatTime(Activity.datetime)}</td>
+              <td className="p-2">{Activity.location.name}</td>
+              <td className="p-2">{Activity.price}</td>
+              <td className="p-2">{Activity.category.name}</td>
+              <td className="p-2">
+                {Activity.tags.map((tag) => (
+                  <span key={tag._id}>{tag.name}, </span>
+                ))}
+              </td>
+              <td className="p-2">{Activity.specialDiscounts}</td>
+              <td className="p-2 flex">
+                <button className="text-gray-600 hover:text-gray-800">
+                  <Pencil size={20} />
                 </button>
                 <button
                   onClick={() => onDeleteActivity(Activity._id)} // Delete based on _id
@@ -62,11 +63,11 @@ function ActivityTable({ Activities, onDeleteActivity }: ActivityTableProps) {
                 >
                   <X size={20} />
                 </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
