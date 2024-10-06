@@ -21,7 +21,7 @@ const activitySchema = new Schema(
       min: 0,
     },
     category: {
-      type: categorySchema,
+      type: Schema.Types.ObjectId,
       required: true,
     },
     tags: {

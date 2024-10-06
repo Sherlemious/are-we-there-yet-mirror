@@ -16,11 +16,15 @@ let location = {
   longitude: 0,
 };
 
+let category = {
+  name: 'Art',
+};
+
 let activity = {
   date: '2023-10-01',
   time: '14:00',
   price: 50,
-  category: 'Outdoor',
+  category: category,
   tags: [tag, tag],
   specialDiscounts: '10% off for students',
   bookingOpen: true,
