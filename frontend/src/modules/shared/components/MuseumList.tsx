@@ -205,9 +205,6 @@ const data: Museum[] = [
 ];
 
 // helper functions
-const formatDateTime = (date: string, time: string) => {
-  return `${date.split('/')[2]}/${date.split('/')[1]} ${time}`;
-};
 const formatLocation = (location: string) => {
   const maxLength = 5 * 4;
   if (location.length > maxLength) {
