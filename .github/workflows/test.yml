@@ -27,3 +27,4 @@ jobs:
       run: npm test
       env:
         MONGO_URI: ${{secrets.MONGO_URI}}
+        TOKEN_SECRET: ${{secrets.TOKEN_SECRET}}
