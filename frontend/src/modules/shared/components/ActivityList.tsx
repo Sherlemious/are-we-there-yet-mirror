@@ -53,20 +53,35 @@ function useGetMyActivities() {
         const parsedData = await response.json();
 
         // format the data
-        const tempData: Activity[] = await parsedData.data.map((item: any) => ({
-          date: item.date === null ? 'N/A' : item.date,
-          time: item.time === null ? 'N/A' : item.time,
-          location: {
-            name: item.location.name === null ? 'N/A' : item.location.name,
-            latitude: item.location.latitude === null ? 0 : item.location.latitude,
-            longitude: item.location.longitude === null ? 0 : item.location.longitude,
-          },
-          price: item.price === null ? 0 : item.price,
-          category: item.category === null ? 'N/A' : item.category,
-          tags: item.tags === null ? [] : item.tags,
-          specialDiscounts: item.specialDiscounts === undefined ? 0 : item.specialDiscounts,
-          bookingOpen: item.bookingOpen === null ? false : item.bookingOpen,
-        }));
+        const tempData: Activity[] = await parsedData.data.map((item) => {
+          const date = item.date ?? 'N/A';
+          const time = item.time ?? 'N/A';
+          const location = {
+            name: item.location.name ?? 'N/A',
+            latitude: item.location.latitude ?? 0,
+            longitude: item.location.longitude ?? 0,
+          };
+          const price = item.price ?? -1;
+          let category = item.category ?? 'N/A';
+          category = category.name ?? 'N/A';
+
+          let tags = item.tags ?? [];
+          tags = tags.map((tag) => tag.name ?? 'N/A');
+
+          const specialDiscounts = item.specialDiscounts ?? 0;
+          const bookingOpen = item.bookingOpen ?? false;
+
+          return {
+            date,
+            time,
+            location,
+            price,
+            category,
+            tags,
+            specialDiscounts,
+            bookingOpen,
+          };
+        });
         // set the data
         setData(tempData);
         setLoading(false);
@@ -100,8 +115,35 @@ function ActivityCard({ activity }: { activity: Activity }) {
 export function ActivityList() {
   // get the data
   const { data, loading, error } = useGetMyActivities();
+
+  // handle the search
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filteredData, setFilteredData] = useState<Activity[]>([]);
+  useEffect(() => {
+    setFilteredData(
+      data.filter((item) => {
+        const matchesSearchQuery =
+          item.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesSearchQuery;
+      })
+    );
+  }, [searchQuery, data]);
+
   return (
     <div className="flex flex-col gap-8 p-8">
+      {/* tool bar */}
+      <div className="p-4 grid grid-cols-2 gap-8">
+        <input
+          type="text"
+          placeholder="Search"
+          className="w-full h-full border-black border-2 p-4"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <div className="border-black border-2 p-4"></div>
+      </div>
       {/* header */}
       <div className="w-full h-fit border-black border-2 grid grid-cols-8 py-4 px-2">
         <div className="text-left font-bold text-xl">Date</div>
@@ -116,7 +158,7 @@ export function ActivityList() {
       {/* body */}
       {loading && <div className="text-center text-2xl font-bold">Loading...</div>}
       {error && <div className="text-center text-2xl font-bold text-red-500">{error}</div>}
-      {!loading && !error && data.map((activity, index) => <ActivityCard key={index} activity={activity} />)}
+      {!loading && !error && filteredData.map((activity, index) => <ActivityCard key={index} activity={activity} />)}
     </div>
   );
 }
