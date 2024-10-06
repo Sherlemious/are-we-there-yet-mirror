@@ -8,6 +8,11 @@ export interface ActivityType {
   price: number;
   category: string;
   tags: TagType[];
-  specialDiscounts?: string;
+  specialDiscounts?: Number;
   bookingOpen: boolean;
+}
+
+export interface ActivityRefType {
+  activity: string;
+  duration: number;
 }

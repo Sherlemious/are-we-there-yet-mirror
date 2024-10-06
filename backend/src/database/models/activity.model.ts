@@ -31,7 +31,9 @@ const activitySchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
     },
     specialDiscounts: {
-      type: String,
+      type: Number,
+      min: 0,
+      max: 100,
     },
     bookingOpen: {
       type: Boolean,

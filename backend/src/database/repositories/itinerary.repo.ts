@@ -35,6 +35,7 @@ class ItineraryRepo {
   async getItinerariesByCreator(creator: string) {
     return await Itinerary.find({ created_by: creator });
   }
+
 }
 
 export default new ItineraryRepo();
