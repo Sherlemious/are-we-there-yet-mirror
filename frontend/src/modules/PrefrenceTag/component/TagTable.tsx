@@ -1,21 +1,15 @@
 import { Pencil, X } from 'lucide-react';
 import { prefrenceTag } from '../types/PrefrenceTag';
-import { AddTagPopup } from './popup';
+import UpdatePopup from './update-popup';
+import { useRef } from 'react';
 
 interface TagTableProps {
   Tags: prefrenceTag[];
   onDeleteTag: (id: string) => void;
+  setTags: React.Dispatch<React.SetStateAction<prefrenceTag[]>>;
 }
 
-function TagTable({
-  Tags,
-  onDeleteTag,
-  isTagPopupOpen2,
-  setIsTagPopupOpen2,
-}: TagTableProps & {
-  isTagPopupOpen2: boolean;
-  setIsTagPopupOpen2: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+function TagTable({ Tags, onDeleteTag, setTags }: TagTableProps) {
   return (
     <div className=" mx-auto max-w-3xl p-4">
       <div className="rounded-md border p-4">
@@ -27,33 +21,30 @@ function TagTable({
             <div className="col-span-2 flex justify-end">Actions</div>
           </div>
         </div>
-        {Tags.filter((Tag) => Tag.type === 'Preference').map((Tag) => (
-          <div key={Tag._id} className="mb-2 rounded-md border last:mb-0">
-            <div className="grid grid-cols-12 items-center p-3">
-              <div className="col-span-3">{Tag.name}</div>
-              <div className="col-span-3">{Tag.type}</div>
-              <div className="col-span-4">{Tag.historical_period}</div>
-              <div className="col-span-2 flex justify-end">
-                <button className="text-gray-600 hover:text-gray-800">
-                  <Pencil onClick={() => setIsTagPopupOpen2(true)} size={20} />
-                </button>
-                <AddTagPopup
-                  _id={Tag._id}
-                  isOpen={isTagPopupOpen2}
-                  onClose={() => setIsTagPopupOpen2(false)}
-                  title="Update a Preference Tag"
-                  isHeader={false}
-                />
-                <button
-                  onClick={() => onDeleteTag(Tag._id)} // Delete based on _id
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  <X size={20} />
-                </button>
+        {Tags.filter((Tag) => Tag.type === 'Preference').map((Tag) => {
+          const dialogRef = useRef<HTMLDialogElement>();
+          return (
+            <div key={Tag._id} className="mb-2 rounded-md border last:mb-0">
+              <div className="grid grid-cols-12 items-center p-3">
+                <div className="col-span-3">{Tag.name}</div>
+                <div className="col-span-3">{Tag.type}</div>
+                <div className="col-span-4">{Tag.historical_period}</div>
+                <div className="col-span-2 flex justify-end">
+                  <button className="text-gray-600 hover:text-gray-800">
+                    <Pencil onClick={() => dialogRef.current?.showModal()} size={20} />
+                  </button>
+                  <UpdatePopup dialogRef={dialogRef} _id={Tag._id} title="Update a Preference Tag" setTags={setTags} />
+                  <button
+                    onClick={() => onDeleteTag(Tag._id)} // Delete based on _id
+                    className="text-gray-600 hover:text-gray-800"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

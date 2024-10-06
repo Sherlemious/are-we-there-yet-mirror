@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import TagTable from '../component/TagTable';
-// import TagForm from '../component/TagForm';
 import { prefrenceTag } from '../types/PrefrenceTag';
 import Header from '../component/Header';
 
 const Dashboard = () => {
   const [Tags, setTags] = useState<prefrenceTag[]>([]);
   const [isTagPopupOpen, setIsTagPopupOpen] = useState(false);
-  const [isTagPopupOpen2, setIsTagPopupOpen2] = useState(false);
+  const [refresh, setRefresh] = useState(0);
 
   // Fetch profiles (GET request)
   const fetchTags = async () => {
@@ -21,11 +20,6 @@ const Dashboard = () => {
     }
   };
 
-  // Add tag (for frontend state)
-  const handleAddTag = (newTag: prefrenceTag) => {
-    setTags([...Tags, newTag]);
-  };
-
   // Delete profile by _id (DELETE request)
   const handleDeleteTag = async (id: string) => {
     try {
@@ -35,6 +29,7 @@ const Dashboard = () => {
 
       if (response.ok) {
         setTags(Tags.filter((Tag) => Tag._id !== id));
+        setRefresh(refresh + 1);
       } else {
         console.error('Failed to delete tag');
       }
@@ -42,17 +37,20 @@ const Dashboard = () => {
       console.error('Error deleting tag:', error);
     }
   };
-   
 
   useEffect(() => {
-    fetchTags(); // Fetch profiles when the component mounts
+    fetchTags();
   }, []);
 
   return (
     <div className="container mx-auto">
-      <Header setIsTagPopupOpen={setIsTagPopupOpen} isTagPopupOpen={isTagPopupOpen} setTags={setTags}/>
-      <TagTable Tags={Tags} onDeleteTag={handleDeleteTag} setIsTagPopupOpen2={setIsTagPopupOpen2} isTagPopupOpen2={isTagPopupOpen2} />
-      {/* <ProfileForm onAddProfile={handleAddProfile} /> */}
+      <Header
+        setIsTagPopupOpen={setIsTagPopupOpen}
+        isTagPopupOpen={isTagPopupOpen}
+        setTags={setTags}
+        setRefresh={setRefresh}
+      />
+      <TagTable key={refresh} Tags={Tags} onDeleteTag={handleDeleteTag} setTags={setTags} />
     </div>
   );
 };
