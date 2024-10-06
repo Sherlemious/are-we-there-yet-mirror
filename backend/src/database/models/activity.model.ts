@@ -3,7 +3,6 @@ import { locationSchema } from './location.model';
 import { ActivityType } from '../../types/Activity.types';
 import { ValidationException } from '../../exceptions/ValidationException';
 import { getTagIds } from './tag.model';
-import { categorySchema } from './category.model';
 
 const activitySchema = new Schema(
   {
@@ -20,10 +19,7 @@ const activitySchema = new Schema(
       required: true,
       min: 0,
     },
-    category: {
-      type: Schema.Types.ObjectId,
-      required: true,
-    },
+    category: { type: Schema.Types.ObjectId, ref: 'category' },
     tags: {
       type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
     },

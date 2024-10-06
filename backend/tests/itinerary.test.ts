@@ -25,7 +25,7 @@ let category = {
 let activity: ActivityType = {
   datetime: new Date('2022-01-01T00:00:00.000Z'),
   price: 50,
-  category: category,
+  category: '',
   tags: [],
   specialDiscounts: 10,
   bookingOpen: true,
@@ -76,7 +76,9 @@ describe('Itinerary tests', () => {
 
     it('should respond with created (201) for creating an itinerary successfully', async () => {
       const newTag = await request(app).post('/api/tags').send(tag);
+      const newCategory = await request(app).post('/api/categories').send(category);
 
+      activity.category = newCategory.body.data.categoryId;
       activity.tags.push(newTag.body.data.tagId);
       const newActivity = await request(app).post('/api/activities').send(activity);
 
