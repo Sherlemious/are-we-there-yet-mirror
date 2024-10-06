@@ -1,9 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { ModalRef } from './modal';
 import defaultPhoto from '../assets/defaultPhoto.png';
+import { Museum } from '../types/museum';
 
 interface MuseumFormProps {
   onSubmit?: (museumData: MuseumFormData) => void;
+  onUpdate?: (museumData: Museum) => void;
+  selectedMuseum?: Museum;
   addModalRef: React.RefObject<ModalRef>;
   initialData?: MuseumFormData;
 }
@@ -27,7 +30,7 @@ export interface MuseumFormData {
   };
 }
 
-const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialData }) => {
+const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMuseum, addModalRef, initialData }) => {
   const [formData, setFormData] = useState<Omit<MuseumFormData, 'pictures'>>( initialData || {
     name: '',
     description: '',
@@ -35,8 +38,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialD
     tags: [''],
     location: {
       name: '',
-      latitude: 0,
-      longitude: 0,
+      latitude: 40.712776,
+      longitude: -74.005974,
     },
     opening_hours: '',
     ticket_prices: {
@@ -52,12 +55,31 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialD
   const [imageIndex, setImageIndex] = useState(0); // State to keep track of the current image index
 
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  
+    if (name === 'location') {
+      setFormData((prevData) => ({
+        ...prevData,
+        location: {
+          ...prevData.location,
+          name: value,
+        },
+      }));
+      setFormData((prevData) => ({
+        ...prevData,
+        location: {
+          ...prevData.location,
+          latitude: 40.712776,
+          longitude: -74.005974, // Update longitude
+        },
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,10 +137,24 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialD
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formDataWithAttachments = { ...formData, pictures: pictures, };
+    const formDataWithAttachments = { ...formData, pictures: [], };
 
     if (onSubmit) {
       onSubmit(formDataWithAttachments);
+    }
+    if(onUpdate){
+      const museum : Museum = {
+        _id: selectedMuseum?._id || '', 
+        name: formData.name,
+        description: formData.description,
+        category: formData.category,
+        tags: formData.tags,
+        pictures: [],
+        location: formData.location,
+        opening_hours: formData.opening_hours,
+        ticket_prices: formData.ticket_prices,
+      }
+      onUpdate(museum);
     }
     addModalRef.current?.close();
   };
@@ -161,7 +197,6 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialD
   //     fileInputRef.current.value = ''; // Reset the file input field
   //   }
   // };
-
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 w-7/8 mx-auto mt-4">
       {/* Left Side */}
@@ -268,6 +303,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialD
       <div className="col-span-1 flex flex-col"> {/* Centering the column */}
         {/* Picture Upload */}
         <div>
+        <label htmlFor="pictures" className="mb-2 block">Upload Pictures</label>
           <img 
             src={imagePreview} 
             alt="Preview" 
@@ -275,7 +311,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialD
           />
           {/* Conditionally render arrows if multiple pictures are uploaded */}
           {pictures.length > 1 && (
-            <div className="flex justify-between mb-2">
+            <div className="flex justify-between mb-3">
               <span 
                 onClick={() => handleImageToggle('prev')} 
                 className="cursor-pointer text-gray-500 hover:text-black"
@@ -290,7 +326,6 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialD
               </span>
             </div>
           )}
-          <label htmlFor="pictures" className="mb-2 block">Upload Pictures</label>
           <input
             type="file"
             multiple
@@ -334,9 +369,9 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, addModalRef, initialD
       </div>
   
       {/* Submit Button (Full width) */}
-      <div className="col-span-2 flex justify-center">
-        <button type="submit" className={`${styles.button} w-1/2 p-4`}>
-          Submit
+      <div className="col-span-2 flex justify-end">
+        <button type="submit" className={`${styles.button} w-1/4 p-4`}>
+        {initialData?.name ? 'Update' : 'submit'}
         </button>
       </div>
     </form>

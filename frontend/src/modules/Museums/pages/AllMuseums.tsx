@@ -17,11 +17,12 @@ const AllMuseums = () => {
   const handleCreate = async (museumData: MuseumFormData) => {
     const museum = {
         name: museumData.name,
+        created_by: "6702aaa50ea778191df3cd5b",
         description: museumData.description,
         category: museumData.category,
         tags: museumData.tags,
-        pictures: museumData.pictures,
-        location: museumData.location,
+        pictures: [],
+        location: museumData.location,  
         opening_hours: museumData.opening_hours,
         ticket_prices: {
           foreigner: museumData.ticket_prices.foreigner,
@@ -37,11 +38,12 @@ const AllMuseums = () => {
   const handleEdit = async (museumData: Museum) => {
     const museum = {
         _id: museumData._id,
+        created_by: "6702aaa50ea778191df3cd5b",
         name: museumData.name,
         description: museumData.description,
         category: museumData.category,
         tags: museumData.tags,
-        pictures: museumData.pictures,
+        pictures: [],
         location: museumData.location,
         opening_hours: museumData.opening_hours,
         ticket_prices: {
@@ -50,6 +52,7 @@ const AllMuseums = () => {
           student: museumData.ticket_prices.student,
         }
   } 
+  console.log(JSON.stringify(museum));
     await updateMuseum(museum._id, museum);
     const Museums = await getMuseums();
     setMuseums(Museums);

@@ -32,7 +32,8 @@ export const deleteMuseum = async (museumId: string): Promise<void> => {
 
 export const updateMuseum = async (museumId: string, museumData: Museum): Promise<Museum> => {
   try {
-    const response = await axios.patch<{ data: { museum: Museum } }>(`${API_URL}/museums/${museumId}`, museumData);
+    const response = await axios.put<{ data: { museum: Museum } }>(`${API_URL}/museums/${museumId}`, museumData);
+    console.log(response.data.data.museum);
     return response.data.data.museum;
   } catch (error) {
     console.log('Error not working');
@@ -46,7 +47,7 @@ export const updateMuseum = async (museumId: string, museumData: Museum): Promis
 
 export const getMuseums = async (): Promise<Museum[]> => {
   try {
-    const response = await axios.get<{ data: { museums: Museum[] } }>(`${API_URL}/museums`);
+    const response = await axios.get<{ data: { museums: Museum[] } }>(`${API_URL}/museums/created_by/6702aaa50ea778191df3cd5b`);
     return response.data.data.museums;
   } catch (error) {
     console.log('Error not working');
