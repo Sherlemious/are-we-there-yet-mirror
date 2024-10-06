@@ -22,11 +22,11 @@ export interface UserType {
 
   // Tour guide
   years_of_experience?: number;
-  previous_work?: string;
+  previous_work?: [string];
   // Advertiser
   website?: string;
   hotline?: string;
-  company_profile?: string;
+  company_profile?: [string];
   // Seller
   description?: string;
   // Tourist

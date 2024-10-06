@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
     },
     previous_work: {
-      type: String,
+      type: [String],
     },
     website: {
       type: String,
@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     company_profile: {
-      type: String,
+      type: [String],
     },
     name: {
       type: String,
