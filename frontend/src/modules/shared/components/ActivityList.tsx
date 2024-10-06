@@ -82,6 +82,10 @@ function useGetMyActivities() {
             bookingOpen,
           };
         });
+
+        // sort on price
+        tempData.sort((a, b) => a.price - b.price);
+
         // set the data
         setData(tempData);
         setLoading(false);
@@ -119,6 +123,7 @@ export function ActivityList() {
   // handle the search
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredData, setFilteredData] = useState<Activity[]>([]);
+
   useEffect(() => {
     setFilteredData(
       data.filter((item) => {
@@ -130,7 +135,6 @@ export function ActivityList() {
       })
     );
   }, [searchQuery, data]);
-
   return (
     <div className="flex flex-col gap-8 p-8">
       {/* tool bar */}

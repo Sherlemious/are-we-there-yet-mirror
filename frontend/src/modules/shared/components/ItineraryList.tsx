@@ -59,9 +59,12 @@ function useGetMyItineraries() {
           const accessibilities = item.accessibility;
           const pickupLocation = item.pick_up_location.name;
           const dropoffLocation = item.drop_off_location.name;
+          const rating = Math.floor(Math.random() * 5) + 1; // TODO: replace with actual rating
+
           return {
             name,
             category,
+            rating,
             tags,
             activities,
             language,
@@ -72,6 +75,9 @@ function useGetMyItineraries() {
             dropoffLocation,
           };
         });
+
+        // sort the data on rating
+        tempData.sort((a, b) => b.rating - a.rating);
 
         // set the data
         setData(tempData);
@@ -192,6 +198,10 @@ function ItineraryModal({ itinerary, onClose }: { itinerary: Itinerary; onClose:
               <div>
                 <div className="font-bold text-lg">Tags</div>
                 <div>{itinerary.tags.join(', ')}</div>
+              </div>
+              <div>
+                <div className="font-bold text-lg">Rating</div>
+                <div>{itinerary.rating}/5</div>
               </div>
               <div>
                 <div className="font-bold text-lg">Accessibilities</div>
