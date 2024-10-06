@@ -8,6 +8,7 @@ export enum accountType {
 }
 
 export interface UserType {
+  _id: string;
   password: string;
   username: string;
   accountType: accountType;
@@ -20,14 +21,14 @@ export interface UserType {
   accepted?: boolean;
 
   // Tour guide
-  years_of_experience: number;
-  previous_work: string;
+  years_of_experience?: number;
+  previous_work?: string;
   // Advertiser
-  website: string;
-  hotline: string;
-  company_profile: string;
+  website?: string;
+  hotline?: string;
+  company_profile?: string;
   // Seller
-  description: string;
+  description?: string;
   // Tourist
-  wallet: number;
+  wallet?: number;
 }
