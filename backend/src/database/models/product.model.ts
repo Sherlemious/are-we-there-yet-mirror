@@ -23,10 +23,12 @@ const productSchema = new Schema(
     reviews: {
       type: [reviewSchema],
     },
+    average_rating: {
+      type: Number,
+    },
     seller: {
       type: Schema.Types.ObjectId,
       ref: 'user',
-      required: true,
     },
     tags: {
       type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],

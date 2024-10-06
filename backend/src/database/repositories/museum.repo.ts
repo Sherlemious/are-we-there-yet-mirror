@@ -32,6 +32,10 @@ class MuseumRepo {
     Validator.validateId(id, 'Invalid museum ID');
     return await Museum.deleteOne({ _id: new ObjectId(id) });
   }
+
+  async getMuseumsByCreator(creator: string) {
+    return await Museum.find({ created_by: creator });
+  }
 }
 
 export default new MuseumRepo();

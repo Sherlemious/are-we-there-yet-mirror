@@ -11,3 +11,8 @@ export interface ActivityType {
   specialDiscounts: Number;
   bookingOpen: boolean;
 }
+
+export interface ActivityRefType {
+  activity: string;
+  duration: number;
+}

@@ -8,8 +8,8 @@ class UserRepository {
     return await User.find();
   }
 
-  async findUserById(id: string) {
-    return await User.find({ _id: new ObjectId(id) });
+  async findUserById(id: string): Promise<UserType | null> {
+    return await User.findById({ _id: new ObjectId(id) });
   }
 
   async createUser(user: UserType) {

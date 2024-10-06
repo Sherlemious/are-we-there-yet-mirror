@@ -27,6 +27,15 @@ class ItineraryRepo {
     Validator.validateId(id, 'Invalid itinerary ID');
     return await Itinerary.deleteOne({ _id: new ObjectId(id) });
   }
+
+  async filterItineraries(query: any) {
+    return await Itinerary.find(query).populate('tags');
+  }
+
+  async getItinerariesByCreator(creator: string) {
+    return await Itinerary.find({ created_by: creator });
+  }
+
 }
 
 export default new ItineraryRepo();

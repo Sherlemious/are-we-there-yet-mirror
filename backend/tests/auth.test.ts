@@ -34,11 +34,11 @@ describe('Authentication Tests', () => {
 
     it('should respond with ok (200) for registering successfully', async () => {
       newUser.email += Math.random();
+      newUser.username += Math.random();
       const response = await request(app).post('/api/auth/register').send(newUser);
       expect(response.status).toBe(ResponseStatusCodes.OK);
       expect(response.body.data).toMatchObject({
-        userId: expect.anything(),
-        jwt: null,
+        jwt: expect.any(String),
       });
     });
   });

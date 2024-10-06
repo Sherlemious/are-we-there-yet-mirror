@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 import { Activity } from '../models/activity.model';
-import { getTagIds } from '../models/tag.model';
 import { ActivityType } from '../../types/Activity.types';
 import Validator from '../../utils/Validator.utils';
 
@@ -27,6 +26,10 @@ class ActivityRepo {
   async getAllActivities(attributeName?: string, attributeValue?: RegExp | string) {
     const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
     return await Activity.find(query).populate('tags');
+  }
+
+  async getActivitiesByCreator(creator: string) {
+    return await Activity.find({ created_by: creator });
   }
 }
 
