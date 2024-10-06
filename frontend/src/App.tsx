@@ -5,9 +5,11 @@ import { generalSettingAction } from './modules/TourGuide/App';
 import { AdvertiserProfile } from './modules/Advertiser/App';
 import { SellerProfile } from './modules/Seller/App';
 import { AllMuseums } from './modules/Museums/App';
+import { MapTest } from './modules/shared/utils/map';
 
 const BrowserRouter = createBrowserRouter([
   { path: '/', element: <RootLayout />, children: [] },
+  { path: '/map', element: <MapTest /> },
   {
     path: '/tour-guide-profile',
     element: <TourGuideProfile />,
