@@ -252,17 +252,45 @@ export function MuseumList() {
   const { data, loading, error } = useGetMuseums();
   console.log(data);
 
+  // handle the search
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filteredData, setFilteredData] = useState<Activity[]>([]);
+  useEffect(() => {
+    setFilteredData(
+      data.filter((item) => {
+        const matchesSearchQuery =
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesSearchQuery;
+      })
+    );
+  }, [searchQuery, data]);
+
   return (
     <>
       {loading && <div className="text-center text-2xl font-bold">Loading...</div>}
       {error && <div className="text-center text-2xl font-bold">{error}</div>}
       {!loading && !error && (
         <>
+          {/* tool bar */}
+          <div className="p-4 grid grid-cols-2 gap-8">
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full h-full border-black border-2 p-4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <div className="border-black border-2 p-4"></div>
+          </div>
+          {/* body */}
           <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
-            {data.map((Museum, index) => (
+            {filteredData.map((Museum, index) => (
               <MuseumCard Museum={Museum} key={index} onCardClick={() => handleCardClick(Museum)} />
             ))}
           </div>
+          {/* modal */}
           {selectedMuseum && <MuseumModal Museum={selectedMuseum} onClose={handleCloseModal} />}
         </>
       )}

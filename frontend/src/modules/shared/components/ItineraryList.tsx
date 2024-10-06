@@ -186,6 +186,14 @@ function ItineraryModal({ itinerary, onClose }: { itinerary: Itinerary; onClose:
                 <div>{itinerary.pickupLocation}</div>
               </div>
               <div>
+                <div className="font-bold text-lg">Category</div>
+                <div>{itinerary.category}</div>
+              </div>
+              <div>
+                <div className="font-bold text-lg">Tags</div>
+                <div>{itinerary.tags.join(', ')}</div>
+              </div>
+              <div>
                 <div className="font-bold text-lg">Accessibilities</div>
                 <div>{itinerary.accessibilities ? 'Yes' : 'No'}</div>
               </div>
@@ -282,17 +290,45 @@ export function ItineraryList() {
   // get the data
   const { data, loading, error } = useGetMyItineraries();
 
+  // handle the search
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filteredData, setFilteredData] = useState<Activity[]>([]);
+  useEffect(() => {
+    setFilteredData(
+      data.filter((item) => {
+        const matchesSearchQuery =
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesSearchQuery;
+      })
+    );
+  }, [searchQuery, data]);
+
   return (
     <>
       {loading && <div className="text-center text-2xl font-bold">Loading...</div>}
       {error && <div className="text-center text-2xl font-bold text-red-500">{error}</div>}
       {!loading && !error && (
         <>
+          {/* tool bar */}
+          <div className="p-4 grid grid-cols-2 gap-8">
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full h-full border-black border-2 p-4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <div className="border-black border-2 p-4"></div>
+          </div>
+          {/* body */}
           <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
-            {data.map((itinerary, index) => (
+            {filteredData.map((itinerary, index) => (
               <ItineraryCard itinerary={itinerary} key={index} onCardClick={() => handleCardClick(itinerary)} />
             ))}
           </div>
+          {/* modal */}
           {selectedItinerary && <ItineraryModal itinerary={selectedItinerary} onClose={handleCloseModal} />};
         </>
       )}
