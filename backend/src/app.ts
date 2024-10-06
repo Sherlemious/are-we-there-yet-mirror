@@ -14,7 +14,7 @@ app.use(cors()); // Enable CORS
 // Middleware
 app.use(express.json());
 app.use(logHttpRequests);
-app.use(authenticateUnlessOpen);
+// app.use(authenticateUnlessOpen);
 app.use('/api', routes);
 
 // MongoDB connection
