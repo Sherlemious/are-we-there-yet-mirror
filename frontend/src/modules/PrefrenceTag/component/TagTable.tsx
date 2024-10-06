@@ -1,12 +1,21 @@
 import { Pencil, X } from 'lucide-react';
 import { prefrenceTag } from '../types/PrefrenceTag';
+import { AddTagPopup } from './popup';
 
 interface TagTableProps {
   Tags: prefrenceTag[];
   onDeleteTag: (id: string) => void;
 }
 
-function TagTable({ Tags, onDeleteTag }: TagTableProps) {
+function TagTable({
+  Tags,
+  onDeleteTag,
+  isTagPopupOpen2,
+  setIsTagPopupOpen2,
+}: TagTableProps & {
+  isTagPopupOpen2: boolean;
+  setIsTagPopupOpen2: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   return (
     <div className=" mx-auto max-w-3xl p-4">
       <div className="rounded-md border p-4">
@@ -26,8 +35,15 @@ function TagTable({ Tags, onDeleteTag }: TagTableProps) {
               <div className="col-span-4">{Tag.historical_period}</div>
               <div className="col-span-2 flex justify-end">
                 <button className="text-gray-600 hover:text-gray-800">
-                  <Pencil size={20} />
+                  <Pencil onClick={() => setIsTagPopupOpen2(true)} size={20} />
                 </button>
+                <AddTagPopup
+                  _id={Tag._id}
+                  isOpen={isTagPopupOpen2}
+                  onClose={() => setIsTagPopupOpen2(false)}
+                  title="Update a Preference Tag"
+                  isHeader={false}
+                />
                 <button
                   onClick={() => onDeleteTag(Tag._id)} // Delete based on _id
                   className="text-gray-600 hover:text-gray-800"

@@ -7,5 +7,5 @@ export interface Activity {
   category: string;    // The category of the profile
   tags: string;        // The tags of the profile
   specialDiscount: string; // The special discount of the profile
-  booking: string;     // The booking of the profile
+  bookingOpen: string;     // The booking of the profile
 }

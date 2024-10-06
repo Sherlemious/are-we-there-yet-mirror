@@ -1,8 +1,10 @@
-import { useState } from 'react';
 import { AddTagPopup, OpenPopupButton } from './popup';
 
-const Header = () => {
-  const [isTagPopupOpen, setIsTagPopupOpen] = useState(false);
+const Header = ({isTagPopupOpen,setIsTagPopupOpen ,setTags}:{
+  isTagPopupOpen:boolean,
+  setIsTagPopupOpen:React.Dispatch<React.SetStateAction<boolean>>
+  setTags:React.Dispatch<React.SetStateAction<any[]>>
+}) => {
 
   // Function to add an Tag
   const addTag = async (name:string ,type:string ,historical_period:string) => {
@@ -18,14 +20,28 @@ const Header = () => {
       if (!response.ok) {
         throw new Error('Failed to add tag');
       }
+      
 
       const newTag = await response.json();
       console.log('Tag added:', newTag); // Log the added user
       // Optionally, you can trigger a state update or callback to refresh the user list
+      const tagId = newTag.data.tagId;
+      const tag = await getTag(tagId);
+      // console.log('Tag:', tag); // Log the added user
+      setTags((prevTags) => [...prevTags, { _id:tag._id,name:tag.name, type:tag.type, historical_period:tag.historical_period }]);
     } catch (error) {
       console.error('Error adding tag:', error);
     }
   };
+ async function getTag(id:string){
+    return(
+    fetch(`https://are-we-there-yet-mirror.onrender.com/api/tags/${id}`)
+    .then(response => response.json())
+    .then(data =>data.data.tag[0]
+    )
+    )
+  }
+  
 
   const handleAddTag = (name:string,historical_period:string) => {
     addTag(name,"Preference",historical_period);
@@ -52,6 +68,7 @@ const Header = () => {
             onClose={() => setIsTagPopupOpen(false)}
             onAdd={handleAddTag}
             title="Add a Preference Tag"
+            isHeader={true}
           />
         </div>
       </div>

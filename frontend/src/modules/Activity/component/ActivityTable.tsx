@@ -29,24 +29,26 @@ function ActivityTable({ Activities, onDeleteActivity }: ActivityTableProps) {
       <div className="rounded-md border p-4">
         <div className="mb-4 rounded-md border">
           <div className="grid grid-cols-12 bg-gray-100 p-3 font-semibold">
-            <div className="col-span-3">Date</div>
+            <div className="col-span-2">Date</div>
             <div className="col-span-1">Time</div>
-            {/* <div className="col-span-2">Location</div> */}
+            <div className="col-span-2">Location</div>
             <div className="col-span-1">Price</div>
-            <div className="col-span-2">Category</div>
+            <div className="col-span-1">Category</div>
             {/* <div className="col-span-2">Tags</div> */}
             <div className="col-span-2">Special Discount</div>
             <div className="col-span-2 flex justify-end">Actions</div>
           </div>
         </div>
-        {Activities.map((Activity, index) => (
+        {/* {Tags.filter((Tag) => Tag.type === 'Preference').map((Tag) => ( */}
+        {/* {Activities.map((Activity, index) => ( */}
+        {Activities.filter((Activity) => Activity.bookingOpen).map((Activity) => (
           <div key={Activity._id} className="mb-2 rounded-md border last:mb-0">
             <div className="grid grid-cols-12 items-center p-3">
-              <div className="col-span-3">{formatDate(Activity.date)}</div>
+              <div className="col-span-2">{formatDate(Activity.date)}</div>
               <div className="col-span-1">{Activity.time}</div>
               {/* <div className="col-span-2">{Activity.location}</div> */}
               <div className="col-span-1">{Activity.price}</div>
-              <div className="col-span-2">{Activity.category}</div>
+              <div className="col-span-1">{Activity.category}</div>
               {/* <div className="col-span-2">{Activity.tags}</div> */}
               <div className="col-span-2">{Activity.specialDiscount}</div>
               <div className="col-span-2 flex justify-end">

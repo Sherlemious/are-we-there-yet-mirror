@@ -11,7 +11,7 @@ interface AddActivityProps {
     category: string,
     tags: string,
     specialDiscount: string,
-    booking: string
+    bookingOpen: string
   ) => void;
   title: string;
 }
@@ -24,7 +24,7 @@ const AddActivityPopup: React.FC<AddActivityProps> = ({ isOpen, onClose, onAdd, 
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [specialDiscount, setSpecialDiscount] = useState('');
-  const [booking, setBooking] = useState('');
+  const [bookingOpen, setBookingOpen] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -36,15 +36,15 @@ const AddActivityPopup: React.FC<AddActivityProps> = ({ isOpen, onClose, onAdd, 
         category.trim() !== '' &&
         tags.trim() !== '' &&
         specialDiscount.trim() !== '' &&
-        booking.trim() !== ''
+        bookingOpen.trim() !== ''
     );
-  }, [date, time, location, price, category, tags, specialDiscount, booking]);
+  }, [date, time, location, price, category, tags, specialDiscount, bookingOpen]);
 
   if (!isOpen) return null;
 
   const handleButtonClick = () => {
     if (isFormValid) {
-      onAdd(date, time, location, price, category, tags, specialDiscount, booking);
+      onAdd(date, time, location, price, category, tags, specialDiscount, bookingOpen);
       setDate('');
       setTime('');
       setLocation('');
@@ -52,7 +52,7 @@ const AddActivityPopup: React.FC<AddActivityProps> = ({ isOpen, onClose, onAdd, 
       setCategory('');
       setTags('');
       setSpecialDiscount('');
-      setBooking('');
+      setBookingOpen('');
     }
     onClose();
   };
@@ -112,10 +112,10 @@ const AddActivityPopup: React.FC<AddActivityProps> = ({ isOpen, onClose, onAdd, 
         />
         <input
           type="Boolean"
-          placeholder="Booking"
+          placeholder="BookingOpen"
           className="mb-4 w-full rounded border border-gray-300 px-3 py-2"
-          value={booking}
-          onChange={(e) => setBooking(e.target.value)}
+          value={bookingOpen}
+          onChange={(e) => setBookingOpen(e.target.value)}
         />
         <div className="flex justify-center">
           <button

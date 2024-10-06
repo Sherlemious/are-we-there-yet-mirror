@@ -6,13 +6,15 @@ import Header from '../component/Header';
 
 const Dashboard = () => {
   const [Tags, setTags] = useState<prefrenceTag[]>([]);
+  const [isTagPopupOpen, setIsTagPopupOpen] = useState(false);
+  const [isTagPopupOpen2, setIsTagPopupOpen2] = useState(false);
 
   // Fetch profiles (GET request)
   const fetchTags = async () => {
     try {
       const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/tags');
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setTags(data.data.tags);
     } catch (error) {
       console.error('Error fetching tags:', error);
@@ -40,6 +42,7 @@ const Dashboard = () => {
       console.error('Error deleting tag:', error);
     }
   };
+   
 
   useEffect(() => {
     fetchTags(); // Fetch profiles when the component mounts
@@ -47,8 +50,8 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto">
-      <Header />
-      <TagTable Tags={Tags} onDeleteTag={handleDeleteTag} />
+      <Header setIsTagPopupOpen={setIsTagPopupOpen} isTagPopupOpen={isTagPopupOpen} setTags={setTags}/>
+      <TagTable Tags={Tags} onDeleteTag={handleDeleteTag} setIsTagPopupOpen2={setIsTagPopupOpen2} isTagPopupOpen2={isTagPopupOpen2} />
       {/* <ProfileForm onAddProfile={handleAddProfile} /> */}
     </div>
   );

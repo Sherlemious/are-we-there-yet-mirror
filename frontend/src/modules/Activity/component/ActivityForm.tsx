@@ -13,7 +13,7 @@ const ActivityForm = ({ onAddActivity }: ActivityFormProps) => {
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [specialDiscount, setSpecialDiscount] = useState('');
-  const [booking, setBooking] = useState('');
+  const [bookingOpen, setBookingOpen] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,8 +27,8 @@ const ActivityForm = ({ onAddActivity }: ActivityFormProps) => {
       category,
       tags,
       specialDiscount,
-      booking,
-      _id: ''
+      bookingOpen,
+      _id: '',
     };
 
     try {
@@ -55,8 +55,7 @@ const ActivityForm = ({ onAddActivity }: ActivityFormProps) => {
         setCategory('');
         setTags('');
         setSpecialDiscount('');
-        setBooking('');
-        
+        setBookingOpen('');
       } else {
         console.error('Error adding activity:', response.statusText);
       }

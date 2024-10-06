@@ -5,14 +5,23 @@ const Header = () => {
   const [isActivityPopupOpen, setIsActivityPopupOpen] = useState(false);
 
   // Function to add an activity
-  const addActivity = async (date: string, time: string, location: string, price:string, category: string ,tags:string ,specialDiscount:string ,booking:string) => {
+  const addActivity = async (
+    date: string,
+    time: string,
+    location: string,
+    price: string,
+    category: string,
+    tags: string,
+    specialDiscount: string,
+    bookingOpen: string
+  ) => {
     try {
       const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/activities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ date, time, location, price, category,tags,specialDiscount,booking }),
+        body: JSON.stringify({ date, time, location, price, category, tags, specialDiscount, bookingOpen }),
       });
 
       if (!response.ok) {
@@ -27,12 +36,19 @@ const Header = () => {
     }
   };
 
-  const handleAddActivity = (date: string, time: string, location: string, price:string, category: string ,tags:string ,specialDiscount:string ,booking:string) => {
-    addActivity(date, time, location, price, category,tags,specialDiscount,booking);
+  const handleAddActivity = (
+    date: string,
+    time: string,
+    location: string,
+    price: string,
+    category: string,
+    tags: string,
+    specialDiscount: string,
+    bookingOpen: string
+  ) => {
+    addActivity(date, time, location, price, category, tags, specialDiscount, bookingOpen);
     setIsActivityPopupOpen(false); // Close the popup after adding
   };
-
-
 
   return (
     <header className="flex items-center justify-between bg-gray-100 p-4">
@@ -43,7 +59,9 @@ const Header = () => {
         </div>
       </div>
       <div className="h-1/2 max-w-fit border-2 border-gray-300 p-14">
-        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">Add an Activity</h3>
+        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">
+          Add an Activity
+        </h3>
         <div className="flex space-x-4">
           <OpenPopupButton onClick={() => setIsActivityPopupOpen(true)}>Add Activity</OpenPopupButton>
 
