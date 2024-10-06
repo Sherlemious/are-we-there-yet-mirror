@@ -70,7 +70,6 @@ function useGetMyActivities() {
         // set the data
         setData(tempData);
         setLoading(false);
-        console.log(tempData);
       } catch (error) {
         setError(error.message);
         setLoading(false);

@@ -1,561 +1,102 @@
 import { useState, useEffect } from 'react';
 
-// data
-interface Activity {
-  date: string;
-  time: string;
-  location: string;
-  price: string;
-  category: string;
-  tags: string[];
-  discount: string;
-  bookingOpen: boolean;
+function useGetMyItineraries() {
+  // init some states
+  const [data, setData] = useState<Itinerary[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // fetch the data
+  useEffect(() => {
+    const runner = async () => {
+      // init the url
+      const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
+      const url = `${baseUrl}/itineraries/get/`;
+
+      // main logic
+      try {
+        // fetch the data
+        const response = await fetch(url, {
+          method: 'GET',
+        });
+
+        // check if the response is ok
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        // parse the response
+        const parsedData = await response.json();
+
+        // format the data
+        const tempData: Itinerary[] = await parsedData.data.itineraries.map((item) => {
+          const name = item.name === null ? 'N/A' : item.name;
+          const category = item.category === null ? 'N/A' : item.category;
+          const tags = item.tags === null ? [] : item.tags.map((tag) => tag.name);
+          let activities = [];
+          activities = item.activities.map((activity) => {
+            if (activity.activity === null) {
+              return {
+                date: 'N/A',
+                time: 'N/A',
+                location: 'N/A',
+                price: 0,
+              };
+            }
+            return {
+              date: activity.activity.date,
+              time: activity.activity.time,
+              location: activity.activity.location.name,
+              price: activity.price,
+            };
+          });
+          const language = item.language === null ? 'N/A' : item.language;
+          const price = item.price === null ? 'N/A' : item.price;
+          const availableDateTimes = item.available_datetimes.map((date: string) => ({
+            date: date,
+            time: date,
+          }));
+          const accessibilities = item.accessibility;
+          const pickupLocation = item.pick_up_location.name;
+          const dropoffLocation = item.drop_off_location.name;
+          return {
+            name,
+            category,
+            tags,
+            activities,
+            language,
+            price,
+            availableDateTimes,
+            accessibilities,
+            pickupLocation,
+            dropoffLocation,
+          };
+        });
+
+        // set the data
+        setData(tempData);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+    runner();
+  }, []);
+
+  return { data, loading, error };
 }
-
-const activities: Activity[] = [
-  {
-    date: '2021/09/01',
-    time: '10:00',
-    location: 'Cairo, Egypt',
-    price: '100',
-    category: 'Sport',
-    tags: ['football', 'soccer'],
-    discount: '10%',
-    bookingOpen: true,
-  },
-  {
-    date: '2021/10/05',
-    time: '14:00',
-    location: 'London, UK',
-    price: '150',
-    category: 'Concert',
-    tags: ['music', 'live'],
-    discount: '15%',
-    bookingOpen: false,
-  },
-  {
-    date: '2021/11/12',
-    time: '18:30',
-    location: 'Paris, France',
-    price: '200',
-    category: 'Theater',
-    tags: ['drama', 'performance'],
-    discount: '20%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/01/15',
-    time: '09:00',
-    location: 'New York, USA',
-    price: '120',
-    category: 'Workshop',
-    tags: ['art', 'painting'],
-    discount: '5%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/03/20',
-    time: '16:00',
-    location: 'Tokyo, Japan',
-    price: '300',
-    category: 'Festival',
-    tags: ['culture', 'food'],
-    discount: '25%',
-    bookingOpen: false,
-  },
-  {
-    date: '2022/05/10',
-    time: '11:00',
-    location: 'Sydney, Australia',
-    price: '180',
-    category: 'Exhibition',
-    tags: ['art', 'sculpture'],
-    discount: '0%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/07/08',
-    time: '20:00',
-    location: 'Berlin, Germany',
-    price: '250',
-    category: 'Sport',
-    tags: ['tennis', 'competition'],
-    discount: '10%',
-    bookingOpen: false,
-  },
-  {
-    date: '2022/08/12',
-    time: '13:30',
-    location: 'Dubai, UAE',
-    price: '220',
-    category: 'Conference',
-    tags: ['tech', 'innovation'],
-    discount: '30%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/10/25',
-    time: '17:00',
-    location: 'Rome, Italy',
-    price: '170',
-    category: 'Food & Drink',
-    tags: ['wine', 'tasting'],
-    discount: '12%',
-    bookingOpen: true,
-  },
-  {
-    date: '2022/12/05',
-    time: '15:00',
-    location: 'Bangkok, Thailand',
-    price: '90',
-    category: 'Tour',
-    tags: ['sightseeing', 'adventure'],
-    discount: '20%',
-    bookingOpen: false,
-  },
-];
-
-interface Itinerary {
-  name: string;
-  category: string;
-  tags: string[];
-  activities: Activity[];
-  language: string;
-  price: string;
-  availableDateTimes: {
-    date: string;
-    time: string;
-  }[];
-  accessibilities: boolean;
-  pickupLocation: string;
-  dropoffLocation: string;
-}
-
-const data: Itinerary[] = [
-  {
-    name: 'Itinerary 1',
-    category: 'Sport',
-    tags: ['football', 'soccer'],
-    activities: [activities[0], activities[1], activities[2]],
-    language: 'English',
-    price: '450',
-    availableDateTimes: [
-      {
-        date: '2021/09/01',
-        time: '10:00',
-      },
-      {
-        date: '2021/10/05',
-        time: '14:00',
-      },
-      {
-        date: '2021/11/12',
-        time: '18:30',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Cairo International Airport',
-    dropoffLocation: 'Cairo International Airport',
-  },
-  {
-    name: 'Itinerary 2',
-    category: 'Workshop',
-    tags: ['art', 'painting'],
-    activities: [],
-    language: 'English',
-    price: '300',
-    availableDateTimes: [
-      {
-        date: '2022/01/15',
-        time: '09:00',
-      },
-      {
-        date: '2022/05/10',
-        time: '11:00',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'JFK Airport',
-    dropoffLocation: 'Times Square',
-  },
-  {
-    name: 'Itinerary 3',
-    category: 'Festival',
-    tags: ['culture', 'food'],
-    activities: [activities[4], activities[6]],
-    language: 'Japanese',
-    price: '550',
-    availableDateTimes: [
-      {
-        date: '2022/03/20',
-        time: '16:00',
-      },
-      {
-        date: '2022/07/08',
-        time: '20:00',
-      },
-    ],
-    accessibilities: false,
-    pickupLocation: 'Tokyo Narita Airport',
-    dropoffLocation: 'Shibuya Crossing',
-  },
-  {
-    name: 'Itinerary 4',
-    category: 'Conference',
-    tags: ['tech', 'innovation'],
-    activities: [activities[7]],
-    language: 'English',
-    price: '700',
-    availableDateTimes: [
-      {
-        date: '2022/08/12',
-        time: '13:30',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Dubai International Airport',
-    dropoffLocation: 'Dubai Mall',
-  },
-  {
-    name: 'Itinerary 5',
-    category: 'Food & Drink',
-    tags: ['wine', 'tasting'],
-    activities: [activities[8], activities[9]],
-    language: 'Italian',
-    price: '400',
-    availableDateTimes: [
-      {
-        date: '2022/10/25',
-        time: '17:00',
-      },
-      {
-        date: '2022/12/05',
-        time: '15:00',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Rome Fiumicino Airport',
-    dropoffLocation: 'Colosseum',
-  },
-  {
-    name: 'Itinerary 1',
-    category: 'Sport',
-    tags: ['football', 'soccer'],
-    activities: [activities[0], activities[1], activities[2]],
-    language: 'English',
-    price: '450',
-    availableDateTimes: [
-      {
-        date: '2021/09/01',
-        time: '10:00',
-      },
-      {
-        date: '2021/10/05',
-        time: '14:00',
-      },
-      {
-        date: '2021/11/12',
-        time: '18:30',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Cairo International Airport',
-    dropoffLocation: 'Cairo International Airport',
-  },
-  {
-    name: 'Itinerary 2',
-    category: 'Workshop',
-    tags: ['art', 'painting'],
-    activities: [activities[3], activities[5]],
-    language: 'English',
-    price: '300',
-    availableDateTimes: [
-      {
-        date: '2022/01/15',
-        time: '09:00',
-      },
-      {
-        date: '2022/05/10',
-        time: '11:00',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'JFK Airport',
-    dropoffLocation: 'Times Square',
-  },
-  {
-    name: 'Itinerary 3',
-    category: 'Festival',
-    tags: ['culture', 'food'],
-    activities: [activities[4], activities[6]],
-    language: 'Japanese',
-    price: '550',
-    availableDateTimes: [
-      {
-        date: '2022/03/20',
-        time: '16:00',
-      },
-      {
-        date: '2022/07/08',
-        time: '20:00',
-      },
-    ],
-    accessibilities: false,
-    pickupLocation: 'Tokyo Narita Airport',
-    dropoffLocation: 'Shibuya Crossing',
-  },
-  {
-    name: 'Itinerary 4',
-    category: 'Conference',
-    tags: ['tech', 'innovation'],
-    activities: [activities[7]],
-    language: 'English',
-    price: '700',
-    availableDateTimes: [
-      {
-        date: '2022/08/12',
-        time: '13:30',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Dubai International Airport',
-    dropoffLocation: 'Dubai Mall',
-  },
-  {
-    name: 'Itinerary 5',
-    category: 'Food & Drink',
-    tags: ['wine', 'tasting'],
-    activities: [activities[8], activities[9]],
-    language: 'Italian',
-    price: '400',
-    availableDateTimes: [
-      {
-        date: '2022/10/25',
-        time: '17:00',
-      },
-      {
-        date: '2022/12/05',
-        time: '15:00',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Rome Fiumicino Airport',
-    dropoffLocation: 'Colosseum',
-  },
-  {
-    name: 'Itinerary 1',
-    category: 'Sport',
-    tags: ['football', 'soccer'],
-    activities: [activities[0], activities[1], activities[2]],
-    language: 'English',
-    price: '450',
-    availableDateTimes: [
-      {
-        date: '2021/09/01',
-        time: '10:00',
-      },
-      {
-        date: '2021/10/05',
-        time: '14:00',
-      },
-      {
-        date: '2021/11/12',
-        time: '18:30',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Cairo International Airport',
-    dropoffLocation: 'Cairo International Airport',
-  },
-  {
-    name: 'Itinerary 2',
-    category: 'Workshop',
-    tags: ['art', 'painting'],
-    activities: [activities[3], activities[5]],
-    language: 'English',
-    price: '300',
-    availableDateTimes: [
-      {
-        date: '2022/01/15',
-        time: '09:00',
-      },
-      {
-        date: '2022/05/10',
-        time: '11:00',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'JFK Airport',
-    dropoffLocation: 'Times Square',
-  },
-  {
-    name: 'Itinerary 3',
-    category: 'Festival',
-    tags: ['culture', 'food'],
-    activities: [activities[4], activities[6]],
-    language: 'Japanese',
-    price: '550',
-    availableDateTimes: [
-      {
-        date: '2022/03/20',
-        time: '16:00',
-      },
-      {
-        date: '2022/07/08',
-        time: '20:00',
-      },
-    ],
-    accessibilities: false,
-    pickupLocation: 'Tokyo Narita Airport',
-    dropoffLocation: 'Shibuya Crossing',
-  },
-  {
-    name: 'Itinerary 4',
-    category: 'Conference',
-    tags: ['tech', 'innovation'],
-    activities: [activities[7]],
-    language: 'English',
-    price: '700',
-    availableDateTimes: [
-      {
-        date: '2022/08/12',
-        time: '13:30',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Dubai International Airport',
-    dropoffLocation: 'Dubai Mall',
-  },
-  {
-    name: 'Itinerary 5',
-    category: 'Food & Drink',
-    tags: ['wine', 'tasting'],
-    activities: [activities[8], activities[9]],
-    language: 'Italian',
-    price: '400',
-    availableDateTimes: [
-      {
-        date: '2022/10/25',
-        time: '17:00',
-      },
-      {
-        date: '2022/12/05',
-        time: '15:00',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Rome Fiumicino Airport',
-    dropoffLocation: 'Colosseum',
-  },
-  {
-    name: 'Itinerary 1',
-    category: 'Sport',
-    tags: ['football', 'soccer'],
-    activities: [activities[0], activities[1], activities[2]],
-    language: 'English',
-    price: '450',
-    availableDateTimes: [
-      {
-        date: '2021/09/01',
-        time: '10:00',
-      },
-      {
-        date: '2021/10/05',
-        time: '14:00',
-      },
-      {
-        date: '2021/11/12',
-        time: '18:30',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Cairo International Airport',
-    dropoffLocation: 'Cairo International Airport',
-  },
-  {
-    name: 'Itinerary 2',
-    category: 'Workshop',
-    tags: ['art', 'painting'],
-    activities: [activities[3], activities[5]],
-    price: '300',
-    availableDateTimes: [
-      {
-        date: '2022/01/15',
-        time: '09:00',
-      },
-      {
-        date: '2022/05/10',
-        time: '11:00',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'JFK Airport',
-    dropoffLocation: 'Times Square',
-  },
-  {
-    name: 'Itinerary 3',
-    category: 'Festival',
-    tags: ['culture', 'food'],
-    activities: [activities[4], activities[6]],
-    language: 'Japanese',
-    price: '550',
-    availableDateTimes: [
-      {
-        date: '2022/03/20',
-        time: '16:00',
-      },
-      {
-        date: '2022/07/08',
-        time: '20:00',
-      },
-    ],
-    accessibilities: false,
-    pickupLocation: 'Tokyo Narita Airport',
-    dropoffLocation: 'Shibuya Crossing',
-  },
-  {
-    name: 'Itinerary 4',
-    category: 'Conference',
-    tags: ['tech', 'innovation'],
-    activities: [activities[7]],
-    language: 'English',
-    price: '700',
-    availableDateTimes: [
-      {
-        date: '2022/08/12',
-        time: '13:30',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Dubai International Airport',
-    dropoffLocation: 'Dubai Mall',
-  },
-  {
-    name: 'Itinerary 5',
-    category: 'Food & Drink',
-    tags: ['wine', 'tasting'],
-    activities: [activities[8], activities[9]],
-    language: 'Italian',
-    price: '400',
-    availableDateTimes: [
-      {
-        date: '2022/10/25',
-        time: '17:00',
-      },
-      {
-        date: '2022/12/05',
-        time: '15:00',
-      },
-    ],
-    accessibilities: true,
-    pickupLocation: 'Rome Fiumicino Airport',
-    dropoffLocation: 'Colosseum',
-  },
-];
 
 // helper functions
 const formatDateTime = (date: string, time: string) => {
-  return `${date.split('/')[2]}/${date.split('/')[1]} ${time}`;
+  if (date === 'N/A' || time === 'N/A') {
+    return 'N/A';
+  }
+  const parsedDate = new Date(date);
+  const parsedTime = new Date(time);
+  const formattedDate = parsedDate.toLocaleDateString('en-GB');
+  const formattedTime = parsedTime.toLocaleTimeString('en-GB');
+  return `${formattedDate} ${formattedTime}`;
 };
 const formatLocation = (location: string) => {
   const maxLength = 12;
@@ -567,6 +108,16 @@ const formatLocation = (location: string) => {
 const formatActivity = (activity: Activity) => {
   return `${formatDateTime(activity.date, activity.time)} - ${formatLocation(activity.location)}`;
 };
+const formatDate = (date: string) => {
+  const parsedDate = new Date(date);
+  return parsedDate.toLocaleDateString('en-GB');
+}
+const formatTime = (time: string) => {
+  const parsedTime = new Date(time);
+  return parsedTime.toLocaleTimeString('en-GB');
+}
+
+
 
 // main components
 function ItineraryModal({ itinerary, onClose }: { itinerary: Itinerary; onClose: () => void }) {
@@ -683,8 +234,8 @@ function ItineraryModal({ itinerary, onClose }: { itinerary: Itinerary; onClose:
                   <tbody>
                     {itinerary.availableDateTimes.map((dateTime, index) => (
                       <tr key={index} className="border-b-2 text-left">
-                        <td>{dateTime.date}</td>
-                        <td>{dateTime.time}</td>
+                        <td>{formatDate(dateTime.date)}</td>
+                        <td>{formatTime(dateTime.time)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -730,14 +281,23 @@ export function ItineraryList() {
     setSelectedItinerary(null);
   };
 
+  // get the data
+  const { data, loading, error } = useGetMyItineraries();
+
   return (
     <>
-      <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
-        {data.map((itinerary, index) => (
-          <ItineraryCard itinerary={itinerary} key={index} onCardClick={() => handleCardClick(itinerary)} />
-        ))}
-      </div>
-      {selectedItinerary && <ItineraryModal itinerary={selectedItinerary} onClose={handleCloseModal} />};
+      {loading && <div className="text-center text-2xl font-bold">Loading...</div>}
+      {error && <div className="text-center text-2xl font-bold text-red-500">{error}</div>}
+      {!loading && !error && (
+        <>
+          <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
+            {data.map((itinerary, index) => (
+              <ItineraryCard itinerary={itinerary} key={index} onCardClick={() => handleCardClick(itinerary)} />
+            ))}
+          </div>
+          {selectedItinerary && <ItineraryModal itinerary={selectedItinerary} onClose={handleCloseModal} />};
+        </>
+      )}
     </>
   );
 }
