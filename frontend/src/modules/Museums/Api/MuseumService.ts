@@ -33,7 +33,6 @@ export const deleteMuseum = async (museumId: string): Promise<void> => {
 export const updateMuseum = async (museumId: string, museumData: Museum): Promise<Museum> => {
   try {
     const response = await axios.put<{ data: { museum: Museum } }>(`${API_URL}/museums/${museumId}`, museumData);
-    console.log(response.data.data.museum);
     return response.data.data.museum;
   } catch (error) {
     console.log('Error not working');

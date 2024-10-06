@@ -52,7 +52,6 @@ const AllMuseums = () => {
           student: museumData.ticket_prices.student,
         }
   } 
-  console.log(JSON.stringify(museum));
     await updateMuseum(museum._id, museum);
     const Museums = await getMuseums();
     setMuseums(Museums);
