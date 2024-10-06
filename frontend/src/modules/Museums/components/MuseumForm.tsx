@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ModalRef } from './modal';
 import defaultPhoto from '../assets/defaultPhoto.png';
 import { Museum } from '../types/museum';
+import Map,{Location} from '../../shared/utils/map';
+
 
 interface MuseumFormProps {
   onSubmit?: (museumData: MuseumFormData) => void;
@@ -53,7 +55,22 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Create a ref for the file input
   const [imagePreview, setImagePreview] = useState<string>(defaultPhoto); // State for image preview
   const [imageIndex, setImageIndex] = useState(0); // State to keep track of the current image index
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null); // To track location from the map
 
+  useEffect(() => {
+    // If a location is selected from the map, update the form's location data
+    if (selectedLocation) {
+      setFormData((prevData) => ({
+        ...prevData,
+        location: {
+          ...prevData.location,
+          latitude: selectedLocation.lat,
+          longitude: selectedLocation.lng,
+          name: selectedLocation.name,
+        },
+      }));
+    }
+  }, [selectedLocation]);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -296,6 +313,9 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
             placeholder="Location"
             className={styles.inputClass}
           />
+        </div>
+        <div className="col-span-2 h-96"> {/* Ensure the map has a fixed height */}
+        <Map markedLocationState={[selectedLocation, setSelectedLocation]} className="h-full w-full" />
         </div>
       </div>
       
