@@ -1,19 +1,27 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./modules/shared/pages/RootLayout";
-import { TourGuideProfile } from "./modules/TourGuide/App";
+import {
+  TourGuideProfile,
+  tourGuideProfileLoader,
+} from "./modules/TourGuide/App";
 import { generalSettingAction } from "./modules/TourGuide/App";
-import { AdvertiserProfile } from "./modules/Advertiser/App";
-import { SellerProfile } from "./modules/Seller/App";
+import {
+  AdvertiserProfile,
+  advertiserProfileLoader,
+} from "./modules/Advertiser/App";
+import { SellerProfile, sellerProfileLoader } from "./modules/Seller/App";
 import {
   Register,
   registerAction,
   registerLoader,
 } from "./modules/Register/App";
-import { TouristAction, TouristProfile } from "./modules/Tourist/App";
+import {
+  TouristAction,
+  TouristProfile,
+  touristProfileLoader,
+} from "./modules/Tourist/App";
 
 import { Toaster } from "react-hot-toast";
-import { store } from "./store";
-import { Provider } from "react-redux";
 
 const BrowserRouter = createBrowserRouter([
   { path: "/", element: <RootLayout />, children: [] },
@@ -24,24 +32,27 @@ const BrowserRouter = createBrowserRouter([
     loader: registerLoader,
   },
   {
-    path: "/tour-guide-profile",
+    path: "/tour-guide-profile/:id",
     element: <TourGuideProfile />,
     action: generalSettingAction,
+    loader: tourGuideProfileLoader,
   },
   {
-    path: "/advertiser-profile",
+    path: "/advertiser-profile/:id",
     element: <AdvertiserProfile />,
     action: generalSettingAction,
+    loader: advertiserProfileLoader,
   },
   {
-    path: "/seller-profile",
+    path: "/seller-profile/:id",
     element: <SellerProfile />,
     action: generalSettingAction,
+    loader: sellerProfileLoader,
   },
   {
-    path: "/tourist-profile",
+    path: "/tourist-profile/:id",
     element: <TouristProfile />,
-    loader: registerLoader,
+    loader: touristProfileLoader,
     action: TouristAction,
   },
 ]);
@@ -66,9 +77,7 @@ function App() {
           },
         }}
       />
-      <Provider store={store}>
-        <RouterProvider router={BrowserRouter} />
-      </Provider>
+      <RouterProvider router={BrowserRouter} />
     </>
   );
 }

@@ -31,7 +31,6 @@ const GenericDropdown = ({
   defaultValue?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  console.log(defaultValue);
 
   const [selectedOption, setSelectedOption] = useState(defaultValue || "");
 

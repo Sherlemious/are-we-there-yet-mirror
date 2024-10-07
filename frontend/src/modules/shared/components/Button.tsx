@@ -8,7 +8,7 @@ export default function Button({
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   type?: "submit" | "reset" | "button" | undefined;
 }) {
   return (

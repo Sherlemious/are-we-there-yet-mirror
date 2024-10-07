@@ -13,13 +13,11 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { handleUserRegistration } from "../services/apiHandleUserRegistration";
 import { validateFormDataValue } from "../utils/helpers";
-import { useDispatch } from "react-redux";
-import { setUser } from "../userSlice";
+import { userRoles } from "../../shared/constants/roles";
 
 export default function RegisterForm({ userRole }: { userRole: string }) {
   const navigation = useNavigation();
   const submit = useSubmit();
-  const dispatch = useDispatch();
 
   const countries = useLoaderData() as { name: { common: string } }[];
   const countryNames = countries.map((country) => country.name.common);
@@ -45,25 +43,32 @@ export default function RegisterForm({ userRole }: { userRole: string }) {
 
     //validation  /////////////////////////
     if (!validateFormDataValue(fieldNames.email, data.email as string)) {
-      toast.error("Invalid email address");
-      return;
+      return toast.error("Invalid email address");
     }
 
     if (!validateFormDataValue(fieldNames.password, data.password as string)) {
-      toast.error(
+      return toast.error(
         "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
       );
-      return;
+    }
+
+    if (
+      userRole === "Tourist" &&
+      !validateFormDataValue(
+        fieldNames.mobileNumber,
+        data["mobile number"] as string,
+      )
+    ) {
+      return toast.error("Invalid mobile number");
     }
 
     ////////////////////////////////////////
-    //save user data to redux store
-    dispatch(setUser(data));
 
     //submit form
     submit(e.currentTarget);
     // reset form
-    e.currentTarget.reset();
+    // e.currentTarget.reset();
+
     //reset dropdown to default value
     setResetDropdown(true);
     //set all fields empty to true
@@ -118,7 +123,6 @@ export default function RegisterForm({ userRole }: { userRole: string }) {
             disabled={isSubmitting || oneOfFieldsIsEmpty}
             type="submit"
             className={customStyles.button}
-            onClick={() => console.log("clicked")}
           >
             Create my account
           </Button>
@@ -142,7 +146,6 @@ export default function RegisterForm({ userRole }: { userRole: string }) {
               disabled={isSubmitting || oneOfFieldsIsEmpty}
               type="submit"
               className={customStyles.button}
-              onClick={() => console.log("clicked")}
             >
               Create my account
             </Button>
@@ -157,17 +160,18 @@ export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
 
-  if (data.userRole === "Tourist") {
+  if (data.userRole === userRoles.tourist) {
     return await handleUserRegistration({
       url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
       requestData: {
-        account_type: data.userRole,
+        account_type: data.userRole.trim(),
         username: data.username,
         email: data.email,
         password: data.password,
         job: data.occupation,
         nationality: data.nationality,
-        dob: data.dateOfBirth,
+        dob: data[fieldNames.dateOfBirth],
+        mobile_number: data[fieldNames.mobileNumber],
       },
       successRedirect: "/tourist-profile",
     });
@@ -175,14 +179,14 @@ export async function action({ request }: { request: Request }) {
     return await handleUserRegistration({
       url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
       requestData: {
-        account_type: data.userRole,
+        account_type: userRoles.tourGuide,
         username: data.username,
         email: data.email,
         password: data.password,
       },
       successRedirect: "/tour-guide-profile",
     });
-  } else if (data.userRole === "Adviser") {
+  } else if (data.userRole === userRoles.advertiser) {
     return await handleUserRegistration({
       url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
       requestData: {
@@ -191,7 +195,7 @@ export async function action({ request }: { request: Request }) {
         email: data.email,
         password: data.password,
       },
-      successRedirect: "/adviser-profile",
+      successRedirect: "/advertiser-profile",
     });
   } else {
     return await handleUserRegistration({
@@ -205,8 +209,6 @@ export async function action({ request }: { request: Request }) {
       successRedirect: "/seller-profile",
     });
   }
-
-  return null;
 }
 
 export async function loader() {

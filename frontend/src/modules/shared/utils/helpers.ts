@@ -12,7 +12,8 @@ export function getPlaceholder(inputField: string) {
       return "Professional.example.com";
     case fieldNames.name:
       return "Jane Doe";
-    case "Email":
+    case fieldNames.wallet:
+      return "Enter wallet number";
     default:
       return "Enter your " + inputField;
   }
@@ -41,4 +42,15 @@ export function getType(inputField: string) {
     default:
       return "text";
   }
+}
+
+export function isValidateHotline(hotline: FormDataEntryValue) {
+  // Validate if hotline contains only digits and is of valid length (e.g., 3 to 5 digits)
+  const isValidFormat = typeof hotline === "string" && /^\d+$/.test(hotline);
+
+  // Check if hotline length is between 3 and 5 digits (adjust this based on your requirements)
+  const isValidLength =
+    typeof hotline === "string" && hotline.length >= 3 && hotline.length <= 5;
+
+  return isValidFormat && isValidLength;
 }

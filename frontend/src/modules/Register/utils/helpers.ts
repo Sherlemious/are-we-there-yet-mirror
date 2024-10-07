@@ -6,9 +6,16 @@ export function validateFormDataValue(
   value: string,
 ): boolean {
   switch (inputField) {
-    case fieldNames.mobileNumber:
-      // Add validation logic for mobile number
-      break;
+    case fieldNames.mobileNumber: {
+      // Check if the mobile number contains only digits or starts with a '+'
+      const isValidFormat = typeof value === "string" && /^\+?\d+$/.test(value);
+
+      // Check if the length is valid (adjust length based on your region's standards)
+      const isValidLength =
+        typeof value === "string" && value.length >= 7 && value.length <= 15;
+
+      return isValidFormat && isValidLength;
+    }
     case fieldNames.email:
       if (
         value.split("@")[1].split(".")[0] !== "gmail" &&
@@ -47,4 +54,18 @@ export function validateFormDataValue(
       break;
   }
   return true; // Return true if validation passes, otherwise return false
+}
+
+export function isValidateMobileNumber(mobileNumber: FormDataEntryValue) {
+  // Check if the mobile number contains only digits or starts with a '+'
+  const isValidFormat =
+    typeof mobileNumber === "string" && /^\+?\d+$/.test(mobileNumber);
+
+  // Check if the length is valid (adjust length based on your region's standards)
+  const isValidLength =
+    typeof mobileNumber === "string" &&
+    mobileNumber.length >= 7 &&
+    mobileNumber.length <= 15;
+
+  return isValidFormat && isValidLength;
 }

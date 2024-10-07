@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigation } from "react-router";
+import { useNavigation } from "react-router";
 import { fieldNames } from "../../shared/constants/inputNames";
 import InputField from "../../shared/components/InputField";
 import { Form, useSubmit } from "react-router-dom";
@@ -6,46 +6,53 @@ import { CircleUserRound } from "lucide-react";
 import GenericDropdown from "../../shared/components/GenericDropdown";
 import { useState } from "react";
 import Button from "../../shared/components/Button";
-import { useSelector } from "react-redux";
+import { updateUser } from "../../shared/services/apiUpdateUser";
+import { userRoles } from "../../shared/constants/roles";
+import type { ActionFunctionArgs } from "react-router-dom";
 
-export default function GeneralSettings() {
+export default function GeneralSettings({
+  account_type,
+  countries,
+  username,
+  email,
+  password,
+  job,
+  userNationality,
+  dob,
+  mobileNumber,
+  wallet,
+}: {
+  account_type: string;
+  countries: { name: { common: string } }[];
+  username: string;
+  email: string;
+  password: string;
+  job: string;
+  userNationality: string;
+  dob: string;
+  mobileNumber: string;
+  wallet: string;
+}) {
   const navigation = useNavigation();
   const submit = useSubmit();
-  const [nationality, setNationality] = useState<string>("");
+  const [nationality, setNationality] = useState<string>(userNationality);
   const [atLeastOneFilled, setAtLeastOneFilled] = useState(false);
   const [resetDropdown, setResetDropdown] = useState(false);
 
+  const hasDOB = dob !== null;
+
   const isSubmitting = navigation.state === "submitting";
 
-  const countries = useLoaderData() as { name: { common: string } }[];
   const countryNames = countries.map((country) => country.name.common);
   // sort country names alphabetically
   countryNames.sort();
 
-  interface UserState {
-    username: string;
-    email: string;
-    password: string;
-    dateOfBirth: string;
-    occupation: string;
-    mobileNumber: string;
-    nationality: string;
-  }
-
-  const {
-    username,
-    email,
-    password,
-    dateOfBirth,
-    occupation,
-    mobileNumber,
-    nationality: userNationality,
-  } = useSelector((state: { user: UserState }) => state.user);
-
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     submit(e.currentTarget);
-    e.currentTarget.reset();
+
+    // e.currentTarget.reset();
+
     setResetDropdown(true);
     setNationality("");
     setAtLeastOneFilled(false);
@@ -96,6 +103,7 @@ export default function GeneralSettings() {
           <CircleUserRound size={300} color="#d1d5db" strokeWidth={1.25} />
 
           <InputField
+            account_type={userRoles.tourist}
             defaultValue={username}
             inputField={fieldNames.username}
             hasLabel={false}
@@ -115,15 +123,23 @@ export default function GeneralSettings() {
             </div>
             <div className="flex flex-col gap-4">
               <InputField
+                hasDOB={hasDOB}
                 className="w-full"
-                defaultValue={dateOfBirth}
+                defaultValue={dob?.split("T")[0]}
                 inputField={fieldNames.dateOfBirth}
                 hasLabel={false}
               />
               <InputField
                 className="w-full"
-                defaultValue={occupation}
+                defaultValue={job}
                 inputField={fieldNames.occupation}
+                hasLabel={false}
+              />
+              <InputField
+                className="w-full"
+                wallet={wallet}
+                defaultValue={wallet}
+                inputField={fieldNames.wallet}
                 hasLabel={false}
               />
             </div>
@@ -144,6 +160,7 @@ export default function GeneralSettings() {
             </div>
           </div>
           <input type="hidden" name="nationality" value={nationality} />
+          <input type="hidden" name="account_type" value={account_type} />
           <Button
             disabled={isSubmitting || !atLeastOneFilled}
             type="submit"
@@ -158,10 +175,25 @@ export default function GeneralSettings() {
   );
 }
 
-export async function action({ request }: { request: Request }) {
+export async function action({
+  request,
+  params,
+}: ActionFunctionArgs): Promise<null> {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  console.log(data);
+
+  if (!params.id) {
+    throw new Error("User ID is missing");
+  }
+  const res = await updateUser(params.id, data);
+
+  //reload the page with timer
+  if (res && typeof res !== "string" && res.status === 200) {
+    setTimeout(() => {
+      window.location.reload();
+    }, 800);
+  }
+
   return null;
 }
 

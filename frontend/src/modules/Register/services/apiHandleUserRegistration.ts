@@ -21,8 +21,17 @@ export async function handleUserRegistration({
         loading: "Creating account...",
         success: "Account created successfully",
         error: (err) => {
-          if (err.response?.data?.message.includes("duplicate key error")) {
+          if (
+            err.response?.data?.message.includes("duplicate key error") &&
+            err.response?.data?.message.includes("email")
+          ) {
             return "Email already exists";
+          }
+          if (
+            err.response?.data?.message.includes("duplicate key error") &&
+            err.response?.data?.message.includes("username")
+          ) {
+            return "Username already exists";
           }
           return "An error occurred";
         },
@@ -41,8 +50,7 @@ export async function handleUserRegistration({
 
     // Check if the response is successful and perform the redirect
     if (res.status === 200) {
-      console.log("redirecting");
-      return redirect(successRedirect); // Redirect to the specified route
+      return redirect(`${successRedirect}/${res.data.data.user._id}`); // Redirect to the specified route
     }
   } catch (error) {
     console.error("Request failed:", error);
