@@ -1,0 +1,15 @@
+export const fieldNames = {
+  email: "email",
+  password: "password",
+  username: "username",
+  dateOfBirth: "date of Birth",
+  description: "description",
+  nationality: "nationality",
+  mobileNumber: "mobile number",
+  occupation: "occupation",
+  yearsOfExperience: "years of experience",
+  hotline: "hotline",
+  link: "link",
+  name: "name",
+  wallet: "wallet",
+};
