@@ -54,12 +54,12 @@ function ActivityTable() {
             <th className="py-2">Category</th>
             <th className="py-2">Tags</th>
             <th className="py-2">Special Discount</th>
+            <th className="py-2">Booking</th>
             <th className="py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {activities
-            .filter((activity) => activity.bookingOpen)
             .map((activity) => (
               <tr key={activity._id} className="text-center">
                 <td className="p-2">{formatDate(activity.datetime)}</td>
@@ -76,6 +76,7 @@ function ActivityTable() {
                   ))}
                 </td>
                 <td className="p-2">{activity.specialDiscounts}</td>
+                <td className='p-2'>{activity.bookingOpen ? "Open": "Booked"}</td>
                 <td className="p-2 flex justify-center">
                   <Link to={`edit/${activity._id}`} className="text-gray-600 hover:text-gray-800">
                     <Pencil size={20} />
