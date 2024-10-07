@@ -1,0 +1,1 @@
+export {default as PrefrenceTag} from "./pages/PrefrenceTag";
