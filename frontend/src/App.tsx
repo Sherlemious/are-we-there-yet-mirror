@@ -30,9 +30,10 @@ import {
 } from "./modules/Tourist/App";
 import { Toaster } from "react-hot-toast";
 import { UsersAssets } from './modules/shared/pages/UsersAssets';
+import { AllMuseums } from './modules/Museums/App';
 
 const BrowserRouter = createBrowserRouter([
-  { path: "/", element: <RootLayout />, children: [] },
+  { path: '/', element: <RootLayout />, children: [] },
   {
     path: "/register",
     element: <Register />,
@@ -102,6 +103,10 @@ const BrowserRouter = createBrowserRouter([
     path: '/users-assets',
     element: <UsersAssets />,
   },
+  {
+    path: '/all-museums',
+    element: <AllMuseums />,
+  }
 ]);
 
 function App() {

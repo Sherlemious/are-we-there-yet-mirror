@@ -1,0 +1,1 @@
+export { default as AllMuseums } from './pages/AllMuseums';
