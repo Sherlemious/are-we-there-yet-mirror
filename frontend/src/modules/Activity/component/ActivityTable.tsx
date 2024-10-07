@@ -77,7 +77,7 @@ function ActivityTable() {
                 </td>
                 <td className="p-2">{activity.specialDiscounts}</td>
                 <td className="p-2 flex justify-center">
-                  <Link to={`edit/${activity._id}`} state={activity} className="text-gray-600 hover:text-gray-800">
+                  <Link to={`edit/${activity._id}`} className="text-gray-600 hover:text-gray-800">
                     <Pencil size={20} />
                   </Link>
                   <button

@@ -13,11 +13,11 @@ import axios from 'axios';
 import Map from '../../shared/utils/map';
 import { useState } from 'react';
 
-function ActivityForm({ method, activity }: { method: FormMethod; activity?: Activity }) {
+function ActivityForm({ method }: { method: FormMethod }) {
   const data = useActionData() as { message?: string };
   const navigate = useNavigate();
   const navigation = useNavigation();
-  const { categories, tags } = useLoaderData() as { categories: Category[]; tags: Tag[] };
+  const { categories, tags, activity } = useLoaderData() as { categories: Category[]; tags: Tag[]; activity: Activity };
   const [location, setLocation] = useState(activity?.location || { latitude: 0, longitude: 0, name: '' });
 
   const isSubmitting = navigation.state === 'submitting';
@@ -74,7 +74,7 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
             id="locationLat"
             name="locationLat"
             value={location.latitude}
-            onChange={() => { }}
+            onChange={() => {}}
             required
             placeholder="Latitude"
           />
@@ -84,7 +84,7 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
             id="locationLng"
             name="locationLng"
             value={location.longitude}
-            onChange={() => { }}
+            onChange={() => {}}
             required
             placeholder="Longitude"
           />
@@ -94,7 +94,7 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
             id="locationName"
             name="locationName"
             value={location.name}
-            onChange={() => { }}
+            onChange={() => {}}
             required
             placeholder="Location Name"
           />
@@ -205,7 +205,7 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
 
 export default ActivityForm;
 
-export async function action({ request, params }: { request: Request; params: { id?: string } }) {
+export async function action({ request, params }: { request: Request; params: { activityId?: string } }) {
   const method = request.method;
   const data = await request.formData();
 
@@ -232,7 +232,7 @@ export async function action({ request, params }: { request: Request; params: { 
   console.log('url', url);
 
   if (method === 'PUT') {
-    const activityId = params.id;
+    const activityId = params.activityId;
     url = `${url}/${activityId}`;
   }
 
@@ -259,4 +259,18 @@ export async function loader() {
   ]);
 
   return { categories: categories.data.data.categories, tags: tags.data.data.tags };
+}
+
+export async function editLoader({ params }: { params: { activityId: string } }) {
+  const [categories, tags, activity] = await Promise.all([
+    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/categories`),
+    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/tags`),
+    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/activities/${params.activityId}`),
+  ]);
+
+  return {
+    categories: categories.data.data.categories,
+    tags: tags.data.data.tags,
+    activity: activity.data.data.activity,
+  };
 }

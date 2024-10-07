@@ -1,7 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Dashboard } from './modules/Admin/App';
 import { loader as activityLoader } from './modules/Activity/pages/Activity';
-import { loader as activityFormLoader, action as activityFormAction } from './modules/Activity/component/ActivityForm';
+import {
+  loader as activityAddLoader,
+  editLoader as activityEditLoader,
+  action as activityFormAction,
+} from './modules/Activity/component/ActivityForm';
 import { Tag } from './modules/Tags/App';
 import { PrefrenceTag } from './modules/PrefrenceTag/App';
 import { Category } from './modules/Category/App';
@@ -24,13 +28,13 @@ const BrowserRouter = createBrowserRouter([
         path: 'add',
         element: <ActivityForm method="post" />,
         action: activityFormAction,
-        loader: activityFormLoader,
+        loader: activityAddLoader,
       },
       {
-        path: 'edit/:id',
+        path: 'edit/:activityId',
         element: <EditActivity />,
         action: activityFormAction,
-        loader: activityFormLoader,
+        loader: activityEditLoader,
       },
     ],
   },
