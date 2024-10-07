@@ -31,6 +31,8 @@ interface Itinerary {
   dropoffLocation: string;
 }
 
+
+
 function useDeleteMyItinerary() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,38 +68,31 @@ function useDeleteMyItinerary() {
 }
 
 function useGetMyItineraries() {
-  // init the states
   const [data, setData] = useState<Itinerary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    // init the url
     const userId = '6702970588d93fa6bce6432b';
     const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
     const url = `${baseUrl}/itineraries/created_by/${userId}`;
 
-    // main logic
     try {
-      // fetch the data
       const response = await fetch(url, {
         method: 'GET',
       });
 
-      // check if the response is ok
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
 
-      // parse the response
       const parsedData = await response.json();
-      console.log('Fetched Data:', parsedData);
+      const itineraries = parsedData.data.itineraries;
 
-      // format the data
-      const tempData: Itinerary[] = parsedData.data.itineraries.map((item: any) => {
+      const tempData: Itinerary[] = itineraries.map((item: any) => {
         const name = item.name ?? 'N/A';
         const category = item.category ?? 'N/A';
-        const tags = item.tags ? item.tags.map((tag: { name: string }) => tag.name) : [];
+        // for each tag get all tags to get the name of tag
         const activities = item.activities ? item.activities.map((activity: Activity) => {
           return {
             duration: activity.duration ?? 'N/A',
@@ -112,6 +107,7 @@ function useGetMyItineraries() {
           };
         }) : [];
         const language = item.language ?? 'N/A';
+        const tags = item.tags ? item.tags.map((tag: { name: string }) => tag.name) : [];
         const locations = item.locations ? item.locations.map((location: { name: string }) => location.name) : [];
         const price = item.price ?? 'N/A';
         const timeline = item.timeline ?? 'N/A';
@@ -122,7 +118,7 @@ function useGetMyItineraries() {
         const pickupLocation = item.pick_up_location?.name ?? 'N/A';
         const dropoffLocation = item.drop_off_location?.name ?? 'N/A';
         return {
-          id: item._id, // Assuming the ID is stored in _id
+          id: item._id,
           name,
           category,
           timeline,
@@ -138,7 +134,6 @@ function useGetMyItineraries() {
         };
       });
 
-      // set the data
       setData(tempData);
       setLoading(false);
     } catch (error) {
@@ -151,7 +146,6 @@ function useGetMyItineraries() {
     }
   };
 
-  // fetch the data
   useEffect(() => {
     fetchData();
   }, []);
@@ -201,11 +195,85 @@ const formatActivity = (activity: Activity) => {
   return `${activity.duration} min - ${formatLocation(activity.location)}`;
 };
 
+// function useGetTagNames(tagIds: string[]) {
+//   const [tagNames, setTagNames] = useState<{ [key: string]: string }>({});
+//   const [loading, setLoading] = useState<boolean>(true);
+//   const [error, setError] = useState<string | null>(null);
+
+//   const fetchTagNames = async () => {
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
+//       const tagNamesPromises = tagIds.map(async (tagId) => {
+//         const url = `${baseUrl}/tags/${tagId}`;
+//         const response = await fetch(url, {
+//           method: 'GET',
+//         });
+
+//         if (!response.ok) {
+//           throw new Error(`Failed to fetch tag name for tag ID: ${tagId}`);
+//         }
+
+//         const data = await response.json();
+//         console.log(`Fetched tag data for ${tagId}:`, data); // Debugging log
+//         console.log(data.tag[0].name); // Debugging log
+//         const tagName = data.tag && data.tag.length > 0 ? data.tag[0].name : 'N/A'; // Check if data.tag is defined and has elements
+//         return { tagId, tagName };
+//       });
+
+//       const tagNamesArray = await Promise.all(tagNamesPromises);
+//       console.log('Tag names array:', tagNamesArray); // Debugging log
+//       const tagNamesMap = tagNamesArray.reduce((acc, { tagId, tagName }) => {
+//         acc[tagId] = tagName;
+//         return acc;
+//       }, {} as { [key: string]: string });
+
+//       console.log('Tag names map:', tagNamesMap); // Debugging log
+
+//       setTagNames(tagNamesMap);
+//       setLoading(false);
+//     } catch (error) {
+//       if (error instanceof Error) {
+//         setError(error.message);
+//       } else {
+//         setError('An unknown error occurred');
+//       }
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (tagIds.length > 0) {
+//       fetchTagNames();
+//     }
+//   }, [tagIds]);
+
+//   return { tagNames, loading, error };
+// }
+
+
+
 // main components
+
+function AddItineraryCard({ onAddClick }: { onAddClick: () => void }) {
+  return (
+    <div className="w-full h-full border-black border-2 relative flex items-center justify-center" onClick={onAddClick}>
+      <button className="text-6xl font-bold text-black">
+        +
+      </button>
+    </div>
+  );
+}
+
 function ItineraryModal({ itinerary, onClose }: { itinerary: Itinerary; onClose: () => void }) {
   // states for the animation
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  // Fetch tag names
+  // const { tagNames, loading: tagLoading, error: tagError } = useGetTagNames(itinerary.tags);
 
   // handle the close button
   useEffect(() => {
@@ -275,6 +343,14 @@ function ItineraryModal({ itinerary, onClose }: { itinerary: Itinerary; onClose:
               <div>
                 <div className="font-bold text-lg">Pickup Location</div>
                 <div>{itinerary.pickupLocation}</div>
+              </div>
+              <div>
+                <div className="font-bold text-lg">Category</div>
+                <div>{itinerary.category}</div>
+              </div>
+              <div>
+                <div className="font-bold text-lg">Tags</div>
+                <div>{itinerary.tags}</div>
               </div>
               <div>
                 <div className="font-bold text-lg">Accessibilities</div>
@@ -383,6 +459,11 @@ export function ItineraryList() {
     setSelectedItinerary(null);
   };
 
+  const handleAddClick = () => {
+    // Logic to handle adding a new itinerary will go here
+    console.log('Add Itinerary Clicked');
+  };
+
   const handleDeleteClick = async (itineraryId: string) => {
     await deleteItinerary(itineraryId);
     // Refresh the itineraries list after deletion
@@ -408,6 +489,7 @@ export function ItineraryList() {
             onDeleteClick={() => handleDeleteClick(itinerary.id)}
           />
         ))}
+        <AddItineraryCard onAddClick={handleAddClick} /> {/* Add the new itinerary card */}
       </div>
       {selectedItinerary && <ItineraryModal itinerary={selectedItinerary} onClose={handleCloseModal} />}
     </>
