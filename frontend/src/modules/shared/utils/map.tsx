@@ -18,20 +18,24 @@ const BlueDot: React.FC<{ position: google.maps.LatLngLiteral }> = ({ position }
   );
 };
 
-export type Location = { lat: number; lng: number; name: string; address: string };
+export type Location = { lat: number; lng: number; name: string };
 
 export default function Map({
   className = 'w-full h-full',
+  initalMark,
   markedLocationState,
   center = null,
+  onChange,
 }: {
   className?: string;
-  markedLocationState: [Location | null, React.Dispatch<React.SetStateAction<Location | null>>];
+  initalMark?: Location;
+  markedLocationState?: [Location | null, React.Dispatch<React.SetStateAction<Location | null>>];
   center?: google.maps.LatLngLiteral | null;
+  onChange?: (location: Location) => void;
 }) {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(center);
-  const [selectedLocation, setSelectedLocation] = markedLocationState;
+  const [selectedLocation, setSelectedLocation] = markedLocationState || useState<Location | null>(initalMark || null);
 
   useEffect(() => {
     if (userLocation) return;
@@ -62,10 +66,10 @@ export default function Map({
     const data = await response.json();
 
     if (data.results && data.results.length > 0) {
-      const address = data.results[0].formatted_address;
-      const name = data.results[0].address_components[0].long_name;
+      const name = data.results[0].formatted_address;
 
-      setSelectedLocation({ lat, lng, name, address });
+      onChange?.({ lat, lng, name });
+      setSelectedLocation?.({ lat, lng, name });
     }
   };
 

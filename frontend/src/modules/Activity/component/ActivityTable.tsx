@@ -1,12 +1,14 @@
 import { Pencil, X } from 'lucide-react';
 import { Activity } from '../types/Activity';
+import { useLoaderData } from 'react-router';
+import { useState } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
-interface ActivityTableProps {
-  Activities: Activity[];
-  onDeleteActivity: (id: string) => void;
-}
+function ActivityTable() {
+  const { activites: loaded_activites } = useLoaderData() as { activites: Activity[] };
+  const [activities, setActivities] = useState(loaded_activites);
 
-function ActivityTable({ Activities, onDeleteActivity }: ActivityTableProps) {
   const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
     return date.toLocaleDateString('en-US', {
@@ -19,54 +21,77 @@ function ActivityTable({ Activities, onDeleteActivity }: ActivityTableProps) {
   const formatTime = (isoDate: string): string => {
     const date = new Date(isoDate);
     return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric',
     });
   };
+
+  const handleDeleteActivity = async (id: string) => {
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_BACK_BASE_URL}/activities/${id}`);
+
+      if (response.status < 400) {
+        setActivities((prev) => prev.filter((activity) => activity._id !== id));
+      } else {
+        console.error('Failed to delete activity response:', response);
+        alert('Failed to delete activity');
+      }
+    } catch (error) {
+      console.error('Error deleting activity error:', error);
+      alert('Error deleting activity');
+    }
+  };
+
   return (
-    <div className="container mx-auto p-4">
-      <div className="rounded-md border p-4">
-        <div className="mb-4 rounded-md border">
-          <div className="grid grid-cols-12 bg-gray-100 p-3 font-semibold">
-            <div className="col-span-2">Date</div>
-            <div className="col-span-1">Time</div>
-            <div className="col-span-2">Location</div>
-            <div className="col-span-1">Price</div>
-            <div className="col-span-1">Category</div>
-            {/* <div className="col-span-2">Tags</div> */}
-            <div className="col-span-2">Special Discount</div>
-            <div className="col-span-2 flex justify-end">Actions</div>
-          </div>
-        </div>
-        {/* {Tags.filter((Tag) => Tag.type === 'Preference').map((Tag) => ( */}
-        {/* {Activities.map((Activity, index) => ( */}
-        {Activities.filter((Activity) => Activity.bookingOpen).map((Activity) => (
-          <div key={Activity._id} className="mb-2 rounded-md border last:mb-0">
-            <div className="grid grid-cols-12 items-center p-3">
-              <div className="col-span-2">{formatDate(Activity.date)}</div>
-              <div className="col-span-1">{Activity.time}</div>
-              {/* <div className="col-span-2">{Activity.location}</div> */}
-              <div className="col-span-1">{Activity.price}</div>
-              <div className="col-span-1">{Activity.category}</div>
-              {/* <div className="col-span-2">{Activity.tags}</div> */}
-              <div className="col-span-2">{Activity.specialDiscount}</div>
-              <div className="col-span-2 flex justify-end">
-              <button
-                 className="text-gray-600 hover:text-gray-800">
-                  <Pencil size={20}/>
-                </button>
-                <button
-                  onClick={() => onDeleteActivity(Activity._id)} // Delete based on _id
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="p-4">
+      <table className="w-full rounded-md border p-4">
+        <thead>
+          <tr className="bg-gray-100 text-start">
+            <th className="py-2">Date</th>
+            <th className="py-2">Time</th>
+            <th className="py-2">Location</th>
+            <th className="py-2">Price</th>
+            <th className="py-2">Category</th>
+            <th className="py-2">Tags</th>
+            <th className="py-2">Special Discount</th>
+            <th className="py-2">Booking</th>
+            <th className="py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {activities
+            .map((activity) => (
+              <tr key={activity._id} className="text-center">
+                <td className="p-2">{formatDate(activity.datetime)}</td>
+                <td className="p-2">{formatTime(activity.datetime)}</td>
+                <td className="p-2">{activity.location?.name}</td>
+                <td className="p-2">{activity.price}</td>
+                <td className="p-2">{activity.category?.name}</td>
+                <td className="p-2">
+                  {activity.tags.map((tag, index) => (
+                    <span key={tag._id}>
+                      {tag.name}
+                      {activity.tags.length - 1 !== index ? ', ' : ''}
+                    </span>
+                  ))}
+                </td>
+                <td className="p-2">{activity.specialDiscounts}</td>
+                <td className='p-2'>{activity.bookingOpen ? "Open": "Booked"}</td>
+                <td className="p-2 flex justify-center">
+                  <Link to={`edit/${activity._id}`} className="text-gray-600 hover:text-gray-800">
+                    <Pencil size={20} />
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteActivity(activity._id)}
+                    className="text-gray-600 hover:text-gray-800"
+                  >
+                    <X size={20} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
     </div>
   );
 }

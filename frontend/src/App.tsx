@@ -5,7 +5,6 @@ import { AdminPage as AdminProducts } from "./modules/products/App";
 import { AllProducts } from "./modules/products/App";
 import { SellerPage as SellerProducts } from "./modules/products/App";
 import { Dashboard as AdminDashboard } from "./modules/Admin/App";
-import Activity from "./modules/Activity/pages/Activity";
 import { Tag } from "./modules/Tags/App";
 import { PrefrenceTag } from "./modules/PrefrenceTag/App";
 import { Category } from "./modules/Category/App";
@@ -31,9 +30,15 @@ import {
 import { Toaster } from "react-hot-toast";
 import { UsersAssets } from './modules/shared/pages/UsersAssets';
 import { AllMuseums } from './modules/Museums/App';
+import { loader as activityLoader } from './modules/Activity/pages/Activity';
+import {
+  loader as activityAddLoader,
+  editLoader as activityEditLoader,
+  action as activityFormAction,
+} from './modules/Activity/component/ActivityForm';
+import { Activity, ActivityForm, EditActivity } from './modules/Activity/App';
 
 const BrowserRouter = createBrowserRouter([
-  { path: '/', element: <RootLayout />, children: [] },
   {
     path: "/register",
     element: <Register />,
@@ -84,8 +89,26 @@ const BrowserRouter = createBrowserRouter([
     element: <AdminDashboard />,
   },
   {
-    path: "/Activity",
-    element: <Activity />,
+    path: '/activity',
+    children: [
+      {
+        index: true,
+        element: <Activity />,
+        loader: activityLoader,
+      },
+      {
+        path: 'add',
+        element: <ActivityForm method="post" />,
+        action: activityFormAction,
+        loader: activityAddLoader,
+      },
+      {
+        path: 'edit/:activityId',
+        element: <EditActivity />,
+        action: activityFormAction,
+        loader: activityEditLoader,
+      },
+    ],
   },
   {
     path: "/Tag",
