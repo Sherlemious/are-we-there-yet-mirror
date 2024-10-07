@@ -114,6 +114,14 @@ const formatDescription = (description: string) => {
   return description;
 };
 
+function getAllTags(data: Museum[]) {
+  let tags: string[] = [];
+  data.forEach((item) => {
+    tags = [...tags, ...item.tags];
+  });
+  return [...new Set(tags)];
+}
+
 // main components
 function MuseumModal({ Museum, onClose }: { Museum: Museum; onClose: () => void }) {
   // states for the animation
@@ -250,22 +258,36 @@ export function MuseumList() {
 
   // get the data
   const { data, loading, error } = useGetMuseums();
-  console.log(data);
 
-  // handle the search
+  // handle the search and filter
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const [allTags, setAllTags] = useState<string[]>([]);
+  const [tag, setTag] = useState<string>('');
+
   const [filteredData, setFilteredData] = useState<Activity[]>([]);
+
+  // get all the tags
+  useEffect(() => {
+    setAllTags(getAllTags(data));
+  }, [data]);
+
   useEffect(() => {
     setFilteredData(
       data.filter((item) => {
+        // handle the search
         const matchesSearchQuery =
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-        return matchesSearchQuery;
+
+        // handle then the tags
+        const matchesTag = tag === '' || item.tags.includes(tag);
+
+        return matchesSearchQuery && matchesTag;
       })
     );
-  }, [searchQuery, data]);
+  }, [searchQuery, tag, data]);
 
   return (
     <>
@@ -282,7 +304,31 @@ export function MuseumList() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div className="border-black border-2 p-4"></div>
+            <div className="w-full h-full grid grid-cols-[90%_10%] justify-between border-black border-2 p-4">
+              <select
+                className="w-full h-full px-2"
+                style={{ appearance: 'none' }}
+                value={tag}
+                onChange={(e) => setTag(e.target.value)}
+              >
+                <option value="">All Tags</option>
+                {allTags.map((tag, index) => (
+                  <option value={tag} key={index}>
+                    {tag}
+                  </option>
+                ))}
+              </select>
+              {/* dropdown icon */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 place-self-center"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="black"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
           </div>
           {/* body */}
           <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
