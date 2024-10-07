@@ -18,7 +18,7 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
   const navigate = useNavigate();
   const navigation = useNavigation();
   const { categories, tags } = useLoaderData() as { categories: Category[]; tags: Tag[] };
-  const [location, setLocation] = useState(activity?.location || { latitude: 0, longitude: 0, name: '', address: '' });
+  const [location, setLocation] = useState(activity?.location || { latitude: 0, longitude: 0, name: '' });
 
   const isSubmitting = navigation.state === 'submitting';
 
@@ -54,31 +54,41 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
         <input type="number" id="price" name="price" defaultValue={activity?.price} required />
       </p>
       <div className="mb-7 w-full h-[70%]">
-        <input type="text" id="locationLat" name="locationLat" value={location.latitude} onChange={() => { }} required />
-        <input
-          type="text"
-          id="locationLng"
-          name="locationLng"
-          value={location.longitude}
-          onChange={() => { }}
-          required
-        />
-        <input type="text" id="locationName" name="locationName" value={location.name} onChange={() => { }} required />
-        <input
-          type="text"
-          id="locationAddress"
-          name="locationAddress"
-          value={location.address}
-          onChange={() => { }}
-          required
-        />
+        <p className="flex">
+          <input
+            className="w-fit"
+            type="text"
+            id="locationLat"
+            name="locationLat"
+            value={location.latitude}
+            onChange={() => {}}
+            required
+          />
+          <input
+            className="w-fit"
+            type="text"
+            id="locationLng"
+            name="locationLng"
+            value={location.longitude}
+            onChange={() => {}}
+            required
+          />
+          <input
+            className="w-full"
+            type="text"
+            id="locationName"
+            name="locationName"
+            value={location.name}
+            onChange={() => {}}
+            required
+          />
+        </p>
         <Map
           onChange={(location) => {
             setLocation({
               latitude: location.lat,
               longitude: location.lng,
               name: location.name,
-              address: location.address,
             });
           }}
         />
@@ -126,7 +136,7 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
         <label htmlFor="isBooked">Is Booked</label>
         <input type="checkbox" id="isBooked" name="isBooked" defaultChecked={activity?.bookingOpen} />
       </p>
-      <div className='flex gap-2'>
+      <div className="flex gap-2">
         <button disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Save'}</button>
         <button type="button" onClick={cancelHandler} disabled={isSubmitting}>
           Cancel

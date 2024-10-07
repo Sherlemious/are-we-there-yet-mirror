@@ -18,7 +18,7 @@ const BlueDot: React.FC<{ position: google.maps.LatLngLiteral }> = ({ position }
   );
 };
 
-export type Location = { lat: number; lng: number; name: string; address: string };
+export type Location = { lat: number; lng: number; name: string };
 
 export default function Map({
   className = 'w-full h-full',
@@ -64,11 +64,10 @@ export default function Map({
     const data = await response.json();
 
     if (data.results && data.results.length > 0) {
-      const address = data.results[0].formatted_address;
-      const name = data.results[0].address_components[0].long_name;
+      const name = data.results[0].formatted_address;
 
-      onChange?.({ lat, lng, name, address });
-      setSelectedLocation?.({ lat, lng, name, address });
+      onChange?.({ lat, lng, name });
+      setSelectedLocation?.({ lat, lng, name });
     }
   };
 

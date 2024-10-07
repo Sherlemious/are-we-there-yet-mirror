@@ -73,7 +73,7 @@ function ActivityTable() {
                   ))}
                 </td>
                 <td className="p-2">{activity.specialDiscounts}</td>
-                <td className="p-2 flex">
+                <td className="p-2 flex justify-center">
                   <Link to="edit" state={activity} className="text-gray-600 hover:text-gray-800">
                     <Pencil size={20} />
                   </Link>
