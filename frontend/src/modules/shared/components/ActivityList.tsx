@@ -55,8 +55,10 @@ function useGetMyActivities() {
 
         // format the data
         const tempData: Activity[] = await parsedData.data.map((item) => {
-          const date = item.date ?? 'N/A';
-          const time = item.time ?? 'N/A';
+          const datetime = item.datetime ?? 'N/A';
+          const date = new Date(datetime).toLocaleDateString();
+          const time = new Date(datetime).toLocaleTimeString();
+
           const location = {
             name: item.location.name ?? 'N/A',
             latitude: item.location.latitude ?? 0,
