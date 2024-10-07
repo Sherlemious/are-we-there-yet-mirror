@@ -1,12 +1,13 @@
 import { Pencil, X } from 'lucide-react';
 import { Activity } from '../types/Activity';
+import { useLoaderData } from 'react-router';
+import { useState } from 'react';
+import axios from 'axios';
 
-interface ActivityTableProps {
-  Activities: Activity[];
-  onDeleteActivity: (id: string) => void;
-}
+function ActivityTable() {
+  const { activites: loaded_activites } = useLoaderData() as { activites: Activity[] };
+  const [activities, setActivities] = useState(loaded_activites);
 
-function ActivityTable({ Activities, onDeleteActivity }: ActivityTableProps) {
   const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
     return date.toLocaleDateString('en-US', {
@@ -22,6 +23,22 @@ function ActivityTable({ Activities, onDeleteActivity }: ActivityTableProps) {
       hour: 'numeric',
       minute: 'numeric',
     });
+  };
+
+  const handleDeleteActivity = async (id: string) => {
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_BACK_BASE_URL}/activities/${id}`);
+
+      if (response.status < 400) {
+        setActivities((prev) => prev.filter((activity) => activity._id !== id));
+      } else {
+        console.error('Failed to delete activity response:', response);
+        alert('Failed to delete activity');
+      }
+    } catch (error) {
+      console.error('Error deleting activity error:', error);
+      alert('Error deleting activity');
+    }
   };
 
   return (
@@ -40,32 +57,34 @@ function ActivityTable({ Activities, onDeleteActivity }: ActivityTableProps) {
           </tr>
         </thead>
         <tbody>
-          {Activities.filter((Activity) => Activity.bookingOpen).map((Activity) => (
-            <tr key={Activity._id} className="text-center">
-              <td className="p-2">{formatDate(Activity.datetime)}</td>
-              <td className="p-2">{formatTime(Activity.datetime)}</td>
-              <td className="p-2">{Activity.location.name}</td>
-              <td className="p-2">{Activity.price}</td>
-              <td className="p-2">{Activity.category.name}</td>
-              <td className="p-2">
-                {Activity.tags.map((tag) => (
-                  <span key={tag._id}>{tag.name}, </span>
-                ))}
-              </td>
-              <td className="p-2">{Activity.specialDiscounts}</td>
-              <td className="p-2 flex">
-                <button className="text-gray-600 hover:text-gray-800">
-                  <Pencil size={20} />
-                </button>
-                <button
-                  onClick={() => onDeleteActivity(Activity._id)} // Delete based on _id
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  <X size={20} />
-                </button>
-              </td>
-            </tr>
-          ))}
+          {activities
+            .filter((activity) => activity.bookingOpen)
+            .map((activity) => (
+              <tr key={activity._id} className="text-center">
+                <td className="p-2">{formatDate(activity.datetime)}</td>
+                <td className="p-2">{formatTime(activity.datetime)}</td>
+                <td className="p-2">{activity.location.name}</td>
+                <td className="p-2">{activity.price}</td>
+                <td className="p-2">{activity.category.name}</td>
+                <td className="p-2">
+                  {activity.tags.map((tag) => (
+                    <span key={tag._id}>{tag.name}, </span>
+                  ))}
+                </td>
+                <td className="p-2">{activity.specialDiscounts}</td>
+                <td className="p-2 flex">
+                  <button className="text-gray-600 hover:text-gray-800">
+                    <Pencil size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteActivity(activity._id)}
+                    className="text-gray-600 hover:text-gray-800"
+                  >
+                    <X size={20} />
+                  </button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

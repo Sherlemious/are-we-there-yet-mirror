@@ -1,92 +1,127 @@
-import React, { useState } from 'react';
-import { Activity } from '../types/Activity';
+import {
+  Form,
+  useNavigate,
+  useNavigation,
+  useActionData,
+  redirect,
+  type FormMethod,
+  useLoaderData,
+} from 'react-router-dom';
 
-interface ActivityFormProps {
-  onAddActivity: (newActivity: Activity) => void; // This function adds the new profile to the state
-}
+import { Activity, Category, Tag } from '../types/Activity';
+import axios from 'axios';
 
-const ActivityForm = ({ onAddActivity }: ActivityFormProps) => {
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [location, setLocation] = useState('');
-  const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('');
-  const [tags, setTags] = useState('');
-  const [specialDiscount, setSpecialDiscount] = useState('');
-  const [bookingOpen, setBookingOpen] = useState('');
+function ActivityForm({ method, activity }: { method: FormMethod; activity?: Activity }) {
+  const data = useActionData() as { message?: string };
+  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const { categories, tags } = useLoaderData() as { categories: Category[]; tags: Tag[] };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const isSubmitting = navigation.state === 'submitting';
 
-    // Create the new profile object
-    const newActivity: Activity = {
-      date,
-      time,
-      location,
-      price,
-      category,
-      tags,
-      specialDiscount,
-      bookingOpen,
-      _id: '',
-    };
-
-    try {
-      // Send the POST request to the backend
-      const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/activities', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newActivity),
-      });
-
-      if (response.ok) {
-        const addedActivity = await response.json();
-
-        // Call the onAddProfile function to update the state with the newly added profile
-        onAddActivity(addedActivity);
-
-        // Clear form fields
-        setDate('');
-        setTime('');
-        setLocation('');
-        setPrice('');
-        setCategory('');
-        setTags('');
-        setSpecialDiscount('');
-        setBookingOpen('');
-      } else {
-        console.error('Error adding activity:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error adding activity:', error);
-    }
-  };
+  function cancelHandler() {
+    navigate('..');
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 border rounded-md shadow-md">
-      <h2 className="text-lg font-semibold mb-4">Add New Activity</h2>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-2" htmlFor="date">
-          Date
-        </label>
+    <Form method={method}>
+      {data && data.message && <p>{data.message}</p>}
+      <p>
+        <label htmlFor="datetime">Date</label>
+        <input type="datetime-local" id="datetime" name="datetime" defaultValue={activity?.datetime} required />
+      </p>
+      <p>
+        <label htmlFor="price">Price</label>
+        <input type="number" id="price" name="price" defaultValue={activity?.price} required />
+      </p>
+      <p>
+        <label htmlFor="category">Category</label>
+        <input type="text" id="category" name="category" defaultValue={activity?.category.name} required />
+      </p>
+      <p>
+        <label htmlFor="category">Category</label>
+        <select name="category" id="category" required>
+          {categories.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </p>
+      <p>
+        {/* input tags using checkboxes */}
+        <label htmlFor="tags">Tags</label>
+        {tags.map((tag) => (
+          <label key={tag._id}>
+            <input
+              type="checkbox"
+              name="tags"
+              value={tag._id}
+              defaultChecked={activity?.tags.map((t) => t._id).includes(tag._id)}
+            />
+            {tag.name}
+          </label>
+        ))}
+      </p>
+      <p>
+        <label htmlFor="specialDiscount">Special Discount</label>
         <input
-          type="Date"
-          id="date"
-          placeholder="Date"
-          className="mb-4 w-full rounded border border-gray-300 px-3 py-2"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          type="number"
+          id="specialDiscount"
+          name="specialDiscount"
+          min="0"
+          defaultValue={activity?.specialDiscounts}
+          required
         />
-      </div>
+      </p>
 
-      <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-        Add Activity
-      </button>
-    </form>
+      <p>
+        <label htmlFor="isBooked">Is Booked</label>
+        <input type="checkbox" id="isBooked" name="isBooked" defaultChecked={activity?.bookingOpen} />
+      </p>
+      <div>
+        <button type="button" onClick={cancelHandler} disabled={isSubmitting}>
+          Cancel
+        </button>
+        <button disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Save'}</button>
+      </div>
+    </Form>
   );
-};
+}
 
 export default ActivityForm;
+
+export async function action({ request, params }: { request: Request; params: { activityId?: string } }) {
+  const method = request.method;
+  const data = await request.formData();
+
+  const activityData = {};
+
+  let url = `${import.meta.env.VITE_BACK_BASE_URL}`;
+
+  if (method === 'put') {
+    const activityId = params.activityId;
+    url = `${import.meta.env.VITE_BACK_BASE_URL}/${activityId}`;
+  }
+
+  const response = await axios({
+    method: method,
+    url: url,
+    data: activityData,
+  });
+
+  if (response.status === 400) {
+    return response;
+  }
+
+  return redirect('/activities');
+}
+
+export async function loader() {
+  const [categories, tags] = await Promise.all([
+    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/categories`),
+    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/tags`),
+  ]);
+
+  return { categories: categories.data.data.categories, tags: tags.data.data.tags };
+}
