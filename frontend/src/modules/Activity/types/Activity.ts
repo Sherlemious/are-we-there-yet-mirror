@@ -21,7 +21,6 @@ export interface Activity {
     latitude: number; // The latitude of the profile
     longitude: number; // The longitude of the profile
     name: string; // The name of the profile
-    address: string; // The address
   }; // The location of the profile
   price: string; // The price of the profile
   category?: Category;

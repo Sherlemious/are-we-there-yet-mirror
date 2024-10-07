@@ -175,7 +175,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
             type="checkbox"
             id="isBooked"
             name="isBooked"
-            defaultChecked={activity?.bookingOpen}
+            defaultChecked={!activity?.bookingOpen}
             className="form-checkbox h-5 w-5 text-gray-600"
           />
           <span className="text-gray-700 font-semibold">Is Booked</span>
