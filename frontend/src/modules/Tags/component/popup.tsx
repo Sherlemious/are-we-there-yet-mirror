@@ -3,35 +3,27 @@ import React, { useState, useEffect } from 'react';
 interface AddTagProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (
-    name: string,
-    type: string,
-    historical_period: string
-  ) => void;
+  onAdd: (name: string, type: string, historical_period: string) => void;
   title: string;
 }
 
 const AddTagPopup: React.FC<AddTagProps> = ({ isOpen, onClose, onAdd, title }) => {
-    const [name, setName] = useState('');
-    const [type, setType] = useState('');
-    const [historical_period, setHistoricalPeriod] = useState('');
+  const [name, setName] = useState('');
+  const [type, setType] = useState('');
+  const [historical_period, setHistoricalPeriod] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
-    setIsFormValid(
-        name.trim().length > 0 &&
-        type.trim().length > 0 &&
-        historical_period.trim().length > 0
-    );
-    }, [name, type, historical_period]);
+    setIsFormValid(name.trim().length > 0 && type.trim().length > 0 && historical_period.trim().length > 0);
+  }, [name, type, historical_period]);
   if (!isOpen) return null;
 
   const handleButtonClick = () => {
     if (isFormValid) {
-        onAdd(name, type, historical_period);
-        setName('');
-        setType('');
-        setHistoricalPeriod('');
+      onAdd(name, type, historical_period);
+      setName('');
+      setType('');
+      setHistoricalPeriod('');
     }
     onClose();
   };

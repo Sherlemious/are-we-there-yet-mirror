@@ -6,6 +6,8 @@ import Header from '../component/Header';
 
 const Dashboard = () => {
   const [Tags, setTags] = useState<Tag[]>([]);
+  const [isTagPopupOpen, setIsTagPopupOpen] = useState(false);
+  const [refresh, setRefresh] = useState(0);
 
   // Fetch profiles (GET request)
   const fetchTags = async () => {
@@ -20,9 +22,9 @@ const Dashboard = () => {
   };
 
   // Add tag (for frontend state)
-  const handleAddTag = (newTag: Tag) => {
-    setTags([...Tags, newTag]);
-  };
+  // const handleAddTag = (newTag: Tag) => {
+  //   setTags([...Tags, newTag]);
+  // };
 
   // Delete profile by _id (DELETE request)
   const handleDeleteTag = async (id: string) => {
@@ -33,6 +35,7 @@ const Dashboard = () => {
 
       if (response.ok) {
         setTags(Tags.filter((Tag) => Tag._id !== id));
+        setRefresh(refresh + 1);
       } else {
         console.error('Failed to delete tag');
       }
@@ -48,7 +51,12 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto">
-      <Header />
+      <Header 
+        setIsTagPopupOpen={setIsTagPopupOpen}
+        isTagPopupOpen={isTagPopupOpen}
+        setTags={setTags}
+        setRefresh={setRefresh}
+      />
       <TagTable Tags={Tags} onDeleteTag={handleDeleteTag} />
       {/* <ProfileForm onAddProfile={handleAddProfile} /> */}
     </div>
