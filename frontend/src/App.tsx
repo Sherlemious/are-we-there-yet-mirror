@@ -28,17 +28,18 @@ import {
   touristProfileLoader,
 } from "./modules/Tourist/App";
 import { Toaster } from "react-hot-toast";
-import { UsersAssets } from './modules/shared/pages/UsersAssets';
-import { AllMuseums } from './modules/Museums/App';
-import { loader as activityLoader } from './modules/Activity/pages/Activity';
+import { UsersAssets } from "./modules/shared/pages/UsersAssets";
+import { AllMuseums } from "./modules/Museums/App";
+import { loader as activityLoader } from "./modules/Activity/pages/Activity";
 import {
   loader as activityAddLoader,
   editLoader as activityEditLoader,
   action as activityFormAction,
-} from './modules/Activity/component/ActivityForm';
-import { Activity, ActivityForm, EditActivity } from './modules/Activity/App';
+} from "./modules/Activity/component/ActivityForm";
+import { Activity, ActivityForm, EditActivity } from "./modules/Activity/App";
 
 const BrowserRouter = createBrowserRouter([
+  { path: "/", element: <RootLayout /> },
   {
     path: "/register",
     element: <Register />,
@@ -89,7 +90,7 @@ const BrowserRouter = createBrowserRouter([
     element: <AdminDashboard />,
   },
   {
-    path: '/activity',
+    path: "/activity",
     children: [
       {
         index: true,
@@ -97,13 +98,13 @@ const BrowserRouter = createBrowserRouter([
         loader: activityLoader,
       },
       {
-        path: 'add',
+        path: "add",
         element: <ActivityForm method="post" />,
         action: activityFormAction,
         loader: activityAddLoader,
       },
       {
-        path: 'edit/:activityId',
+        path: "edit/:activityId",
         element: <EditActivity />,
         action: activityFormAction,
         loader: activityEditLoader,
@@ -123,13 +124,13 @@ const BrowserRouter = createBrowserRouter([
     element: <Category />,
   },
   {
-    path: '/users-assets',
+    path: "/users-assets",
     element: <UsersAssets />,
   },
   {
-    path: '/all-museums',
+    path: "/all-museums",
     element: <AllMuseums />,
-  }
+  },
 ]);
 
 function App() {
