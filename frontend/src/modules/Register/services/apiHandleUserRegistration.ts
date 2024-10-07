@@ -50,6 +50,7 @@ export async function handleUserRegistration({
 
     // Check if the response is successful and perform the redirect
     if (res.status === 200) {
+      localStorage.setItem("UUID", res.data.data.user._id); // Store the user ID in local storage
       return redirect(`${successRedirect}/${res.data.data.user._id}`); // Redirect to the specified route
     }
   } catch (error) {
