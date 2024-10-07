@@ -1,10 +1,11 @@
 import React from 'react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Museum } from '../types/museum';
 import { Minus, Plus } from 'lucide-react';
 import Modal, { ModalRef } from './modal';
 import MuseumForm, {MuseumFormData} from './MuseumForm';
 import defaultPhoto from '../assets/defaultPhoto.png';
+import axios from 'axios';
 
 
 interface MuseumListProps {
@@ -19,12 +20,45 @@ const defaultImage = defaultPhoto;
 
 const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit, onDelete  }) => {
   const [selectedMuseum, setSelectedMuseum] = useState<Museum | null>(null); // State to store the clicked museum
+  const [imageURLs, setImageURLs] = useState<{ [key: string]: string }>({}); // State to store image URLs
   const EditmodalRef = useRef<ModalRef>(null); // Reference for modal
   const AddmodalRef = useRef<ModalRef>(null); // Reference for modal
   const handleOpenModal = (museum: Museum) => {
     setSelectedMuseum(museum);
     EditmodalRef.current?.open(); // Open the modal
   };
+  const fetchPicture = async (museum: Museum): Promise<string | undefined> => {
+    try {
+      const response = await axios.get(
+        `https://are-we-there-yet-mirror.onrender.com/api/attachments/${museum.pictures[0]}`,
+        { responseType: 'arraybuffer' } // Fetch binary data
+      );
+
+      // Convert array buffer to Blob
+      const blob = new Blob([response.data], { type: 'image/png' }); // Adjust type according to the image type
+      return URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Error fetching pictures:', error);
+      return undefined;
+    }
+  };
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const newImageURLs: { [key: string]: string } = {};
+      for (const museum of museums) {
+        if (museum.pictures.length > 0) {
+          const imageUrl = await fetchPicture(museum);
+          newImageURLs[museum._id] = imageUrl || defaultPhoto; // Use fetched image or default
+        } else {
+          newImageURLs[museum._id] = defaultPhoto; // Default image if no pictures
+        }
+      }
+      setImageURLs(newImageURLs);
+    };
+
+    // fetchImages();
+  }, [museums]);
 
   return (
     <div className={customStyles.container}>
@@ -50,7 +84,8 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
 
                   {/* Image */}
                   <div className={customStyles.imageContainer}>
-                  <img src={museum.pictures.length > 0 ? museum.pictures[0] : defaultImage} alt={museum.name} className={customStyles.image} />
+                  <img src={defaultImage} alt={museum.name} className={customStyles.image} />
+                  {/* <img src={museum.pictures.length > 0 ? museum.pictures[0] : defaultImage} alt={museum.name} className={customStyles.image} /> */}
                   </div>
 
                   <h3 className={customStyles.slideTitle}>{museum.name}</h3>

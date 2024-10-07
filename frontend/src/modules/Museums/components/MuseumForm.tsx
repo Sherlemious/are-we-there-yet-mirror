@@ -58,6 +58,40 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
   const [imageIndex, setImageIndex] = useState(0); // State to keep track of the current image index
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null); // To track location from the map
 
+  const fetchPictures = async (museum: Museum) => {
+  try {
+    const fetchedFiles: File[] = [];
+
+    for (let i = 0; i < museum.pictures.length; i++) {
+      // Fetch the picture using the attachment ID
+      if(museum.pictures[i]) {
+      const response = await axios.get(
+        `https://are-we-there-yet-mirror.onrender.com/api/attachments/${museum.pictures[i]}`,
+        { responseType: 'arraybuffer' } // Fetch binary data
+      );
+      // Convert array buffer to Blob
+      const blob = new Blob([response.data], { type: 'image/png' }); // Adjust type according to the image type
+
+      // Convert Blob to File
+      const file = new File([blob], `image-${i}.png`, { type: 'image/png' }); // Adjust file type and name
+
+      fetchedFiles.push(file); // Push the file into the array
+    }
+
+    // Set the fetched files into the state
+    setPictures(fetchedFiles);
+
+    // Optionally set the first file as preview
+    if (fetchedFiles.length > 0) {
+      setImagePreview(fetchedFiles[0]);
+    }
+  }
+  } catch (error) {
+    console.error('Error fetching pictures:', error);
+  }
+};
+
+  
   useEffect(() => {
     if (selectedMuseum) {
       setFormData((prevData) => ({
@@ -75,6 +109,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
         },
         pictures: selectedMuseum.pictures,
       }));
+      // fetchPictures(selectedMuseum);
+
       // Load the selected location for the map
       setSelectedLocation({
         lat: selectedMuseum.location.latitude,
