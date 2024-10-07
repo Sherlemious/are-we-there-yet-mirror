@@ -29,7 +29,8 @@ import {
   touristProfileLoader,
 } from "./modules/Tourist/App";
 import { Toaster } from "react-hot-toast";
-import { UsersAssets } from './modules/shared/pages/UsersAssets';
+import { UsersAssets } from "./modules/shared/pages/UsersAssets";
+import { UsersAssets as CrudUserAssets } from "./modules/TourGuide/pages/UsersAssets";
 
 const BrowserRouter = createBrowserRouter([
   { path: "/", element: <RootLayout />, children: [] },
@@ -99,8 +100,12 @@ const BrowserRouter = createBrowserRouter([
     element: <Category />,
   },
   {
-    path: '/users-assets',
+    path: "/users-assets",
     element: <UsersAssets />,
+  },
+  {
+    path: "/crud-users-assets",
+    element: <CrudUserAssets />,
   },
 ]);
 
