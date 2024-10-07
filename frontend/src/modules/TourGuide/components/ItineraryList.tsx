@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import CreateItineraryModal from './CreateItineraryModal';
 import { getActivities } from './Api';
+import axios from 'axios';
 
 export interface Location {
   name: string;
@@ -114,18 +115,13 @@ function useCreateMyItinerary(activities: Activity[]) {
       const ids = newItinerary.activityIds || [];
       newItinerary.locations = activities.filter((activity) => activity.id in ids).map((activity) => activity.location);
 
-      console.table(newItinerary);
-      const response = await fetch(url, {
-        method: 'POST',
+      console.log(JSON.stringify(newItinerary));
+      const response = await axios.post(url, JSON.stringify(newItinerary), {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newItinerary),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create itinerary');
-      }
+      console.log(response);
 
       setLoading(false);
     } catch (error) {
