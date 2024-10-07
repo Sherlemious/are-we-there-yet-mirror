@@ -37,52 +37,70 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
 
   console.log(activity);
   return (
-    <Form method={method} className="w-full h-full">
-      {data && data.message && <p>{data.message}</p>}
-      <p>
-        <label htmlFor="datetime">Date</label>
+    <Form method={method} className="w-full h-full bg-gray-100 p-6 rounded-lg shadow-md">
+      {data && data.message && <p className="text-gray-700 mb-4">{data.message}</p>}
+
+      <div className="mb-4">
+        <label htmlFor="datetime" className="block text-gray-700 font-semibold mb-2">
+          Date
+        </label>
         <input
           type="datetime-local"
           id="datetime"
           name="datetime"
           defaultValue={toDateTimeLocal(activity?.datetime)}
           required
+          className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
-      </p>
-      <p>
-        <label htmlFor="price">Price</label>
-        <input type="number" id="price" name="price" defaultValue={activity?.price} required />
-      </p>
-      <div className="mb-7 w-full h-[70%]">
-        <p className="flex">
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="price" className="block text-gray-700 font-semibold mb-2">
+          Price
+        </label>
+        <input
+          type="number"
+          id="price"
+          name="price"
+          defaultValue={activity?.price}
+          required
+          className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+        />
+      </div>
+
+      <div className="w-full h-full">
+        <div className="flex gap-2 mb-2">
           <input
-            className="w-fit"
+            className="w-1/3 px-3 py-2 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
             type="text"
             id="locationLat"
             name="locationLat"
             value={location.latitude}
             onChange={() => {}}
             required
+            placeholder="Latitude"
           />
           <input
-            className="w-fit"
+            className="w-1/3 px-3 py-2 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
             type="text"
             id="locationLng"
             name="locationLng"
             value={location.longitude}
             onChange={() => {}}
             required
+            placeholder="Longitude"
           />
           <input
-            className="w-full"
+            className="w-1/3 px-3 py-2 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
             type="text"
             id="locationName"
             name="locationName"
             value={location.name}
             onChange={() => {}}
             required
+            placeholder="Location Name"
           />
-        </p>
+        </div>
         <Map
           onChange={(location) => {
             setLocation({
@@ -91,37 +109,50 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
               name: location.name,
             });
           }}
+          className="w-full h-[90%] bg-gray-300 rounded-md"
         />
       </div>
-      <p>
-        <label htmlFor="category">Category</label>
-        <select name="category" id="category" required>
+
+      <div className="mb-4">
+        <label htmlFor="category" className="block text-gray-700 font-semibold mb-2">
+          Category
+        </label>
+        <select
+          name="category"
+          id="category"
+          required
+          className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+        >
           {categories.map((category) => (
             <option key={category._id} value={category._id}>
               {category.name}
             </option>
           ))}
         </select>
-      </p>
-      <p>
-        {/* input tags using checkboxes */}
-        <label>
-          Tags
+      </div>
+
+      <div className="mb-4">
+        <span className="block text-gray-700 font-semibold mb-2">Tags</span>
+        <div className="space-y-2">
           {tags.map((tag) => (
-            <label key={tag._id}>
+            <label key={tag._id} className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 name="tags"
                 value={tag._id}
                 defaultChecked={activity?.tags.map((t) => t._id).includes(tag._id)}
+                className="form-checkbox h-5 w-5 text-gray-600"
               />
-              {tag.name}
+              <span className="text-gray-700">{tag.name}</span>
             </label>
           ))}
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="specialDiscount" className="block text-gray-700 font-semibold mb-2">
+          Special Discount
         </label>
-      </p>
-      <p>
-        <label htmlFor="specialDiscount">Special Discount</label>
         <input
           type="number"
           id="specialDiscount"
@@ -129,16 +160,36 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
           min="0"
           defaultValue={activity?.specialDiscounts}
           required
+          className="w-full px-3 py-2 bg-gray-200 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
-      </p>
+      </div>
 
-      <p>
-        <label htmlFor="isBooked">Is Booked</label>
-        <input type="checkbox" id="isBooked" name="isBooked" defaultChecked={activity?.bookingOpen} />
-      </p>
+      <div className="mb-6">
+        <label htmlFor="isBooked" className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="isBooked"
+            name="isBooked"
+            defaultChecked={activity?.bookingOpen}
+            className="form-checkbox h-5 w-5 text-gray-600"
+          />
+          <span className="text-gray-700 font-semibold">Is Booked</span>
+        </label>
+      </div>
+
       <div className="flex gap-2">
-        <button disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Save'}</button>
-        <button type="button" onClick={cancelHandler} disabled={isSubmitting}>
+        <button
+          disabled={isSubmitting}
+          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 disabled:opacity-50"
+        >
+          {isSubmitting ? 'Submitting...' : 'Save'}
+        </button>
+        <button
+          type="button"
+          onClick={cancelHandler}
+          disabled={isSubmitting}
+          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 disabled:opacity-50"
+        >
           Cancel
         </button>
       </div>
