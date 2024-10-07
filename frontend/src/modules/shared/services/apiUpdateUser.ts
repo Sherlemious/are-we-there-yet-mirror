@@ -114,6 +114,12 @@ function prepareData(
   }
 
   if (account_type === userRoles.tourGuide) {
+    if (data["email"]) {
+      keys["email"] = data["email"];
+    }
+    if (data["password"]) {
+      keys["password"] = data["password"];
+    }
     if (data["mobile number"]) {
       {
         keys["mobile_number"] = data["mobile number"];
@@ -127,6 +133,12 @@ function prepareData(
   }
 
   if (account_type === userRoles.seller) {
+    if (data["email"]) {
+      keys["email"] = data["email"];
+    }
+    if (data["password"]) {
+      keys["password"] = data["password"];
+    }
     if (data["description"]) {
       keys["description"] = data["description"];
     }
@@ -138,6 +150,12 @@ function prepareData(
   }
 
   if (account_type === userRoles.advertiser) {
+    if (data["email"]) {
+      keys["email"] = data["email"];
+    }
+    if (data["password"]) {
+      keys["password"] = data["password"];
+    }
     if (data[fieldNames.hotline]) {
       keys["hotline"] = data[fieldNames.hotline];
     }

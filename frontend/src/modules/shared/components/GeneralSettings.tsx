@@ -21,6 +21,8 @@ export default function GeneralSettings({
   name,
   hotline,
   website,
+  email,
+  password,
 }: {
   inputFields: string[];
   description?: string;
@@ -30,6 +32,8 @@ export default function GeneralSettings({
   name?: string;
   hotline?: string;
   website?: string;
+  email?: string;
+  password?: string;
 }) {
   const navigation = useNavigation();
   const submit = useSubmit();
@@ -110,6 +114,19 @@ export default function GeneralSettings({
                 </div>
               </div>
             ))}
+
+            <div className="mt-2 flex flex-col gap-2">
+              <InputField
+                defaultValue={email}
+                inputField={fieldNames.email}
+                hasLabel={false}
+              />
+              <InputField
+                inputField={fieldNames.password}
+                hasLabel={false}
+                defaultValue={password}
+              />
+            </div>
             {fieldsLength > 1 && (
               <Button
                 type="submit"

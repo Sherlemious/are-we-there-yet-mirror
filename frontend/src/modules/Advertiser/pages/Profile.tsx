@@ -36,6 +36,8 @@ export default function Profile() {
     website,
     _id: id,
     company_profile,
+    email,
+    password,
   } = user;
 
   return (
@@ -46,6 +48,8 @@ export default function Profile() {
           account_type={account_type}
           hotline={hotline}
           website={website}
+          email={email}
+          password={password}
           inputFields={[fieldNames.hotline, fieldNames.link]}
         />
       </div>

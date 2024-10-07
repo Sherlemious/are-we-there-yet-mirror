@@ -27,7 +27,7 @@ export default function Profile() {
   };
 
   const user = loaderData.data.user;
-  const { username, account_type, description } = user;
+  const { username, account_type, description, password, email } = user;
 
   return (
     <div className="mx-7 my-20 flex h-auto flex-col gap-10">
@@ -37,6 +37,8 @@ export default function Profile() {
       </div>
       <GeneralSettings
         name={username}
+        email={email}
+        password={password}
         account_type={account_type}
         inputFields={[fieldNames.name]}
         description={description}

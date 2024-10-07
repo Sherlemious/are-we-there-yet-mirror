@@ -34,7 +34,11 @@ export default function Profile() {
     years_of_experience,
     previous_work,
     _id: id,
+    email,
+    password,
   } = user;
+
+  console.log(account_type);
 
   return (
     <div className="mx-7 my-20 flex h-auto flex-col gap-10">
@@ -44,6 +48,8 @@ export default function Profile() {
           account_type={account_type}
           mobileNumber={mobile_number}
           yearsOfExperience={years_of_experience}
+          email={email}
+          password={password}
           inputFields={[fieldNames.mobileNumber, fieldNames.yearsOfExperience]}
         />
       </div>
