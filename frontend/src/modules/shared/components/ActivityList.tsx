@@ -10,6 +10,7 @@ interface Activity {
   };
   price: number;
   category: string;
+  ratings: number;
   tags: {
     name: string;
     type: string;
@@ -70,11 +71,13 @@ function useGetMyActivities() {
 
           const specialDiscounts = item.specialDiscounts ?? 0;
           const bookingOpen = item.bookingOpen ?? false;
+          const ratings = Math.floor(Math.random() * 5) + 1; // TODO: Replace with actual ratings
 
           return {
             date,
             time,
             location,
+            ratings,
             price,
             category,
             tags,
@@ -103,11 +106,12 @@ function useGetMyActivities() {
 
 function ActivityCard({ activity }: { activity: Activity }) {
   return (
-    <div className="w-full h-fit border-black border-2 grid grid-cols-8 py-8 px-2">
+    <div className="w-full h-fit border-black border-2 grid grid-cols-9 py-8 px-2">
       <div className="text-left">{activity.date}</div>
       <div className="text-left">{activity.time}</div>
       <div className="text-left">{activity.location.name}</div>
       <div className="text-left">{activity.price}</div>
+      <div className="text-left">{activity.ratings}/5</div>
       <div className="text-left">{activity.category}</div>
       <div className="text-left">{activity.tags.map(formatText).join(', ')}</div>
       <div className="text-left">{activity.specialDiscounts}</div>
@@ -120,25 +124,41 @@ export function ActivityList() {
   // get the data
   const { data, loading, error } = useGetMyActivities();
 
-  // handle the search
+  // handle the search and filter
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const [budget, setBudget] = useState<number | null>(null);
+  const [date, setDate] = useState<string>('');
+  const [ratings, setRatings] = useState<number | null>(null);
+
   const [filteredData, setFilteredData] = useState<Activity[]>([]);
 
   useEffect(() => {
     setFilteredData(
       data.filter((item) => {
+        // Check each filter criteria
         const matchesSearchQuery =
+          searchQuery === '' ||
           item.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-        return matchesSearchQuery;
+
+        const matchesBudget = budget === null || item.price <= budget;
+
+        const matchesDate = date === '' || new Date(item.date) >= new Date(date);
+
+        const matchesRatings = ratings === null || item.ratings >= ratings;
+
+        // Return true if all conditions match
+        return matchesSearchQuery && matchesBudget && matchesDate && matchesRatings;
       })
     );
-  }, [searchQuery, data]);
+  }, [searchQuery, budget, date, ratings, data]);
+
   return (
     <div className="flex flex-col gap-8 p-8">
       {/* tool bar */}
-      <div className="p-4 grid grid-cols-2 gap-8">
+      <div className="p-4 grid grid-cols-4 gap-8">
         <input
           type="text"
           placeholder="Search"
@@ -146,14 +166,34 @@ export function ActivityList() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <div className="border-black border-2 p-4"></div>
+        <input
+          type="number"
+          placeholder="Max Budget"
+          className="w-full border-black border-2 p-4"
+          value={budget ?? ''}
+          onChange={(e) => setBudget(e.target.value ? parseInt(e.target.value) : null)}
+        />
+        <input
+          type="date"
+          className="w-full border-black border-2 p-4"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Min Ratings"
+          className="w-full border-black border-2 p-4"
+          value={ratings ?? ''}
+          onChange={(e) => setRatings(e.target.value ? parseInt(e.target.value) : null)}
+        />
       </div>
       {/* header */}
-      <div className="w-full h-fit border-black border-2 grid grid-cols-8 py-4 px-2">
+      <div className="w-full h-fit border-black border-2 grid grid-cols-9 py-4 px-2">
         <div className="text-left font-bold text-xl">Date</div>
         <div className="text-left font-bold text-xl">Time</div>
         <div className="text-left font-bold text-xl">Location</div>
         <div className="text-left font-bold text-xl">Price</div>
+        <div className="text-left font-bold text-xl">Ratings</div>
         <div className="text-left font-bold text-xl">Category</div>
         <div className="text-left font-bold text-xl">Tags</div>
         <div className="text-left font-bold text-xl">Discount</div>

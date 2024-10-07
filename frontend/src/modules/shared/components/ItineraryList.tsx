@@ -300,20 +300,44 @@ export function ItineraryList() {
   // get the data
   const { data, loading, error } = useGetMyItineraries();
 
-  // handle the search
+  // handle the search and filter
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const [budget, setBudget] = useState<number | null>(null);
+  const [date, setDate] = useState<string>('');
+  const [ratings, setRatings] = useState<number | null>(null);
+
   const [filteredData, setFilteredData] = useState<Activity[]>([]);
+
   useEffect(() => {
     setFilteredData(
       data.filter((item) => {
+        // Check each filter criteria
         const matchesSearchQuery =
+          searchQuery === '' ||
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-        return matchesSearchQuery;
+
+        // handle the budget
+        const matchesBudget = budget === null || item.price <= budget;
+
+        // handle the date
+        const matchesDate =
+          date === '' ||
+          item.availableDateTimes.some((dateTime) => {
+            const formattedDate = new Date(dateTime.date).toLocaleDateString('en-GB');
+            return formattedDate === new Date(date).toLocaleDateString('en-GB');
+          });
+
+        // handle the ratings
+        const matchesRatings = ratings === null || item.rating >= ratings;
+
+        // Return true if all conditions match
+        return matchesSearchQuery && matchesBudget && matchesDate && matchesRatings;
       })
     );
-  }, [searchQuery, data]);
+  }, [searchQuery, budget, date, ratings, data]);
 
   return (
     <>
@@ -322,7 +346,7 @@ export function ItineraryList() {
       {!loading && !error && (
         <>
           {/* tool bar */}
-          <div className="p-4 grid grid-cols-2 gap-8">
+          <div className="p-4 grid grid-cols-4 gap-8">
             <input
               type="text"
               placeholder="Search"
@@ -330,7 +354,26 @@ export function ItineraryList() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div className="border-black border-2 p-4"></div>
+            <input
+              type="number"
+              placeholder="Max Budget"
+              className="w-full border-black border-2 p-4"
+              value={budget ?? ''}
+              onChange={(e) => setBudget(e.target.value ? parseInt(e.target.value) : null)}
+            />
+            <input
+              type="date"
+              className="w-full border-black border-2 p-4"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Min Ratings"
+              className="w-full border-black border-2 p-4"
+              value={ratings ?? ''}
+              onChange={(e) => setRatings(e.target.value ? parseInt(e.target.value) : null)}
+            />
           </div>
           {/* body */}
           <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
