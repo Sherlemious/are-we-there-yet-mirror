@@ -1,7 +1,19 @@
 import { useState, useEffect } from 'react';
 import CreateItineraryModal from './CreateItineraryModal';
+import { getActivities } from './Api';
+
+export interface Location {
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+export interface Tag {
+  id: string;
+  name: string;
+}
 
 export interface Activity {
+  id: string;
   duration: string;
   date: string;
   time: string;
@@ -14,22 +26,30 @@ export interface Activity {
 }
 
 export interface Itinerary {
+  user_id: string;
   id: string;
   name: string;
   category: string;
   tags: string[];
+  tagIds: Tag[];
+  activityIds: string[];
   activities: Activity[];
   locations: string[];
   language: string;
   timeline: string;
   price: string;
+  available_datetimes: String[];
+  availableDateTimes2: String[];
   availableDateTimes: {
     date: string;
     time: string;
   }[];
+  accessibility: boolean;
   accessibilities: boolean;
   pickupLocation: string;
   dropoffLocation: string;
+  pick_up_location: Location;
+  drop_off_location: Location;
 }
 
 function useDeleteMyItinerary() {
@@ -66,7 +86,7 @@ function useDeleteMyItinerary() {
   return { deleteItinerary, loading, error };
 }
 
-function useCreateMyItinerary() {
+function useCreateMyItinerary(activities: Activity[]) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -78,6 +98,23 @@ function useCreateMyItinerary() {
     const url = `${baseUrl}/itineraries`;
 
     try {
+      newItinerary.user_id = '6702970588d93fa6bce6432b';
+      newItinerary.available_datetimes = newItinerary.availableDateTimes2;
+      newItinerary.pick_up_location = {
+        name: newItinerary.pickupLocation || '',
+        latitude: 0,
+        longitude: 0,
+      };
+      newItinerary.drop_off_location = {
+        name: newItinerary.dropoffLocation || '',
+        latitude: 0,
+        longitude: 0,
+      };
+      newItinerary.accessibility = newItinerary.accessibilities;
+      const ids = newItinerary.activityIds || [];
+      newItinerary.locations = activities.filter((activity) => activity.id in ids).map((activity) => activity.location);
+
+      console.table(newItinerary);
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -130,27 +167,31 @@ function useGetMyItineraries() {
         const name = item.name ?? 'N/A';
         const category = item.category ?? 'N/A';
         // for each tag get all tags to get the name of tag
-        const activities = item.activities ? item.activities.map((activity: Activity) => {
-          return {
-            duration: activity.duration ?? 'N/A',
-            date: activity.date ?? 'N/A',
-            time: activity.time ?? 'N/A',
-            location: activity.location ?? 'N/A',
-            price: activity.price ?? 'N/A',
-            category: activity.category ?? 'N/A',
-            tags: activity.tags ?? [],
-            discount: activity.discount ?? 'N/A',
-            bookingOpen: activity.bookingOpen ?? false,
-          };
-        }) : [];
+        const activities = item.activities
+          ? item.activities.map((activity: Activity) => {
+              return {
+                duration: activity.duration ?? 'N/A',
+                date: activity.date ?? 'N/A',
+                time: activity.time ?? 'N/A',
+                location: activity.location ?? 'N/A',
+                price: activity.price ?? 'N/A',
+                category: activity.category ?? 'N/A',
+                tags: activity.tags ?? [],
+                discount: activity.discount ?? 'N/A',
+                bookingOpen: activity.bookingOpen ?? false,
+              };
+            })
+          : [];
         const language = item.language ?? 'N/A';
         const tags = item.tags ? item.tags.map((tag: { name: string }) => tag.name) : [];
         const locations = item.locations ? item.locations.map((location: { name: string }) => location.name) : [];
         const price = item.price ?? 'N/A';
         const timeline = item.timeline ?? 'N/A';
-        const availableDateTimes = item.available_datetimes ? item.available_datetimes.map((dateTime: string) => {
-          return formatDateTime(dateTime);
-        }) : [];
+        const availableDateTimes = item.available_datetimes
+          ? item.available_datetimes.map((dateTime: string) => {
+              return formatDateTime(dateTime);
+            })
+          : [];
         const accessibilities = item.accessibility ?? false;
         const pickupLocation = item.pick_up_location?.name ?? 'N/A';
         const dropoffLocation = item.drop_off_location?.name ?? 'N/A';
@@ -234,9 +275,7 @@ const formatActivity = (activity: Activity) => {
 function AddItineraryCard({ onAddClick }: { onAddClick: () => void }) {
   return (
     <div className="w-full h-full border-black border-2 relative flex items-center justify-center" onClick={onAddClick}>
-      <button className="text-6xl font-bold text-black">
-        +
-      </button>
+      <button className="text-6xl font-bold text-black">+</button>
     </div>
   );
 }
@@ -390,7 +429,15 @@ function ItineraryModal({ itinerary, onClose }: { itinerary: Itinerary; onClose:
   );
 }
 
-function ItineraryCard({ itinerary, onCardClick, onDeleteClick }: { itinerary: Itinerary; onCardClick: () => void; onDeleteClick: () => void }) {
+function ItineraryCard({
+  itinerary,
+  onCardClick,
+  onDeleteClick,
+}: {
+  itinerary: Itinerary;
+  onCardClick: () => void;
+  onDeleteClick: () => void;
+}) {
   const combinedData = itinerary.activities.map((activity, index) => ({
     ...activity,
     location: itinerary.locations[index] || 'N/A',
@@ -399,7 +446,13 @@ function ItineraryCard({ itinerary, onCardClick, onDeleteClick }: { itinerary: I
   return (
     <div className="w-full h-full border-black border-2 relative" onClick={onCardClick}>
       {/* Minus button */}
-      <button onClick={(e) => { e.stopPropagation(); onDeleteClick(); }} className="absolute top-2 right-2 text-xl font-bold bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onDeleteClick();
+        }}
+        className="absolute top-2 right-2 text-xl font-bold bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+      >
         -
       </button>
       {/* Itinerary name */}
@@ -423,9 +476,18 @@ function ItineraryCard({ itinerary, onCardClick, onDeleteClick }: { itinerary: I
 export function ItineraryList() {
   const { data, loading, error, fetchData } = useGetMyItineraries();
   const { deleteItinerary, loading: deleteLoading, error: deleteError } = useDeleteMyItinerary();
-  const { createItinerary, loading: createLoading, error: createError } = useCreateMyItinerary(); // Extract createItinerary
   const [selectedItinerary, setSelectedItinerary] = useState<Itinerary | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const { createItinerary, loading: createLoading, error: createError } = useCreateMyItinerary(activities); // Extract createItinerary
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      const data = await getActivities();
+      setActivities(data);
+    };
+    fetchActivities();
+  });
 
   const handleCardClick = (itinerary: Itinerary) => {
     setSelectedItinerary(itinerary);
