@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import CreateItineraryModal from './CreateItineraryModal';
 
-interface Activity {
+export interface Activity {
   duration: string;
   date: string;
   time: string;
@@ -12,7 +13,7 @@ interface Activity {
   bookingOpen: boolean;
 }
 
-interface Itinerary {
+export interface Itinerary {
   id: string;
   name: string;
   category: string;
@@ -30,8 +31,6 @@ interface Itinerary {
   pickupLocation: string;
   dropoffLocation: string;
 }
-
-
 
 function useDeleteMyItinerary() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -65,6 +64,44 @@ function useDeleteMyItinerary() {
   };
 
   return { deleteItinerary, loading, error };
+}
+
+function useCreateMyItinerary() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const createItinerary = async (newItinerary: Partial<Itinerary>) => {
+    setLoading(true);
+    setError(null);
+
+    const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
+    const url = `${baseUrl}/itineraries`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newItinerary),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create itinerary');
+      }
+
+      setLoading(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+      setLoading(false);
+    }
+  };
+
+  return { createItinerary, loading, error };
 }
 
 function useGetMyItineraries() {
@@ -173,7 +210,6 @@ const formatLocation = (location: string) => {
   }
   return location;
 };
-
 const formatTimeline = (timeline: string) => {
   const [start, end] = timeline.split(' - ');
   const formatDate = (dateString: string) => {
@@ -194,68 +230,6 @@ const formatTimeline = (timeline: string) => {
 const formatActivity = (activity: Activity) => {
   return `${activity.duration} min - ${formatLocation(activity.location)}`;
 };
-
-// function useGetTagNames(tagIds: string[]) {
-//   const [tagNames, setTagNames] = useState<{ [key: string]: string }>({});
-//   const [loading, setLoading] = useState<boolean>(true);
-//   const [error, setError] = useState<string | null>(null);
-
-//   const fetchTagNames = async () => {
-//     setLoading(true);
-//     setError(null);
-
-//     try {
-//       const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
-//       const tagNamesPromises = tagIds.map(async (tagId) => {
-//         const url = `${baseUrl}/tags/${tagId}`;
-//         const response = await fetch(url, {
-//           method: 'GET',
-//         });
-
-//         if (!response.ok) {
-//           throw new Error(`Failed to fetch tag name for tag ID: ${tagId}`);
-//         }
-
-//         const data = await response.json();
-//         console.log(`Fetched tag data for ${tagId}:`, data); // Debugging log
-//         console.log(data.tag[0].name); // Debugging log
-//         const tagName = data.tag && data.tag.length > 0 ? data.tag[0].name : 'N/A'; // Check if data.tag is defined and has elements
-//         return { tagId, tagName };
-//       });
-
-//       const tagNamesArray = await Promise.all(tagNamesPromises);
-//       console.log('Tag names array:', tagNamesArray); // Debugging log
-//       const tagNamesMap = tagNamesArray.reduce((acc, { tagId, tagName }) => {
-//         acc[tagId] = tagName;
-//         return acc;
-//       }, {} as { [key: string]: string });
-
-//       console.log('Tag names map:', tagNamesMap); // Debugging log
-
-//       setTagNames(tagNamesMap);
-//       setLoading(false);
-//     } catch (error) {
-//       if (error instanceof Error) {
-//         setError(error.message);
-//       } else {
-//         setError('An unknown error occurred');
-//       }
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (tagIds.length > 0) {
-//       fetchTagNames();
-//     }
-//   }, [tagIds]);
-
-//   return { tagNames, loading, error };
-// }
-
-
-
-// main components
 
 function AddItineraryCard({ onAddClick }: { onAddClick: () => void }) {
   return (
@@ -449,7 +423,9 @@ function ItineraryCard({ itinerary, onCardClick, onDeleteClick }: { itinerary: I
 export function ItineraryList() {
   const { data, loading, error, fetchData } = useGetMyItineraries();
   const { deleteItinerary, loading: deleteLoading, error: deleteError } = useDeleteMyItinerary();
+  const { createItinerary, loading: createLoading, error: createError } = useCreateMyItinerary(); // Extract createItinerary
   const [selectedItinerary, setSelectedItinerary] = useState<Itinerary | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleCardClick = (itinerary: Itinerary) => {
     setSelectedItinerary(itinerary);
@@ -460,22 +436,26 @@ export function ItineraryList() {
   };
 
   const handleAddClick = () => {
-    // Logic to handle adding a new itinerary will go here
-    console.log('Add Itinerary Clicked');
+    setIsCreating(true);
+  };
+
+  const handleSaveNewItinerary = async (newItinerary: Partial<Itinerary>) => {
+    await createItinerary(newItinerary); // Call createItinerary function
+    setIsCreating(false);
+    fetchData();
   };
 
   const handleDeleteClick = async (itineraryId: string) => {
     await deleteItinerary(itineraryId);
-    // Refresh the itineraries list after deletion
     fetchData();
   };
 
-  if (loading || deleteLoading) {
+  if (loading || deleteLoading || createLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error || deleteError) {
-    return <div>Error: {error || deleteError}</div>;
+  if (error || deleteError || createError) {
+    return <div>Error: {error || deleteError || createError}</div>;
   }
 
   return (
@@ -492,6 +472,7 @@ export function ItineraryList() {
         <AddItineraryCard onAddClick={handleAddClick} /> {/* Add the new itinerary card */}
       </div>
       {selectedItinerary && <ItineraryModal itinerary={selectedItinerary} onClose={handleCloseModal} />}
+      {isCreating && <CreateItineraryModal onClose={() => setIsCreating(false)} onSave={handleSaveNewItinerary} />}
     </>
   );
 }
