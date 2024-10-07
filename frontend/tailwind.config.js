@@ -11,6 +11,7 @@ export default {
         borders: {
           primary: '#d1d5db',
           bottomBorder: '#71717a',
+          bottom: '#71717a',
         },
         background: {
           button: '#6b7280',
