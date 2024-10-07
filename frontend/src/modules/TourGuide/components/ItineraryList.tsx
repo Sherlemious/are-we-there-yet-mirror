@@ -27,7 +27,7 @@ export interface Activity {
 }
 
 export interface Itinerary {
-  user_id: string;
+  created_by: string;
   id: string;
   name: string;
   category: string;
@@ -99,7 +99,7 @@ function useCreateMyItinerary(activities: Activity[]) {
     const url = `${baseUrl}/itineraries`;
 
     try {
-      newItinerary.user_id = '6702970588d93fa6bce6432b';
+      newItinerary.created_by = '6702970588d93fa6bce6432b';
       newItinerary.available_datetimes = newItinerary.availableDateTimes2;
       newItinerary.pick_up_location = {
         name: newItinerary.pickupLocation || '',
