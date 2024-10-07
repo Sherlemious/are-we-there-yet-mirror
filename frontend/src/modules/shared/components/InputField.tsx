@@ -62,9 +62,7 @@ export default function InputField({
         }
         max={
           inputField === fieldNames.dateOfBirth
-            ? new Date(new Date().getTime() - 18 * 365 * 24 * 60 * 60 * 1000)
-                .toISOString()
-                .slice(0, 10)
+            ? new Date().toISOString().slice(0, 10)
             : ""
         }
         placeholder={getPlaceholder(inputField)}
