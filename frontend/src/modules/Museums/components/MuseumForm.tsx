@@ -188,7 +188,20 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
     }
   };
 
-
+  const handleDeletePicture = (index: number) => {
+    console.log(index + " " + pictures.length);
+    if(pictures.length > 0) {
+    setImageIndex(index>=pictures.length ? pictures.length-1 : index); // Adjust imageIndex if necessary
+    setImagePreview(pictures[index>pictures.length ? pictures.length-1 : index]); // Update preview
+    }
+    else{
+      setImagePreview(undefined);
+      setImageIndex(0);
+    }
+    setPictures((prevPictures) => prevPictures.filter((_, i) => i !== index));
+    console.log(index + " " + pictures.length);
+  };
+  
   // Handling tags
   const handleTagChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = e.target;
@@ -402,12 +415,13 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
         <div>
         <label htmlFor="pictures" className="mb-2 block">Upload Pictures</label>
           <img 
-            src={imagePreview ? URL.createObjectURL(imagePreview) : defaultPhoto} 
+            src={imagePreview && pictures.length>0? URL.createObjectURL(imagePreview) : defaultPhoto} 
             alt="Preview" 
             className="mt-4-gray-300 rounded-md w-full h-64 object-cover" 
           />
+
           {/* Conditionally render arrows if multiple pictures are uploaded */}
-          {pictures.length > 1 && (
+          {pictures.length > 0 && (
             <div className="flex justify-between mb-3">
               <span 
                 onClick={() => handleImageToggle('prev')} 
@@ -421,6 +435,12 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
               >
                 &#9654; {/* Right arrow */}
               </span>
+              <button 
+                  type="button"
+                  onClick={() => handleDeletePicture(imageIndex)}
+                  className="ml-4 bg-red-500 text-white rounded-md p-1">
+                  Delete
+              </button>
             </div>
           )}
           <input
