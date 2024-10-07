@@ -13,7 +13,13 @@
     │   |   ├── controllers
     │   |   ├── middleware
     │   │   |   ├── auth
-    │   |   ├── models
+    │   |   ├── database
+    │   |   |   ├── models
+    │   |   |   ├── repositories
+    │   |   |   ├── exceptions
+    │   │   ├── exceptions
+    │   │   ├── types
+    │   │   ├── utils
     │   |   ├── routes
     │   |   ├── services
     │   |   ├── app.js
@@ -37,14 +43,14 @@
 ### Branch naming convention
 
     backend/root -> deployed to production
-    backend/dev -> where all the development happens. Our code is merged here before being deployed to production
+    backend/dev -> where all the development happens. Our code is merged here before being deployed to the production
     backend/your_name/feature -> where you work on your feature
 
 
 
     frontend/root -> deployed to production
-    frontend/dev -> where all the development happens. Our code is merged here before being deployed to production
-    frontend/your_name/feature -> where you work on your feature
+    frontend/dev -> where all the development happens. Our code is merged here before being deployed to the production
+    frontend/feat/feature_name -> where you work on your feature
 
 ## Screenshots
 
