@@ -181,7 +181,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
-      setPictures(files); // Store the file URLs
+      //update pictures to add existing pictures with the new files
+      setPictures([...pictures, ...files  ]);
       setImageIndex(0); // Reset to the first image
       setImagePreview(files[0]); // Display the first uploaded image
     }
