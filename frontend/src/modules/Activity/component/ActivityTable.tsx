@@ -3,6 +3,7 @@ import { Activity } from '../types/Activity';
 import { useLoaderData } from 'react-router';
 import { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 function ActivityTable() {
   const { activites: loaded_activites } = useLoaderData() as { activites: Activity[] };
@@ -63,9 +64,9 @@ function ActivityTable() {
               <tr key={activity._id} className="text-center">
                 <td className="p-2">{formatDate(activity.datetime)}</td>
                 <td className="p-2">{formatTime(activity.datetime)}</td>
-                <td className="p-2">{activity.location.name}</td>
+                <td className="p-2">{activity.location?.name}</td>
                 <td className="p-2">{activity.price}</td>
-                <td className="p-2">{activity.category.name}</td>
+                <td className="p-2">{activity.category?.name}</td>
                 <td className="p-2">
                   {activity.tags.map((tag) => (
                     <span key={tag._id}>{tag.name}, </span>
@@ -73,9 +74,9 @@ function ActivityTable() {
                 </td>
                 <td className="p-2">{activity.specialDiscounts}</td>
                 <td className="p-2 flex">
-                  <button className="text-gray-600 hover:text-gray-800">
+                  <Link to="edit" state={activity} className="text-gray-600 hover:text-gray-800">
                     <Pencil size={20} />
-                  </button>
+                  </Link>
                   <button
                     onClick={() => handleDeleteActivity(activity._id)}
                     className="text-gray-600 hover:text-gray-800"

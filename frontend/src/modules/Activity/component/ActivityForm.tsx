@@ -10,34 +10,79 @@ import {
 
 import { Activity, Category, Tag } from '../types/Activity';
 import axios from 'axios';
+import Map from '../../shared/utils/map';
+import { useState } from 'react';
 
 function ActivityForm({ method, activity }: { method: FormMethod; activity?: Activity }) {
   const data = useActionData() as { message?: string };
   const navigate = useNavigate();
   const navigation = useNavigation();
   const { categories, tags } = useLoaderData() as { categories: Category[]; tags: Tag[] };
+  const [location, setLocation] = useState(activity?.location || { latitude: 0, longitude: 0, name: '', address: '' });
 
   const isSubmitting = navigation.state === 'submitting';
+
+  function toDateTimeLocal(isoTimestamp?: string) {
+    if (!isoTimestamp) return '';
+
+    const date = new Date(isoTimestamp);
+    const dateTimeLocal = date.toISOString().slice(0, 16);
+
+    return dateTimeLocal;
+  }
 
   function cancelHandler() {
     navigate('..');
   }
 
+  console.log(activity);
   return (
-    <Form method={method}>
+    <Form method={method} className="w-full h-full">
       {data && data.message && <p>{data.message}</p>}
       <p>
         <label htmlFor="datetime">Date</label>
-        <input type="datetime-local" id="datetime" name="datetime" defaultValue={activity?.datetime} required />
+        <input
+          type="datetime-local"
+          id="datetime"
+          name="datetime"
+          defaultValue={toDateTimeLocal(activity?.datetime)}
+          required
+        />
       </p>
       <p>
         <label htmlFor="price">Price</label>
         <input type="number" id="price" name="price" defaultValue={activity?.price} required />
       </p>
-      <p>
-        <label htmlFor="category">Category</label>
-        <input type="text" id="category" name="category" defaultValue={activity?.category.name} required />
-      </p>
+      <div className="mb-7 w-full h-[70%]">
+        <input type="text" id="locationLat" name="locationLat" value={location.latitude} onChange={() => { }} required />
+        <input
+          type="text"
+          id="locationLng"
+          name="locationLng"
+          value={location.longitude}
+          onChange={() => { }}
+          required
+        />
+        <input type="text" id="locationName" name="locationName" value={location.name} onChange={() => { }} required />
+        <input
+          type="text"
+          id="locationAddress"
+          name="locationAddress"
+          value={location.address}
+          onChange={() => { }}
+          required
+        />
+        <Map
+          onChange={(location) => {
+            setLocation({
+              latitude: location.lat,
+              longitude: location.lng,
+              name: location.name,
+              address: location.address,
+            });
+          }}
+        />
+      </div>
       <p>
         <label htmlFor="category">Category</label>
         <select name="category" id="category" required>
@@ -50,18 +95,20 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
       </p>
       <p>
         {/* input tags using checkboxes */}
-        <label htmlFor="tags">Tags</label>
-        {tags.map((tag) => (
-          <label key={tag._id}>
-            <input
-              type="checkbox"
-              name="tags"
-              value={tag._id}
-              defaultChecked={activity?.tags.map((t) => t._id).includes(tag._id)}
-            />
-            {tag.name}
-          </label>
-        ))}
+        <label>
+          Tags
+          {tags.map((tag) => (
+            <label key={tag._id}>
+              <input
+                type="checkbox"
+                name="tags"
+                value={tag._id}
+                defaultChecked={activity?.tags.map((t) => t._id).includes(tag._id)}
+              />
+              {tag.name}
+            </label>
+          ))}
+        </label>
       </p>
       <p>
         <label htmlFor="specialDiscount">Special Discount</label>
@@ -79,11 +126,11 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
         <label htmlFor="isBooked">Is Booked</label>
         <input type="checkbox" id="isBooked" name="isBooked" defaultChecked={activity?.bookingOpen} />
       </p>
-      <div>
+      <div className='flex gap-2'>
+        <button disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Save'}</button>
         <button type="button" onClick={cancelHandler} disabled={isSubmitting}>
           Cancel
         </button>
-        <button disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Save'}</button>
       </div>
     </Form>
   );
@@ -95,26 +142,47 @@ export async function action({ request, params }: { request: Request; params: { 
   const method = request.method;
   const data = await request.formData();
 
-  const activityData = {};
+  const activityData = {
+    datetime: data.get('datetime'),
+    price: data.get('price'),
+    location: {
+      latitude: data.get('locationLat'),
+      longitude: data.get('locationLng'),
+      name: data.get('locationName'),
+      address: data.get('locationAddress'),
+    },
+    category: data.get('category'),
+    tags: data.getAll('tags'),
+    specialDiscounts: data.get('specialDiscount'),
+    bookingOpen: data.get('isBooked') === 'on',
+  };
 
-  let url = `${import.meta.env.VITE_BACK_BASE_URL}`;
+  let url = `${import.meta.env.VITE_BACK_BASE_URL}/activities`;
+
+  console.log('activityData', activityData);
+  console.log('method', method);
+  console.log('params', params);
+  console.log('url', url);
 
   if (method === 'put') {
     const activityId = params.activityId;
     url = `${import.meta.env.VITE_BACK_BASE_URL}/${activityId}`;
   }
 
-  const response = await axios({
-    method: method,
-    url: url,
-    data: activityData,
-  });
+  try {
+    console.log(
+      await axios({
+        method: method,
+        url: url,
+        data: activityData,
+      })
+    );
 
-  if (response.status === 400) {
-    return response;
+    return redirect('/activity');
+  } catch (e) {
+    console.error('Error saving activity', e);
+    return { message: 'Error submitting' };
   }
-
-  return redirect('/activities');
 }
 
 export async function loader() {

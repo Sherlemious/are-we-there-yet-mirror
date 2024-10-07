@@ -1,11 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Dashboard } from './modules/Admin/App';
-import Activity, { loader as activityLoader } from './modules/Activity/pages/Activity';
-import { loader as activityFormLoader } from './modules/Activity/component/ActivityForm';
+import { loader as activityLoader } from './modules/Activity/pages/Activity';
+import { loader as activityFormLoader, action as activityFormAction } from './modules/Activity/component/ActivityForm';
 import { Tag } from './modules/Tags/App';
 import { PrefrenceTag } from './modules/PrefrenceTag/App';
 import { Category } from './modules/Category/App';
-import { ActivityForm } from './modules/Activity/App';
+import { Activity, ActivityForm, EditActivity } from './modules/Activity/App';
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -13,7 +13,7 @@ const BrowserRouter = createBrowserRouter([
     element: <Dashboard />,
   },
   {
-    path: '/Activity',
+    path: '/activity',
     children: [
       {
         index: true,
@@ -23,6 +23,13 @@ const BrowserRouter = createBrowserRouter([
       {
         path: 'add',
         element: <ActivityForm method="post" />,
+        action: activityFormAction,
+        loader: activityFormLoader,
+      },
+      {
+        path: 'edit',
+        element: <EditActivity />,
+        action: activityFormAction,
         loader: activityFormLoader,
       },
     ],

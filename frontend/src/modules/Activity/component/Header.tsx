@@ -14,7 +14,7 @@ const Header = () => {
           Add an Activity
         </h3>
         <Link
-          to="/Activity/Add"
+          to="add"
           className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
         >
           Add Activity

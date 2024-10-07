@@ -24,14 +24,16 @@ export default function Map({
   className = 'w-full h-full',
   markedLocationState,
   center = null,
+  onChange,
 }: {
   className?: string;
-  markedLocationState: [Location | null, React.Dispatch<React.SetStateAction<Location | null>>];
+  markedLocationState?: [Location | null, React.Dispatch<React.SetStateAction<Location | null>>];
   center?: google.maps.LatLngLiteral | null;
+  onChange?: (location: Location) => void;
 }) {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(center);
-  const [selectedLocation, setSelectedLocation] = markedLocationState;
+  const [selectedLocation, setSelectedLocation] = markedLocationState || useState<Location | null>(null);
 
   useEffect(() => {
     if (userLocation) return;
@@ -65,7 +67,8 @@ export default function Map({
       const address = data.results[0].formatted_address;
       const name = data.results[0].address_components[0].long_name;
 
-      setSelectedLocation({ lat, lng, name, address });
+      onChange?.({ lat, lng, name, address });
+      setSelectedLocation?.({ lat, lng, name, address });
     }
   };
 

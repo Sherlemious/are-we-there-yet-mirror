@@ -15,7 +15,7 @@ export default Dashboard;
 
 export async function loader() {
   const activites = await axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/activities`);
-
+  console.log(activites);
   return {
     activites: activites.data.data,
   };
