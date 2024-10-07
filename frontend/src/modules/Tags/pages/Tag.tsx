@@ -43,7 +43,6 @@ const Dashboard = () => {
       console.error('Error deleting tag:', error);
     }
   };
-  
 
   useEffect(() => {
     fetchTags(); // Fetch profiles when the component mounts
@@ -51,7 +50,7 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto">
-      <Header 
+      <Header
         setIsTagPopupOpen={setIsTagPopupOpen}
         isTagPopupOpen={isTagPopupOpen}
         setTags={setTags}

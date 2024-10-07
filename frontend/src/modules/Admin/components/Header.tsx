@@ -1,19 +1,34 @@
-import React, { useState } from 'react';
+import { User } from 'lucide-react';
 import { AddUserPopup, OpenPopupButton } from './popup';
 
-const Header = () => {
-  const [isTourismGovernorPopupOpen, setIsTourismGovernorPopupOpen] = useState(false);
-  const [isAdminPopupOpen, setIsAdminPopupOpen] = useState(false);
-
-  // Function to add a user
-  const addUser = async (username: string, password: string,email:string, accountType: string) => {
+const Header = ({
+  isTourismGovernorPopupOpen,
+  setIsTourismGovernorPopupOpen,
+  setIsProfilePopupOpen,
+  isProfilePopupOpen,
+  isAdminPopupOpen,
+  setIsAdminPopupOpen,
+  setUsers,
+  setRefresh,
+}: {
+  isTourismGovernorPopupOpen: boolean;
+  isAdminPopupOpen: boolean;
+  isProfilePopupOpen: boolean;
+  setIsProfilePopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsTourismGovernorPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAdminPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setUsers: React.Dispatch<React.SetStateAction<any[]>>;
+  setRefresh: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+  // Function to add an Tag
+  const addUser = async (username: string, password: string, email: string, accountType: string) => {
     try {
       const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password,email, account_type: accountType }),
+        body: JSON.stringify({ username, password, email, account_type: accountType }),
       });
 
       if (!response.ok) {
@@ -23,18 +38,32 @@ const Header = () => {
       const newUser = await response.json();
       console.log('User added:', newUser); // Log the added user
       // Optionally, you can trigger a state update or callback to refresh the user list
+      const userId = newUser.data.user._id;
+      console.log('userId:', userId);
+      const user = await getUser(userId);
+      console.log('user:', user); // Log the added user
+      setUsers((prevUsers) => [
+        ...prevUsers,
+        { _id: user._id, username: user.username, email: user.email, account_type: user.account_type },
+      ]);
+      setRefresh((prev) => prev + 1);
     } catch (error) {
       console.error('Error adding user:', error);
     }
   };
+  async function getUser(id: string) {
+    return fetch(`https://are-we-there-yet-mirror.onrender.com/api/users/${id}`)
+      .then((response) => response.json())
+      .then((data) => data.data.user);
+  }
 
-  const handleAddTourismGovernor = (username: string, password: string, email:string ) => {
+  const handleAddTourismGovernor = (username: string, password: string, email: string) => {
     addUser(username, password, email, 'TourismGovernor');
     setIsTourismGovernorPopupOpen(false); // Close the popup after adding
   };
 
-  const handleAddAdmin = (username: string, password: string, email:string) => {
-    addUser(username, password,email, 'Admin');
+  const handleAddAdmin = (username: string, password: string, email: string) => {
+    addUser(username, password, email, 'Admin');
     setIsAdminPopupOpen(false); // Close the popup after adding
   };
 

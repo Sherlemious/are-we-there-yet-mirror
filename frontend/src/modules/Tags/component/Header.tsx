@@ -61,9 +61,7 @@ const Header = ({
         </div>
       </div>
       <div className="h-1/2 max-w-fit border-2 border-gray-300 p-14">
-        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">
-          Add a Tag
-        </h3>
+        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">Add a Tag</h3>
         <div className="flex space-x-4">
           <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>Add Tag</OpenPopupButton>
           <AddTagPopup

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 interface AddUserProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (username: string, password: string ,email:string) => void;
+  onAdd: (username: string, password: string, email: string) => void;
   title: string;
 }
 
