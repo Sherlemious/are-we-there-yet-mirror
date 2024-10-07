@@ -1,0 +1,1 @@
+export {default as ActivityCategory} from "./pages/Activity";
