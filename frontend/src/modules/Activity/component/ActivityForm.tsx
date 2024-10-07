@@ -38,8 +38,6 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
   console.log(activity);
   return (
     <Form method={method} className="w-full h-full bg-gray-100 p-6 rounded-lg shadow-md">
-      {data && data.message && <p className="text-gray-700 mb-4">{data.message}</p>}
-
       <div className="mb-4">
         <label htmlFor="datetime" className="block text-gray-700 font-semibold mb-2">
           Date
@@ -76,7 +74,7 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
             id="locationLat"
             name="locationLat"
             value={location.latitude}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Latitude"
           />
@@ -86,7 +84,7 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
             id="locationLng"
             name="locationLng"
             value={location.longitude}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Longitude"
           />
@@ -96,12 +94,19 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
             id="locationName"
             name="locationName"
             value={location.name}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Location Name"
           />
         </div>
         <Map
+          initalMark={
+            activity?.location && {
+              lat: activity.location.latitude,
+              lng: activity.location.longitude,
+              name: activity.location.name,
+            }
+          }
           onChange={(location) => {
             setLocation({
               latitude: location.lat,
@@ -193,13 +198,14 @@ function ActivityForm({ method, activity }: { method: FormMethod; activity?: Act
           Cancel
         </button>
       </div>
+      {data && data.message && <p className="text-red-500 mb-4">{data.message}</p>}
     </Form>
   );
 }
 
 export default ActivityForm;
 
-export async function action({ request, params }: { request: Request; params: { activityId?: string } }) {
+export async function action({ request, params }: { request: Request; params: { id?: string } }) {
   const method = request.method;
   const data = await request.formData();
 
@@ -225,9 +231,9 @@ export async function action({ request, params }: { request: Request; params: { 
   console.log('params', params);
   console.log('url', url);
 
-  if (method === 'put') {
-    const activityId = params.activityId;
-    url = `${import.meta.env.VITE_BACK_BASE_URL}/${activityId}`;
+  if (method === 'PUT') {
+    const activityId = params.id;
+    url = `${url}/${activityId}`;
   }
 
   try {

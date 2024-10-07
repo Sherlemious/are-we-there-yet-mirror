@@ -68,13 +68,16 @@ function ActivityTable() {
                 <td className="p-2">{activity.price}</td>
                 <td className="p-2">{activity.category?.name}</td>
                 <td className="p-2">
-                  {activity.tags.map((tag) => (
-                    <span key={tag._id}>{tag.name}, </span>
+                  {activity.tags.map((tag, index) => (
+                    <span key={tag._id}>
+                      {tag.name}
+                      {activity.tags.length - 1 !== index ? ', ' : ''}
+                    </span>
                   ))}
                 </td>
                 <td className="p-2">{activity.specialDiscounts}</td>
                 <td className="p-2 flex justify-center">
-                  <Link to="edit" state={activity} className="text-gray-600 hover:text-gray-800">
+                  <Link to={`edit/${activity._id}`} state={activity} className="text-gray-600 hover:text-gray-800">
                     <Pencil size={20} />
                   </Link>
                   <button

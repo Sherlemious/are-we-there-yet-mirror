@@ -22,18 +22,20 @@ export type Location = { lat: number; lng: number; name: string };
 
 export default function Map({
   className = 'w-full h-full',
+  initalMark,
   markedLocationState,
   center = null,
   onChange,
 }: {
   className?: string;
+  initalMark?: Location;
   markedLocationState?: [Location | null, React.Dispatch<React.SetStateAction<Location | null>>];
   center?: google.maps.LatLngLiteral | null;
   onChange?: (location: Location) => void;
 }) {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(center);
-  const [selectedLocation, setSelectedLocation] = markedLocationState || useState<Location | null>(null);
+  const [selectedLocation, setSelectedLocation] = markedLocationState || useState<Location | null>(initalMark || null);
 
   useEffect(() => {
     if (userLocation) return;

@@ -27,7 +27,7 @@ const BrowserRouter = createBrowserRouter([
         loader: activityFormLoader,
       },
       {
-        path: 'edit',
+        path: 'edit/:id',
         element: <EditActivity />,
         action: activityFormAction,
         loader: activityFormLoader,
