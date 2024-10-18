@@ -90,6 +90,20 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
     console.error('Error fetching pictures:', error);
   }
 };
+const [availableTags, setAvailableTags] = useState<{ _id: string; name: string }[]>([]);
+  
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await axios.get('https://are-we-there-yet-mirror.onrender.com/api/tags');
+        setAvailableTags(response.data.data.tags);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+    
+    fetchTags();
+  }, []);
 
   
   useEffect(() => {
@@ -109,14 +123,13 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
         },
         pictures: selectedMuseum.pictures,
       }));
-      // fetchPictures(selectedMuseum);
+      fetchPictures(selectedMuseum);
 
       // Load the selected location for the map
       setSelectedLocation({
         lat: selectedMuseum.location.latitude,
         lng: selectedMuseum.location.longitude,
         name: selectedMuseum.location.name,
-        address: '', // You can add logic to fetch the address if needed
       });
     }
   }, [selectedMuseum]);
@@ -203,17 +216,16 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
   };
   
   // Handling tags
-  const handleTagChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleTagChange = (index: number, e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
     const updatedTags = [...formData.tags];
     updatedTags[index] = value;
-  
     setFormData((prevData) => ({
       ...prevData,
       tags: updatedTags,
     }));
   };
-  
+
   const addTag = () => {
     setFormData((prevData) => ({
       ...prevData,
@@ -223,7 +235,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
       ],
     }));
   };
-  
+
   const removeTag = (index: number) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -244,6 +256,12 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
         ids.push(response.data._id);
     }
     console.log(ids);
+    for(let i=0;i<formData.tags.length;i++) {
+      if(availableTags.find(tag => tag.name === formData.tags[i])) {
+        formData.tags[i] = availableTags.find(tag => tag.name === formData.tags[i])?._id || '';
+      }
+    }
+    console.log(formData.tags);
     const formDataWithAttachments = { ...formData, pictures: ids, };
     if (onSubmit) {
       onSubmit(formDataWithAttachments);
@@ -453,36 +471,40 @@ const MuseumForm: React.FC<MuseumFormProps> = ({ onSubmit, onUpdate, selectedMus
         </div>
 
   
-        {/* Tags Section (Below Pictures) */}
         <div className="mt-2">
-          <h3 className="mt-2 mb-2">Tags</h3>
-          {formData.tags.map((tag, index) => (
-            <div key={index} className="flex items-center mb-2">
-              <input
-                type="text"
-                name="tag"
-                value={tag}
-                onChange={(e) => handleTagChange(index, e)}
-                placeholder="Tag Name"
-                className={styles.inputClass}
-              />
-              <button
-                type="button"
-                onClick={() => removeTag(index)}
-                className="ml-2 bg-red-500 text-white rounded-md p-1"
-              >
-                Remove
-              </button>
-            </div>
+  <h3 className="mt-2 mb-2">Tags</h3>
+  {formData.tags.map((tag, index) => (
+    <div key={index} className="flex items-center mb-2">
+      <select
+        value={tag}
+        onChange={(e) => handleTagChange(index, e)}
+        className={styles.inputClass}
+      >
+        <option value="">Select a Tag</option>
+        {availableTags 
+          .map((availableTag) => (
+            <option key={availableTag._id} value={availableTag.name}>
+              {availableTag.name}
+            </option>
           ))}
-          <button
-            type="button"
-            onClick={addTag}
-            className=" bg-green-500 text-white rounded-md p-2"
-          >
-            Add Tag
-          </button>
-        </div>
+      </select>
+      <button
+        type="button"
+        onClick={() => removeTag(index)}
+        className="ml-2 bg-red-500 text-white rounded-md p-1"
+      >
+        Remove
+      </button>
+    </div>
+  ))}
+  <button
+    type="button"
+    onClick={addTag}
+    className=" bg-green-500 text-white rounded-md p-2"
+  >
+    Add Tag
+  </button>
+</div>
 
       </div>
   

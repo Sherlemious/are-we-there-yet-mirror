@@ -57,7 +57,7 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
       setImageURLs(newImageURLs);
     };
 
-    // fetchImages();
+    fetchImages();
   }, [museums]);
 
   return (
