@@ -1,6 +1,6 @@
-import ActivityTable from '../component/ActivityTable';
-import Header from '../component/Header';
-import axios from 'axios';
+import ActivityTable from "../component/ActivityTable";
+import Header from "../component/Header";
+import axios from "axios";
 
 const Dashboard = () => {
   return (
@@ -14,7 +14,10 @@ const Dashboard = () => {
 export default Dashboard;
 
 export async function loader() {
-  const activites = await axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/activities`);
+  const UUID = localStorage.getItem("UUID");
+  const activites = await axios.get(
+    `${import.meta.env.VITE_BACK_BASE_URL}/activities/created_by/${UUID}`,
+  );
   console.log(activites);
   return {
     activites: activites.data.data,
