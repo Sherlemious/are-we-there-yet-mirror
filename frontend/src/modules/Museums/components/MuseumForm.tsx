@@ -123,7 +123,7 @@ const [availableTags, setAvailableTags] = useState<{ _id: string; name: string }
         },
         pictures: selectedMuseum.pictures,
       }));
-      // fetchPictures(selectedMuseum);
+      fetchPictures(selectedMuseum);
 
       // Load the selected location for the map
       setSelectedLocation({

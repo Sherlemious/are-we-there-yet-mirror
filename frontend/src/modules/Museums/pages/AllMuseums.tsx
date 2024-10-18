@@ -42,9 +42,10 @@ const AllMuseums = () => {
   };
 
   const handleEdit = async (museumData: Museum) => {
+    const UUID = localStorage.getItem("UUID");
     const museum = {
       _id: museumData._id,
-      created_by: "6702aaa50ea778191df3cd5b",
+      created_by: UUID,
       name: museumData.name,
       description: museumData.description,
       category: museumData.category,
