@@ -1,4 +1,5 @@
-# Build files
+# Build/Development
+.vite/
 tsconfig.app.tsbuildinfo
 tsconfig.node.tsbuildinfo
 
