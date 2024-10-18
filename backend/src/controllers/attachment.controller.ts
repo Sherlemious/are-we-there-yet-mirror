@@ -26,6 +26,7 @@ async function uploadAttachment(req: Request, res: Response) {
       const attachment = await attachmentRepo.createAttachment({
         original_name: fileName,
         url: filePath,
+        created_by: req.user.userId,
       });
 
       res.status(ResponseStatusCodes.CREATED).json(attachment); // Respond with the created attachment record (metadata)

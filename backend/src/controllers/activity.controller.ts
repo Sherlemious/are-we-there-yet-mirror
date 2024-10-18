@@ -7,6 +7,7 @@ import { ActivityType } from '../types/Activity.types';
 const createActivity = async (req: Request, res: Response) => {
   try {
     const activity: ActivityType = req.body;
+    activity.created_by = req.user.userId;
     const newActivity = await activityRepo.createActivity(activity);
     res
       .status(ResponseStatusCodes.CREATED)
@@ -68,7 +69,7 @@ const getAllActivities = async (req: Request, res: Response) => {
 
 const getActivitiesByCreator = async (req: Request, res: Response) => {
   try {
-    const activities = await activityRepo.getActivitiesByCreator(req.params.id);
+    const activities = await activityRepo.getActivitiesByCreator(req.user.userId);
     res.status(ResponseStatusCodes.OK).json({ message: 'Activities fetched successfully', data: activities });
   } catch (error: any) {
     logger.error(`Error fetching activities: ${error.message}`);

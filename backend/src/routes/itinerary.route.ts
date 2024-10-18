@@ -12,8 +12,8 @@ import {
 const itineraryRouter = Router();
 
 itineraryRouter.get('/get', getItineraries);
+itineraryRouter.get('/mine', getItinerariesCreatedByUser);
 itineraryRouter.get('/:id', findItineraryById);
-itineraryRouter.get('/created_by/:id', getItinerariesCreatedByUser);
 itineraryRouter.post('/', createItinerary);
 itineraryRouter.put('/:id', updateItinerary);
 itineraryRouter.delete('/:id', deleteItinerary);

@@ -10,14 +10,14 @@ interface UserPayload {
 declare global {
   namespace Express {
     interface Request {
-      user?: UserPayload;
+      user: UserPayload;
     }
   }
 }
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.split(' ')[1];
-  console.log(token);
+
   if (!token) {
     logger.error('Access Denied');
     res.status(401).send('Access Denied');
@@ -40,7 +40,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const openPaths = ['/api/auth'];
+const openPaths = ['/api/auth/register'];
 
 const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
   if (openPaths.some((path) => req.path.startsWith(path))) {

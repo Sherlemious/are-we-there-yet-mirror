@@ -35,6 +35,7 @@ const findTagById = async (req: Request, res: Response) => {
 
 const createTag = async (req: Request, res: Response) => {
   const tag = req.body;
+  tag.created_by = req.user.userId;
 
   try {
     const newTag = await tagRepo.createTag(tag);
