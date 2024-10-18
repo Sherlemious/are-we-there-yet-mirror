@@ -17,7 +17,7 @@ declare global {
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.split(' ')[1];
-  console.log(token);
+
   if (!token) {
     logger.error('Access Denied');
     res.status(401).send('Access Denied');
