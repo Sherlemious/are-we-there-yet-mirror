@@ -6,6 +6,10 @@ import { getTagIds } from './tag.model';
 
 const activitySchema = new Schema(
   {
+    name: {
+      type: String,
+      required: true,
+    },
     datetime: {
       type: Date,
       required: true,
