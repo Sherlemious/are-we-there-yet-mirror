@@ -1,10 +1,8 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export async function getUser(id: string) {
   try {
-    const resPromise = axios.get(
-      `https://are-we-there-yet-mirror.onrender.com/api/users/${id}`,
-    );
+    const resPromise = axiosInstance.get(`/users/${id}`);
 
     return await resPromise;
   } catch (error) {

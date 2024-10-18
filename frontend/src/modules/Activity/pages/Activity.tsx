@@ -1,6 +1,8 @@
+import axiosInstance from "../../shared/services/axiosInstance";
+import { ActivityType } from "../../shared/types/Activity.types";
+import { ApiResponse } from "../../shared/types/Response.types";
 import ActivityTable from "../component/ActivityTable";
 import Header from "../component/Header";
-import axios from "axios";
 
 const Dashboard = () => {
   return (
@@ -13,12 +15,12 @@ const Dashboard = () => {
 
 export default Dashboard;
 
-export async function loader() {
-  const UUID = localStorage.getItem("UUID");
-  const activites = await axios.get(
-    `${import.meta.env.VITE_BACK_BASE_URL}/activities/created_by/${UUID}`,
-  );
-  console.log(activites);
+export interface LoaderDataType {
+  activites: ActivityType[];
+}
+export async function loader(): Promise<LoaderDataType> {
+  const activites =
+    await axiosInstance.get<ApiResponse<ActivityType[]>>(`/activities/mine`);
   return {
     activites: activites.data.data,
   };

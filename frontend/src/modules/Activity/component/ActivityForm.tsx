@@ -8,20 +8,19 @@ import {
   useLoaderData,
 } from "react-router-dom";
 
-import { Activity, Category, Tag } from "../types/Activity";
-import axios from "axios";
 import Map from "../../shared/utils/map";
 import { useState } from "react";
+import axiosInstance from "../../shared/services/axiosInstance";
+import { CategoryType } from "../../shared/types/Category.types";
+import { TagType } from "../../shared/types/Tag.types";
+import { ActivityType } from "../../shared/types/Activity.types";
+import { ApiResponse } from "../../shared/types/Response.types";
 
 function ActivityForm({ method }: { method: FormMethod }) {
   const data = useActionData() as { message?: string };
   const navigate = useNavigate();
   const navigation = useNavigation();
-  const { categories, tags, activity } = useLoaderData() as {
-    categories: Category[];
-    tags: Tag[];
-    activity: Activity;
-  };
+  const { categories, tags, activity } = useLoaderData() as LoaderDataType;
   const [location, setLocation] = useState(
     activity?.location || { latitude: 0, longitude: 0, name: "" },
   );
@@ -41,12 +40,27 @@ function ActivityForm({ method }: { method: FormMethod }) {
     navigate("..");
   }
 
-  console.log(activity);
   return (
     <Form
       method={method}
       className="h-full w-full rounded-lg bg-gray-100 p-6 shadow-md"
     >
+      <div className="mb-4">
+        <label
+          htmlFor="name"
+          className="mb-2 block font-semibold text-gray-700"
+        >
+          Name
+        </label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          defaultValue={activity?.name || ""}
+          required
+          className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
+        />
+      </div>
       <div className="mb-4">
         <label
           htmlFor="datetime"
@@ -183,10 +197,10 @@ function ActivityForm({ method }: { method: FormMethod }) {
         </label>
         <input
           type="number"
-          id="specialDiscount"
-          name="specialDiscount"
+          id="specialDiscounts"
+          name="specialDiscounts"
           min="0"
-          defaultValue={activity?.specialDiscounts}
+          defaultValue={activity?.specialDiscounts || 0}
           required
           className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
@@ -241,6 +255,7 @@ export async function action({
   const data = await request.formData();
 
   const activityData: any = {
+    name: data.get("name"),
     datetime: data.get("datetime"),
     price: data.get("price"),
     location: {
@@ -251,23 +266,11 @@ export async function action({
     },
     category: data.get("category"),
     tags: data.getAll("tags"),
-    specialDiscounts: data.get("specialDiscount"),
-    bookingOpen: data.get("isBooked") === "on",
+    specialDiscounts: data.get("specialDiscounts"),
+    bookingOpen: data.get("isBooked") !== "on",
   };
 
-  if (method === "POST") {
-    const UUID = localStorage.getItem("UUID");
-    console.log(UUID);
-
-    activityData["created_by"] = UUID;
-  }
-
-  let url = `${import.meta.env.VITE_BACK_BASE_URL}/activities`;
-
-  console.log("activityData", activityData);
-  console.log("method", method);
-  console.log("params", params);
-  console.log("url", url);
+  let url = "/activities";
 
   if (method === "PUT") {
     const activityId = params.activityId;
@@ -276,7 +279,7 @@ export async function action({
 
   try {
     console.log(
-      await axios({
+      await axiosInstance({
         method: method,
         url: url,
         data: activityData,
@@ -290,10 +293,17 @@ export async function action({
   }
 }
 
-export async function loader() {
+interface LoaderDataType {
+  categories: CategoryType[];
+  tags: TagType[];
+  activity?: ActivityType;
+}
+export async function loader(): Promise<LoaderDataType> {
   const [categories, tags] = await Promise.all([
-    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/categories`),
-    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/tags`),
+    axiosInstance.get<ApiResponse<{ categories: CategoryType[] }>>(
+      "/categories",
+    ),
+    axiosInstance.get<ApiResponse<{ tags: TagType[] }>>("/tags"),
   ]);
 
   return {
@@ -306,12 +316,14 @@ export async function editLoader({
   params,
 }: {
   params: { activityId: string };
-}) {
+}): Promise<LoaderDataType> {
   const [categories, tags, activity] = await Promise.all([
-    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/categories`),
-    axios.get(`${import.meta.env.VITE_BACK_BASE_URL}/tags`),
-    axios.get(
-      `${import.meta.env.VITE_BACK_BASE_URL}/activities/${params.activityId}`,
+    axiosInstance.get<ApiResponse<{ categories: CategoryType[] }>>(
+      "/categories",
+    ),
+    axiosInstance.get<ApiResponse<{ tags: TagType[] }>>("/tags"),
+    axiosInstance.get<ApiResponse<{ activity: ActivityType }>>(
+      `/activities/${params.activityId}`,
     ),
   ]);
 

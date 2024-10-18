@@ -20,10 +20,8 @@ const AllMuseums = () => {
   }, []);
 
   const handleCreate = async (museumData: MuseumFormData) => {
-    const UUID = localStorage.getItem("UUID");
     const museum = {
       name: museumData.name,
-      created_by: UUID,
       description: museumData.description,
       category: museumData.category,
       tags: museumData.tags,
@@ -42,10 +40,8 @@ const AllMuseums = () => {
   };
 
   const handleEdit = async (museumData: Museum) => {
-    const UUID = localStorage.getItem("UUID");
     const museum = {
       _id: museumData._id,
-      created_by: UUID,
       name: museumData.name,
       description: museumData.description,
       category: museumData.category,

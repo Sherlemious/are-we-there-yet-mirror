@@ -1,4 +1,3 @@
-import axios from "axios";
 import { userRoles } from "../constants/roles";
 import toast from "react-hot-toast";
 import { fieldNames } from "../constants/inputNames";
@@ -7,6 +6,7 @@ import {
   validateFormDataValue,
 } from "../../Register/utils/helpers";
 import { isValidateHotline } from "../utils/helpers";
+import axiosInstance from "./axiosInstance";
 
 export async function updateUser(
   id: string,
@@ -50,10 +50,7 @@ export async function updateUser(
   }
 
   try {
-    const resPromise = axios.patch(
-      `https://are-we-there-yet-mirror.onrender.com/api/users/${id}`,
-      keys,
-    );
+    const resPromise = axiosInstance.patch(`/users/${id}`, keys);
     toast.promise(
       resPromise,
       {

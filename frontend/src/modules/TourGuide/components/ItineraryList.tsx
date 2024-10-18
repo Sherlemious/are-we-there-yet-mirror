@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import CreateItineraryModal from "./CreateItineraryModal";
 import { getActivities } from "./Api";
+import axiosInstance from "../../shared/services/axiosInstance";
 
 export interface Location {
   name: string;
@@ -98,8 +99,6 @@ function useCreateMyItinerary(activities: Activity[]) {
     const url = `${baseUrl}/itineraries`;
 
     try {
-      const UUID = localStorage.getItem("UUID");
-      newItinerary.created_by = UUID!;
       newItinerary.available_datetimes = newItinerary.availableDateTimes2;
       newItinerary.pick_up_location = {
         name: newItinerary.pickupLocation || "",
@@ -150,20 +149,17 @@ function useGetMyItineraries() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    const UUID = localStorage.getItem("UUID");
     const baseUrl = "https://are-we-there-yet-mirror.onrender.com/api";
-    const url = `${baseUrl}/itineraries/created_by/${UUID}`;
+    const url = `${baseUrl}/itineraries/mine`;
 
     try {
-      const response = await fetch(url, {
-        method: "GET",
-      });
+      const response = await axiosInstance.get(url);
 
-      if (!response.ok) {
+      if (response.statusText === "OK") {
         throw new Error("Failed to fetch data");
       }
 
-      const parsedData = await response.json();
+      const parsedData = response.data;
       const itineraries = parsedData.data.itineraries;
 
       const tempData: Itinerary[] = itineraries.map((item: any) => {

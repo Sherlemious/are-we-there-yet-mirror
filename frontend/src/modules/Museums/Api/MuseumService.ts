@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Museum } from "../types/museum";
+import axiosInstance from "../../shared/services/axiosInstance";
 
 const API_URL = "https://are-we-there-yet-mirror.onrender.com/api";
 
@@ -57,9 +58,8 @@ export const updateMuseum = async (
 
 export const getMuseums = async (): Promise<Museum[]> => {
   try {
-    const UUID = localStorage.getItem("UUID");
-    const response = await axios.get<{ data: { museums: Museum[] } }>(
-      `${API_URL}/museums/created_by/${UUID}`,
+    const response = await axiosInstance.get<{ data: { museums: Museum[] } }>(
+      `${API_URL}/museums/mine`,
     );
     return response.data.data.museums;
   } catch (error) {
