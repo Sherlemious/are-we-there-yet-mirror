@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProfileTable from '../components/ProfileTable';
 import { Profile } from '../types/Profile';
 import Header from '../components/Header';

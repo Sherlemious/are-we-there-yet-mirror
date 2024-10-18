@@ -6,9 +6,10 @@ import {
   redirect,
   type FormMethod,
   useLoaderData,
+  LoaderFunctionArgs,
 } from "react-router-dom";
 
-import Map from "../../shared/utils/map";
+import Map from "../../shared/components/Map";
 import { useState } from "react";
 import axiosInstance from "../../shared/services/axiosInstance";
 import { CategoryType } from "../../shared/types/Category.types";
@@ -103,7 +104,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
             id="locationLat"
             name="locationLat"
             value={location.latitude}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Latitude"
           />
@@ -113,7 +114,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
             id="locationLng"
             name="locationLng"
             value={location.longitude}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Longitude"
           />
@@ -123,14 +124,14 @@ function ActivityForm({ method }: { method: FormMethod }) {
             id="locationName"
             name="locationName"
             value={location.name}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Location Name"
           />
         </div>
         <Map
-          initalMark={
-            activity?.location && {
+          defaultMark={
+            activity && {
               lat: activity.location.latitude,
               lng: activity.location.longitude,
               name: activity.location.name,
@@ -143,10 +144,9 @@ function ActivityForm({ method }: { method: FormMethod }) {
               name: location.name,
             });
           }}
-          className="h-[90%] w-full rounded-md bg-gray-300"
+          className="h-96 w-full rounded-md bg-gray-300"
         />
       </div>
-
       <div className="mb-4">
         <label
           htmlFor="category"
@@ -190,7 +190,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
 
       <div className="mb-4">
         <label
-          htmlFor="specialDiscount"
+          htmlFor="specialDiscounts"
           className="mb-2 block font-semibold text-gray-700"
         >
           Special Discount
@@ -212,7 +212,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
             type="checkbox"
             id="isBooked"
             name="isBooked"
-            defaultChecked={!activity?.bookingOpen}
+            defaultChecked={activity && !activity.bookingOpen}
             className="form-checkbox h-5 w-5 text-gray-600"
           />
           <span className="font-semibold text-gray-700">Is Booked</span>
@@ -254,7 +254,7 @@ export async function action({
   const method = request.method;
   const data = await request.formData();
 
-  const activityData: any = {
+  const activityData: unknown = {
     name: data.get("name"),
     datetime: data.get("datetime"),
     price: data.get("price"),
@@ -278,13 +278,11 @@ export async function action({
   }
 
   try {
-    console.log(
-      await axiosInstance({
-        method: method,
-        url: url,
-        data: activityData,
-      }),
-    );
+    await axiosInstance({
+      method: method,
+      url: url,
+      data: activityData,
+    });
 
     return redirect("/activity");
   } catch (e) {
@@ -314,9 +312,14 @@ export async function loader(): Promise<LoaderDataType> {
 
 export async function editLoader({
   params,
-}: {
-  params: { activityId: string };
-}): Promise<LoaderDataType> {
+}: LoaderFunctionArgs): Promise<LoaderDataType> {
+  if (!params.activityId) {
+    return {
+      categories: [],
+      tags: [],
+    };
+  }
+
   const [categories, tags, activity] = await Promise.all([
     axiosInstance.get<ApiResponse<{ categories: CategoryType[] }>>(
       "/categories",

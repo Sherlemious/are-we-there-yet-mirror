@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useNavigate } from "react-router";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACK_BASE_URL,
@@ -26,10 +25,9 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && [401, 403].includes(error.response.status)) {
       localStorage.removeItem("token");
-      const navigate = useNavigate();
-      navigate("/register");
+      throw new Error("Unauthorized");
     }
     return Promise.reject(error);
   },

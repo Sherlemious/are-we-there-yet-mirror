@@ -1,5 +1,10 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import RootLayout from "./modules/shared/pages/RootLayout";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import {
+  ErrorPage,
+  NotFoundPage,
+  RootLayout,
+  rootLayoutLoader,
+} from "./modules/Layout/App";
 import { generalSettingAction } from "./modules/TourGuide/App";
 import { AdminPage as AdminProducts } from "./modules/products/App";
 import { AllProducts } from "./modules/products/App";
@@ -38,9 +43,11 @@ import {
   action as activityFormAction,
 } from "./modules/Activity/component/ActivityForm";
 import { Activity, ActivityForm, EditActivity } from "./modules/Activity/App";
+import UserContextProvider from "./modules/shared/store/user-context";
+import { RouteGuard } from "./modules/shared/components/RouteGuard";
+import { AccountType } from "./modules/shared/types/User.types";
 
 const BrowserRouter = createBrowserRouter([
-  { path: "/", element: <RootLayout /> },
   {
     path: "/register",
     element: <Register />,
@@ -48,93 +55,111 @@ const BrowserRouter = createBrowserRouter([
     loader: registerLoader,
   },
   {
-    path: "/tour-guide-profile/:id",
-    element: <TourGuideProfile />,
-    action: generalSettingAction,
-    loader: tourGuideProfileLoader,
-  },
-  {
-    path: "/advertiser-profile/:id",
-    element: <AdvertiserProfile />,
-    action: generalSettingAction,
-    loader: advertiserProfileLoader,
-  },
-  {
-    path: "/seller-profile/:id",
-    element: <SellerProfile />,
-    action: generalSettingAction,
-    loader: sellerProfileLoader,
-  },
-  {
-    path: "/tourist-profile/:id",
-    element: <TouristProfile />,
-    loader: touristProfileLoader,
-    action: TouristAction,
-  },
-  {
-    path: "/myproducts-admin",
-    element: <AdminProducts />,
-    children: [],
-  },
-  {
-    path: "/all-products",
-    element: <AllProducts />,
-    children: [],
-  },
-  {
-    path: "/myproducts-seller",
-    element: <SellerProducts />,
-    children: [],
-  },
-  {
-    path: "/AdminDashboard",
-    element: <AdminDashboard />,
-  },
-  {
-    path: "/activity",
+    path: "/",
+    id: "root",
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    loader: rootLayoutLoader,
     children: [
       {
-        index: true,
-        element: <Activity />,
-        loader: activityLoader,
+        path: "/tour-guide-profile/:id",
+        element: <TourGuideProfile />,
+        action: generalSettingAction,
+        loader: tourGuideProfileLoader,
       },
       {
-        path: "add",
-        element: <ActivityForm method="post" />,
-        action: activityFormAction,
-        loader: activityAddLoader,
+        path: "/advertiser-profile/:id",
+        element: <AdvertiserProfile />,
+        action: generalSettingAction,
+        loader: advertiserProfileLoader,
       },
       {
-        path: "edit/:activityId",
-        element: <EditActivity />,
-        action: activityFormAction,
-        loader: activityEditLoader,
+        path: "/seller-profile/:id",
+        element: <SellerProfile />,
+        action: generalSettingAction,
+        loader: sellerProfileLoader,
+      },
+      {
+        path: "/tourist-profile/:id",
+        element: <TouristProfile />,
+        loader: touristProfileLoader,
+        action: TouristAction,
+      },
+      {
+        path: "/myproducts-admin",
+        element: <AdminProducts />,
+        children: [],
+      },
+      {
+        path: "/all-products",
+        element: <AllProducts />,
+        children: [],
+      },
+      {
+        path: "/myproducts-seller",
+        element: <SellerProducts />,
+        children: [],
+      },
+      {
+        path: "/AdminDashboard",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "/activity",
+        element: (
+          <RouteGuard account_types={[AccountType.Advertiser]}>
+            <Outlet />
+          </RouteGuard>
+        ),
+        children: [
+          {
+            index: true,
+            element: <Activity />,
+            loader: activityLoader,
+          },
+          {
+            path: "add",
+            element: <ActivityForm method="post" />,
+            action: activityFormAction,
+            loader: activityAddLoader,
+          },
+          {
+            path: "edit/:activityId",
+            element: <EditActivity />,
+            action: activityFormAction,
+            loader: activityEditLoader,
+          },
+        ],
+      },
+      {
+        path: "/Tag",
+        element: <Tag />,
+      },
+      {
+        path: "/PrefrenceTag",
+        element: <PrefrenceTag />,
+      },
+      {
+        path: "/ActivityCategory",
+        element: <Category />,
+      },
+      {
+        path: "/users-assets",
+        element: <UsersAssets />,
+      },
+      {
+        path: "/crud-users-assets",
+        element: <CrudUserAssets />,
+      },
+      {
+        path: "/all-museums",
+        element: <AllMuseums />,
       },
     ],
   },
   {
-    path: "/Tag",
-    element: <Tag />,
-  },
-  {
-    path: "/PrefrenceTag",
-    element: <PrefrenceTag />,
-  },
-  {
-    path: "/ActivityCategory",
-    element: <Category />,
-  },
-  {
-    path: "/users-assets",
-    element: <UsersAssets />,
-  },
-  {
-    path: "/crud-users-assets",
-    element: <CrudUserAssets />,
-  },
-  {
-    path: "/all-museums",
-    element: <AllMuseums />,
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 
@@ -158,7 +183,9 @@ function App() {
           },
         }}
       />
-      <RouterProvider router={BrowserRouter} />
+      <UserContextProvider>
+        <RouterProvider router={BrowserRouter} />
+      </UserContextProvider>
     </>
   );
 }

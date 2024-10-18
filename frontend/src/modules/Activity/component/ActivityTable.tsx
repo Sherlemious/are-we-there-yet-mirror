@@ -28,7 +28,7 @@ function ActivityTable() {
 
   const handleDeleteActivity = async (id: string) => {
     try {
-      const response = await axiosInstance.delete(`$/activities/${id}`);
+      const response = await axiosInstance.delete(`/activities/${id}`);
 
       if (response.status < 400) {
         setActivities((prev) => prev.filter((activity) => activity._id !== id));
@@ -42,13 +42,11 @@ function ActivityTable() {
     }
   };
 
-  console.log(activities);
-  
   return (
     <div className="p-4">
       <table className="w-full rounded-md border p-4">
         <thead>
-          <tr className="bg-gray-100 text-start">
+          <tr className="bg-gray-100 text-center">
             <th className="py-2">Name</th>
             <th className="py-2">Date</th>
             <th className="py-2">Time</th>
@@ -71,12 +69,14 @@ function ActivityTable() {
               <td className="p-2">{activity.price}</td>
               <td className="p-2">{activity.category?.name}</td>
               <td className="p-2">
-                {activity.tags.map((tag, index) => (
-                  <span key={tag._id}>
-                    {tag.name}
-                    {activity.tags.length - 1 !== index ? ", " : ""}
-                  </span>
-                ))}
+                <span>
+                  {activity.tags.length === 0
+                    ? "No tags"
+                    : activity.tags.map(
+                      (tag, index) =>
+                        `${tag.name}${activity.tags.length - 1 !== index ? ", " : ""}`,
+                    )}
+                </span>
               </td>
               <td className="p-2">{activity.specialDiscounts}</td>
               <td className="p-2">

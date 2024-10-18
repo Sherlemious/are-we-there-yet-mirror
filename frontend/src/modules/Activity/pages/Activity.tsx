@@ -20,7 +20,7 @@ export interface LoaderDataType {
 }
 export async function loader(): Promise<LoaderDataType> {
   const activites =
-    await axiosInstance.get<ApiResponse<ActivityType[]>>(`/activities/mine`);
+    await axiosInstance.get<ApiResponse<ActivityType[]>>("/activities/mine");
   return {
     activites: activites.data.data,
   };

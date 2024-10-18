@@ -1,4 +1,5 @@
-export enum accountType {
+export enum AccountType {
+  None = "None",
   Admin = "Admin",
   Tourist = "Tourist",
   Advertiser = "Advertiser",
@@ -11,10 +12,10 @@ export interface UserType {
   _id: string;
   password: string;
   username: string;
-  account_type: accountType;
+  account_type: AccountType;
   email?: string;
   dob?: string;
-  mobile_number: string;
+  mobile_number?: string;
   job?: string;
   picture?: string;
   name?: string;
