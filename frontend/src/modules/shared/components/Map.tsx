@@ -52,10 +52,13 @@ export default function Map({
   onChange?: (location: Location) => void;
 }) {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const [userLocation, setUserLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(defaultUserLocation || null);
+  const [userLocation, setUserLocation] = useState<
+    | {
+        lat: number;
+        lng: number;
+      }
+    | undefined
+  >(defaultUserLocation);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     defaultMark || null,
   );
@@ -113,11 +116,10 @@ export default function Map({
 
   return (
     <APIProvider apiKey={apiKey}>
-      {/* {(defaultCenter || userLocation) && ( */}
-      <div className={className}>
-        {userLocation && (
+      {(defaultCenter ?? userLocation) && (
+        <div className={className}>
           <VisMap
-            defaultCenter={userLocation}
+            defaultCenter={defaultCenter ?? userLocation}
             defaultZoom={18}
             mapId="YOUR_MAP_ID"
             onClick={handleMapClick}
@@ -132,9 +134,8 @@ export default function Map({
               />
             )}
           </VisMap>
-        )}
-      </div>
-      {/* )} */}
+        </div>
+      )}
     </APIProvider>
   );
 }
