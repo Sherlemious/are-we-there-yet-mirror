@@ -7,6 +7,6 @@ export interface ComplaintType {
 }
 
 export enum ComplaintStatus {
-  PENDING = 'PENDING',
-  RESOLVED = 'RESOLVED',
+  PENDING = 'Pending',
+  RESOLVED = 'Resolved',
 }

@@ -22,14 +22,14 @@ const complaintSchema = new Schema({
   },
   created_at: {
     type: Date,
-    required: true,
+    default: Date.now,
   },
   updated_at: {
     type: Date,
-    required: true,
+    default: Date.now,
   },
 });
 
-const complaintModel = model('complaint', complaintSchema);
+const Complaint = model('complaint', complaintSchema);
 
-export { complaintSchema, complaintModel };
+export { complaintSchema, Complaint };
