@@ -4,5 +4,8 @@ import ComplaintController from '../controllers/complaint.controller';
 const complaintRouter = Router();
 
 complaintRouter.post('/', ComplaintController.fileComplaint);
+complaintRouter.get('/', ComplaintController.getComplaints);
+complaintRouter.get('/mine', ComplaintController.getMyComplaints);
+complaintRouter.get('/:id', ComplaintController.getComplaintById);
 
 export default complaintRouter;
