@@ -1,6 +1,8 @@
-import { Outlet, redirect, useLoaderData } from "react-router-dom";
+import { Outlet, redirect, useLoaderData, useNavigate } from "react-router-dom";
 import { AccountType, UserType } from "../../shared/types/User.types";
-import axiosInstance from "../../shared/services/axiosInstance";
+import axiosInstance, {
+  setupInterceptors,
+} from "../../shared/services/axiosInstance";
 import { ApiResponse } from "../../shared/types/Response.types";
 import { useContext, useEffect } from "react";
 import { UserContext } from "../../shared/store/user-context";
@@ -8,9 +10,11 @@ import { UserContext } from "../../shared/store/user-context";
 export default function RootLayout() {
   const userData = useLoaderData() as UserType;
   const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userData) setUser(userData);
+    setupInterceptors(navigate);
   }, [userData, setUser]);
 
   if (user.account_type === AccountType.None) return null;
