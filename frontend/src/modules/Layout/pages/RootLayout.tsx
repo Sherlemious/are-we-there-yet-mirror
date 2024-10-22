@@ -31,8 +31,14 @@ export async function loader() {
   if (!token) return redirect("/register");
 
   try {
-    const response =
-      await axiosInstance.get<ApiResponse<{ user: UserType }>>("/auth/me");
+    const response = await axiosInstance.get<ApiResponse<{ user: UserType }>>(
+      "/auth/me",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
     return response.data.data.user;
   } catch (error) {
     console.error("Error fetching user", error);
