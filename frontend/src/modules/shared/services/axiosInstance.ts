@@ -8,21 +8,21 @@ const axiosInstance = axios.create({
   },
 });
 
-export const setupInterceptors = (navigate: NavigateFunction) => {
-  axiosInstance.interceptors.request.use(
-    (config) => {
-      config.headers = config.headers || {};
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    },
-  );
+axiosInstance.interceptors.request.use(
+  (config) => {
+    config.headers = config.headers || {};
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
+export const setupInterceptors = (navigate: NavigateFunction) => {
   // Response Interceptor
   axiosInstance.interceptors.response.use(
     (response) => response,

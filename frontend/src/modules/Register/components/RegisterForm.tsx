@@ -188,7 +188,7 @@ export async function action({ request }: { request: Request }) {
     });
   } else if (data.userRole === userRoles.advertiser) {
     return await handleUserRegistration({
-      url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
+      url: "/auth/register",
       requestData: {
         account_type: data.userRole,
         username: data.username,
