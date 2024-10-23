@@ -1,4 +1,5 @@
-import { AddTagPopup, OpenPopupButton } from './popup';
+import axiosInstance from "../../shared/services/axiosInstance";
+import { AddTagPopup, OpenPopupButton } from "./popup";
 
 const Header = ({
   isTagPopupOpen,
@@ -12,42 +13,74 @@ const Header = ({
   setRefresh: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   // Function to add an Tag
-  const addTag = async (name: string, type: string, historical_period: string) => {
+  const addTag = async (
+    name: string,
+    type: string,
+    historical_period: string,
+  ) => {
     try {
-      const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/tags', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, type, historical_period }),
+      // const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/tags', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ name, type, historical_period }),
+      // });
+      const response = await axiosInstance.post("/tags", {
+        name,
+        type,
+        historical_period,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add tag');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to add tag');
+      // }
 
-      const newTag = await response.json();
-      console.log('Tag added:', newTag); // Log the added user
+      // const newTag = await response.json();
+      const newTag = response.data; // Adjust according to your response structure
+      console.log("Tag added:", newTag); // Log the added user
       // Optionally, you can trigger a state update or callback to refresh the user list
       const tagId = newTag.data.tagId;
       const tag = await getTag(tagId);
       // console.log('Tag:', tag); // Log the added user
       setTags((prevTags) => [
         ...prevTags,
-        { _id: tag._id, name: tag.name, type: tag.type, historical_period: tag.historical_period },
+        {
+          _id: tag._id,
+          name: tag.name,
+          type: tag.type,
+          historical_period: tag.historical_period,
+        },
       ]);
       setRefresh((prev) => prev + 1);
     } catch (error) {
-      console.error('Error adding tag:', error);
+      console.error("Error adding tag:", error);
     }
   };
+  // async function getTag(id: string) {
+  //   return fetch(`https://are-we-there-yet-mirror.onrender.com/api/tags/${id}`)
+  //     .then((response) => response.json())
+  //     .then((data) => data.data.tag[0]);
+  // }
   async function getTag(id: string) {
-    return fetch(`https://are-we-there-yet-mirror.onrender.com/api/tags/${id}`)
-      .then((response) => response.json())
-      .then((data) => data.data.tag[0]);
+    try {
+      // Send the GET request to the backend
+      const response = await axiosInstance.get(`/tags/${id}`);
+
+      // Log the response data for debugging
+      console.log(response.data.data);
+      return response.data.data.tag[0]; // Adjust according to your response structure
+    } catch (error) {
+      console.error("Error fetching tag:", error);
+      throw error; // Optionally rethrow the error for further handling
+    }
   }
 
-  const handleAddTag = (name: string, type: string, historical_period: string) => {
+  const handleAddTag = (
+    name: string,
+    type: string,
+    historical_period: string,
+  ) => {
     addTag(name, type, historical_period);
     setIsTagPopupOpen(false); // Close the popup after adding
   };
@@ -61,9 +94,13 @@ const Header = ({
         </div>
       </div>
       <div className="h-1/2 max-w-fit border-2 border-gray-300 p-14">
-        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">Add a Tag</h3>
+        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">
+          Add a Tag
+        </h3>
         <div className="flex space-x-4">
-          <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>Add Tag</OpenPopupButton>
+          <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>
+            Add Tag
+          </OpenPopupButton>
           <AddTagPopup
             isOpen={isTagPopupOpen}
             onClose={() => setIsTagPopupOpen(false)}

@@ -56,10 +56,19 @@ const Header = ({
       console.error("Error adding user:", error);
     }
   };
+  // async function getUser(id: string) {
+  //   return fetch(`https://are-we-there-yet-mirror.onrender.com/api/users/${id}`)
+  //     .then((response) => response.json())
+  //     .then((data) => data.data.user);
+  // }
   async function getUser(id: string) {
-    return fetch(`https://are-we-there-yet-mirror.onrender.com/api/users/${id}`)
-      .then((response) => response.json())
-      .then((data) => data.data.user);
+    try {
+      const response = await axiosInstance.get(`/users/${id}`);
+      return response.data.data.user; // Adjust according to your response structure
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      throw error; // Rethrow error if needed
+    }
   }
 
   const handleAddTourismGovernor = (
