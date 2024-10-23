@@ -162,7 +162,7 @@ export async function action({ request }: { request: Request }) {
 
   if (data.userRole === userRoles.tourist) {
     return await handleUserRegistration({
-      url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
+      endpoint: "/auth/register",
       requestData: {
         account_type: data.userRole.trim(),
         username: data.username,
@@ -177,7 +177,7 @@ export async function action({ request }: { request: Request }) {
     });
   } else if (data.userRole === "Tour Guide") {
     return await handleUserRegistration({
-      url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
+      endpoint: "/auth/register",
       requestData: {
         account_type: userRoles.tourGuide,
         username: data.username,
@@ -188,7 +188,7 @@ export async function action({ request }: { request: Request }) {
     });
   } else if (data.userRole === userRoles.advertiser) {
     return await handleUserRegistration({
-      url: "/auth/register",
+      endpoint: "/auth/register",
       requestData: {
         account_type: data.userRole,
         username: data.username,
@@ -199,7 +199,7 @@ export async function action({ request }: { request: Request }) {
     });
   } else {
     return await handleUserRegistration({
-      url: "https://are-we-there-yet-mirror.onrender.com/api/auth/register",
+      endpoint: "/auth/register",
       requestData: {
         account_type: data.userRole,
         username: data.username,
