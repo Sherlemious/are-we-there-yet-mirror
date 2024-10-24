@@ -3,6 +3,7 @@ import { ModalRef } from "./modal";
 import defaultPhoto from "../assets/defaultPhoto.png";
 import { Museum } from "../types/museum";
 import Map, { Location } from "../../shared/components/Map";
+import SearchMultiSelect from '../../shared/components/SearchMultiSelect';
 import axiosInstance from "../../shared/services/axiosInstance";
 
 interface MuseumFormProps {
@@ -44,7 +45,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       name: "",
       description: "",
       category: "",
-      tags: [""],
+      tags: [],
       location: {
         name: "",
         latitude: 40.712776,
@@ -121,32 +122,36 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
   }, []);
 
   useEffect(() => {
-    if (selectedMuseum) {
-      setFormData((prevData) => ({
-        ...prevData,
-        name: selectedMuseum.name,
-        description: selectedMuseum.description,
-        category: selectedMuseum.category,
-        tags: selectedMuseum.tags,
-        opening_hours: selectedMuseum.opening_hours,
-        ticket_prices: selectedMuseum.ticket_prices,
-        location: {
-          name: selectedMuseum.location.name,
-          latitude: selectedMuseum.location.latitude,
-          longitude: selectedMuseum.location.longitude,
-        },
-        pictures: selectedMuseum.pictures,
-      }));
-      fetchPictures(selectedMuseum);
+  if (selectedMuseum) {
+    const tagNames = selectedMuseum.tags.map(tag => {
+      return typeof tag === "object" ? tag.name : tag; // If it's an object, get the name
+    });
 
-      // Load the selected location for the map
-      setSelectedLocation({
-        lat: selectedMuseum.location.latitude,
-        lng: selectedMuseum.location.longitude,
+    setFormData((prevData) => ({
+      ...prevData,
+      name: selectedMuseum.name,
+      description: selectedMuseum.description,
+      category: selectedMuseum.category,
+      tags: tagNames, // Store only tag names
+      opening_hours: selectedMuseum.opening_hours,
+      ticket_prices: selectedMuseum.ticket_prices,
+      location: {
         name: selectedMuseum.location.name,
-      });
-    }
-  }, [selectedMuseum]);
+        latitude: selectedMuseum.location.latitude,
+        longitude: selectedMuseum.location.longitude,
+      },
+      pictures: selectedMuseum.pictures,
+    }));
+
+    fetchPictures(selectedMuseum);
+
+    setSelectedLocation({
+      lat: selectedMuseum.location.latitude,
+      lng: selectedMuseum.location.longitude,
+      name: selectedMuseum.location.name,
+    });
+  }
+}, [selectedMuseum, availableTags]);
 
   const handleLocationChange = (location: Location) => {
     setFormData((prevData) => ({
@@ -227,36 +232,6 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
     console.log(index + " " + pictures.length);
   };
 
-  // Handling tags
-  const handleTagChange = (
-    index: number,
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    const { value } = e.target;
-    const updatedTags = [...formData.tags];
-    updatedTags[index] = value;
-    setFormData((prevData) => ({
-      ...prevData,
-      tags: updatedTags,
-    }));
-  };
-
-  const addTag = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      tags: [
-        ...prevData.tags,
-        "", // Add an empty string as the new tag
-      ],
-    }));
-  };
-
-  const removeTag = (index: number) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      tags: prevData.tags.filter((_, i) => i !== index),
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -522,41 +497,31 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
             ref={fileInputRef}
           />
         </div>
+        
         <div className="mt-2">
-          <h3 className="mb-2 mt-2">Tags</h3>
-          {formData.tags.map((tag, index) => (
-            <div key={index} className="mb-2 flex items-center">
-              <select
-                value={tag}
-                onChange={(e) => handleTagChange(index, e)}
-                className={styles.inputClass}
-              >
-                <option value="">Select a Tag</option>
-                {availableTags.map((availableTag) => (
-                  <option key={availableTag._id} value={availableTag.name}>
-                    {availableTag.name}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => removeTag(index)}
-                className="ml-2 rounded-md bg-red-500 p-1 text-white"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addTag}
-            className="rounded-md bg-green-500 p-2 text-white"
-          >
-            Add Tag
-          </button>
-        </div>
-      </div>
+  <h3 className="mb-2 mt-2">Tags</h3>
+  <SearchMultiSelect
+    options={availableTags.map((tag) => tag.name)} // Extract tag names for options
+    selectedItems={formData.tags.map(tag => (typeof tag === "object" ? tag.name : tag))} // Map to tag names
+    onSelect={(item: string) => {
+      if (!formData.tags.includes(item)) {
+        setFormData((prevData) => ({
+          ...prevData,
+          tags: [...prevData.tags, item], // Add selected tag
+        }));
+      }
+    }}
+    onRemove={(item: string) => {
+      setFormData((prevData) => ({
+        ...prevData,
+        tags: prevData.tags.filter((tag) => tag !== item), // Remove tag
+      }));
+    }}
+  />
+</div>
 
+
+      </div>
       <div className="col-span-2 flex justify-end">
         <button type="submit" className={`${styles.button} w-1/4 p-4`}>
           {initialData?.name ? "Update" : "Submit"}
