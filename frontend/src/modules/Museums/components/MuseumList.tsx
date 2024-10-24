@@ -5,7 +5,7 @@ import { Minus, Plus } from 'lucide-react';
 import Modal, { ModalRef } from './modal';
 import MuseumForm, {MuseumFormData} from './MuseumForm';
 import defaultPhoto from '../assets/defaultPhoto.png';
-import axios from 'axios';
+import axiosInstance from '../../shared/services/axiosInstance';
 
 
 interface MuseumListProps {
@@ -29,8 +29,8 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
   };
   const fetchPicture = async (museum: Museum): Promise<string | undefined> => {
     try {
-      const response = await axios.get(
-        `https://are-we-there-yet-mirror.onrender.com/api/attachments/${museum.pictures[0]}`,
+      const response = await axiosInstance.get(
+        `/attachments/${museum.pictures[0]}`,
         { responseType: 'arraybuffer' } // Fetch binary data
       );
 
