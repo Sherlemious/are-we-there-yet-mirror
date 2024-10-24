@@ -3,7 +3,7 @@ import { ModalRef } from "./modal";
 import defaultPhoto from "../assets/defaultPhoto.png";
 import { Museum } from "../types/museum";
 import Map, { Location } from "../../shared/components/Map";
-import axios from "axios";
+import axiosInstance from "../../shared/services/axiosInstance";
 
 interface MuseumFormProps {
   onSubmit?: (museumData: MuseumFormData) => void;
@@ -74,8 +74,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       for (let i = 0; i < museum.pictures.length; i++) {
         // Fetch the picture using the attachment ID
         if (museum.pictures[i]) {
-          const response = await axios.get(
-            `https://are-we-there-yet-mirror.onrender.com/api/attachments/${museum.pictures[i]}`,
+          const response = await axiosInstance.get(
+            `/attachments/${museum.pictures[i]}`,
             { responseType: "arraybuffer" }, // Fetch binary data
           );
           // Convert array buffer to Blob
@@ -108,8 +108,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await axios.get(
-          "https://are-we-there-yet-mirror.onrender.com/api/tags",
+        const response = await axiosInstance.get(
+          "/tags",
         );
         setAvailableTags(response.data.data.tags);
       } catch (error) {
@@ -266,8 +266,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       formData.append("file", pictures[i]);
       console.log(formData);
       console.log(pictures[i]);
-      const response = await axios.post(
-        `https://are-we-there-yet-mirror.onrender.com/api/attachments`,
+      const response = await axiosInstance.post(
+        `/attachments`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

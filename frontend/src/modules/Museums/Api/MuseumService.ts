@@ -2,14 +2,12 @@ import axios from "axios";
 import { Museum } from "../types/museum";
 import axiosInstance from "../../shared/services/axiosInstance";
 
-const API_URL = "https://are-we-there-yet-mirror.onrender.com/api";
-
 export const createMuseum = async (
   museumData: Omit<Museum, "_id">,
 ): Promise<Museum> => {
   try {
-    const response = await axios.post<{ data: { museum: Museum } }>(
-      `${API_URL}/museums`,
+    const response = await axiosInstance.post<{ data: { museum: Museum } }>(
+      `/museums`,
       museumData,
     );
     return response.data.data.museum;
@@ -25,7 +23,7 @@ export const createMuseum = async (
 
 export const deleteMuseum = async (museumId: string): Promise<void> => {
   try {
-    await axios.delete(`${API_URL}/museums/${museumId}`);
+    await axiosInstance.delete(`/museums/${museumId}`);
   } catch (error) {
     console.log("Error not working");
     if (axios.isAxiosError(error) && error.response) {
@@ -41,8 +39,8 @@ export const updateMuseum = async (
   museumData: Museum,
 ): Promise<Museum> => {
   try {
-    const response = await axios.put<{ data: { museum: Museum } }>(
-      `${API_URL}/museums/${museumId}`,
+    const response = await axiosInstance.put<{ data: { museum: Museum } }>(
+      `/museums/${museumId}`,
       museumData,
     );
     return response.data.data.museum;
@@ -59,7 +57,7 @@ export const updateMuseum = async (
 export const getMuseums = async (): Promise<Museum[]> => {
   try {
     const response = await axiosInstance.get<{ data: { museums: Museum[] } }>(
-      `${API_URL}/museums/mine`,
+      `/museums/mine`,
     );
     return response.data.data.museums;
   } catch (error) {
