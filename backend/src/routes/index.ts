@@ -9,6 +9,7 @@ import productRouter from './product.route';
 import searchRouter from './search.route';
 import attachmentRouter from './attachment.route';
 import categoryRouter from './category.route';
+import complaintRouter from './complaint.route';
 
 const routes = Router();
 
@@ -22,5 +23,6 @@ routes.use('/activities', activityRouter);
 routes.use('/products', productRouter);
 routes.use('/search', searchRouter);
 routes.use('/categories', categoryRouter);
+routes.use('/complaints', complaintRouter);
 
 export { routes };
