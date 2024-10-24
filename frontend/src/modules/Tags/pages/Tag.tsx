@@ -3,6 +3,7 @@ import TagTable from '../component/TagTable';
 // import TagForm from '../component/TagForm';
 import { Tag } from '../types/Tag';
 import Header from '../component/Header';
+import axiosInstance from '../../shared/services/axiosInstance';
 
 const Dashboard = () => {
   const [Tags, setTags] = useState<Tag[]>([]);
@@ -12,10 +13,13 @@ const Dashboard = () => {
   // Fetch profiles (GET request)
   const fetchTags = async () => {
     try {
-      const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/tags');
-      const data = await response.json();
-      console.log(data);
-      setTags(data.data.tags);
+      // const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/tags');
+      const response = await axiosInstance.get('/tags');
+      // const data = await response.json();
+      // console.log(data);
+      console.log(response.data);
+      setTags(response.data.data.tags); 
+      // setTags(data.data.tags);
     } catch (error) {
       console.error('Error fetching tags:', error);
     }
@@ -29,12 +33,15 @@ const Dashboard = () => {
   // Delete profile by _id (DELETE request)
   const handleDeleteTag = async (id: string) => {
     try {
-      const response = await fetch(`https://are-we-there-yet-mirror.onrender.com/api/tags/${id}`, {
-        method: 'DELETE',
-      });
+      // const response = await fetch(`https://are-we-there-yet-mirror.onrender.com/api/tags/${id}`, {
+      //   method: 'DELETE',
+      // });
+      const response = await axiosInstance.delete(`/tags/${id}`);
 
-      if (response.ok) {
-        setTags(Tags.filter((Tag) => Tag._id !== id));
+
+      if (response.status === 200) {
+        // setTags(Tags.filter((Tag) => Tag._id !== id));
+        setTags((prevTags) => prevTags.filter((tag) => tag._id !== id));
         setRefresh(refresh + 1);
       } else {
         console.error('Failed to delete tag');
