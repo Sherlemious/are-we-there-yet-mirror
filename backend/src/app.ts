@@ -12,6 +12,7 @@ const mongoConnectionString = process.env.MONGO_URI || '';
 app.use(cors()); // Enable CORS
 
 // Middleware
+app.use('/api', express.static('public'));
 app.use(express.json());
 app.use(logHttpRequests);
 app.use(authenticateUnlessOpen);
