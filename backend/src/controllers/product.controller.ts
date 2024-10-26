@@ -60,6 +60,7 @@ const getProducts = async (req: Request, res: Response) => {
 
 const createProduct = async (req: Request, res: Response) => {
   const product = req.body;
+  product.created_by = req.user.userId;
 
   try {
     const newProduct = await productRepo.createProduct(product);

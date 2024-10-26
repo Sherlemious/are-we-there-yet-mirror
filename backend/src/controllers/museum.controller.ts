@@ -21,7 +21,7 @@ const getAllMuseums = async (req: Request, res: Response) => {
 
 const getMuseumsCreatedByUser = async (req: Request, res: Response) => {
   try {
-    const museums = await MuseumRepo.getMuseumsByCreator(req.params.id);
+    const museums = await MuseumRepo.getMuseumsByCreator(req.user.userId);
     const response = {
       message: 'Museums fetched successfully',
       data: { museums: museums },
@@ -74,6 +74,7 @@ const findMuseumsByTags = async (req: Request, res: Response) => {
 
 const createMuseum = async (req: Request, res: Response) => {
   const museum = req.body;
+  museum.created_by = req.user.userId;
 
   try {
     const newMuseum = await MuseumRepo.createMuseum(museum);

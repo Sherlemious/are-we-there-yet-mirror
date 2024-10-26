@@ -6,7 +6,7 @@ import Validator from '../../utils/Validator.utils';
 class ActivityRepo {
   async getActivityById(id: string) {
     Validator.validateId(id, 'Invalid activity ID');
-    return await Activity.findById(id).populate('tags');
+    return await Activity.findById(id).populate(['tags', 'category']);
   }
 
   async createActivity(activity: ActivityType) {
@@ -25,11 +25,11 @@ class ActivityRepo {
 
   async getAllActivities(attributeName?: string, attributeValue?: RegExp | string) {
     const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
-    return await Activity.find(query).populate('tags');
+    return await Activity.find(query).populate(['tags', 'category']);
   }
 
   async getActivitiesByCreator(creator: string) {
-    return await Activity.find({ created_by: creator });
+    return await Activity.find({ created_by: creator }).populate(['tags', 'category']);
   }
 }
 

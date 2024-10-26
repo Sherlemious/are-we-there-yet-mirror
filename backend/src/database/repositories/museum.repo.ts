@@ -34,7 +34,7 @@ class MuseumRepo {
   }
 
   async getMuseumsByCreator(creator: string) {
-    return await Museum.find({ created_by: creator });
+    return await Museum.find({ created_by: creator }).populate('tags');
   }
 }
 

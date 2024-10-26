@@ -6,6 +6,10 @@ class AuthRepo {
     const newUser = await User.create(user);
     return newUser;
   }
+
+  async me(userId: String) {
+    return await User.findById(userId);
+  }
 }
 
 export default new AuthRepo();

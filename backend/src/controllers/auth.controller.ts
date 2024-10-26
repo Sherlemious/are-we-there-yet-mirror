@@ -19,6 +19,16 @@ class AuthController {
       res.status(ResponseStatusCodes.BAD_REQUEST).send({ message: error.message, data: null });
     }
   }
+
+  async me(req: Request, res: Response) {
+    try {
+      const user = await AuthRepo.me(req.user.userId);
+      res.status(ResponseStatusCodes.OK).send({ message: 'User found', data: { user: user } });
+    } catch (error: any) {
+      logger.error(`Error getting user: ${error}`);
+      res.status(ResponseStatusCodes.BAD_REQUEST).send({ message: error.message, data: null });
+    }
+  }
 }
 
 export default new AuthController();

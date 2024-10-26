@@ -36,7 +36,7 @@ const findItineraryById = async (req: Request, res: Response) => {
 
 const getItinerariesCreatedByUser = async (req: Request, res: Response) => {
   try {
-    const itineraries = await ItineraryRepo.getItinerariesByCreator(req.params.id);
+    const itineraries = await ItineraryRepo.getItinerariesByCreator(req.user.userId);
     const response = {
       message: 'Itineraries fetched successfully',
       data: { itineraries: itineraries },
@@ -51,6 +51,7 @@ const getItinerariesCreatedByUser = async (req: Request, res: Response) => {
 
 const createItinerary = async (req: Request, res: Response) => {
   const itinerary = req.body;
+  itinerary.created_by = req.user.userId;
 
   try {
     const newItinerary = await ItineraryRepo.createItinerary(itinerary);

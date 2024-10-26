@@ -1,15 +1,16 @@
 import { LocationType } from './Location.types';
 import { TagType } from './Tag.types';
-import { CategoryType } from './Category.types';
 
 export interface ActivityType {
-  date: Date;
+  name: String;
+  datetime: Date;
   location: LocationType;
   price: number;
-  category: CategoryType;
+  category: String;
   tags: TagType[];
   specialDiscounts: Number;
   bookingOpen: boolean;
+  created_by: String;
 }
 
 export interface ActivityRefType {

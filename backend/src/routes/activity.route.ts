@@ -10,11 +10,11 @@ import {
 
 const activityRouter = Router();
 
+activityRouter.get('/', getAllActivities);
+activityRouter.get('/mine', getActivitiesByCreator);
 activityRouter.get('/:id', getActivityById);
-activityRouter.get('/created_by/:id', getActivitiesByCreator);
 activityRouter.post('/', createActivity);
 activityRouter.put('/:id', updateActivity);
 activityRouter.delete('/:id', deleteActivity);
-activityRouter.get('/', getAllActivities);
 
 export default activityRouter;
