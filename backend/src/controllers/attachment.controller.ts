@@ -1,68 +1,51 @@
-import { NextFunction, Request, Response } from 'express';
-import { FileService } from '../services/file.service';
+import { Request, Response } from 'express';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import attachmentRepo from '../database/repositories/attachment.repo';
 import { logger } from '../middlewares/logger.middleware';
-const fs = require('fs');
-
-const fileService = new FileService();
+import cloudinary from '../config/cloudinary.config';
+import { UploadedFile } from 'express-fileupload';
 
 async function uploadAttachment(req: Request, res: Response) {
-  fileService.upload.single('file')(req, res, async (err) => {
-    if (err) {
-      return res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'File upload failed', error: err });
+  try {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'No file uploaded' });
+      return;
     }
 
-    try {
-      if (!req.file) {
-        return res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'No file uploaded' });
-      }
+    const file = req.files.file as UploadedFile;
 
-      // Extract file details from the request
-      const filePath = req.file.path;
-      const fileName = req.file.originalname;
+    const result = await cloudinary.uploader.upload(file.tempFilePath);
 
-      // Create a new attachment record in the database
-      const attachment = await attachmentRepo.createAttachment({
-        original_name: fileName,
-        url: filePath,
-        created_by: req.user.userId,
-      });
+    // Create a new attachment record in the database
+    const attachment = await attachmentRepo.createAttachment({
+      original_name: file.name,
+      url: result.url,
+      created_by: req.user?.userId,
+    });
 
-      res.status(ResponseStatusCodes.CREATED).json(attachment); // Respond with the created attachment record (metadata)
-    } catch (error: any) {
-      logger.error(`Error creating attachment: ${error.message}`);
-      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
-    }
-  });
+    res.status(ResponseStatusCodes.CREATED).json(attachment); // Respond with the created attachment record (metadata)
+  } catch (error: any) {
+    logger.error(`Error creating attachment: ${error.message}`);
+    res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error creating attachment' });
+  }
 }
 
-async function downloadAttachment(req: Request, res: Response, next: NextFunction) {
+async function getAttachment(req: Request, res: Response) {
   try {
-    const attachment_id = req.params.attachment_id;
-    const attachment = await attachmentRepo.findAttachmentById(attachment_id);
+    const attachmentId = req.params.attachment_id;
+
+    const attachment = await attachmentRepo.findAttachmentById(attachmentId);
 
     if (!attachment) {
       res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Attachment not found' });
       return;
     }
 
-    // Extract file path and name from the attachment details
-    const filePath = attachment.url;
-    const fileName = attachment.original_name;
-
-    // Set response headers for file download
-    res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-    const file = fs.createReadStream(filePath); // Create a read stream for the file
-
-    file.pipe(res); // Pipe the file stream to the response}
+    res.status(ResponseStatusCodes.OK).json(attachment);
   } catch (error: any) {
-    logger.error(`Error downloading attachment: ${error.message}`);
-    res
-      .status(ResponseStatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: 'Error downloading attachment', error: error });
-    next(error);
+    logger.error(`Error creating attachment: ${error.message}`);
+    res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error creating attachment' });
   }
 }
 
-export { uploadAttachment, downloadAttachment };
+export { uploadAttachment, getAttachment };

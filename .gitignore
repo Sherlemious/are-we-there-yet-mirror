@@ -137,6 +137,7 @@ backend/dist
 backend/certs
 backend/src/uploads
 backend/uploads
+backend/tmp
 
 # backend/.env
 backend/.env

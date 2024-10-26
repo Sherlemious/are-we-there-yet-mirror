@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 import Validator from '../../utils/Validator.utils';
 import { Attachment } from '../models/attachment.model';
-import { AttachmentType } from '../../types/Attachment.types';
 
 class AttachmentRepo {
   async findAttachmentById(id: string) {
@@ -9,7 +8,7 @@ class AttachmentRepo {
     return await Attachment.findOne({ _id: new ObjectId(id) });
   }
 
-  async createAttachment(attachment: any) {
+  async createAttachment(attachment: any): Promise<any> {
     return await Attachment.create(attachment);
   }
 

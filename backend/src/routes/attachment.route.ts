@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { uploadAttachment, downloadAttachment } from '../controllers/attachment.controller';
+import { uploadAttachment, getAttachment } from '../controllers/attachment.controller';
 
 const router = Router();
 
-router.get('/:attachment_id', downloadAttachment);
+router.get('/:attachment_id', getAttachment);
 router.post('', uploadAttachment);
 
 export default router;
