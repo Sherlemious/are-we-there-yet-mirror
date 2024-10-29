@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { locationSchema } from './location.model';
 import { reviewSchema } from './review.model';
+import { accessibilitySchema } from './accessibility.model';
 
 const itinerarySchema = new Schema(
   {
@@ -11,6 +12,10 @@ const itinerarySchema = new Schema(
     category: {
       type: String,
       required: true,
+    },
+    active: {
+      type: Boolean,
+      default: true,
     },
     tags: {
       type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
@@ -44,8 +49,7 @@ const itinerarySchema = new Schema(
       required: true,
     },
     accessibility: {
-      type: Boolean,
-      required: true,
+      type: accessibilitySchema,
     },
     pick_up_location: {
       type: locationSchema,

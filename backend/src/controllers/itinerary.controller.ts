@@ -148,6 +148,20 @@ const filterItineraries = async (req: Request, res: Response) => {
   }
 };
 
+const toggleItineraryActive = async (req: Request, res: Response, active: boolean) => {
+  try {
+    await ItineraryRepo.toggleItineraryActive(req.params.id, active);
+    const response = {
+      message: 'Itinerary status updated successfully',
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error activating/deactivating itinerary: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 export {
   getItineraries,
   findItineraryById,
@@ -156,4 +170,5 @@ export {
   deleteItinerary,
   filterItineraries,
   getItinerariesCreatedByUser,
+  toggleItineraryActive,
 };

@@ -35,6 +35,11 @@ class ItineraryRepo {
   async getItinerariesByCreator(creator: string) {
     return await Itinerary.find({ created_by: creator }).populate(['tags', 'activities.activity']);
   }
+
+  async toggleItineraryActive(id: string, active: boolean): Promise<void> {
+    Validator.validateId(id, 'Invalid itinerary ID');
+    await Itinerary.findByIdAndUpdate(id, { active: active });
+  }
 }
 
 export default new ItineraryRepo();
