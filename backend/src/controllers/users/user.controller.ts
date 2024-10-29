@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import userRepo from '../../database/repositories/user.repo';
 import { logger } from '../../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../../types/ResponseStatusCodes.types';
-import request from 'supertest';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
