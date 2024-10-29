@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema(
     dob: {
       type: Date,
     },
+    deletionRequested: {
+      type: Boolean,
+      default: false,
+    },
     job: {
       type: String,
     },

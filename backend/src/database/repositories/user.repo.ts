@@ -33,6 +33,10 @@ class UserRepository {
     return await User.find({ email: email });
   }
 
+  async requestAccountDeletion(id: string) {
+    return await User.updateOne({ _id: new ObjectId(id) }, { deletionRequested: true });
+  }
+
   async deleteUser(id: string) {
     return await User.deleteOne({ _id: new ObjectId(id) });
   }

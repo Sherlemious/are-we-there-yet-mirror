@@ -10,6 +10,7 @@ import {
   acceptUser,
   findUserById,
   updateUser,
+  requestAccountDeletion,
 } from '../controllers/users/user.controller';
 
 const router = Router();
@@ -22,6 +23,7 @@ router.use('/admins', adminRouter);
 
 // User routes
 router.get('/', getUsers);
+router.patch('/requestDeletion', requestAccountDeletion);
 router.patch('/:id/accept-user', acceptUser);
 router.delete('/:id', deleteUser);
 router.patch('/:id', updateUser);

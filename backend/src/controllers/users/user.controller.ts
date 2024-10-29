@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import userRepo from '../../database/repositories/user.repo';
 import { logger } from '../../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../../types/ResponseStatusCodes.types';
+import request from 'supertest';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -92,4 +93,20 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser };
+const requestAccountDeletion = async (req: Request, res: Response) => {
+  try {
+    const userId: string = req.user.userId;
+    await userRepo.requestAccountDeletion(userId);
+    const response = {
+      message: 'Account deletion requested successfully',
+      data: { userId: userId },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error requesting account deletion: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser, requestAccountDeletion };
