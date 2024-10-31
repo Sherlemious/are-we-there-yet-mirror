@@ -92,4 +92,20 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser };
+const ChangeUserPassword = async (req: Request, res: Response) => {
+  try {
+    const password = req.body.password;
+    await userRepo.ChangeUserPassword(req.params.id, password);
+    const response = {
+      message: 'Password updated successfully',
+      data: { userId: req.params.id, password: password },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error updating password: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser, ChangeUserPassword };

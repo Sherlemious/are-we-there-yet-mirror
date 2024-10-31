@@ -36,6 +36,9 @@ class UserRepository {
   async deleteUser(id: string) {
     return await User.deleteOne({ _id: new ObjectId(id) });
   }
+  async ChangeUserPassword(id: string, pass: string) {
+    return await User.updateOne({ _id: new ObjectId(id) }, { password: pass });
+  }
 }
 
 export default new UserRepository();

@@ -10,6 +10,7 @@ import {
   acceptUser,
   findUserById,
   updateUser,
+  ChangeUserPassword,
 } from '../controllers/users/user.controller';
 
 const router = Router();
@@ -28,5 +29,6 @@ router.patch('/:id', updateUser);
 router.get('/:id', findUserById);
 router.patch('/:id', updateUser);
 router.post('/', createUser);
+router.patch('/changePassword/:id', ChangeUserPassword);
 
 export default router;
