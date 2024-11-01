@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axiosInstance from '../../shared/services/axiosInstance';
 
 export default function UpdatePopup({ dialogRef, title, _id, setCategories }) {
   const [isFormValid2, setIsFormValid2] = useState(false);
@@ -22,19 +23,26 @@ export default function UpdatePopup({ dialogRef, title, _id, setCategories }) {
   const updateCategory = async (name: string, _id: string) => {
     console.log('updating with:', name, _id);
     try {
-      const response = await fetch(`https://are-we-there-yet-mirror.onrender.com/api/categories/${_id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ _id, name }),
+      // const response = await fetch(`https://are-we-there-yet-mirror.onrender.com/api/categories/${_id}`, {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ _id, name }),
+      // });
+      const response = await axiosInstance.put(`/categories/${_id}`, {
+        _id,
+        name,
       });
 
-      if (!response.ok) {
+      // if (!response.ok) {
+      //   throw new Error('Failed to update Category');
+      // }
+      if (response.status !== 200) {
         throw new Error('Failed to update Category');
       }
 
-      await response.json();
+      // await response.json();
       setCategories((prevCategories) => {
         return prevCategories.map((Category) => {
           if (Category._id === _id) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import ProfileTable from '../components/ProfileTable';
 import { Profile } from '../types/Profile';
 import Header from '../components/Header';
+import axiosInstance from '../../shared/services/axiosInstance';
 
 const Dashboard = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -13,9 +14,14 @@ const Dashboard = () => {
   // Fetch profiles (GET request)
   const fetchProfiles = async () => {
     try {
-      const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/users');
-      const data = await response.json();
-      setProfiles(data.data);
+      // const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/users');
+      const response = await axiosInstance.get('/users');
+      // const data = await response.json();
+      console.log(response.data);
+
+      // setProfiles(data.data);
+      setProfiles(response.data.data); 
+
     } catch (error) {
       console.error('Error fetching profiles:', error);
     }
@@ -29,12 +35,16 @@ const Dashboard = () => {
   // Delete profile by _id (DELETE request)
   const handleDeleteProfile = async (id: string) => {
     try {
-      const response = await fetch(`https://are-we-there-yet-mirror.onrender.com/api/users/${id}`, {
-        method: 'DELETE',
-      });
+      // const response = await fetch(`https://are-we-there-yet-mirror.onrender.com/api/users/${id}`, {
+      //   method: 'DELETE',
+      // });
+      const response = await axiosInstance.delete(`/users/${id}`);
 
-      if (response.ok) {
-        setProfiles(profiles.filter((profile) => profile._id !== id));
+
+      // if (response.ok) {
+        if (response.status === 200) {
+        // setProfiles(profiles.filter((profile) => profile._id !== id));
+        setProfiles((prevProfiles) => prevProfiles.filter((profile) => profile._id !== id));
         setRefresh(refresh + 1);
       } else {
         console.error('Failed to delete profile');

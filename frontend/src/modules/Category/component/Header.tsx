@@ -1,4 +1,5 @@
-import { AddCategoryPopup, OpenPopupButton } from './popup';
+import axiosInstance from "../../shared/services/axiosInstance";
+import { AddCategoryPopup, OpenPopupButton } from "./popup";
 
 const Header = ({
   isCategoryPopupOpen,
@@ -13,39 +14,61 @@ const Header = ({
 }) => {
   // Function to add an Category
   const addCategory = async (name: string) => {
+    // try {
+    //   const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/categories', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ name }),
+    //   });
     try {
-      const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name }),
+      // Send the POST request to the backend
+      const response = await axiosInstance.post("/categories", {
+        name,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add Category');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to add Category');
+      // }
 
-      const newCategory = await response.json();
-      console.log('Category added:', newCategory); // Log the added user
+      // const newCategory = await response.json();
+      const newCategory = response.data; // Adjust according to your response structure
+      console.log("Category added:", newCategory); // Log the added user
       // Optionally, you can trigger a state update or callback to refresh the user list
       const CategoryId = newCategory.data.categoryId;
       const Category = await getCategory(CategoryId);
-      console.log('Category:', Category); // Log the added user
-      setCategories((prevCategories) => [...prevCategories, { _id: Category._id, name: Category.name }]);
+      console.log("Category:", Category); // Log the added user
+      setCategories((prevCategories) => [
+        ...prevCategories,
+        { _id: Category._id, name: Category.name },
+      ]);
       setRefresh((prev) => prev + 1);
     } catch (error) {
-      console.error('Error adding Category:', error);
+      console.error("Error adding Category:", error);
     }
   };
+  // async function getCategory(id: string) {
+  //   console.log(id);
+  //   return fetch(`https://are-we-there-yet-mirror.onrender.com/api/categories/${id}`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data.data);
+  //       return data.data.category;
+  //     });
+  // }
   async function getCategory(id: string) {
     console.log(id);
-    return fetch(`https://are-we-there-yet-mirror.onrender.com/api/categories/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.data);
-        return data.data.category;
-      });
+    try {
+      // Send the GET request to the backend
+      const response = await axiosInstance.get(`/categories/${id}`);
+
+      console.log(response.data.data); // Log the response data for debugging
+      return response.data.data.category; // Adjust according to your response structure
+    } catch (error) {
+      console.error("Error fetching category:", error);
+      throw error; // Optionally rethrow the error for further handling
+    }
   }
 
   const handleAddCategory = (name: string) => {
@@ -66,7 +89,9 @@ const Header = ({
           Add a Category
         </h3>
         <div className="flex space-x-4">
-          <OpenPopupButton onClick={() => setIsCategoryPopupOpen(true)}>Add Category</OpenPopupButton>
+          <OpenPopupButton onClick={() => setIsCategoryPopupOpen(true)}>
+            Add Category
+          </OpenPopupButton>
           <AddCategoryPopup
             isOpen={isCategoryPopupOpen}
             onClose={() => setIsCategoryPopupOpen(false)}
