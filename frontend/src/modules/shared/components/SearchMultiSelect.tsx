@@ -29,19 +29,22 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
   }, [distinctOptions, searchTerm, selectedItems]);
 
   return (
-    <div className="border border-gray-300 rounded-md p-4 w-full max-w-md relative">
+    <div className="border border-borders-primary rounded-md p-4 w-full max-w-md relative">
       <div className="flex items-start mb-2">
         {/* Selected Items */}
         <div className="flex flex-wrap mr-2">
           {selectedItems.length === 0 ? (
-            <div className="text-gray-500"></div>
+            <div className="text-text-primary"></div>
           ) : (
             selectedItems.map((item) => (
-              <span key={item} className="bg-blue-200 text-blue-800 rounded-full px-2 py-1 mr-2 mb-2 flex items-center shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out">
+              <span
+                key={item}
+                className="bg-primary-blue text-text-white rounded-full px-2 py-1 mr-2 mb-2 flex items-center shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
+              >
                 {item}
                 <button
                   onClick={() => onRemove(item)}
-                  className="ml-1 text-red-500 hover:text-red-700"
+                  className="ml-1 text-accent-gold hover:text-gold"
                 >
                   &times;
                 </button>
@@ -57,7 +60,7 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ width: '80px' }} // Adjust width here
-          className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ml-auto shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
+          className="border border-borders-primary rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary-blue ml-auto shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
         />
       </div>
 
@@ -83,7 +86,7 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
               <div
                 key={option}
                 onClick={() => onSelect(option)}
-                className="p-2 hover:bg-blue-100 cursor-pointer transition-colors duration-200 ease-in-out rounded-md"
+                className="p-2 hover:bg-background-button cursor-pointer transition-colors duration-200 ease-in-out rounded-md"
               >
                 {option}
               </div>
