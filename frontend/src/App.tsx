@@ -22,11 +22,7 @@ import {
   advertiserProfileLoader,
 } from "./modules/Advertiser/App";
 import { SellerProfile, sellerProfileLoader } from "./modules/Seller/App";
-import {
-  Register,
-  registerAction,
-  registerLoader,
-} from "./modules/Register/App";
+
 import {
   TouristAction,
   TouristProfile,
@@ -47,6 +43,8 @@ import UserContextProvider from "./modules/shared/store/user-context";
 import { RouteGuard } from "./modules/shared/components/RouteGuard";
 import { AccountType } from "./modules/shared/types/User.types";
 import { LandingPage } from "./modules/LandingPage/App";
+import Register from "./modules/Register/pages/Register";
+import { registerAction, registerLoader } from "./modules/Register/App";
 
 const BrowserRouter = createBrowserRouter([
   {
