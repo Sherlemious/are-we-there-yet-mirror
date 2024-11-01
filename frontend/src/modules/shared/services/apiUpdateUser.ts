@@ -50,7 +50,11 @@ export async function updateUser(
   }
 
   try {
-    const resPromise = axiosInstance.patch(`/users/${id}`, keys);
+    const resPromise = axiosInstance.patch(
+      `/users/${id}`,
+      keys,
+    ) as Promise<unknown>;
+
     toast.promise(
       resPromise,
       {

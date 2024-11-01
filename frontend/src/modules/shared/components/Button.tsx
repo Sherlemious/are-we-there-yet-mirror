@@ -16,7 +16,7 @@ export default function Button({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`bg-background-button text-text-white ${className}`}
+      className={`bg-accent-gold text-accent-dark-blue ${className}`}
     >
       {children}
     </button>

@@ -1,6 +1,7 @@
 import toast from "react-hot-toast";
 import { redirect } from "react-router-dom";
 import axiosInstance from "../../shared/services/axiosInstance";
+import { AxiosResponse } from "axios";
 
 // Generic function for handling form submission, API request, and redirect
 export async function handleUserRegistration({
@@ -13,7 +14,10 @@ export async function handleUserRegistration({
   successRedirect: string;
 }) {
   try {
-    const resPromise = axiosInstance.post(endpoint, requestData);
+    const resPromise = axiosInstance.post(
+      endpoint,
+      requestData,
+    ) as Promise<AxiosResponse>;
 
     toast.promise(
       resPromise,

@@ -46,8 +46,14 @@ import { Activity, ActivityForm, EditActivity } from "./modules/Activity/App";
 import UserContextProvider from "./modules/shared/store/user-context";
 import { RouteGuard } from "./modules/shared/components/RouteGuard";
 import { AccountType } from "./modules/shared/types/User.types";
+import { LandingPage } from "./modules/LandingPage/App";
 
 const BrowserRouter = createBrowserRouter([
+  {
+    path: "/home",
+    index: true,
+    element: <LandingPage />,
+  },
   {
     path: "/register",
     element: <Register />,
