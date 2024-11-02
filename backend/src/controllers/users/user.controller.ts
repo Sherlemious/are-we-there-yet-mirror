@@ -48,6 +48,7 @@ const acceptUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
     await userRepo.acceptUser(userId);
+    await userRepo.notRejectUser(userId);
     const response = {
       message: 'User accepted successfully',
       data: { userId: req.params.id },
@@ -126,6 +127,7 @@ const acceptTerms = async (req: Request, res: Response) => {
 const rejectUser = async (req: Request, res: Response) => {
   try {
     await userRepo.rejectUser(req.params.id);
+    await userRepo.notAcceptUser(req.params.id);
     const response = {
       message: 'User rejected successfully',
       data: { userId: req.params.id },

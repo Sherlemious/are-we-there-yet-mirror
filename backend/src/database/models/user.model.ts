@@ -74,7 +74,12 @@ const userSchema = new mongoose.Schema(
     rejected: {
       type: Boolean,
       default: false, 
-    }
+    },
+    termsAndConditions: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   {
     timestamps: true,
