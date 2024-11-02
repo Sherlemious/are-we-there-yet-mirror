@@ -4,6 +4,8 @@ import { Minus, Plus } from "lucide-react";
 import Modal, { ModalRef } from "./modal";
 import ProductForm, { ProductFormData } from "./ProductForm";
 import defaultPhoto from "../assets/defaultPhoto.png";
+import mintBluePhoto from "../assets/mintBlue.jpg";
+import Xbox5 from "../assets/Xbox5.jpg";
 import GenericCard from "../../shared/GenericCard/GenericCard";
 
 interface ProductListProps {
@@ -141,8 +143,33 @@ const ProductList: React.FC<ProductListProps> = ({
               <div key={index} /*className={customStyles.slide}}*/>
                 <GenericCard
                   item={product}
-                  imageUrl={product.attachments?.[0] || defaultImage}
-                />
+                  onClick={() => handleOpenModal(product)}
+                  images={[Xbox5, mintBluePhoto, defaultImage]}
+                  // imageUrl={product.attachments?.[0] || defaultImage}
+                >
+                  <p className={customStyles.slideText}>
+                    {product.description}
+                  </p>
+                  <p className={customStyles.slideText}>
+                    Price: ${product.price}
+                  </p>
+                  <p className={customStyles.slideText}>
+                    Quantity: {product.available_quantity}
+                  </p>
+                  <strong>
+                    Rating:
+                    {product.reviews.length > 0
+                      ? (
+                          product.reviews.reduce(
+                            (sum, review) => sum + review.rating,
+                            0,
+                          ) / product.reviews.length
+                        ).toFixed(1)
+                      : "0"}
+                    /5
+                  </strong>
+                </GenericCard>
+
                 {/* <div onClick={() => handleOpenModal(product)} className={customStyles.slideContent}>
                   {(role === 'admin' || role === 'seller') && (
                     <button
@@ -256,13 +283,15 @@ const ProductList: React.FC<ProductListProps> = ({
 
 const customStyles = {
   container:
-    "h-auto max-h-[85vh] max-w-fit border-2 border-gray-300 pr-14 pt-4 pl-20 pb-10 mx-auto",
+    "h-auto max-h-[85vh] bg-secondary-white max-w-fit border-2 border-gray-300 pr-14 pt-4 pl-20 pb-10 mx-auto",
   filterContainer: "flex items-center justify-between gap-4 mb-4",
-  searchBar: "px-4 py-2 border border-gray-300 rounded-lg w-[200px]",
+  searchBar:
+    "px-4 py-2 border border-gray-300 bg-secondary-light_grey rounded-lg w-[200px]",
   priceFilters: "flex gap-4",
-  priceInput: "px-4 py-2 border border-gray-300 rounded-lg w-[50%]",
+  priceInput:
+    "px-4 py-2 border border-gray-300 bg-secondary-light_grey rounded-lg w-[50%]",
   sortButton:
-    "px-4 py-2 border border-gray-300 rounded-lg bg-blue-500 text-white",
+    "px-4 py-2 border border-gray-300 rounded-lg bg-accent-gold text-white",
   sliderContainer: "relative",
   sliderContent: "overflow-hidden",
   sliderWrapper: "grid grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto", // Set a max height and make it scrollable
