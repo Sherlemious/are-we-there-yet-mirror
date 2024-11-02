@@ -14,4 +14,5 @@ export interface ItineraryType {
   accessibility: boolean;
   pick_up_location: LocationType;
   drop_off_location: LocationType;
+  flagged?:boolean;
 }

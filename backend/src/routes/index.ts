@@ -24,5 +24,6 @@ routes.use('/products', productRouter);
 routes.use('/search', searchRouter);
 routes.use('/categories', categoryRouter);
 routes.use('/complaints', complaintRouter);
+// routes.use('/termsAndConditions', );
 
 export { routes };

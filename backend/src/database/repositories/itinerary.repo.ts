@@ -5,7 +5,7 @@ import Validator from '../../utils/Validator.utils';
 
 class ItineraryRepo {
   async getItineraries(attributeName?: string, attributeValue?: RegExp | string) {
-    const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
+    const query = attributeName && attributeValue ? { [attributeName]: attributeValue} : {};
     return await Itinerary.find(query).populate(['tags', 'activities.activity']);
   }
 
@@ -34,6 +34,11 @@ class ItineraryRepo {
 
   async getItinerariesByCreator(creator: string) {
     return await Itinerary.find({ created_by: creator }).populate(['tags', 'activities.activity']);
+  }
+
+  async flagItinerary(id: string) {
+    Validator.validateId(id, 'Invalid itinerary ID');
+    return await Itinerary.findByIdAndUpdate(id, { flagged: true });
   }
 }
 

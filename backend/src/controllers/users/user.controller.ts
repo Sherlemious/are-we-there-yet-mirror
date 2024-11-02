@@ -108,4 +108,34 @@ const ChangeUserPassword = async (req: Request, res: Response) => {
   }
 };
 
-export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser, ChangeUserPassword };
+const acceptTerms = async (req: Request, res: Response) => {
+  try {
+    await userRepo.acceptTerms(req.params.id);
+    const response = {
+      message: 'Terms accepted successfully',
+      data: { userId: req.params.id },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error accepting terms: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const rejectUser = async (req: Request, res: Response) => {
+  try {
+    await userRepo.rejectUser(req.params.id);
+    const response = {
+      message: 'User rejected successfully',
+      data: { userId: req.params.id },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error rejecting user: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser, ChangeUserPassword, acceptTerms, rejectUser };

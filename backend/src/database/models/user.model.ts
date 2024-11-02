@@ -71,6 +71,10 @@ const userSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: 'user',
     },
+    rejected: {
+      type: Boolean,
+      default: false, 
+    }
   },
   {
     timestamps: true,

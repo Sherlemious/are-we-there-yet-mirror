@@ -7,6 +7,7 @@ import {
   deleteItinerary,
   filterItineraries,
   getItinerariesCreatedByUser,
+  flagItinerary,
 } from '../controllers/itinerary.controller';
 
 const itineraryRouter = Router();
@@ -18,5 +19,6 @@ itineraryRouter.post('/', createItinerary);
 itineraryRouter.put('/:id', updateItinerary);
 itineraryRouter.delete('/:id', deleteItinerary);
 itineraryRouter.get('/', filterItineraries);
+itineraryRouter.put('/flag/:id', flagItinerary);
 
 export default itineraryRouter;
