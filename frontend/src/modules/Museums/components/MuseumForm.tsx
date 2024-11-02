@@ -61,9 +61,11 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
     },
   );
 
-  const [pictures, setPictures] = useState<File[]>([]); // Separate state for file uploads
+  const [pictures, setPictures] = useState<string[]>([]); // Separate state for file uploads
+  const [uploaded, setUploaded] = useState<File[]>([]); // Separate state for file uploads
+  const [fetched, setFetched] = useState<object[]>([]); // Separate state for file uploads
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Create a ref for the file input
-  const [imagePreview, setImagePreview] = useState<File>(); // State for image preview
+  const [imagePreview, setImagePreview] = useState<string>(); // State for image preview
   const [imageIndex, setImageIndex] = useState(0); // State to keep track of the current image index
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
@@ -71,29 +73,29 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
   const fetchPictures = async (museum: Museum) => {
     try {
-      const fetchedFiles: File[] = [];
-
+      const fetchedURLs: string[] = [];
+      const objects: object[] = [];
       for (let i = 0; i < museum.pictures.length; i++) {
         // Fetch the picture using the attachment ID
         if (museum.pictures[i]) {
           const response = await axiosInstance.get(
             `/attachments/${museum.pictures[i]}`,
-            { responseType: "blob" }, // Fetch binary data
           );
+          console.log(response);
           // Convert Blob to File
-          const file = new File([response.data], `image-${i}.png`, {
-            type: response.data.type || "image/png",
-          });
-
-          fetchedFiles.push(file); // Push the file into the array
+          // const file = new File([response.data], response.data.original_name, {
+          //   type: response.data.type || "image/png",
+          // });
+          objects.push(response.data);
+          fetchedURLs.push(response.data.url); // Push the file into the array
         }
 
         // Set the fetched files into the state
-        setPictures(fetchedFiles);
-
+        setPictures(fetchedURLs);
+        setFetched(objects);
         // Optionally set the first file as preview
-        if (fetchedFiles.length > 0) {
-          setImagePreview(fetchedFiles[0]);
+        if (fetchedURLs.length > 0) {
+          setImagePreview(fetchedURLs[0]);
         }
       }
     } catch (error) {
@@ -208,11 +210,13 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    const urls = files.map((file) => URL.createObjectURL(file));
     if (files.length > 0) {
       //update pictures to add existing pictures with the new files
-      setPictures([...pictures, ...files]);
+      setUploaded([...uploaded, ...files]);
+      setPictures([...pictures, ...urls]);
       setImageIndex(0); // Reset to the first image
-      setImagePreview(files[0]); // Display the first uploaded image
+      setImagePreview(urls[0]); // Display the first uploaded image
     }
   };
 
@@ -235,11 +239,11 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const ids = [];
-    for (let i = 0; i < pictures.length; i++) {
+    for (let i = 0; i < uploaded.length; i++) {
       const formData = new FormData();
-      formData.append("file", pictures[i]);
+      formData.append("file", uploaded[i]);
       console.log(formData);
-      console.log(pictures[i]);
+      console.log(uploaded[i]);
       const response = await axiosInstance.post(
         `/attachments`,
         formData,
@@ -249,13 +253,18 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       );
       ids.push(response.data._id);
     }
-    console.log(ids);
+    for(let i=0; i<fetched.length;i++){
+      if (pictures.includes(fetched[i].url)) {
+        ids.push(fetched[i]._id); // Only push the ID if it is not present in pictures
+    }
+    }
     for (let i = 0; i < formData.tags.length; i++) {
       if (availableTags.find((tag) => tag.name === formData.tags[i])) {
         formData.tags[i] =
           availableTags.find((tag) => tag.name === formData.tags[i])?._id || "";
       }
     }
+    console.log(ids);
     console.log(formData.tags);
     const formDataWithAttachments = { ...formData, pictures: ids };
     if (onSubmit) {
@@ -268,7 +277,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
         description: formData.description,
         category: formData.category,
         tags: formData.tags,
-        pictures: formData.pictures,
+        pictures: ids,
         location: formData.location,
         opening_hours: formData.opening_hours,
         ticket_prices: formData.ticket_prices,
@@ -457,7 +466,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
           <img
             src={
               imagePreview && pictures.length > 0
-                ? URL.createObjectURL(imagePreview)
+                ?imagePreview
                 : defaultPhoto
             }
             alt="Preview"

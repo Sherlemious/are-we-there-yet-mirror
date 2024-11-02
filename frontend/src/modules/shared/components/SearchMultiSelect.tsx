@@ -65,7 +65,7 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
       </div>
 
       {/* Options Dropdown */}
-      {searchTerm && filteredOptions.length > 0 && (
+      {filteredOptions.length > 0 && (
         <div className="mt-2 max-h-40 overflow-hidden">
           <div
             className="w-full shadow-lg max-h-40 overflow-y-auto"

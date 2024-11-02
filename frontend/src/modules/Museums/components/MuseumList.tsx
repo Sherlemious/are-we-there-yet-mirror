@@ -30,10 +30,9 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
   const fetchPicture = async (museum: Museum): Promise<string | undefined> => {
     try {
       const response = await axiosInstance.get(
-        `/attachments/${museum.pictures[0]}`,
-        { responseType: 'blob' } // Fetch binary data
+        `/attachments/${museum.pictures[0]}` // Fetch binary data
       );
-      return URL.createObjectURL(response.data);
+      return response.data.url;
     } catch (error) {
       console.error('Error fetching pictures:', error);
       return undefined;
@@ -46,7 +45,10 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
       for (const museum of museums) {
         if (museum.pictures.length > 0) {
           const imageUrl = await fetchPicture(museum);
-          newImageURLs[museum._id] = imageUrl || defaultPhoto; // Use fetched image or default
+          if(imageUrl){
+             newImageURLs[museum._id] = imageUrl;
+             console.log(newImageURLs[museum._id] + " " + imageUrl);
+           } // Use fetched image or default
         } else {
           newImageURLs[museum._id] = defaultPhoto; // Default image if no pictures
         }
@@ -81,8 +83,8 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
 
                   {/* Image */}
                   <div className={customStyles.imageContainer}>
-                  <img src={defaultImage} alt={museum.name} className={customStyles.image} />
-                  {/* <img src={museum.pictures.length > 0 ? museum.pictures[0] : defaultImage} alt={museum.name} className={customStyles.image} /> */}
+                  {/* <img src={defaultImage} alt={museum.name} className={customStyles.image} /> */}
+                  <img src={museum.pictures.length > 0 ? imageURLs[museum._id] : defaultImage} alt={museum.name} className={customStyles.image} />
                   </div>
 
                   <h3 className={customStyles.slideTitle}>{museum.name}</h3>
