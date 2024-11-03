@@ -1,5 +1,7 @@
 import axiosInstance from "../../shared/services/axiosInstance";
 import { AddCategoryPopup, OpenPopupButton } from "./popup";
+import { UserContext } from "../../shared/store/user-context";
+import { useContext } from "react";
 
 const Header = ({
   isCategoryPopupOpen,
@@ -75,31 +77,27 @@ const Header = ({
     addCategory(name);
     setIsCategoryPopupOpen(false); // Close the popup after adding
   };
+  const { user } = useContext(UserContext);
 
   return (
     <header className="flex items-center justify-between bg-gray-100 p-4">
       <div className="flex flex-col justify-end p-14 text-text-primary">
         <div className="w-full max-w-[50vw] divide-y-2 divide-borders-bottomBorder">
-          <h1 className="py-4 text-4xl font-bold">Welcome Sawy</h1>
+          <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
           <h3 className="py-4 text-2xl font-bold">Categories</h3>
         </div>
       </div>
-      <div className="h-1/2 max-w-fit border-2 border-gray-300 p-14">
-        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">
-          Add a Category
-        </h3>
-        <div className="flex space-x-4">
-          <OpenPopupButton onClick={() => setIsCategoryPopupOpen(true)}>
-            Add Category
-          </OpenPopupButton>
-          <AddCategoryPopup
-            isOpen={isCategoryPopupOpen}
-            onClose={() => setIsCategoryPopupOpen(false)}
-            onAdd={handleAddCategory}
-            title="Add a Preference Category"
-            isHeader={true}
-          />
-        </div>
+      <div className="flex space-x-4 pr-80 pt-40">
+        <OpenPopupButton onClick={() => setIsCategoryPopupOpen(true)}>
+          Add Category
+        </OpenPopupButton>
+        <AddCategoryPopup
+          isOpen={isCategoryPopupOpen}
+          onClose={() => setIsCategoryPopupOpen(false)}
+          onAdd={handleAddCategory}
+          title="Add a Preference Category"
+          isHeader={true}
+        />
       </div>
     </header>
   );

@@ -1,5 +1,7 @@
 import axiosInstance from "../../shared/services/axiosInstance";
 import { AddTagPopup, OpenPopupButton } from "./popup";
+import { UserContext } from "../../shared/store/user-context";
+import { useContext } from "react";
 
 const Header = ({
   isTagPopupOpen,
@@ -80,20 +82,17 @@ const Header = ({
     addTag(name, "Preference", historical_period);
     setIsTagPopupOpen(false); // Close the popup after adding
   };
+  const { user } = useContext(UserContext);
 
   return (
     <header className="flex items-center justify-between bg-gray-100 p-4">
       <div className="flex flex-col justify-end p-14 text-text-primary">
         <div className="w-full max-w-[50vw] divide-y-2 divide-borders-bottomBorder">
-          <h1 className="py-4 text-4xl font-bold">Welcome Sawy</h1>
+          <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
           <h3 className="py-4 text-2xl font-bold">Preference Tags</h3>
         </div>
       </div>
-      <div className="h-1/2 max-w-fit border-2 border-gray-300 p-14">
-        <h3 className="mb-4 w-fit border-b border-borders-bottomBorder text-lg font-bold text-gray-800">
-          Add a Preference Tag
-        </h3>
-        <div className="flex space-x-4">
+      <div className="flex space-x-4 pr-80 pt-40">
           <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>
             Add Preference Tag
           </OpenPopupButton>
@@ -105,7 +104,6 @@ const Header = ({
             isHeader={true}
           />
         </div>
-      </div>
     </header>
   );
 };

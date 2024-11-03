@@ -65,8 +65,8 @@ const AddTagPopup: React.FC<AddTagProps> = ({ isOpen, onClose, onAdd, title, isH
           <button
             className={`rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
               isFormValid
-                ? 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500'
-                : 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500'
+                ? 'bg-accent-dark-blue text-white hover:bg-accent-dark-blue/80 focus:ring-gray-500'
+                : 'bg-accent-dark-blue text-white hover:bg-accent-dark-blue/80 focus:ring-gray-500'
             }`}
             onClick={handleButtonClick}
           >
@@ -85,7 +85,7 @@ const OpenPopupButton: React.FC<{
 }> = ({ onClick, children }) => (
   <button
     onClick={onClick}
-    className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+    className="rounded bg-accent-dark-blue px-4 py-2 text-white hover:bg-accent-dark-blue/80 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
   >
     {children}
   </button>
