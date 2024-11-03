@@ -3,6 +3,8 @@ import advertiserRouter from './advertiser.route';
 import sellerRouter from './seller.route';
 import adminRouter from './admin.route';
 import tourGuideRouter from './tourGuide.route';
+import touristRouter from './tourist.route';
+
 import {
   getUsers,
   createUser,
@@ -20,6 +22,7 @@ router.use('/advertisers', advertiserRouter);
 router.use('/tourGuides', tourGuideRouter);
 router.use('/sellers', sellerRouter);
 router.use('/admins', adminRouter);
+router.use('/tourists', touristRouter);
 
 // User routes
 router.get('/', getUsers);

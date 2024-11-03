@@ -20,7 +20,6 @@ export interface UserType {
   name?: string;
   accepted?: boolean;
   nationality: string;
-
   // Tour guide
   years_of_experience?: number;
   previous_work?: [string];
@@ -31,5 +30,6 @@ export interface UserType {
   // Seller
   description?: string;
   // Tourist
+  loyalty_points: number;
   wallet?: number;
 }

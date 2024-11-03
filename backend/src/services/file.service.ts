@@ -13,7 +13,6 @@ export default class FileService {
 
     const file = req.files.file as UploadedFile;
 
-    // You can now use the file object to upload to Cloudinary or perform other operations
     res.status(ResponseStatusCodes.OK).json({ message: 'File uploaded successfully', file });
   }
 }

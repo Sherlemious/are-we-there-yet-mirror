@@ -78,6 +78,9 @@ const findUserById = async (req: Request, res: Response) => {
 const updateUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
+    if (req.body.dob) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Cannot change dob' });
+    }
     const user = req.body;
     await userRepo.updateUser(userId, user);
     const response = {
