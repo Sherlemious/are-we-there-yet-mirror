@@ -337,6 +337,7 @@ const RegistrationForm = () => {
                           name={fieldNames.dateOfBirth}
                           type="date"
                           required
+                          max={new Date().toISOString().slice(0, 10)}
                           className="bg-white bg-opacity-20 text-white placeholder-white"
                         />
                       </motion.div>
@@ -399,6 +400,8 @@ export default RegistrationForm;
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
+
+  console.log(data);
 
   if (data.userRole === userRoles.tourist) {
     return await handleUserRegistration({

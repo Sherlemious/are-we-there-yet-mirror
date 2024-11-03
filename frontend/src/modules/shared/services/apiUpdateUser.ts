@@ -12,6 +12,7 @@ export async function updateUser(
   id: string,
   data: { [key: string]: FormDataEntryValue },
 ) {
+  console.log("Updating with:", data);
   if (
     data[fieldNames.mobileNumber] &&
     !isValidateMobileNumber(data[fieldNames.mobileNumber])
@@ -85,23 +86,20 @@ function prepareData(
   const keys: { [key: string]: FormDataEntryValue } = {};
 
   if (account_type === userRoles.tourist) {
-    if (data["username"]) {
-      keys["username"] = data["username"];
-    }
     if (data["email"]) {
       keys["email"] = data["email"];
     }
     if (data["password"]) {
       keys["password"] = data["password"];
     }
-    if (data["date of Birth"]) {
-      keys["dob"] = data["date of Birth"];
+    if (data["dob"]) {
+      keys["dob"] = data["dob"];
     }
-    if (data["occupation"]) {
-      keys["job"] = data["occupation"];
+    if (data["job"]) {
+      keys["job"] = data["job"];
     }
-    if (data["mobile number"]) {
-      keys["mobile_number"] = data["mobile number"];
+    if (data["mobile_number"]) {
+      keys["mobile_number"] = data["mobile_number"];
     }
 
     if (data["nationality"]) {
@@ -121,14 +119,14 @@ function prepareData(
     if (data["password"]) {
       keys["password"] = data["password"];
     }
-    if (data["mobile number"]) {
+    if (data["mobile_number"]) {
       {
-        keys["mobile_number"] = data["mobile number"];
+        keys["mobile_number"] = data["mobile_number"];
       }
     }
 
-    if (data["years of experience"]) {
-      keys["years_of_experience"] = data["years of experience"];
+    if (data["years_of_experience"]) {
+      keys["years_of_experience"] = data["years_of_experience"];
     }
     return keys;
   }
@@ -161,8 +159,8 @@ function prepareData(
       keys["hotline"] = data[fieldNames.hotline];
     }
 
-    if (data["link"]) {
-      keys["website"] = data["link"];
+    if (data["website"]) {
+      keys["website"] = data["website"];
     }
     return keys;
   }

@@ -1,65 +1,34 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import GeneralSettings from "../../shared/components/GeneralSettings";
-import Greeting from "../../shared/components/Greeting";
-import Slider from "../../shared/components/Slider";
-import { fieldNames } from "../../shared/constants/inputNames";
-import { getUser } from "../../shared/services/apiGetUserInfo";
+import { LoaderFunctionArgs } from "react-router";
 
-type User = {
-  accepted: boolean;
-  account_type: string;
-  createdAt: string;
-  email: string;
-  password: string;
-  updatedAt: string;
-  username: string;
-  __v: number;
-  _id: string;
-  mobile_number: string;
-  years_of_experience: number;
-  previous_work: string[];
-};
+import { getUser } from "../../shared/services/apiGetUserInfo";
+import { useContext } from "react";
+import { UserContext } from "@/modules/shared/store/user-context";
+import NewProf from "@/modules/shared/components/NewProf";
+import { updateUser } from "@/modules/shared/services/apiUpdateUser";
+import { fieldNames } from "@/modules/shared/constants/inputNames";
 
 export default function Profile() {
-  const loaderData = useLoaderData() as {
-    data: { user: User };
-    message: string;
-  };
-
-  const user = loaderData.data.user;
-  const {
-    username,
-    account_type,
-    mobile_number,
-    years_of_experience,
-    previous_work,
-    _id: id,
-    email,
-    password,
-  } = user;
-
-  console.log(account_type);
+  const { user } = useContext(UserContext);
 
   return (
-    <div className="mx-7 my-20 flex h-auto flex-col gap-10">
-      <div className="flex justify-between">
-        <Greeting name={username} signedIn={true} title={"Profile"} />
-        <GeneralSettings
-          account_type={account_type}
-          mobileNumber={mobile_number}
-          yearsOfExperience={years_of_experience}
-          email={email}
-          password={password}
-          inputFields={[fieldNames.mobileNumber, fieldNames.yearsOfExperience]}
-        />
-      </div>
-      <Slider
-        title="Previous Works"
-        array={previous_work}
-        id={id}
-        account_type={account_type}
-      />
-    </div>
+    <NewProf
+      accountTypeNeededInAPICall={true}
+      endpoint={updateUser}
+      fieldsIncludeNationality={true}
+      APICallFields={[
+        fieldNames.mobileNumber,
+        fieldNames.yearsOfExperience,
+        fieldNames.email,
+        fieldNames.password,
+      ]}
+      mappingNeeded
+      initialFormValues={{
+        MobileNumber: user.mobile_number || "",
+        YearsOfExperience: user.years_of_experience?.toString() || "",
+        Email: user.email || "",
+        Password: "",
+      }}
+    />
   );
 }
 
