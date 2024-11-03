@@ -27,14 +27,13 @@ router.use('/admins', adminRouter);
 // User routes
 router.get('/', getUsers);
 router.patch('/requestDeletion', requestAccountDeletion);
-router.patch('/:id/accept-user', acceptUser);
+router.patch('/changePassword', ChangeUserPassword);
+router.patch('/accept-user/:id', acceptUser);
+router.patch('/acceptTerms', acceptTerms);
+router.patch('/rejectUser/:id', rejectUser);
+router.post('/', createUser);
 router.delete('/:id', deleteUser);
-router.patch('/:id', updateUser);
 router.get('/:id', findUserById);
 router.patch('/:id', updateUser);
-router.post('/', createUser);
-router.patch('/changePassword/:id', ChangeUserPassword);
-router.patch('/acceptTerms/:id', acceptTerms);
-router.patch('/rejectUser/:id', rejectUser);
 
 export default router;
