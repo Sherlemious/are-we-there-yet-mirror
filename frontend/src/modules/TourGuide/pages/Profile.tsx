@@ -1,6 +1,3 @@
-import { LoaderFunctionArgs } from "react-router";
-
-import { getUser } from "../../shared/services/apiGetUserInfo";
 import { useContext } from "react";
 import { UserContext } from "@/modules/shared/store/user-context";
 import NewProf from "@/modules/shared/components/NewProf";
@@ -30,16 +27,4 @@ export default function Profile() {
       }}
     />
   );
-}
-
-export async function loader({ params }: LoaderFunctionArgs) {
-  if (!params.id) {
-    throw new Error("User ID is required");
-  }
-
-  const res = await getUser(params.id);
-
-  const data = res.data;
-
-  return data;
 }

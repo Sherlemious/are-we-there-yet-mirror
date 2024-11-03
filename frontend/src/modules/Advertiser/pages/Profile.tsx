@@ -1,7 +1,4 @@
-import { LoaderFunctionArgs } from "react-router";
-
 import { fieldNames } from "../../shared/constants/inputNames";
-import { getUser } from "../../shared/services/apiGetUserInfo";
 import NewProf from "@/modules/shared/components/NewProf";
 import { updateUser } from "@/modules/shared/services/apiUpdateUser";
 import { useContext } from "react";
@@ -30,16 +27,4 @@ export default function Profile() {
       }}
     />
   );
-}
-
-export async function loader({ params }: LoaderFunctionArgs) {
-  if (!params.id) {
-    throw new Error("User ID is required");
-  }
-
-  const res = await getUser(params.id);
-
-  const data = res.data;
-
-  return data;
 }

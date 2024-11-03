@@ -13,7 +13,6 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
   const navigate = useNavigate();
 
   const { user } = useContext(UserContext);
-  console.log(user);
 
   // Update indicator position when active link or hover changes
   const updateIndicator = (index: number) => {

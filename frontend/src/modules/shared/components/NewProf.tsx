@@ -15,6 +15,9 @@ import { useState, useEffect, useRef, useContext } from "react";
 import EditModal, { formModalRef } from "../../shared/components/FormEditModal";
 import { UserContext } from "@/modules/shared/store/user-context";
 import toast from "react-hot-toast";
+import { deleteUser } from "../services/apiDeleteUser";
+import { AccountType } from "../types/User.types";
+import { useNavigate } from "react-router";
 
 const imgs = Object.values(imgLinks.landing_page);
 
@@ -41,6 +44,7 @@ const NewProf = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const modalRef = useRef<formModalRef>(null);
   const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleSave = async (data: Record<string, string>) => {
     if (
@@ -81,6 +85,26 @@ const NewProf = ({
     modalRef.current?.open({
       ...initialFormValues,
     });
+  };
+
+  const deleteAccount = async (id: string) => {
+    console.log("Deleting account... with id: ", id);
+    try {
+      const res = (await deleteUser(id)) as { status: number };
+      console.log(res);
+
+      if (res.status === 200) {
+        setUser({
+          _id: "",
+          password: "",
+          username: "",
+          account_type: AccountType.None,
+        });
+        navigate("/home");
+      }
+    } catch (error) {
+      console.error("Error deleting account:", error);
+    }
   };
 
   useEffect(() => {
@@ -158,7 +182,8 @@ const NewProf = ({
                 <div className="flex items-center gap-3 text-slate-600">
                   <Clock className="h-5 w-5 flex-shrink-0 text-primary-blue" />
                   <span>
-                    {user.years_of_experience || "NA"} years of experience
+                    {user.years_of_experience || "NA"}
+                    {user.years_of_experience ? " years of experience" : ""}
                   </span>
                 </div>
               </div>
@@ -290,6 +315,7 @@ const NewProf = ({
                 ref={modalRef}
                 fields={Object.keys(initialFormValues)}
                 onSave={handleSave}
+                onDeleteAccount={() => deleteAccount(user._id)}
               />
             </div>
           </div>
