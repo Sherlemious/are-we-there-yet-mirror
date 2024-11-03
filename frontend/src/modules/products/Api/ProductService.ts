@@ -1,54 +1,67 @@
-import axios from 'axios';
-import { Product } from '../types/product';
+import axiosInstance from "../../shared/services/axiosInstance";
+import { Product } from "../types/product";
 
-const API_URL = 'https://are-we-there-yet-mirror.onrender.com/api';
-
-export const createProduct = async (productData: Omit<Product, '_id'>): Promise<Product> => {
+export const createProduct = async (
+  productData: Omit<Product, "_id">,
+): Promise<Product> => {
   try {
-    const response = await axios.post<{ data: { product: Product } }>(`${API_URL}/products`, productData);
+    const response = await axiosInstance.post<{ data: { product: Product } }>(
+      `/products`,
+      productData,
+    );
     return response.data.data.product;
   } catch (error) {
-    console.log('msh sh8ala sa7');
-    throw new Error(error.response?.data?.message || 'Error creating product');
+    console.log("msh sh8ala sa7");
+    throw new Error(error.response?.data?.message || "Error creating product");
   }
 };
 
 export const deleteProduct = async (productId: string): Promise<void> => {
   try {
-    await axios.delete(`${API_URL}/products/${productId}`);
+    await axiosInstance.delete(`/products/${productId}`);
   } catch (error) {
-    console.log('msh sh8ala sa7');
-    throw new Error(error.response?.data?.message || 'Error deleting product');
+    console.log("msh sh8ala sa7");
+    throw new Error(error.response?.data?.message || "Error deleting product");
   }
 };
 
-export const updateProduct = async (productId: string, productData: Product): Promise<Product> => {
+export const updateProduct = async (
+  productId: string,
+  productData: Product,
+): Promise<Product> => {
   try {
-    const response = await axios.patch<{ data: { product: Product } }>(`${API_URL}/products/${productId}`, productData);
+    const response = await axiosInstance.patch<{ data: { product: Product } }>(
+      `/products/${productId}`,
+      productData,
+    );
     console.log(response.data.data.product);
     return response.data.data.product;
   } catch (error) {
-    console.log('msh sh8ala sa7');
-    throw new Error(error.response?.data?.message || 'Error updating product');
+    console.log("msh sh8ala sa7");
+    throw new Error(error.response?.data?.message || "Error updating product");
   }
 };
 
 export const getProducts = async (): Promise<Product[]> => {
   try {
-    const response = await axios.get<{ data: { products: Product[] } }>(`${API_URL}/products`);
-    return response.data.data.products;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Error fetching products');
-  }
-};
-
-export const getProductBySeller = async (sellerId: string): Promise<Product[]> => {
-  try {
-    const response = await axios.get<{ data: { products: Product[] } }>(
-      `${API_URL}/products/filter-by-seller?seller=${sellerId}`
+    const response = await axiosInstance.get<{ data: { products: Product[] } }>(
+      `/products`,
     );
     return response.data.data.products;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Error fetching products');
+    throw new Error(error.response?.data?.message || "Error fetching products");
+  }
+};
+
+export const getProductBySeller = async (
+  sellerId: string,
+): Promise<Product[]> => {
+  try {
+    const response = await axiosInstance.get<{ data: { products: Product[] } }>(
+      `/products/filter-by-seller?seller=${sellerId}`,
+    );
+    return response.data.data.products;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error fetching products");
   }
 };
