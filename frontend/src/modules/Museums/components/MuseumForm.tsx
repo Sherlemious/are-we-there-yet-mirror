@@ -3,6 +3,7 @@ import { ModalRef } from "./modal";
 import defaultPhoto from "../assets/defaultPhoto.png";
 import { Museum } from "../types/museum";
 import Map, { Location } from "../../shared/components/Map";
+import SearchMultiSelect from '../../shared/components/SearchMultiSelect';
 import axiosInstance from "../../shared/services/axiosInstance";
 
 interface MuseumFormProps {
@@ -39,12 +40,13 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
   addModalRef,
   initialData,
 }) => {
-  const [formData, setFormData] = useState<Omit<MuseumFormData, "pictures">>(
+  const [formData, setFormData] = useState(
     initialData || {
       name: "",
       description: "",
       category: "",
-      tags: [""],
+      tags: [],
+      pictures: [],
       location: {
         name: "",
         latitude: 40.712776,
@@ -59,9 +61,11 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
     },
   );
 
-  const [pictures, setPictures] = useState<File[]>([]); // Separate state for file uploads
+  const [pictures, setPictures] = useState<string[]>([]); // Separate state for file uploads
+  const [uploaded, setUploaded] = useState<File[]>([]); // Separate state for file uploads
+  const [fetched, setFetched] = useState<object[]>([]); // Separate state for file uploads
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Create a ref for the file input
-  const [imagePreview, setImagePreview] = useState<File>(); // State for image preview
+  const [imagePreview, setImagePreview] = useState<string>(); // State for image preview
   const [imageIndex, setImageIndex] = useState(0); // State to keep track of the current image index
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
@@ -69,38 +73,36 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
   const fetchPictures = async (museum: Museum) => {
     try {
-      const fetchedFiles: File[] = [];
-
+      const fetchedURLs: string[] = [];
+      const objects: object[] = [];
       for (let i = 0; i < museum.pictures.length; i++) {
         // Fetch the picture using the attachment ID
         if (museum.pictures[i]) {
           const response = await axiosInstance.get(
             `/attachments/${museum.pictures[i]}`,
-            { responseType: "arraybuffer" }, // Fetch binary data
           );
-          // Convert array buffer to Blob
-          const blob = new Blob([response.data], { type: "image/png" }); // Adjust type according to the image type
-
+          console.log(response);
           // Convert Blob to File
-          const file = new File([blob], `image-${i}.png`, {
-            type: "image/png",
-          }); // Adjust file type and name
-
-          fetchedFiles.push(file); // Push the file into the array
+          // const file = new File([response.data], response.data.original_name, {
+          //   type: response.data.type || "image/png",
+          // });
+          objects.push(response.data);
+          fetchedURLs.push(response.data.url); // Push the file into the array
         }
 
         // Set the fetched files into the state
-        setPictures(fetchedFiles);
-
+        setPictures(fetchedURLs);
+        setFetched(objects);
         // Optionally set the first file as preview
-        if (fetchedFiles.length > 0) {
-          setImagePreview(fetchedFiles[0]);
+        if (fetchedURLs.length > 0) {
+          setImagePreview(fetchedURLs[0]);
         }
       }
     } catch (error) {
       console.error("Error fetching pictures:", error);
     }
   };
+
   const [availableTags, setAvailableTags] = useState<
     { _id: string; name: string }[]
   >([]);
@@ -121,32 +123,36 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
   }, []);
 
   useEffect(() => {
-    if (selectedMuseum) {
-      setFormData((prevData) => ({
-        ...prevData,
-        name: selectedMuseum.name,
-        description: selectedMuseum.description,
-        category: selectedMuseum.category,
-        tags: selectedMuseum.tags,
-        opening_hours: selectedMuseum.opening_hours,
-        ticket_prices: selectedMuseum.ticket_prices,
-        location: {
-          name: selectedMuseum.location.name,
-          latitude: selectedMuseum.location.latitude,
-          longitude: selectedMuseum.location.longitude,
-        },
-        pictures: selectedMuseum.pictures,
-      }));
-      fetchPictures(selectedMuseum);
+  if (selectedMuseum) {
+    const tagIds = selectedMuseum.tags.map(tag => {
+      return typeof tag === "object" ? tag._id : tag; // If it's an object, get the name
+    });
 
-      // Load the selected location for the map
-      setSelectedLocation({
-        lat: selectedMuseum.location.latitude,
-        lng: selectedMuseum.location.longitude,
+    setFormData((prevData) => ({
+      ...prevData,
+      name: selectedMuseum.name,
+      description: selectedMuseum.description,
+      category: selectedMuseum.category,
+      tags: tagIds, // Store only tag names
+      opening_hours: selectedMuseum.opening_hours,
+      ticket_prices: selectedMuseum.ticket_prices,
+      location: {
         name: selectedMuseum.location.name,
-      });
-    }
-  }, [selectedMuseum]);
+        latitude: selectedMuseum.location.latitude,
+        longitude: selectedMuseum.location.longitude,
+      },
+      pictures: selectedMuseum.pictures,
+    }));
+
+    fetchPictures(selectedMuseum);
+
+    setSelectedLocation({
+      lat: selectedMuseum.location.latitude,
+      lng: selectedMuseum.location.longitude,
+      name: selectedMuseum.location.name,
+    });
+  }
+}, [selectedMuseum, availableTags]);
 
   const handleLocationChange = (location: Location) => {
     setFormData((prevData) => ({
@@ -204,11 +210,13 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    const urls = files.map((file) => URL.createObjectURL(file));
     if (files.length > 0) {
       //update pictures to add existing pictures with the new files
-      setPictures([...pictures, ...files]);
+      setUploaded([...uploaded, ...files]);
+      setPictures([...pictures, ...urls]);
       setImageIndex(0); // Reset to the first image
-      setImagePreview(files[0]); // Display the first uploaded image
+      setImagePreview(urls[0]); // Display the first uploaded image
     }
   };
 
@@ -227,45 +235,15 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
     console.log(index + " " + pictures.length);
   };
 
-  // Handling tags
-  const handleTagChange = (
-    index: number,
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    const { value } = e.target;
-    const updatedTags = [...formData.tags];
-    updatedTags[index] = value;
-    setFormData((prevData) => ({
-      ...prevData,
-      tags: updatedTags,
-    }));
-  };
-
-  const addTag = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      tags: [
-        ...prevData.tags,
-        "", // Add an empty string as the new tag
-      ],
-    }));
-  };
-
-  const removeTag = (index: number) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      tags: prevData.tags.filter((_, i) => i !== index),
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const ids = [];
-    for (let i = 0; i < pictures.length; i++) {
+    for (let i = 0; i < uploaded.length; i++) {
       const formData = new FormData();
-      formData.append("file", pictures[i]);
+      formData.append("file", uploaded[i]);
       console.log(formData);
-      console.log(pictures[i]);
+      console.log(uploaded[i]);
       const response = await axiosInstance.post(
         `/attachments`,
         formData,
@@ -275,13 +253,18 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       );
       ids.push(response.data._id);
     }
-    console.log(ids);
-    for (let i = 0; i < formData.tags.length; i++) {
-      if (availableTags.find((tag) => tag.name === formData.tags[i])) {
-        formData.tags[i] =
-          availableTags.find((tag) => tag.name === formData.tags[i])?._id || "";
-      }
+    for(let i=0; i<fetched.length;i++){
+      if (pictures.includes(fetched[i].url)) {
+        ids.push(fetched[i]._id); // Only push the ID if it is not present in pictures
     }
+    }
+    // for (let i = 0; i < formData.tags.length; i++) {
+    //   if (availableTags.find((tag) => tag.name === formData.tags[i])) {
+    //     formData.tags[i] =
+    //       availableTags.find((tag) => tag.name === formData.tags[i])?._id || "";
+    //   }
+    // }
+    console.log(ids);
     console.log(formData.tags);
     const formDataWithAttachments = { ...formData, pictures: ids };
     if (onSubmit) {
@@ -351,7 +334,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       <div className="col-span-1 grid grid-cols-2 gap-4">
         {/* Name (Full width) */}
         <div className="col-span-2">
-          <label htmlFor="name" className="mb-2 block">
+          <label htmlFor="name" className="mb-2 block text-input_or_label text-text-primary">
             Museum Name
           </label>
           <input
@@ -366,7 +349,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
         {/* Description (Full width) */}
         <div className="col-span-2">
-          <label htmlFor="description" className="mb-2 block">
+          <label htmlFor="description" className="mb-2 block text-input_or_label text-text-primary">
             Description
           </label>
           <textarea
@@ -374,13 +357,13 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
             value={formData.description}
             onChange={handleInputChange}
             placeholder="Description"
-            className={`${styles.inputClass} h-24`} // Increase height for textarea
+            className={`${styles.inputClass} h-24 text-text-primary`} // Increase height for textarea
           />
         </div>
 
         {/* Category and Location (Side by side) */}
         <div className="col-span-1">
-          <label htmlFor="category" className="mb-2 block">
+          <label htmlFor="category" className="mb-2 block text-input_or_label text-text-primary">
             Category
           </label>
           <input
@@ -395,7 +378,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
         {/* Opening Hours (Full width) */}
         <div className="col-span-1">
-          <label htmlFor="opening_hours" className="mb-2 block">
+          <label htmlFor="opening_hours" className="mb-2 block text-input_or_label text-text-primary">
             Opening Hours
           </label>
           <input
@@ -410,7 +393,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
         {/* Ticket Prices (Side by side) */}
         <div className="col-span-1">
-          <label htmlFor="price-foreigner" className="mb-2 block">
+          <label htmlFor="price-foreigner" className="mb-2 block text-input_or_label text-text-primary">
             Ticket Price (Foreigner)
           </label>
           <input
@@ -423,7 +406,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
           />
         </div>
         <div className="col-span-1">
-          <label htmlFor="price-native" className="mb-2 block">
+          <label htmlFor="price-native" className="mb-2 block text-input_or_label text-text-primary">
             Ticket Price (Native)
           </label>
           <input
@@ -436,7 +419,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
           />
         </div>
         <div className="col-span-1">
-          <label htmlFor="price-student" className="mb-2 block">
+          <label htmlFor="price-student" className="mb-2 block text-input_or_label text-text-primary">
             Ticket Price (Student)
           </label>
           <input
@@ -449,7 +432,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
           />
         </div>
         <div className="col-span-1">
-          <label htmlFor="location" className="mb-2 block">
+          <label htmlFor="location" className="mb-2 block text-input_or_label text-text-primary">
             Location
           </label>
           <input
@@ -477,86 +460,91 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
         {/* Centering the column */}
         {/* Picture Upload */}
         <div>
-          <label htmlFor="pictures" className="mb-2 block">
-            Upload Pictures
-          </label>
-          <img
-            src={
-              imagePreview && pictures.length > 0
-                ? URL.createObjectURL(imagePreview)
-                : defaultPhoto
-            }
-            alt="Preview"
-            className="mt-4-gray-300 h-64 w-full rounded-md object-cover"
-          />
+  <label htmlFor="pictures" className="mb-2 block text-input_or_label text-text-primary">
+    Upload Pictures
+  </label>
 
-          {/* Conditionally render arrows if multiple pictures are uploaded */}
-          {pictures.length > 0 && (
-            <div className="mb-3 flex justify-between">
-              <span
-                onClick={() => handleImageToggle("prev")}
-                className="cursor-pointer text-gray-500 hover:text-black"
-              >
-                &#9664; {/* Left arrow */}
-              </span>
-              <span
-                onClick={() => handleImageToggle("next")}
-                className="cursor-pointer text-gray-500 hover:text-black"
-              >
-                &#9654; {/* Right arrow */}
-              </span>
-              <button
-                type="button"
-                onClick={() => handleDeletePicture(imageIndex)}
-                className="ml-4 rounded-md bg-red-500 p-1 text-white"
-              >
-                Delete
-              </button>
-            </div>
-          )}
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            className={styles.inputClass}
-            ref={fileInputRef}
-          />
-        </div>
+  <div className="relative mb-2">
+    <img
+      src={
+        imagePreview && pictures.length > 0
+          ? imagePreview
+          : defaultPhoto
+      }
+      alt="Preview"
+      className="h-64 w-full rounded-md object-cover border border-borders-primary"
+    />
+
+    {/* Conditionally render chevrons if multiple pictures are uploaded */}
+    {pictures.length > 0 && (
+      <>
+        <span
+          onClick={() => handleImageToggle("prev")}
+          className="absolute top-1/2 left-2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-accent-dark-blue text-2xl"
+        >
+          {/* Left chevron icon */}
+          &#10094;
+        </span>
+        <span
+          onClick={() => handleImageToggle("next")}
+          className="absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-accent-dark-blue text-2xl"
+        >
+          {/* Right chevron icon */}
+          &#10095;
+        </span>
+
+        <button
+          type="button"
+          onClick={() => handleDeletePicture(imageIndex)}
+          className="absolute top-1 right-2 text-gray-500 hover:text-red-600 focus:outline-none text-2xl"
+          aria-label="Delete picture"
+        >
+          &#10005; {/* "X" icon */}
+        </button>
+      </>
+    )}
+  </div>
+
+  <input
+    type="file"
+    multiple
+    onChange={handleFileChange}
+    className={styles.inputClass}
+    ref={fileInputRef}
+  />
+</div>
+
+        
+    <h3 className="mb-2 mt-2 text-input_or_label text-text-primary">Tags</h3>
         <div className="mt-2">
-          <h3 className="mb-2 mt-2">Tags</h3>
-          {formData.tags.map((tag, index) => (
-            <div key={index} className="mb-2 flex items-center">
-              <select
-                value={tag}
-                onChange={(e) => handleTagChange(index, e)}
-                className={styles.inputClass}
-              >
-                <option value="">Select a Tag</option>
-                {availableTags.map((availableTag) => (
-                  <option key={availableTag._id} value={availableTag.name}>
-                    {availableTag.name}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => removeTag(index)}
-                className="ml-2 rounded-md bg-red-500 p-1 text-white"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addTag}
-            className="rounded-md bg-green-500 p-2 text-white"
-          >
-            Add Tag
-          </button>
+            <SearchMultiSelect
+              options={availableTags.map((tag) => ({
+                value: tag._id, // Unique identifier
+                label: tag.name, // Display name
+                payload: tag // Full tag object as payload
+              }))} // Extract tag names for options
+              selectedItems={formData.tags.map(tagId => {
+                const tag = availableTags.find((tag) => tag._id === tagId); // Find the tag object by ID
+                return tag ? { value: tag._id, label: tag.name, payload: tag } : null;
+              }).filter(Boolean)}
+              onSelect={(item) => {
+              if (!formData.tags.includes(item.value)) {
+              setFormData((prevData) => ({
+              ...prevData,
+              tags: [...prevData.tags, item.value], // Add selected tag
+                }));
+                }
+              }}
+              onRemove={(item) => {
+                setFormData((prevData) => ({
+                ...prevData,
+                tags: prevData.tags.filter((tag) => tag !== item.value), // Remove tag
+                }));
+                }}
+          />
         </div>
-      </div>
 
+      </div>
       <div className="col-span-2 flex justify-end">
         <button type="submit" className={`${styles.button} w-1/4 p-4`}>
           {initialData?.name ? "Update" : "Submit"}
@@ -568,8 +556,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 };
 
 const styles = {
-  inputClass: "border border-gray-300 rounded-md p-2 mb-4 w-full",
-  button: "bg-gray-500 text-white rounded-md p-2",
+  inputClass: "border border-borders-primary rounded-md p-2 mb-4 w-full bg-secondary-light_grey text-text-primary placeholder:text-gray-500",
+  button: "bg-primary-blue text-secondary-white rounded-md p-2 hover:bg-accent-dark-blue transition-all duration-150",
 };
-
 export default MuseumForm;

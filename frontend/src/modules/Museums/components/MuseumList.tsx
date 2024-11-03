@@ -30,13 +30,9 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
   const fetchPicture = async (museum: Museum): Promise<string | undefined> => {
     try {
       const response = await axiosInstance.get(
-        `/attachments/${museum.pictures[0]}`,
-        { responseType: 'arraybuffer' } // Fetch binary data
+        `/attachments/${museum.pictures[0]}` // Fetch binary data
       );
-
-      // Convert array buffer to Blob
-      const blob = new Blob([response.data], { type: 'image/png' }); // Adjust type according to the image type
-      return URL.createObjectURL(blob);
+      return response.data.url;
     } catch (error) {
       console.error('Error fetching pictures:', error);
       return undefined;
@@ -49,7 +45,10 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
       for (const museum of museums) {
         if (museum.pictures.length > 0) {
           const imageUrl = await fetchPicture(museum);
-          newImageURLs[museum._id] = imageUrl || defaultPhoto; // Use fetched image or default
+          if(imageUrl){
+             newImageURLs[museum._id] = imageUrl;
+             console.log(newImageURLs[museum._id] + " " + imageUrl);
+           } // Use fetched image or default
         } else {
           newImageURLs[museum._id] = defaultPhoto; // Default image if no pictures
         }
@@ -84,8 +83,8 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
 
                   {/* Image */}
                   <div className={customStyles.imageContainer}>
-                  <img src={defaultImage} alt={museum.name} className={customStyles.image} />
-                  {/* <img src={museum.pictures.length > 0 ? museum.pictures[0] : defaultImage} alt={museum.name} className={customStyles.image} /> */}
+                  {/* <img src={defaultImage} alt={museum.name} className={customStyles.image} /> */}
+                  <img src={museum.pictures.length > 0 ? imageURLs[museum._id] : defaultImage} alt={museum.name} className={customStyles.image} />
                   </div>
 
                   <h3 className={customStyles.slideTitle}>{museum.name}</h3>
@@ -157,21 +156,21 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
 };
 
 const customStyles = {
-  container: 'h-auto max-h-[85vh] max-w-fit border-2 border-gray-300 pr-14 pt-4 pl-20 pb-10 mx-auto',
+  container: 'h-auto max-h-[85vh] max-w-fit border-2 border-borders-primary pr-14 pt-4 pl-20 pb-10 mx-auto',
   sliderContainer: 'relative',
   sliderContent: 'overflow-hidden',
   sliderWrapper: 'grid grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto', // Set a max height and make it scrollable
   slide: 'w-[10%] h-[100%] flex-shrink-0 px-2 transition-all duration-600 m-6',
-  slideContent: 'h-[60vh] w-[40vh] overflow-auto border-2 border-gray-300 bg-white p-6 relative cursor-pointer',
-  slideTitle: 'mb-2 font-bold mt-10',
-  slideText: 'text-sm',
-  removeButton: 'absolute group top-1 right-1 z-2 rounded-full border border-gray-500 bg-background-button p-1 hover:bg-red-600 focus:outline-none duration-150',
-  addSlideDiv: 'flex items-center justify-center h-[60vh] w-[40vh] border-2 border-dashed border-gray-300 bg-white cursor-pointer hover:bg-gray-50',
+  slideContent: 'h-[60vh] w-[40vh] overflow-auto border-2 border-borders-primary bg-secondary-white p-6 relative cursor-pointer',
+  slideTitle: 'mb-2 font-bold mt-10 text-text-primary',
+  slideText: 'text-sm text-text-primary',
+  removeButton: 'absolute group top-1 right-1 z-2 rounded-full border border-gray-500 bg-background-button p-1 hover:bg-accent-gold focus:outline-none duration-150',
+  addSlideDiv: 'flex items-center justify-center h-[60vh] w-[40vh] border-2 border-dashed border-borders-primary bg-secondary-white cursor-pointer hover:bg-secondary-light_grey',
   addSlideIcon: 'text-gray-400 w-16 h-16',
   imageContainer: 'w-full h-[150px] overflow-hidden mb-4', // Container for image with set height
   image: 'w-full h-full object-cover', // Image should cover the container without distortion
   tagContainer: 'flex flex-col gap-2 mt-2',
-  editButton: 'px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600',
+  editButton: 'px-4 py-2 bg-primary-blue text-secondary-white rounded hover:bg-accent-dark-blue',
   editSection: 'mt-4',
 };
 
