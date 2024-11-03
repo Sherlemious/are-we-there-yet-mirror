@@ -41,6 +41,9 @@ const productSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'user',
     },
+    sales: {
+      type: Number,
+    },
   },
   {
     timestamps: true,

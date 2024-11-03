@@ -63,6 +63,25 @@ class ProductRepo {
       { $pull: { reviews: { _id: new ObjectId(reviewId) } } }
     );
   }
-}
 
+  async getAvailableQuantity(productId: string) {
+    return await Product.findById({ _id: new ObjectId(productId) });
+  }
+
+  async getProductSales(productId: string) {
+    return await Product.findById({ _id: new ObjectId(productId) });
+  }
+
+  async buyProduct(productId: string, quantity: number) {
+    return await Product.updateOne(
+      { _id: new ObjectId(productId) },
+      { 
+        $inc: { 
+          available_quantity: -quantity,  // Decrease available quantity
+          sales: quantity                  // Increase sales by quantity sold
+        } 
+      }
+    );
+  }
+}
 export default new ProductRepo();
