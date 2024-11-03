@@ -460,7 +460,6 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
         {/* Centering the column */}
         {/* Picture Upload */}
         <div>
-          <h3 className="mb-2 mt-2 text-input_or_label text-text-primary">Tags</h3>
   <label htmlFor="pictures" className="mb-2 block text-input_or_label text-text-primary">
     Upload Pictures
   </label>
@@ -516,6 +515,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 </div>
 
         
+    <h3 className="mb-2 mt-2 text-input_or_label text-text-primary">Tags</h3>
         <div className="mt-2">
             <SearchMultiSelect
               options={availableTags.map((tag) => ({
