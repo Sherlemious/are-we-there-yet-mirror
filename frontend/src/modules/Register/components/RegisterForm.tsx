@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { imgLinks } from "@/modules/shared/utils/constants";
-import { useLoaderData, useNavigation } from "react-router";
+import {
+  useActionData,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+} from "react-router";
 import { Form, useSubmit } from "react-router-dom";
 import { validateFormDataValue } from "../utils/helpers";
 import toast from "react-hot-toast";
@@ -18,6 +23,8 @@ import { fieldNames } from "../../shared/constants/inputNames";
 import { handleUserRegistration } from "../services/apiHandleUserRegistration";
 import { userRoles } from "@/modules/shared/constants/roles";
 import { motion, AnimatePresence } from "framer-motion";
+import { UserContext } from "@/modules/shared/store/user-context";
+import { UserType } from "@/modules/shared/types/User.types";
 
 const imgs = Object.values(imgLinks.landing_page);
 
@@ -66,6 +73,31 @@ const RegistrationForm = () => {
   const navigation = useNavigation();
   const submit = useSubmit();
   const countries = useLoaderData() as { name: { common: string } }[];
+  const navigate = useNavigate();
+
+  const res = useActionData() as {
+    status: number;
+    data: {
+      data: {
+        user: UserType;
+        jwt: string;
+      };
+    };
+  };
+
+  const { user, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    if (res?.status === 200) {
+      setUser({
+        ...res.data.data.user,
+      });
+
+      navigate("/home");
+    }
+  }, [res]);
+
+  console.log(user);
 
   const countryNames = countries.map((country) => country.name.common);
   countryNames.sort();
@@ -404,7 +436,7 @@ export async function action({ request }: { request: Request }) {
   console.log(data);
 
   if (data.userRole === userRoles.tourist) {
-    return await handleUserRegistration({
+    const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
         account_type: data.userRole,
@@ -418,8 +450,10 @@ export async function action({ request }: { request: Request }) {
       },
       successRedirect: "/tourist-profile",
     });
+
+    return res;
   } else if (data.userRole === userRoles.tourGuide) {
-    return await handleUserRegistration({
+    const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
         account_type: userRoles.tourGuide,
@@ -429,8 +463,10 @@ export async function action({ request }: { request: Request }) {
       },
       successRedirect: "/tour-guide-profile",
     });
+
+    return res;
   } else if (data.userRole === userRoles.advertiser) {
-    return await handleUserRegistration({
+    const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
         account_type: data.userRole,
@@ -440,8 +476,10 @@ export async function action({ request }: { request: Request }) {
       },
       successRedirect: "/advertiser-profile",
     });
+
+    return res;
   } else {
-    return await handleUserRegistration({
+    const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
         account_type: data.userRole,
@@ -451,6 +489,7 @@ export async function action({ request }: { request: Request }) {
       },
       successRedirect: "/seller-profile",
     });
+    return res;
   }
 }
 

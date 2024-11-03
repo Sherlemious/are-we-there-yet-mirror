@@ -1,6 +1,8 @@
 import Button from "@/modules/shared/components/Button";
+import { UserContext } from "@/modules/shared/store/user-context";
+import { AccountType } from "@/modules/shared/types/User.types";
 import { UserCog } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 export default function NavigationBar({ fontColor }: { fontColor: string }) {
@@ -9,6 +11,9 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
   const navRef = useRef<HTMLAnchorElement>(null);
   const linkRefs = useRef<HTMLAnchorElement[]>([]);
   const navigate = useNavigate();
+
+  const { user } = useContext(UserContext);
+  console.log(user);
 
   // Update indicator position when active link or hover changes
   const updateIndicator = (index: number) => {
@@ -106,13 +111,24 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
         </nav>
       </div>
       <div className="flex w-[15%] items-center gap-7">
-        <UserCog
-          size={45}
-          className="rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-80"
-        />
+        {user.account_type !== AccountType.None && (
+          <UserCog
+            onClick={() => {
+              if (user.account_type === AccountType.TourGuide) {
+                return navigate(`/tour-guide-profile/${user._id}`);
+              }
+
+              return navigate(
+                `/${user.account_type.toLowerCase()}-profile/${user._id}`,
+              );
+            }}
+            size={45}
+            className="rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-80"
+          />
+        )}
         <Button
           onClick={() => navigate("/register")}
-          className="min-w-fit rounded-2xl bg-accent-gold p-2 text-body font-bold text-black transition-all duration-150 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-w-fit rounded-2xl bg-accent-gold p-2 text-body text-black transition-all duration-150 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Register Now
         </Button>
