@@ -1,8 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { locationSchema } from './location.model';
-import { ActivityType } from '../../types/Activity.types';
-import { ValidationException } from '../../exceptions/ValidationException';
-import { getTagIds } from './tag.model';
+import { reviewSchema } from './review.model';
 
 const activitySchema = new Schema(
   {
@@ -27,6 +25,12 @@ const activitySchema = new Schema(
     tags: {
       type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
     },
+    reviews: {
+      type: [reviewSchema],
+    },
+    average_rating: {
+      type: Number,
+    },
     specialDiscounts: {
       type: Number,
       min: 0,
@@ -50,27 +54,6 @@ const activitySchema = new Schema(
   }
 );
 
-async function getActivityIds(activitiesData: ActivityType[]): Promise<ActivityType[]> {
-  const activityIds: ActivityType[] = [];
-
-  if (!activitiesData) {
-    return activityIds;
-  }
-
-  for (const activityData of activitiesData) {
-    const tagIds = await getTagIds(activityData.tags);
-    activityData.tags = tagIds;
-    let activity = await Activity.findOne(activityData);
-
-    if (!activity) {
-      throw new ValidationException('One or more activities are invalid');
-    }
-    activityIds.push(activity.id);
-  }
-
-  return activityIds;
-}
-
 const Activity = model('activity', activitySchema);
 
-export { Activity, activitySchema, getActivityIds };
+export { Activity, activitySchema };

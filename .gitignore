@@ -134,10 +134,10 @@ backend/.vscode
 backend/.idea
 backend/node_modules
 backend/dist
-backend/public
 backend/certs
 backend/src/uploads
 backend/uploads
+backend/tmp
 
 # backend/.env
 backend/.env

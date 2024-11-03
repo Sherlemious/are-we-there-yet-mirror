@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 import { accountType } from '../../types/User.types';
+import { reviewSchema } from './review.model';
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,7 +22,6 @@ const userSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      unique: true,
       required: true,
     },
     password: {
@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema(
     },
     dob: {
       type: Date,
+    },
+    deletionRequested: {
+      type: Boolean,
+      default: false,
     },
     job: {
       type: String,
@@ -63,9 +67,16 @@ const userSchema = new mongoose.Schema(
     },
     wallet: {
       type: Number,
+      default: 0,
     },
     profile_pic: {
       type: { type: Schema.Types.ObjectId, ref: 'attachment' },
+    },
+    reviews: {
+      type: [reviewSchema],
+    },
+    average_rating: {
+      type: Number,
     },
     modified_by: {
       type: Schema.Types.ObjectId,
@@ -86,6 +97,8 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+userSchema.index({ account_type: 1, username: 1 }, { unique: true });
+
 userSchema.pre('save', function (next) {
   var user = this;
 
@@ -103,4 +116,4 @@ userSchema.pre('save', function (next) {
   });
 });
 
-export const User = mongoose.model('User', userSchema);
+export const User = model('User', userSchema);

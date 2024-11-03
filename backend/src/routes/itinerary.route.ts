@@ -7,6 +7,7 @@ import {
   deleteItinerary,
   filterItineraries,
   getItinerariesCreatedByUser,
+  toggleItineraryActive,
   flagItinerary,
 } from '../controllers/itinerary.controller';
 
@@ -19,6 +20,8 @@ itineraryRouter.post('/', createItinerary);
 itineraryRouter.put('/:id', updateItinerary);
 itineraryRouter.delete('/:id', deleteItinerary);
 itineraryRouter.get('/', filterItineraries);
+itineraryRouter.patch('/:id/activate', (req, res) => toggleItineraryActive(req, res, true));
+itineraryRouter.patch('/:id/deactivate', (req, res) => toggleItineraryActive(req, res, false));
 itineraryRouter.put('/flag/:id', flagItinerary);
 
 export default itineraryRouter;

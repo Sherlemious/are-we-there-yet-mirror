@@ -33,8 +33,12 @@ class UserRepository {
     return await User.updateOne({ _id: new ObjectId(id) }, { accepted: false });
   }
 
-  async findUserByEmail(email: string) {
-    return await User.find({ email: email });
+  async findUserByEmail(email: string): Promise<UserType | null> {
+    return await User.findOne({ email: email });
+  }
+
+  async requestAccountDeletion(id: string) {
+    return await User.updateOne({ _id: new ObjectId(id) }, { deletionRequested: true });
   }
 
   async deleteUser(id: string) {
@@ -44,7 +48,7 @@ class UserRepository {
   async ChangeUserPassword(id: string, pass: string) {
     return await User.updateOne({ _id: new ObjectId(id) }, { password: pass });
   }
-  
+
   async acceptTerms(id: string) {
     return await User.updateOne({ _id: new ObjectId(id) }, { termsAndConditions: true });
   }

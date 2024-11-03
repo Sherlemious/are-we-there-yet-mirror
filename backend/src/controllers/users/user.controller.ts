@@ -93,6 +93,22 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
+const requestAccountDeletion = async (req: Request, res: Response) => {
+  try {
+    const userId: string = req.user.userId;
+    await userRepo.requestAccountDeletion(userId);
+    const response = {
+      message: 'Account deletion requested successfully',
+      data: { userId: userId },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error requesting account deletion: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 const ChangeUserPassword = async (req: Request, res: Response) => {
   try {
     const password = req.body.password;
@@ -140,4 +156,15 @@ const rejectUser = async (req: Request, res: Response) => {
   }
 };
 
-export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser, ChangeUserPassword, acceptTerms, rejectUser };
+export {
+  getUsers,
+  deleteUser,
+  acceptUser,
+  findUserById,
+  updateUser,
+  createUser,
+  requestAccountDeletion,
+  ChangeUserPassword,
+  acceptTerms,
+  rejectUser,
+};

@@ -10,6 +10,7 @@ import searchRouter from './search.route';
 import attachmentRouter from './attachment.route';
 import categoryRouter from './category.route';
 import complaintRouter from './complaint.route';
+import reviewRouter from './review.route';
 import termsRouter from './terms.route';
 
 const routes = Router();
@@ -25,6 +26,7 @@ routes.use('/products', productRouter);
 routes.use('/search', searchRouter);
 routes.use('/categories', categoryRouter);
 routes.use('/complaints', complaintRouter);
+routes.use('/reviews', reviewRouter);
 routes.use('/termsAndConditions', termsRouter);
 
 export { routes };

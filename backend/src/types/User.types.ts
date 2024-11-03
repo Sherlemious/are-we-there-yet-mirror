@@ -19,6 +19,7 @@ export interface UserType {
   picture?: string;
   name?: string;
   accepted?: boolean;
+  nationality: string;
   rejected?: boolean;
   termsAndConditions?: boolean;
 

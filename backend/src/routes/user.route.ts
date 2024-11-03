@@ -10,6 +10,7 @@ import {
   acceptUser,
   findUserById,
   updateUser,
+  requestAccountDeletion,
   ChangeUserPassword,
   acceptTerms,
   rejectUser,
@@ -25,6 +26,7 @@ router.use('/admins', adminRouter);
 
 // User routes
 router.get('/', getUsers);
+router.patch('/requestDeletion', requestAccountDeletion);
 router.patch('/:id/accept-user', acceptUser);
 router.delete('/:id', deleteUser);
 router.patch('/:id', updateUser);
