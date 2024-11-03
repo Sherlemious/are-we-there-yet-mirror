@@ -130,7 +130,7 @@ const GenericCard = <T extends CommonProperties>({
   return (
     <Card
       onClick={(e) => onClick?.(e, item)}
-      className={`min-h-[462px] w-80 overflow-hidden rounded-lg shadow-lg transition-shadow duration-300 hover:shadow-xl hover:shadow-primary-green ${className}`}
+      className={`min-h-[500px] w-80 overflow-hidden rounded-lg shadow-lg transition-shadow duration-300 hover:shadow-xl hover:shadow-primary-green ${className}`}
     >
       <div className="relative h-48 overflow-hidden">
         {renderImageSlider()}

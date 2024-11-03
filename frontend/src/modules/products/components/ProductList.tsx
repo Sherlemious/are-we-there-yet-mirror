@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Product } from "../types/product";
-import { Plus } from "lucide-react";
+import { DollarSign, Package, Plus, ShoppingCart, Star } from "lucide-react";
 import Modal, { ModalRef } from "./modal";
 import ProductForm, { ProductFormData } from "./ProductForm";
 import defaultPhoto from "../assets/defaultPhoto.png";
@@ -146,62 +146,70 @@ const ProductList: React.FC<ProductListProps> = ({
                   onClick={() => handleOpenModal(product)}
                   images={[Xbox5, mintBluePhoto, defaultImage]}
                   onRemove={onDelete}
-                  // imageUrl={product.attachments?.[0] || defaultImage}
                 >
-                  <p className={customStyles.slideText}>
-                    {product.description}
-                  </p>
-                  <p className={customStyles.slideText}>
-                    Price: ${product.price}
-                  </p>
-                  <p className={customStyles.slideText}>
-                    Quantity: {product.available_quantity}
-                  </p>
-                  <strong>
-                    Rating:
-                    {product.reviews.length > 0
-                      ? (
-                          product.reviews.reduce(
-                            (sum, review) => sum + review.rating,
-                            0,
-                          ) / product.reviews.length
-                        ).toFixed(1)
-                      : "0"}
-                    /5
-                  </strong>
-                </GenericCard>
+                  {/* Description Section */}
+                  <div className="p-4">
+                    {/* Description */}
+                    <div className="rounded-lg bg-secondary-light_grey">
+                      <p className="line-clamp-2 text-body text-gray-700">
+                        {product.description}
+                      </p>
+                    </div>
 
-                {/* <div onClick={() => handleOpenModal(product)} className={customStyles.slideContent}>
-                  {(role === 'admin' || role === 'seller') && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent the event from bubbling up to the parent
-                        if (onDelete) {
-                          onDelete(product._id);
-                        }
-                      }}
-                      className={customStyles.removeButton}
-                    >
-                      <Minus size={16} className="duration-150 group-hover:stroke-black" />
-                    </button>
-                  )}
-                  <img
-                    src={product.attachments?.length > 0 ? product.attachments[0] : defaultImage}
-                    alt={product.name}
-                    className={customStyles.productImage} // Add your styles here
-                  />
-                  <h3 className={customStyles.slideTitle}>{product.name}</h3>
-                  <p className={customStyles.slideText}>{product.description}</p>
-                  <p className={customStyles.slideText}>Price: {product.price}</p>
-                  <p className={customStyles.slideText}>Quantity: {product.available_quantity}</p>
-                  <strong>Rating:</strong>
-                  {product.reviews.length > 0
-                    ? (
-                        product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
-                      ).toFixed(1)
-                    : '0'}
-                  /5
-                </div> */}
+                    {/* Price and Quantity Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="rounded-lg bg-secondary-light_grey">
+                        <div className="flex items-center gap-2 text-accent-dark-blue">
+                          <DollarSign size={16} className="text-primary-blue" />
+                          <span className="text-sm font-sub_headings">
+                            Price :
+                          </span>
+                        </div>
+                        <p className="mt-1 text-lg font-semibold text-primary-green">
+                          ${product.price}
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg bg-secondary-light_grey">
+                        <div className="flex items-center gap-2 text-accent-dark-blue">
+                          <Package size={16} className="text-primary-blue" />
+                          <span className="text-sm font-sub_headings">
+                            Quantity :
+                          </span>
+                        </div>
+                        <p className="mt-1 text-lg font-bold text-primary-blue">
+                          {product.available_quantity}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="rounded-lg bg-secondary-light_grey p-1">
+                      <div className="flex items-center gap-2">
+                        <Star
+                          size={18}
+                          className="text-accent-gold"
+                          fill="currentColor"
+                        />
+                        <span className="font-bold text-accent-dark-blue">
+                          {product.reviews.length > 0
+                            ? (
+                                product.reviews.reduce(
+                                  (sum, review) => sum + review.rating,
+                                  0,
+                                ) / product.reviews.length
+                              ).toFixed(1)
+                            : "0"}
+                          <span className="font-normal text-gray-500">/5</span>
+                        </span>
+
+                        <span className="ml-16 text-sm text-gray-500">
+                          {product.reviews.length} reviews
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </GenericCard>
               </div>
             ))}
           </div>
@@ -215,59 +223,105 @@ const ProductList: React.FC<ProductListProps> = ({
         onClose={() => setSelectedProduct(null)}
       >
         {selectedProduct && (
-          <div>
+          <div className="p-6">
             {role === "tourist" && (
-              <>
-                <p>
-                  <strong>Description:</strong> {selectedProduct.description}
-                </p>
-                <p>
-                  <strong>Price:</strong> {selectedProduct.price}
-                </p>
-                <p>
-                  <strong>Quantity:</strong>{" "}
-                  {selectedProduct.available_quantity}
-                </p>
-                <p>
-                  <strong>Rating:</strong>
-                  {selectedProduct.reviews.length > 0
-                    ? (
-                        selectedProduct.reviews.reduce(
-                          (sum, review) => sum + review.rating,
-                          0,
-                        ) / selectedProduct.reviews.length
-                      ).toFixed(1)
-                    : "0"}
-                  /5
-                </p>
-                <p>
-                  <strong>reviews:</strong>
-                </p>
-                {selectedProduct.reviews.map((review, index) => (
-                  <>
-                    <p key={index}>
-                      {index + 1}.Rating : {review.rating}/5
+              <div className="space-y-6">
+                {/* Description */}
+                <div className="rounded-lg bg-secondary-light_grey p-4">
+                  <h3 className="mb-2 font-sub_headings text-accent-dark-blue">
+                    Description
+                  </h3>
+                  <p className="text-body">{selectedProduct.description}</p>
+                </div>
+
+                {/* Price and Quantity Row */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg bg-secondary-light_grey p-4">
+                    <h3 className="mb-2 font-sub_headings text-accent-dark-blue">
+                      Price
+                    </h3>
+                    <p className="text-2xl font-bold text-primary-green">
+                      ${selectedProduct.price}
                     </p>
-                    <p className="ml-2"> Comment : {review.comment}</p>
-                  </>
-                ))}
-              </>
+                  </div>
+                  <div className="rounded-lg bg-secondary-light_grey p-4">
+                    <h3 className="mb-2 font-sub_headings text-accent-dark-blue">
+                      Available
+                    </h3>
+                    <p className="text-2xl font-bold text-primary-blue">
+                      {selectedProduct.available_quantity} units
+                    </p>
+                  </div>
+                </div>
+
+                {/* Rating Section */}
+                <div className="rounded-lg bg-secondary-light_grey p-4">
+                  <div className="mb-4 flex items-center gap-2">
+                    <Star className="text-accent-gold" fill="currentColor" />
+                    <span className="text-xl font-bold">
+                      {selectedProduct.reviews.length > 0
+                        ? (
+                            selectedProduct.reviews.reduce(
+                              (sum, review) => sum + review.rating,
+                              0,
+                            ) / selectedProduct.reviews.length
+                          ).toFixed(1)
+                        : "0"}
+                      /5
+                    </span>
+                  </div>
+
+                  {/* Reviews */}
+                  <div className="space-y-4">
+                    <h3 className="font-sub_headings text-accent-dark-blue">
+                      Reviews
+                    </h3>
+                    <div className="max-h-60 space-y-3 overflow-y-auto">
+                      {selectedProduct.reviews.map((review, index) => (
+                        <div
+                          key={index}
+                          className="rounded-lg bg-white p-3 shadow-sm"
+                        >
+                          <div className="mb-2 flex items-center gap-2">
+                            <Star
+                              size={16}
+                              className="text-accent-gold"
+                              fill="currentColor"
+                            />
+                            <span className="font-bold">{review.rating}/5</span>
+                          </div>
+                          <p className="text-gray-600">{review.comment}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
-            {role === "admin" || role === "seller" ? (
-              <ProductForm
-                addModalRef={EditmodalRef}
-                onUpdate={onEdit}
-                initialData={{
-                  name: selectedProduct.name,
-                  description: selectedProduct.description,
-                  price: selectedProduct.price,
-                  available_quantity: selectedProduct.available_quantity,
-                  attachments: [], // Add an empty array or appropriate initial value for attachments
-                }}
-                selectedProduct={selectedProduct}
-              />
-            ) : null}
+            {/* Footer */}
+            <div className="mt-6 flex justify-end">
+              {role === "tourist" && (
+                <button className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80">
+                  <ShoppingCart size={20} />
+                  Add to Cart
+                </button>
+              )}
+              {(role === "admin" || role === "seller") && (
+                <ProductForm
+                  addModalRef={EditmodalRef}
+                  onUpdate={onEdit}
+                  initialData={{
+                    name: selectedProduct.name,
+                    description: selectedProduct.description,
+                    price: selectedProduct.price,
+                    available_quantity: selectedProduct.available_quantity,
+                    attachments: [], // Add an empty array or appropriate initial value for attachments
+                  }}
+                  selectedProduct={selectedProduct}
+                />
+              )}
+            </div>
           </div>
         )}
       </Modal>
@@ -292,10 +346,10 @@ const customStyles = {
   priceInput:
     "px-4 py-2 border border-gray-300 bg-secondary-light_grey rounded-lg w-[50%]",
   sortButton:
-    "px-4 py-2 border border-gray-300 rounded-lg bg-accent-gold text-white",
+    "px-4 py-2 border border-gray-300 rounded-lg bg-accent-dark-blue text-white",
   sliderContainer: "relative",
   sliderContent: "overflow-hidden",
-  sliderWrapper: "grid grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto", // Set a max height and make it scrollable
+  sliderWrapper: "grid grid-cols-3 gap-10 max-h-[65vh] overflow-y-auto", // Set a max height and make it scrollable
   slide: "w-[22%] h-[100%] flex-shrink-0 px-2 transition-all duration-600 m-6",
   slideContent:
     "h-[50vh] w-[35vh] overflow-auto border-2 border-gray-300 bg-white p-6 relative cursor-pointer",
