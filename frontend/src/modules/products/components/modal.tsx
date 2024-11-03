@@ -1,6 +1,6 @@
-import { X } from 'lucide-react';
-import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { X } from "lucide-react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { createPortal } from "react-dom";
 
 export interface ModalRef {
   open(): void;
@@ -13,7 +13,10 @@ interface ModalProps {
   title: string;
 }
 
-const Modal = forwardRef(function Modal({ children, onClose, title }: ModalProps, ref: React.Ref<ModalRef>) {
+const Modal = forwardRef(function Modal(
+  { children, onClose, title }: ModalProps,
+  ref: React.Ref<ModalRef>,
+) {
   const dialog = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => {
@@ -45,7 +48,7 @@ const Modal = forwardRef(function Modal({ children, onClose, title }: ModalProps
       </div>
       {children}
     </dialog>,
-    document.getElementById('modal-root')!
+    document.getElementById("modal-root")!,
   );
 });
 
