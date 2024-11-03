@@ -1,105 +1,15 @@
-// import React, { useMemo } from "react";
-// import "slick-carousel/slick/slick.css";
-// import "slick-carousel/slick/slick-theme.css";
-// import Slider from "react-slick";
-// import { Card, CardContent } from "./card";
-// import { Badge } from "./badge";
-// import { TagType } from "../types/Tag.types";
-
-// type CommonProperties = {
-//   name: string;
-//   category?: string;
-//   tags?: TagType[];
-// };
-
-// type CardProps<T extends CommonProperties> = {
-//   item: T;
-//   images?: string[];
-//   className?: string;
-//   children: React.ReactNode;
-//   onClick?: (e: React.MouseEvent<HTMLDivElement>, item: T) => void;
-// };
-
-// const GenericCard = <T extends CommonProperties>({
-//   item,
-//   images,
-//   className = "",
-//   children,
-//   onClick,
-// }: CardProps<T>) => {
-//   const defaultSliderSettings = {
-//     dots: true,
-//     arrows: true,
-//     infinite: true,
-//     speed: 500,
-//     slidesToShow: 1,
-//     slidesToScroll: 1,
-//   };
-
-//   const renderTags = useMemo(() => {
-//     if (!item?.tags || item.tags.length === 0) return null;
-//     return (
-//       <div className="mt-2 flex flex-wrap justify-center gap-2">
-//         {item.tags.slice(0, 3).map((tag, index) => (
-//           <Badge key={index} variant="secondary" className="text-xs">
-//             {tag?.name ?? ""}
-//           </Badge>
-//         ))}
-//       </div>
-//     );
-//   }, [item.tags]);
-
-//   return (
-//     <Card
-//       // onClick={(e) => onClick?.(e, item)}
-//       className={`w-80 overflow-hidden rounded-lg shadow-lg transition-shadow duration-300 hover:shadow-xl hover:shadow-primary-green ${className}`}
-//     >
-//       <div className="relative h-48 overflow-hidden">
-//         {images && images.length > 0 ? (
-//           <Slider {...defaultSliderSettings} className="h-full w-full">
-//             {images.map((imageUrl, index) => (
-//               <div key={index} className="h-full">
-//                 <img
-//                   src={imageUrl}
-//                   alt={`${item.name || "Item"} Image ${index + 1}`}
-//                   className="mt-0 h-48 w-full object-cover"
-//                   style={{ marginTop: 0 }}
-//                 />
-//               </div>
-//             ))}
-//           </Slider>
-//         ) : (
-//           <div className="absolute inset-0 bg-gradient-to-br from-primary-green to-primary-blue" />
-//         )}
-//         <div className="absolute inset-0 bg-gradient-to-t from-secondary-light_grey via-transparent"></div>
-//       </div>
-
-//       <CardContent className="space-y-4 bg-secondary-light_grey p-6 text-center">
-//         <h3 className="text-headline font-headline text-accent-dark-blue">
-//           {item.name || "Untitled"}
-//         </h3>
-//         <p className="text-sub-headings font-sub_headings text-primary-blue">
-//           {item.category ?? "Product"}
-//         </p>
-//         <p className="text-body text-text-primary">{children}</p>
-//         {renderTags}
-//       </CardContent>
-//     </Card>
-//   );
-// };
-
-// export default GenericCard;
 import React, { useState, useCallback, useMemo } from "react";
 import { Card, CardContent } from "./card";
 import { Badge } from "./badge";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus } from "lucide-react";
 
 interface TagType {
-  id?: string | number;
+  _id: string | number;
   name: string;
 }
 
 type CommonProperties = {
+  _id: string | number;
   name: string;
   category?: string;
   tags?: TagType[];
@@ -111,6 +21,7 @@ type CardProps<T extends CommonProperties> = {
   className?: string;
   children: React.ReactNode;
   onClick?: (e: React.MouseEvent<HTMLDivElement>, item: T) => void;
+  onRemove?: (id: string | number) => void;
 };
 
 const GenericCard = <T extends CommonProperties>({
@@ -119,8 +30,11 @@ const GenericCard = <T extends CommonProperties>({
   className = "",
   children,
   onClick,
+  onRemove,
 }: CardProps<T>) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  console.log(className);
 
   const nextImage = useCallback(() => {
     if (images && images.length > 0) {
@@ -142,9 +56,14 @@ const GenericCard = <T extends CommonProperties>({
       <div className="mt-2 flex flex-wrap justify-center gap-2">
         {item.tags.slice(0, 3).map((tag, index) => (
           <Badge key={index} variant="secondary" className="text-xs">
-            {tag?.name ?? ""}
+            {tag.name ?? ""}
           </Badge>
         ))}
+        {item.tags.length > 3 && (
+          <Badge variant="secondary" className="text-xs">
+            +{item.tags.length - 3}
+          </Badge>
+        )}
       </div>
     );
   }, [item.tags]);
@@ -211,11 +130,25 @@ const GenericCard = <T extends CommonProperties>({
   return (
     <Card
       onClick={(e) => onClick?.(e, item)}
-      className={`bg-ac w-80 overflow-hidden rounded-lg shadow-lg transition-shadow duration-300 hover:shadow-xl hover:shadow-primary-green ${className}`}
+      className={`min-h-[462px] w-80 overflow-hidden rounded-lg shadow-lg transition-shadow duration-300 hover:shadow-xl hover:shadow-primary-green ${className}`}
     >
       <div className="relative h-48 overflow-hidden">
         {renderImageSlider()}
         <div className="absolute inset-0 bg-gradient-to-t from-secondary-light_grey via-transparent"></div>
+        {onRemove && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent bubbling
+              onRemove(item._id); // Call the onRemove function with item ID
+            }}
+            className="absolute right-2 top-2 z-10 rounded-full border border-gray-500 bg-white p-1 duration-150 hover:bg-red-600 focus:outline-none"
+          >
+            <Minus
+              size={16}
+              className="text-accent-dark-blue duration-150 group-hover:stroke-black"
+            />
+          </button>
+        )}
       </div>
 
       <CardContent className="space-y-4 bg-secondary-light_grey p-6 text-center">
@@ -225,7 +158,7 @@ const GenericCard = <T extends CommonProperties>({
         <p className="text-sub-headings font-sub_headings text-primary-blue">
           {item.category ?? "Product"}
         </p>
-        <p className="text-body text-text-primary">{children}</p>
+        <span className="text-body text-text-primary">{children}</span>
         {renderTags}
       </CardContent>
     </Card>

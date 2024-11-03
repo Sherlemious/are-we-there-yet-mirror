@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Product } from "../types/product";
-import { Minus, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Modal, { ModalRef } from "./modal";
 import ProductForm, { ProductFormData } from "./ProductForm";
 import defaultPhoto from "../assets/defaultPhoto.png";
@@ -12,7 +12,7 @@ interface ProductListProps {
   products: Product[]; // All products
   role: "admin" | "seller" | "tourist"; // Define user roles
   onEdit?: (product: Product) => void; // Admin/Seller functionality
-  onDelete?: (productId: string) => void; // Admin/Seller functionality
+  onDelete?: (productId: string | number) => void; // Admin/Seller functionality
   onCreate?: (productData: ProductFormData) => void; // Admin/Seller functionality
 }
 
@@ -145,6 +145,7 @@ const ProductList: React.FC<ProductListProps> = ({
                   item={product}
                   onClick={() => handleOpenModal(product)}
                   images={[Xbox5, mintBluePhoto, defaultImage]}
+                  onRemove={onDelete}
                   // imageUrl={product.attachments?.[0] || defaultImage}
                 >
                   <p className={customStyles.slideText}>
