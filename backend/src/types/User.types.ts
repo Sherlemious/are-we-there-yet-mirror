@@ -33,5 +33,6 @@ export interface UserType {
   // Seller
   description?: string;
   // Tourist
+  loyalty_points: number;
   wallet?: number;
 }
