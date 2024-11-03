@@ -34,15 +34,7 @@ const Modal = forwardRef(function Modal({ children, onClose, title }: ModalProps
       className="backdrop:bg-base-black/15 w-2/3 rounded-lg p-12 shadow-md outline-none relative" // Set to relative positioning
     >
       <div className="border-system-neutral-3 flex border-b py-6">
-        <h1 className="flex-grow text-xl font-semibold">{title}</h1>
-        {/* Close button styled and positioned */}
-        <button
-          type="button" // Changed to 'button' to prevent form reset
-          onClick={() => dialog.current?.close()}
-          className="absolute top-4 right-4 flex-shrink-0 p-2 rounded-full bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-150 ease-in-out"
-        >
-          <X size={16} />
-        </button>
+        <h1 className="flex-grow text-xl font-semibold text-accent-dark-blue">{title}</h1>
       </div>
       {children}
     </dialog>,
