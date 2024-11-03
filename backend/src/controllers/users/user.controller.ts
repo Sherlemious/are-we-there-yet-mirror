@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import userRepo from '../../database/repositories/user.repo';
 import { logger } from '../../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../../types/ResponseStatusCodes.types';
+import bcrypt from 'bcrypt';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -48,6 +49,7 @@ const acceptUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
     await userRepo.acceptUser(userId);
+    await userRepo.notRejectUser(userId);
     const response = {
       message: 'User accepted successfully',
       data: { userId: req.params.id },
@@ -111,4 +113,76 @@ const requestAccountDeletion = async (req: Request, res: Response) => {
   }
 };
 
-export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser, requestAccountDeletion };
+const ChangeUserPassword = async (req: Request, res: Response) => {
+  const password = req.body.password;
+
+  // Check if password is provided
+  if (!password) {
+    res.status(400).json({ message: 'Password is required' });
+    return;
+  }
+
+  // Find the user by ID using repository
+  const user = await userRepo.findUserById(req.user.userId);
+  if (!user) {
+    res.status(404).json({ message: 'User not found' });
+    return;
+  }
+
+  try {
+    // Hash the new password
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Update the user's password in the database
+    await userRepo.ChangeUserPassword(user._id, hashedPassword);
+
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred while changing the password' });
+  }
+};
+
+const acceptTerms = async (req: Request, res: Response) => {
+  try {
+    await userRepo.acceptTerms(req.user.userId);
+    const response = {
+      message: 'Terms accepted successfully',
+      data: { userId: req.user.userId },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error accepting terms: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const rejectUser = async (req: Request, res: Response) => {
+  try {
+    await userRepo.rejectUser(req.params.id);
+    await userRepo.notAcceptUser(req.params.id);
+    const response = {
+      message: 'User rejected successfully',
+      data: { userId: req.params.id },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error rejecting user: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+export {
+  getUsers,
+  deleteUser,
+  acceptUser,
+  findUserById,
+  updateUser,
+  createUser,
+  requestAccountDeletion,
+  ChangeUserPassword,
+  acceptTerms,
+  rejectUser,
+};

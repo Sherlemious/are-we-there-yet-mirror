@@ -18,8 +18,11 @@ export interface UserType {
   job?: string;
   picture?: string;
   name?: string;
-  accepted?: boolean;
+  accepted: boolean;
   nationality: string;
+  rejected: boolean;
+  termsAndConditions: boolean;
+
   // Tour guide
   years_of_experience?: number;
   previous_work?: [string];

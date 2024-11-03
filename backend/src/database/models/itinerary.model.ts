@@ -67,6 +67,11 @@ const itinerarySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'user',
     },
+    flagged: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -162,6 +162,22 @@ const toggleItineraryActive = async (req: Request, res: Response, active: boolea
   }
 };
 
+const flagItinerary = async (req: Request, res: Response) => {
+  try {
+    await ItineraryRepo.flagItinerary(req.params.id);
+    const newItinerary = await ItineraryRepo.findItineraryById(req.params.id);
+    const response = {
+      message: 'Itinerary flagged successfully',
+      data: { itinerary: newItinerary },
+    };
+
+    res.json(response);
+  } catch (error: any) {
+    logger.error(`Error flagging itinerary: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 export {
   getItineraries,
   findItineraryById,
@@ -170,5 +186,6 @@ export {
   deleteItinerary,
   filterItineraries,
   getItinerariesCreatedByUser,
+  flagItinerary,
   toggleItineraryActive,
 };
