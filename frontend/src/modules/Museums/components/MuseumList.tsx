@@ -182,7 +182,7 @@ const customStyles = {
   container: "h-auto max-h-[85vh] bg-secondary-white max-w-fit border-2 border-gray-300 pr-14 pt-4 pl-20 pb-10 mx-auto",
   sliderContainer: "relative",
   sliderContent: "overflow-hidden",
-  sliderWrapper: "grid grid-cols-3 gap-10 max-h-[65vh] overflow-y-auto", // Set a max height and make it scrollable
+  sliderWrapper: "grid grid-cols-3 gap-12 max-h-[65vh] overflow-y-auto pr-5", // Set a max height and make it scrollable
   slide: "w-[22%] h-[100%] flex-shrink-0 px-2 transition-all duration-600 m-6",
   slideContent: "h-[50vh] w-[35vh] overflow-auto border-2 border-gray-300 bg-white p-6 relative cursor-pointer",
   slideTitle: "mb-2 font-bold",
