@@ -124,8 +124,8 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
   useEffect(() => {
   if (selectedMuseum) {
-    const tagNames = selectedMuseum.tags.map(tag => {
-      return typeof tag === "object" ? tag.name : tag; // If it's an object, get the name
+    const tagIds = selectedMuseum.tags.map(tag => {
+      return typeof tag === "object" ? tag._id : tag; // If it's an object, get the name
     });
 
     setFormData((prevData) => ({
@@ -133,7 +133,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       name: selectedMuseum.name,
       description: selectedMuseum.description,
       category: selectedMuseum.category,
-      tags: tagNames, // Store only tag names
+      tags: tagIds, // Store only tag names
       opening_hours: selectedMuseum.opening_hours,
       ticket_prices: selectedMuseum.ticket_prices,
       location: {
@@ -258,12 +258,12 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
         ids.push(fetched[i]._id); // Only push the ID if it is not present in pictures
     }
     }
-    for (let i = 0; i < formData.tags.length; i++) {
-      if (availableTags.find((tag) => tag.name === formData.tags[i])) {
-        formData.tags[i] =
-          availableTags.find((tag) => tag.name === formData.tags[i])?._id || "";
-      }
-    }
+    // for (let i = 0; i < formData.tags.length; i++) {
+    //   if (availableTags.find((tag) => tag.name === formData.tags[i])) {
+    //     formData.tags[i] =
+    //       availableTags.find((tag) => tag.name === formData.tags[i])?._id || "";
+    //   }
+    // }
     console.log(ids);
     console.log(formData.tags);
     const formDataWithAttachments = { ...formData, pictures: ids };
@@ -460,69 +460,85 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
         {/* Centering the column */}
         {/* Picture Upload */}
         <div>
-          <label htmlFor="pictures" className="mb-2 block text-input_or_label text-text-primary">
-            Upload Pictures
-          </label>
-          <img
-            src={
-              imagePreview && pictures.length > 0
-                ?imagePreview
-                : defaultPhoto
-            }
-            alt="Preview"
-            className="mt-4-gray-300 h-64 w-full rounded-md object-cover border border-borders-primary"
-            />
+          <h3 className="mb-2 mt-2 text-input_or_label text-text-primary">Tags</h3>
+  <label htmlFor="pictures" className="mb-2 block text-input_or_label text-text-primary">
+    Upload Pictures
+  </label>
 
-          {/* Conditionally render arrows if multiple pictures are uploaded */}
-          {pictures.length > 0 && (
-            <div className="mb-3 flex justify-between">
-              <span
-                onClick={() => handleImageToggle("prev")}
-                className="cursor-pointer text-gray-500 hover:text-accent-dark-blue"
-                >
-                &#9664; {/* Left arrow */}
-              </span>
-              <span
-                onClick={() => handleImageToggle("next")}
-                className="cursor-pointer text-gray-500 hover:text-accent-dark-blue"
-                >
-                &#9654; {/* Right arrow */}
-              </span>
-              <button
-                type="button"
-                onClick={() => handleDeletePicture(imageIndex)}
-                className="ml-4 rounded-md bg-accent-gold p-1 text-secondary-white"
-                >
-                Delete
-              </button>
-            </div>
-          )}
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            className={styles.inputClass}
-            ref={fileInputRef}
-          />
-        </div>
+  <div className="relative mb-2">
+    <img
+      src={
+        imagePreview && pictures.length > 0
+          ? imagePreview
+          : defaultPhoto
+      }
+      alt="Preview"
+      className="h-64 w-full rounded-md object-cover border border-borders-primary"
+    />
+
+    {/* Conditionally render chevrons if multiple pictures are uploaded */}
+    {pictures.length > 0 && (
+      <>
+        <span
+          onClick={() => handleImageToggle("prev")}
+          className="absolute top-1/2 left-2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-accent-dark-blue text-2xl"
+        >
+          {/* Left chevron icon */}
+          &#10094;
+        </span>
+        <span
+          onClick={() => handleImageToggle("next")}
+          className="absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-accent-dark-blue text-2xl"
+        >
+          {/* Right chevron icon */}
+          &#10095;
+        </span>
+
+        <button
+          type="button"
+          onClick={() => handleDeletePicture(imageIndex)}
+          className="absolute top-1 right-2 text-gray-500 hover:text-red-600 focus:outline-none text-2xl"
+          aria-label="Delete picture"
+        >
+          &#10005; {/* "X" icon */}
+        </button>
+      </>
+    )}
+  </div>
+
+  <input
+    type="file"
+    multiple
+    onChange={handleFileChange}
+    className={styles.inputClass}
+    ref={fileInputRef}
+  />
+</div>
+
         
         <div className="mt-2">
-          <h3 className="mb-2 mt-2 text-input_or_label text-text-primary">Tags</h3>
             <SearchMultiSelect
-              options={availableTags.map((tag) => tag.name)} // Extract tag names for options
-              selectedItems={formData.tags.map(tag => (typeof tag === "object" ? tag.name : tag))} // Map to tag names
-              onSelect={(item: string) => {
-              if (!formData.tags.includes(item)) {
+              options={availableTags.map((tag) => ({
+                value: tag._id, // Unique identifier
+                label: tag.name, // Display name
+                payload: tag // Full tag object as payload
+              }))} // Extract tag names for options
+              selectedItems={formData.tags.map(tagId => {
+                const tag = availableTags.find((tag) => tag._id === tagId); // Find the tag object by ID
+                return tag ? { value: tag._id, label: tag.name, payload: tag } : null;
+              }).filter(Boolean)}
+              onSelect={(item) => {
+              if (!formData.tags.includes(item.value)) {
               setFormData((prevData) => ({
               ...prevData,
-              tags: [...prevData.tags, item], // Add selected tag
+              tags: [...prevData.tags, item.value], // Add selected tag
                 }));
                 }
               }}
-              onRemove={(item: string) => {
+              onRemove={(item) => {
                 setFormData((prevData) => ({
                 ...prevData,
-                tags: prevData.tags.filter((tag) => tag !== item), // Remove tag
+                tags: prevData.tags.filter((tag) => tag !== item.value), // Remove tag
                 }));
                 }}
           />

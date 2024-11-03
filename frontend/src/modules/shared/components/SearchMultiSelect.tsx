@@ -1,10 +1,16 @@
 import React, { useState, useMemo } from 'react';
 
+interface Option {
+  value: string;
+  label: string;
+  payload?: any; // Payload can hold any additional data
+}
+
 interface SearchMultiSelectProps {
-  options: string[];
-  selectedItems: string[];
-  onSelect: (item: string) => void;
-  onRemove: (item: string) => void;
+  options: Option[];
+  selectedItems: Option[];
+  onSelect: (item: Option) => void;
+  onRemove: (item: Option) => void;
 }
 
 const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
@@ -15,16 +21,17 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  // Ensure options are distinct
+  // Ensure options are distinct by value
   const distinctOptions = useMemo(() => {
-    return Array.from(new Set(options));
+    const uniqueOptions = new Map(options.map(option => [option.value, option]));
+    return Array.from(uniqueOptions.values());
   }, [options]);
 
   const filteredOptions = useMemo(() => {
     return distinctOptions.filter(
       (option) =>
-        option.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !selectedItems.includes(option)
+        option.label?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !selectedItems.some(selected => selected.value === option.value)
     );
   }, [distinctOptions, searchTerm, selectedItems]);
 
@@ -38,10 +45,10 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
           ) : (
             selectedItems.map((item) => (
               <span
-                key={item}
+                key={item.value}
                 className="bg-primary-blue text-text-white rounded-full px-2 py-1 mr-2 mb-2 flex items-center shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
               >
-                {item}
+                {item.label}
                 <button
                   onClick={() => onRemove(item)}
                   className="ml-1 text-accent-gold hover:text-gold"
@@ -57,9 +64,9 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
         <input
           type="text"
           placeholder="Search"
-          value={searchTerm}
+          value={searchTerm}x
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ width: '80px' }} // Adjust width here
+          style={{ width: '100px' }} // Adjust width here
           className="border border-borders-primary rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary-blue ml-auto shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
         />
       </div>
@@ -84,11 +91,11 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
             </style>
             {filteredOptions.map((option) => (
               <div
-                key={option}
+                key={option.value}
                 onClick={() => onSelect(option)}
                 className="p-2 hover:bg-background-button cursor-pointer transition-colors duration-200 ease-in-out rounded-md"
               >
-                {option}
+                {option.label}
               </div>
             ))}
           </div>
