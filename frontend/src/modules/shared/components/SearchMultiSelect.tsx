@@ -64,7 +64,7 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
         <input
           type="text"
           placeholder="Search"
-          value={searchTerm}x
+          value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ width: '100px' }} // Adjust width here
           className="border border-borders-primary rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary-blue ml-auto shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
