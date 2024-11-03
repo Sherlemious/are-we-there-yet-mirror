@@ -6,6 +6,7 @@ import Modal, { ModalRef } from './modal';
 import MuseumForm, {MuseumFormData} from './MuseumForm';
 import defaultPhoto from '../assets/defaultPhoto.png';
 import axiosInstance from '../../shared/services/axiosInstance';
+import GenericCard from '../../shared/GenericCard/GenericCard';
 
 
 interface MuseumListProps {
@@ -20,42 +21,43 @@ const defaultImage = defaultPhoto;
 
 const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit, onDelete  }) => {
   const [selectedMuseum, setSelectedMuseum] = useState<Museum | null>(null); // State to store the clicked museum
-  const [imageURLs, setImageURLs] = useState<{ [key: string]: string }>({}); // State to store image URLs
+  const [imageURLs, setImageURLs] = useState<{ [key: string]: string[] }>({});
   const EditmodalRef = useRef<ModalRef>(null); // Reference for modal
   const AddmodalRef = useRef<ModalRef>(null); // Reference for modal
   const handleOpenModal = (museum: Museum) => {
     setSelectedMuseum(museum);
     EditmodalRef.current?.open(); // Open the modal
   };
-  const fetchPicture = async (museum: Museum): Promise<string | undefined> => {
+  const fetchPicture = async (pictureId: string): Promise<string | undefined> => {
     try {
-      const response = await axiosInstance.get(
-        `/attachments/${museum.pictures[0]}` // Fetch binary data
-      );
+      const response = await axiosInstance.get(`/attachments/${pictureId}`); // Fetch binary data
       return response.data.url;
     } catch (error) {
-      console.error('Error fetching pictures:', error);
+      console.error('Error fetching picture:', error);
       return undefined;
     }
   };
-
   useEffect(() => {
     const fetchImages = async () => {
-      const newImageURLs: { [key: string]: string } = {};
+      const newImageURLs: { [key: string]: string[] } = {}; // Prepare to store an array of URLs
       for (const museum of museums) {
+        newImageURLs[museum._id] = []; // Initialize an empty array for each museum
         if (museum.pictures.length > 0) {
-          const imageUrl = await fetchPicture(museum);
-          if(imageUrl){
-             newImageURLs[museum._id] = imageUrl;
-             console.log(newImageURLs[museum._id] + " " + imageUrl);
-           } // Use fetched image or default
-        } else {
-          newImageURLs[museum._id] = defaultPhoto; // Default image if no pictures
+          for (const pictureId of museum.pictures) {
+            const imageUrl = await fetchPicture(pictureId);
+            if (imageUrl) {
+              newImageURLs[museum._id].push(imageUrl); // Store the image URL
+            }
+          }
+        }
+        // If no valid images were fetched, add the default image
+        if (newImageURLs[museum._id].length === 0) {
+          newImageURLs[museum._id].push(defaultPhoto); // Default image if no valid pictures
         }
       }
-      setImageURLs(newImageURLs);
+      setImageURLs(newImageURLs); // Update state with new URLs
     };
-
+  
     fetchImages();
   }, [museums]);
 
@@ -67,29 +69,26 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
           <div className={customStyles.sliderWrapper}>
             {museums.map((museum, index) => (
               <div key={index} className={customStyles.slide}>
-                <div onClick={() => handleOpenModal(museum)} className={customStyles.slideContent}>
-                  {(role === 'TourismGovernor') && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent the event from bubbling up to the parent
-                        if (onDelete) {
-                          onDelete(museum._id);
-                        }
-                      }}
-                      className={customStyles.removeButton}
-                    >                      <Minus size={16} className="duration-150 group-hover:stroke-black" />
-                    </button>
-                  )}
+                <GenericCard
+                item={museum}
+                images={imageURLs[museum._id] ? imageURLs[museum._id] : [defaultImage]} // Pass the fetched image URL or default image
+                onClick={() => handleOpenModal(museum)} // Opens the modal on click
+                onRemove={(id) => {
+                  if (onDelete) {
+                    onDelete(id); // Call delete function with the museum ID
+                  }
+                }}
+              >
+                <p className={customStyles.slideText}>{museum.description}</p>
+                <p className={customStyles.slideText}>{museum.opening_hours}</p>
+                <p className={customStyles.slideText}>Foreigner Ticket: {museum.ticket_prices.foreigner}</p>
+                <p className={customStyles.slideText}>Native Ticket: {museum.ticket_prices.native}</p>
+                <p className={customStyles.slideText}>Student Ticket: {museum.ticket_prices.student}</p>
+                <p className={customStyles.slideText}>{museum.location.name}</p>
 
-                  {/* Image */}
-                  <div className={customStyles.imageContainer}>
-                  {/* <img src={defaultImage} alt={museum.name} className={customStyles.image} /> */}
-                  <img src={museum.pictures.length > 0 ? imageURLs[museum._id] : defaultImage} alt={museum.name} className={customStyles.image} />
-                  </div>
 
-                  <h3 className={customStyles.slideTitle}>{museum.name}</h3>
-                  <p className={customStyles.slideText}>{museum.description}</p>
-                  
+              </GenericCard>
+              
                   {/* Tags
                   <p className={customStyles.slideText}>Tags:</p>
                   {museum.tags.map((tag, i) => (
@@ -97,13 +96,12 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
                       <p className={`${customStyles.slideText} font-bold`}><span className="font-normal">{tag}</span></p>
                     </div>
                   ))}
-                  <p className={`${customStyles.slideText} font-bold`}>Location: <span className="font-normal">{museum.location.name}</span></p>
                   <p className={`${customStyles.slideText} font-bold`}>Opening Hours: <span className="font-normal">{museum.opening_hours}</span></p>
+                  <p className={`${customStyles.slideText} font-bold`}>Location: <span className="font-normal">{museum.location.name}</span></p>
                   <p className={`${customStyles.slideText} font-bold`}>Ticket Prices:</p>
                   <p className={customStyles.slideText}>Foreigner: {museum.ticket_prices.foreigner}</p>
                   <p className={customStyles.slideText}>Native: {museum.ticket_prices.native}</p>
                   <p className={customStyles.slideText}>Student: {museum.ticket_prices.student}</p> */}
-                </div>
               </div>
             ))}
 
