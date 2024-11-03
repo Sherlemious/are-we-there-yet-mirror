@@ -216,6 +216,59 @@ async function deleteProductReview(req: Request, res: Response) {
   }
 }
 
+async function getAvailableQuantityAndSales(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const product: ProductType | null = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+    const sales = product.sales ?? 0;
+    const price = product.price ?? 0;
+    const totalSalesValue = sales * price;
+    res.status(ResponseStatusCodes.OK).json({
+      message: 'Product fetched successfully',
+      data: { available_quantity: product.available_quantity, sales: totalSalesValue },
+    });
+  } catch (error: any) {
+    logger.error(`Error fetching product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function buyProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const quantity = parseInt(req.body.quantity);
+    const product: ProductType | null = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+    if (product.available_quantity && product.available_quantity < quantity) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Insufficient quantity', data: [] });
+      return;
+    }
+    await productRepo.buyProduct(productId, quantity);
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product bought successfully', data: { productId, quantity } });
+  } catch (error: any) {
+    logger.error(`Error buying product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function archiveProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    await productRepo.archiveProduct(productId);
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product archived successfully', data: { productId } });
+  } catch (error: any) {
+    logger.error(`Error archiving product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
 export {
   findProductById,
   createProduct,
@@ -227,4 +280,7 @@ export {
   deleteProduct,
   addProductReview,
   deleteProductReview,
+  getAvailableQuantityAndSales,
+  buyProduct,
+  archiveProduct,
 };

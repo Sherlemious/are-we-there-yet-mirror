@@ -20,6 +20,8 @@ export interface UserType {
   name?: string;
   accepted?: boolean;
   nationality: string;
+  rejected?: boolean;
+  termsAndConditions?: boolean;
 
   // Tour guide
   years_of_experience?: number;

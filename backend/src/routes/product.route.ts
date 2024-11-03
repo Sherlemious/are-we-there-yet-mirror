@@ -11,6 +11,9 @@ import {
   deleteProduct,
   addProductReview,
   deleteProductReview,
+  getAvailableQuantityAndSales,
+  buyProduct,
+  archiveProduct,
 } from '../controllers/product.controller';
 
 const router = Router();
@@ -26,5 +29,8 @@ router.delete('/:id', deleteProduct);
 router.patch('/:id', updateProduct);
 router.get('/', getProducts);
 router.post('/', createProduct);
+router.get('/available-quantity-sales/:id', getAvailableQuantityAndSales);
+router.patch('/buy/:id', buyProduct);
+router.patch('/archive/:id', archiveProduct);
 
 export default router;

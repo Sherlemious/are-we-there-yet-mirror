@@ -48,6 +48,7 @@ const acceptUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
     await userRepo.acceptUser(userId);
+    await userRepo.notRejectUser(userId);
     const response = {
       message: 'User accepted successfully',
       data: { userId: req.params.id },
@@ -108,4 +109,62 @@ const requestAccountDeletion = async (req: Request, res: Response) => {
   }
 };
 
-export { getUsers, deleteUser, acceptUser, findUserById, updateUser, createUser, requestAccountDeletion };
+const ChangeUserPassword = async (req: Request, res: Response) => {
+  try {
+    const password = req.body.password;
+    await userRepo.ChangeUserPassword(req.params.id, password);
+    const response = {
+      message: 'Password updated successfully',
+      data: { userId: req.params.id, password: password },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error updating password: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const acceptTerms = async (req: Request, res: Response) => {
+  try {
+    await userRepo.acceptTerms(req.params.id);
+    const response = {
+      message: 'Terms accepted successfully',
+      data: { userId: req.params.id },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error accepting terms: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const rejectUser = async (req: Request, res: Response) => {
+  try {
+    await userRepo.rejectUser(req.params.id);
+    await userRepo.notAcceptUser(req.params.id);
+    const response = {
+      message: 'User rejected successfully',
+      data: { userId: req.params.id },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error rejecting user: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+export {
+  getUsers,
+  deleteUser,
+  acceptUser,
+  findUserById,
+  updateUser,
+  createUser,
+  requestAccountDeletion,
+  ChangeUserPassword,
+  acceptTerms,
+  rejectUser,
+};
