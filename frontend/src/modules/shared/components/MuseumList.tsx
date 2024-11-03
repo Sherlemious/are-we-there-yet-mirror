@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import axiosInstance from "../services/axiosInstance";
+import { useState, useEffect } from "react";
 
 // data
 interface Museum {
@@ -20,82 +21,50 @@ interface Museum {
   };
 }
 
-function useGetMuseums() {
-  // init the states
-  const [data, setData] = useState<Museum[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+async function getMuseums() {
+  try {
+    // fetch the data
+    const response = await axiosInstance.get("/museums/getall");
 
-  // fetch the data
-  useEffect(() => {
-    const runner = async () => {
-      // init the url
-      const baseUrl = 'https://are-we-there-yet-mirror.onrender.com/api';
-      const url = `${baseUrl}/museums/getall`;
+    // format the data
+    const tempData: Museum[] = await response.data.data.museums.map(
+      (item: any) => {
+        const name = item.name ?? "N/A";
 
-      // main logic
-      try {
-        // fetch the data
-        const response = await fetch(url, {
-          method: 'GET',
-        });
+        let tags = item.tags ?? [];
+        tags = tags.map((tag: any) => tag.name ?? "N/A");
 
-        // check if the response is ok
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
+        const description = item.description ?? "N/A";
+        const category = item.category ?? "N/A";
+        const pictures = item.pictures ?? [];
+        const location = {
+          name: item.location.name ?? "N/A",
+          latitude: item.location.latitude ?? 0,
+          longitude: item.location.longitude ?? 0,
+        };
+        const opening_hours = item.opening_hours ?? "N/A";
+        const ticket_prices = {
+          foreigner: item.ticket_prices.foreigner ?? 0,
+          native: item.ticket_prices.native ?? 0,
+          student: item.ticket_prices.student ?? 0,
+        };
 
-        // parse the response
-        const parsedData = await response.json();
-
-        // format the data
-        const tempData: Museum[] = await parsedData.data.museums.map((item) => {
-          const name = item.name ?? 'N/A';
-
-          let tags = item.tags ?? [];
-          tags = tags.map((tag) => tag.name ?? 'N/A');
-
-          const description = item.description ?? 'N/A';
-          const category = item.category ?? 'N/A';
-          const pictures = item.pictures ?? [];
-          const location = {
-            name: item.location.name ?? 'N/A',
-            latitude: item.location.latitude ?? 0,
-            longitude: item.location.longitude ?? 0,
-          };
-          const opening_hours = item.opening_hours ?? 'N/A';
-          const ticket_prices = {
-            foreigner: item.ticket_prices.foreigner ?? 0,
-            native: item.ticket_prices.native ?? 0,
-            student: item.ticket_prices.student ?? 0,
-          };
-
-          return {
-            name,
-            tags,
-            description,
-            category,
-            pictures,
-            location,
-            opening_hours,
-            ticket_prices,
-          };
-        });
-
-        // set the data
-        setData(tempData);
-        setLoading(false);
-      } catch (error) {
-        setError(error.message);
-        setLoading(false);
-      }
-    };
-
-    // run the function
-    runner();
-  }, []);
-
-  return { data, loading, error };
+        return {
+          name,
+          tags,
+          description,
+          category,
+          pictures,
+          location,
+          opening_hours,
+          ticket_prices,
+        };
+      },
+    );
+    return await tempData;
+  } catch (error) {
+    throw new Error(`Failed to fetch data: ${error.message}`);
+  }
 }
 
 // helper functions
@@ -116,14 +85,20 @@ const formatDescription = (description: string) => {
 
 function getAllTags(data: Museum[]) {
   let tags: string[] = [];
-  data.forEach((item) => {
+  data?.forEach((item) => {
     tags = [...tags, ...item.tags];
   });
   return [...new Set(tags)];
 }
 
 // main components
-function MuseumModal({ Museum, onClose }: { Museum: Museum; onClose: () => void }) {
+function MuseumModal({
+  Museum,
+  onClose,
+}: {
+  Museum: Museum;
+  onClose: () => void;
+}) {
   // states for the animation
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -144,40 +119,62 @@ function MuseumModal({ Museum, onClose }: { Museum: Museum; onClose: () => void 
 
   // Animation styles
   const modalOverlayStyle = {
-    transition: 'opacity 0.3s ease-in-out',
+    transition: "opacity 0.3s ease-in-out",
     opacity: isVisible && !isClosing ? 1 : 0,
   };
 
   const modalContentStyle = {
-    transition: 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
-    transform: isVisible && !isClosing ? 'scale(1)' : 'scale(0.95)',
+    transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+    transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
     opacity: isVisible && !isClosing ? 1 : 0,
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={modalOverlayStyle}>
-      <div className="w-full max-w-[80vw] h-auto border-black border-2 bg-white p-4 relative" style={modalContentStyle}>
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      style={modalOverlayStyle}
+    >
+      <div
+        className="relative h-auto w-full max-w-[80vw] border-2 border-black bg-white p-4"
+        style={modalContentStyle}
+      >
         {/* Close button */}
-        <button onClick={handleModalClose} className="absolute top-2 right-2 text-xl font-bold m-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="black">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <button
+          onClick={handleModalClose}
+          className="absolute right-2 top-2 m-4 text-xl font-bold"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="black"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
         <div>
           {/* Museum name */}
-          <div className="text-left font-bold text-xl w-fit my-8 mx-4">
+          <div className="mx-4 my-8 w-fit text-left text-xl font-bold">
             {Museum.name}
             {/* add an underline */}
             <div className="border-b-2 border-black"></div>
           </div>
           {/* Museum details */}
-          <div className="grid grid-cols-[70%_30%] gap-8 mx-8 mb-8 px-8">
+          <div className="mx-8 mb-8 grid grid-cols-[70%_30%] gap-8 px-8">
             {/* Museum info */}
-            <div className="col-start-1 col-end-1 grid grid-rows-auto gap-4 grid-cols-2">
+            <div className="grid-rows-auto col-start-1 col-end-1 grid grid-cols-2 gap-4">
               {/* tags */}
               <div>
                 <div className="text-left font-bold">Tags</div>
-                <div className="">{Museum.tags.length === 0 ? 'N/A' : Museum.tags.join(', ')}</div>
+                <div className="">
+                  {Museum.tags.length === 0 ? "N/A" : Museum.tags.join(", ")}
+                </div>
               </div>
 
               {/* description */}
@@ -226,7 +223,10 @@ function MuseumModal({ Museum, onClose }: { Museum: Museum; onClose: () => void 
               </div>
             </div>
             {/* Museum picture */}
-            <img src={Museum.pictures[0]} className="w-full h-auto col-start-2 col-end-2" />
+            <img
+              src={Museum.pictures[0]}
+              className="col-start-2 col-end-2 h-auto w-full"
+            />
           </div>
         </div>
       </div>
@@ -234,11 +234,20 @@ function MuseumModal({ Museum, onClose }: { Museum: Museum; onClose: () => void 
   );
 }
 
-function MuseumCard({ Museum, onCardClick }: { Museum: Museum; onCardClick: () => void }) {
+function MuseumCard({
+  Museum,
+  onCardClick,
+}: {
+  Museum: Museum;
+  onCardClick: () => void;
+}) {
   return (
-    <div className="w-full h-full border-black border-2 p-4" onClick={onCardClick}>
+    <div
+      className="h-full w-full border-2 border-black p-4"
+      onClick={onCardClick}
+    >
       {/* Museum picture */}
-      <img src={Museum.pictures[0]} className="w-1/2 h-auto mb-8" />
+      <img src={Museum.pictures[0]} className="mb-8 h-auto w-1/2" />
       {/* Museum name */}
       <div className="text-left font-bold">{Museum.name}</div>
       {/* Museum description */}
@@ -257,13 +266,28 @@ export function MuseumList() {
   };
 
   // get the data
-  const { data, loading, error } = useGetMuseums();
+  const [ data, setData ] = useState<Museum[]>([]);
+  const [ loading, setLoading ] = useState<boolean>(true);
+  const [ error, setError ] = useState<string | null>(null);
+
+  useEffect(() => {
+    getMuseums()
+      .then((data) => {
+        console.log(data);
+        setData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  }, []);
 
   // handle the search and filter
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [allTags, setAllTags] = useState<string[]>([]);
-  const [tag, setTag] = useState<string>('');
+  const [tag, setTag] = useState<string>("");
 
   const [filteredData, setFilteredData] = useState<Activity[]>([]);
 
@@ -274,70 +298,85 @@ export function MuseumList() {
 
   useEffect(() => {
     setFilteredData(
-      data.filter((item) => {
+      data?.filter((item) => {
         // handle the search
         const matchesSearchQuery =
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+          item.tags.some((tag) =>
+            tag.toLowerCase().includes(searchQuery.toLowerCase()),
+          );
 
         // handle then the tags
-        const matchesTag = tag === '' || item.tags.includes(tag);
+        const matchesTag = tag === "" || item.tags.includes(tag);
 
         return matchesSearchQuery && matchesTag;
-      })
+      }),
     );
   }, [searchQuery, tag, data]);
 
   return (
     <>
-      {loading && <div className="text-center text-2xl font-bold">Loading...</div>}
+      {loading && (
+        <div className="text-center text-2xl font-bold">Loading...</div>
+      )}
       {error && <div className="text-center text-2xl font-bold">{error}</div>}
       {!loading && !error && (
         <>
           {/* tool bar */}
-          <div className="p-4 grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-8 p-4">
             <input
               type="text"
               placeholder="Search"
-              className="w-full h-full border-black border-2 p-4"
+              className="h-full w-full border-2 border-black p-4"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div className="w-full h-full grid grid-cols-[90%_10%] justify-between border-black border-2 p-4">
+            <div className="grid h-full w-full grid-cols-[90%_10%] justify-between border-2 border-black p-4">
               <select
-                className="w-full h-full px-2"
-                style={{ appearance: 'none' }}
+                className="h-full w-full px-2"
+                style={{ appearance: "none" }}
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
               >
                 <option value="">All Tags</option>
-                {allTags.map((tag, index) => (
+                {allTags?.map((tag, index) => (
                   <option value={tag} key={index}>
                     {tag}
                   </option>
                 ))}
               </select>
               {/* dropdown icon */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 place-self-center"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="black"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 place-self-center"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="black"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </div>
           </div>
           {/* body */}
-          <div className="grid grid-cols-3 grid-rows-auto gap-8 p-8">
-            {filteredData.map((Museum, index) => (
-              <MuseumCard Museum={Museum} key={index} onCardClick={() => handleCardClick(Museum)} />
+          <div className="grid-rows-auto grid grid-cols-3 gap-8 p-8">
+            {filteredData?.map((Museum, index) => (
+              <MuseumCard
+                Museum={Museum}
+                key={index}
+                onCardClick={() => handleCardClick(Museum)}
+              />
             ))}
           </div>
           {/* modal */}
-          {selectedMuseum && <MuseumModal Museum={selectedMuseum} onClose={handleCloseModal} />}
+          {selectedMuseum && (
+            <MuseumModal Museum={selectedMuseum} onClose={handleCloseModal} />
+          )}
         </>
       )}
     </>
