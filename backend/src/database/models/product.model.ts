@@ -44,6 +44,10 @@ const productSchema = new Schema(
     sales: {
       type: Number,
     },
+    archive: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

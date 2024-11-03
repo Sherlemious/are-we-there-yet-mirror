@@ -15,4 +15,5 @@ export interface ProductType {
   createdAt?: Date;
   updatedAt?: Date;
   sales?: number;
+  archive: boolean;
 }

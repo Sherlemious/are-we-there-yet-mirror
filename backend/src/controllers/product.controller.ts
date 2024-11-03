@@ -258,6 +258,17 @@ async function buyProduct(req: Request, res: Response) {
   }
 }
 
+async function archiveProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    await productRepo.archiveProduct(productId);
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product archived successfully', data: { productId } });
+  } catch (error: any) {
+    logger.error(`Error archiving product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
 export {
   findProductById,
   createProduct,
@@ -271,4 +282,5 @@ export {
   deleteProductReview,
   getAvailableQuantityAndSales,
   buyProduct,
+  archiveProduct,
 };

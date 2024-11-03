@@ -83,5 +83,10 @@ class ProductRepo {
       }
     );
   }
+
+  async archiveProduct(productId: string) {
+    return await Product.updateOne({ _id: new ObjectId(productId) }, { archive: true });
+  }
+  
 }
 export default new ProductRepo();
