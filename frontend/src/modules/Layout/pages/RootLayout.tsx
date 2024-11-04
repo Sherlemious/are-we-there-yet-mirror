@@ -7,11 +7,18 @@ import { ApiResponse } from "../../shared/types/Response.types";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../shared/store/user-context";
 
+import { imgLinks } from "../../shared/utils/constants";
+import NavigationBar from "@/modules/LandingPage/components/NavigationBar";
+
 export default function RootLayout() {
   const userData = useLoaderData() as UserType;
   const { setUser } = useContext(UserContext);
+
   const [isMounted, setIsMounted] = useState(false);
   const navigate = useNavigate();
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const imgs = Object.values(imgLinks.landing_page);
 
   useEffect(() => {
     setIsMounted(true);
@@ -22,6 +29,14 @@ export default function RootLayout() {
   }, [navigate]);
 
   useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imgs.length);
+    }, 4000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
     if (userData) setUser(userData);
     else navigate("/register");
   }, [userData, setUser]);
@@ -29,9 +44,31 @@ export default function RootLayout() {
   if (!isMounted) return null;
 
   return (
-    <main>
-      <Outlet />
-    </main>
+    <div className="h-full">
+      <div className="absolute inset-0 -z-50">
+        {imgs.map((image, index) => (
+          <div
+            key={image}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              currentImageIndex === index ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              backgroundImage: `url(${image})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              filter: "blur(8px)",
+            }}
+          />
+        ))}
+        <div className="absolute inset-0 bg-black opacity-50" />
+      </div>
+
+      <NavigationBar fontColor={"text-black"} />
+
+      <main>
+        <Outlet />
+      </main>
+    </div>
   );
 }
 
