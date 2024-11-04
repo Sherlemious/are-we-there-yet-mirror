@@ -102,15 +102,14 @@ const ShareLink = forwardRef<ShareLinkRef, ShareLinkProps>(({ link }, ref) => {
             Outlook
           </button>
         </div>
+        <span
+          onClick={handleCancel}
+          className="absolute top-0 right-2 cursor-pointer text-gray-500 hover:text-red-600 transition-colors p-1"
+          title="Close"
+        >
+          &#10005; {/* HTML entity for multiplication symbol as close icon */}
+        </span>
       </div>
-        <div className="flex justify-end w-full "> {/* Container for the exit button */}
-          <button
-            onClick={handleCancel}
-            className="rounded-lg px-3 py-3 font-bold text-accent-dark-blue transition-colors hover:bg-secondary-light_grey"
-          >
-            Exit
-          </button>
-        </div>
     </Modal>
   );
 });
