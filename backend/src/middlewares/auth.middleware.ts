@@ -50,7 +50,7 @@ const openPaths = [
 ];
 
 const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
-  if (openPaths.some((path) => req.path.startsWith(path))) {
+  if (openPaths.includes(req.path)) {
     return next();
   }
   return authenticateToken(req, res, next);
