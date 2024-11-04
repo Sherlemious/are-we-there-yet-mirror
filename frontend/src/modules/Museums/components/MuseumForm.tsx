@@ -5,6 +5,16 @@ import { Museum } from "../types/museum";
 import Map, { Location } from "../../shared/components/Map";
 import SearchMultiSelect from '../../shared/components/SearchMultiSelect';
 import axiosInstance from "../../shared/services/axiosInstance";
+import {
+  Building,
+  DollarSign,
+  ClipboardList,
+  MapPin,
+  ImagePlus,
+  Clock,
+  List,
+  Tag,
+} from "lucide-react";
 
 interface MuseumFormProps {
   onSubmit?: (museumData: MuseumFormData) => void;
@@ -13,7 +23,19 @@ interface MuseumFormProps {
   addModalRef: React.RefObject<ModalRef>;
   initialData?: MuseumFormData;
 }
-
+const InputWrapper: React.FC<{
+  children: React.ReactNode;
+  icon: React.ReactNode;
+  label: string;
+}> = ({ children, icon, label }) => (
+  <div className="mb-6">
+    <label className="mb-2 flex items-center gap-2 font-sub_headings text-accent-dark-blue">
+      {icon}
+      {label}
+    </label>
+    {children}
+  </div>
+);
 export interface MuseumFormData {
   name: string;
   description: string;
@@ -222,20 +244,40 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
 
   const handleDeletePicture = (index: number) => {
     console.log(index + " " + pictures.length);
-    if (pictures.length > 0) {
-      setImageIndex(index >= pictures.length ? pictures.length - 1 : index); // Adjust imageIndex if necessary
-      setImagePreview(
-        pictures[index > pictures.length ? pictures.length - 1 : index],
-      ); // Update preview
+    
+    // Ensure the index is valid before attempting to delete
+    if (index >= 0 && index < pictures.length) {
+      // Remove the picture from the pictures array
+      const updatedPictures = pictures.filter((_, i) => i !== index);
+  
+      // Also update the uploaded array if necessary
+      // If the picture URL corresponds to an uploaded file, remove it from the uploaded array
+      const deletedPictureUrl = pictures[index];
+      const updatedUploaded = uploaded.filter((file, i) => {
+        // Compare the file's object URL to determine if it's the same as the one being deleted
+        const fileUrl = URL.createObjectURL(file);
+        return fileUrl !== deletedPictureUrl; // Keep files that don't match the deleted picture
+      });
+  
+      // Update the states
+      setPictures(updatedPictures);
+      setUploaded(updatedUploaded);
+  
+      // Adjust imageIndex if necessary
+      const newIndex = index === pictures.length - 1 ? index - 1 : index;
+      setImageIndex(newIndex >= updatedPictures.length ? updatedPictures.length - 1 : newIndex);
+  
+      // Update image preview
+      setImagePreview(updatedPictures.length > 0 ? updatedPictures[newIndex] : undefined);
     } else {
+      // If the index is invalid, reset image preview and index
       setImagePreview(undefined);
       setImageIndex(0);
     }
-    setPictures((prevPictures) => prevPictures.filter((_, i) => i !== index));
+  
     console.log(index + " " + pictures.length);
   };
-
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const ids = [];
@@ -297,6 +339,11 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
     });
     setImagePreview(pictures[imageIndex]); // Update the preview with the selected image
   };
+  useEffect(() => {
+    if (imageIndex >= 0 && imageIndex < pictures.length) {
+      setImagePreview(pictures[imageIndex]);
+    }
+  }, [imageIndex, pictures]);
   // const resetForm = () => {
   //   setFormData({
   //     name: '',
@@ -334,115 +381,126 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       <div className="col-span-1 grid grid-cols-2 gap-4">
         {/* Name (Full width) */}
         <div className="col-span-2">
-          <label htmlFor="name" className="mb-2 block text-input_or_label text-text-primary">
-            Museum Name
-          </label>
+        <InputWrapper icon={<Building size={20} />} label="Museum Name">
           <input
             type="text"
             name="name"
             value={formData.name}
+            required
             onChange={handleInputChange}
             placeholder="Museum Name"
-            className={styles.inputClass}
+            className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
           />
+          </InputWrapper>
+
         </div>
 
         {/* Description (Full width) */}
         <div className="col-span-2">
-          <label htmlFor="description" className="mb-2 block text-input_or_label text-text-primary">
-            Description
-          </label>
+        <InputWrapper icon={<ClipboardList size={20} />} label="Description">
           <textarea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
             placeholder="Description"
-            className={`${styles.inputClass} h-24 text-text-primary`} // Increase height for textarea
+            className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20 h-24 text-text-primary" // Increase height for textarea
           />
+        </InputWrapper>
         </div>
 
         {/* Category and Location (Side by side) */}
         <div className="col-span-1">
-          <label htmlFor="category" className="mb-2 block text-input_or_label text-text-primary">
-            Category
-          </label>
+        <InputWrapper icon={<List size={20} />} label="Category">
           <input
             type="text"
             name="category"
             value={formData.category}
+            required
             onChange={handleInputChange}
             placeholder="Category"
-            className={styles.inputClass}
-          />
+            className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+            />
+        </InputWrapper>
         </div>
 
         {/* Opening Hours (Full width) */}
         <div className="col-span-1">
-          <label htmlFor="opening_hours" className="mb-2 block text-input_or_label text-text-primary">
-            Opening Hours
-          </label>
+        <InputWrapper icon={<Clock size={20} />} label="Opening Hours">
           <input
             type="text"
             name="opening_hours"
             value={formData.opening_hours}
             onChange={handleInputChange}
             placeholder="Opening Hours"
-            className={styles.inputClass}
-          />
+            className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+            />
+        </InputWrapper>
         </div>
 
         {/* Ticket Prices (Side by side) */}
         <div className="col-span-1">
-          <label htmlFor="price-foreigner" className="mb-2 block text-input_or_label text-text-primary">
-            Ticket Price (Foreigner)
-          </label>
+        <InputWrapper icon={<DollarSign size={20} />} label="Foreigner Price">
+        <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  $
+                </span>
           <input
             type="number"
             name="foreigner"
             value={formData.ticket_prices.foreigner}
             onChange={handlePriceChange}
             placeholder="Price for Foreigners"
-            className={styles.inputClass}
-          />
+            className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey py-3 pl-8 pr-4 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+            />
         </div>
+        </InputWrapper>
+        </div>
+
         <div className="col-span-1">
-          <label htmlFor="price-native" className="mb-2 block text-input_or_label text-text-primary">
-            Ticket Price (Native)
-          </label>
+        <InputWrapper icon={<DollarSign size={20} />} label="Native Price">
+        <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  $
+                </span>
           <input
             type="number"
             name="native"
             value={formData.ticket_prices.native}
             onChange={handlePriceChange}
             placeholder="Price for Natives"
-            className={styles.inputClass}
-          />
+            className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey py-3 pl-8 pr-4 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+            />
+        </div>
+        </InputWrapper>
         </div>
         <div className="col-span-1">
-          <label htmlFor="price-student" className="mb-2 block text-input_or_label text-text-primary">
-            Ticket Price (Student)
-          </label>
+        <InputWrapper icon={<DollarSign size={20} />} label="Student Price">
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+            $
+          </span>
           <input
             type="number"
             name="student"
             value={formData.ticket_prices.student}
             onChange={handlePriceChange}
             placeholder="Price for Students"
-            className={styles.inputClass}
-          />
+            className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey py-3 pl-8 pr-4 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+            />
+        </div>
+        </InputWrapper>
         </div>
         <div className="col-span-1">
-          <label htmlFor="location" className="mb-2 block text-input_or_label text-text-primary">
-            Location
-          </label>
+        <InputWrapper icon={<MapPin size={20} />} label="Location">
           <input
             type="text"
             name="location"
             value={formData.location.name}
             onChange={handleInputChange}
             placeholder="Location"
-            className={styles.inputClass}
-          />
+            className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+            />
+        </InputWrapper>
         </div>
         <div className="col-span-2 h-96">
           {/* Ensure the map has a fixed height */}
@@ -460,10 +518,17 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
         {/* Centering the column */}
         {/* Picture Upload */}
         <div>
-  <label htmlFor="pictures" className="mb-2 block text-input_or_label text-text-primary">
-    Upload Pictures
-  </label>
-
+  <InputWrapper icon={<ImagePlus size={20} />} label="Museum Images">
+  {pictures.length === 0 || !imagePreview ? (
+    <div className="rounded-lg border-2 border-dashed border-borders-primary bg-secondary-light_grey p-6 text-center mb-2">
+    <>
+      <ImagePlus className="mx-auto mb-2 text-primary-blue" size={32} />
+      <p className="text-gray-500">
+        Drag and drop your images here or click to browse
+      </p>
+    </>
+    </div>
+  ) : (
   <div className="relative mb-2">
     <img
       src={
@@ -504,6 +569,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       </>
     )}
   </div>
+    )}
 
   <input
     type="file"
@@ -511,12 +577,13 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
     onChange={handleFileChange}
     className={styles.inputClass}
     ref={fileInputRef}
+    accept="image/*"
   />
+</InputWrapper>
 </div>
-
         
-    <h3 className="mb-2 mt-2 text-input_or_label text-text-primary">Tags</h3>
-        <div className="mt-2">
+        <InputWrapper icon={<Tag size={20} />} label="Tags">
+          <div className="mt-2">
             <SearchMultiSelect
               options={availableTags.map((tag) => ({
                 value: tag._id, // Unique identifier
@@ -541,13 +608,23 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
                 tags: prevData.tags.filter((tag) => tag !== item.value), // Remove tag
                 }));
                 }}
-          />
+                />
         </div>
+      </InputWrapper>
 
       </div>
       <div className="col-span-2 flex justify-end">
-        <button type="submit" className={`${styles.button} w-1/4 p-4`}>
-          {initialData?.name ? "Update" : "Submit"}
+      <button
+            type="button"
+            onClick={() => addModalRef.current?.close()}
+            className="mr-4 rounded-lg px-6 py-3 font-bold text-accent-dark-blue transition-colors hover:bg-secondary-light_grey"
+          >
+            Cancel
+          </button>
+        <button type="submit" className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+        >
+          <Building size={20} />
+          {initialData?.name ? "Update Museum" : "Add New Museum"}
         </button>
       </div>
       {/* Submit Button (Full width) */}

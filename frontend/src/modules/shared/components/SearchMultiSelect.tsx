@@ -36,7 +36,7 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
   }, [distinctOptions, searchTerm, selectedItems]);
 
   return (
-    <div className="border border-borders-primary rounded-md p-4 w-full max-w-md relative">
+    <div className="bg-[#F4F4F4] border border-borders-primary rounded-md p-4 w-full max-w-md relative">
       <div className="flex items-start mb-2">
         {/* Selected Items */}
         <div className="flex flex-wrap mr-2">
