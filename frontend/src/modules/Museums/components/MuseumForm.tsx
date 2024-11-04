@@ -15,6 +15,7 @@ import {
   List,
   Tag,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface MuseumFormProps {
   onSubmit?: (museumData: MuseumFormData) => void;
@@ -280,55 +281,61 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const loadingToastId = toast.loading("Processing..."); // Show loading toast
     const ids = [];
-    for (let i = 0; i < uploaded.length; i++) {
-      const formData = new FormData();
-      formData.append("file", uploaded[i]);
-      console.log(formData);
-      console.log(uploaded[i]);
-      const response = await axiosInstance.post(
-        `/attachments`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
-      );
-      ids.push(response.data._id);
-    }
-    for(let i=0; i<fetched.length;i++){
-      if (pictures.includes(fetched[i].url)) {
-        ids.push(fetched[i]._id); // Only push the ID if it is not present in pictures
-    }
-    }
-    // for (let i = 0; i < formData.tags.length; i++) {
-    //   if (availableTags.find((tag) => tag.name === formData.tags[i])) {
-    //     formData.tags[i] =
-    //       availableTags.find((tag) => tag.name === formData.tags[i])?._id || "";
-    //   }
-    // }
-    console.log(ids);
-    console.log(formData.tags);
-    const formDataWithAttachments = { ...formData, pictures: ids };
-    if (onSubmit) {
-      onSubmit(formDataWithAttachments);
-    }
-    if (onUpdate) {
-      const museum: Museum = {
-        _id: selectedMuseum?._id || "",
-        name: formData.name,
-        description: formData.description,
-        category: formData.category,
-        tags: formData.tags,
-        pictures: ids,
-        location: formData.location,
-        opening_hours: formData.opening_hours,
-        ticket_prices: formData.ticket_prices,
-      };
-      onUpdate(museum);
-    }
     addModalRef.current?.close();
+  
+    try {
+        for (let i = 0; i < uploaded.length; i++) {
+        const formData = new FormData();
+        formData.append("file", uploaded[i]);
+        const response = await axiosInstance.post(
+          `/attachments`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        ids.push(response.data._id);
+      }
+  
+      // Collect fetched picture IDs
+      for (let i = 0; i < fetched.length; i++) {
+        if (pictures.includes(fetched[i].url)) {
+          ids.push(fetched[i]._id);
+        }
+      }
+  
+      const formDataWithAttachments = { ...formData, pictures: ids };
+  
+      // Handle submission
+      if (onSubmit) {
+        await onSubmit(formDataWithAttachments); // Await onSubmit
+        toast.success("Museum added successfully!", { id: loadingToastId }); // Success toast
+      }
+  
+      // Handle update
+      if (onUpdate) {
+        const museum: Museum = {
+          _id: selectedMuseum?._id || "",
+          name: formData.name,
+          description: formData.description,
+          category: formData.category,
+          tags: formData.tags,
+          pictures: ids,
+          location: formData.location,
+          opening_hours: formData.opening_hours,
+          ticket_prices: formData.ticket_prices,
+        };
+        await onUpdate(museum); // Await onUpdate
+        toast.success("Museum updated successfully!", { id: loadingToastId }); // Success toast
+      }
+    } catch (error) {
+      toast.error("An error occurred while processing your request.", { id: loadingToastId }); // Error toast
+      console.error(error);
+    }
   };
-
+  
   const handleImageToggle = (direction: "next" | "prev") => {
     setImageIndex((prevIndex) => {
       if (direction === "next") {
@@ -402,6 +409,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
             name="description"
             value={formData.description}
             onChange={handleInputChange}
+            required
             placeholder="Description"
             className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20 h-24 text-text-primary" // Increase height for textarea
           />
@@ -430,6 +438,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
             type="text"
             name="opening_hours"
             value={formData.opening_hours}
+            required
             onChange={handleInputChange}
             placeholder="Opening Hours"
             className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
@@ -496,6 +505,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
             type="text"
             name="location"
             value={formData.location.name}
+            required
             onChange={handleInputChange}
             placeholder="Location"
             className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"

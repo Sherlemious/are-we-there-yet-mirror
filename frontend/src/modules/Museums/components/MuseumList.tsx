@@ -7,6 +7,7 @@ import MuseumForm, {MuseumFormData} from './MuseumForm';
 import defaultPhoto from '../assets/defaultPhoto.png';
 import axiosInstance from '../../shared/services/axiosInstance';
 import GenericCard from '../../shared/GenericCard/GenericCard';
+import toast from 'react-hot-toast';
 
 
 interface MuseumListProps {
@@ -76,6 +77,7 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
                 onRemove={(id) => {
                   if (onDelete) {
                     onDelete(id); // Call delete function with the museum ID
+                    toast.success('Museum deleted successfully!');
                   }
                 }}
               >
