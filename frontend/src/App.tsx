@@ -1,4 +1,9 @@
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
 import {
   ErrorPage,
   NotFoundPage,
@@ -28,18 +33,68 @@ import {
   action as activityFormAction,
 } from "./modules/Activity/component/ActivityForm";
 import { Activity, ActivityForm, EditActivity } from "./modules/Activity/App";
-import UserContextProvider from "./modules/shared/store/user-context";
+import UserContextProvider, {
+  UserContext,
+} from "./modules/shared/store/user-context";
 import { RouteGuard } from "./modules/shared/components/RouteGuard";
 import { AccountType } from "./modules/shared/types/User.types";
 import { LandingPage } from "./modules/LandingPage/App";
 import Register from "./modules/Register/pages/Register";
 import { registerAction, registerLoader } from "./modules/Register/App";
+import { useContext } from "react";
+import axiosInstance from "./modules/shared/services/axiosInstance";
+
+const Login = () => {
+  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        const email = (e.target as any).elements[0].value;
+        const password = (e.target as any).elements[1].value;
+        axiosInstance
+          .post("/auth/login", { email, password })
+          .then((res) => {
+            const data = res.data as any;
+            localStorage.setItem("token", data.data.jwt);
+            setUser(data.data.user);
+            navigate("/home");
+          })
+          .catch((err) => console.log(err));
+      }}
+      className="container mx-auto mt-9 space-y-4 bg-secondary-white"
+    >
+      <input
+        type="email"
+        placeholder="Email"
+        className="w-full rounded-lg border p-3"
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        className="w-full rounded-lg border p-3"
+      />
+      <button
+        type="submit"
+        className="w-full rounded-full border bg-accent-dark-blue p-2 text-white"
+      >
+        Login
+      </button>
+    </form>
+  );
+};
 
 const BrowserRouter = createBrowserRouter([
   {
-    path: "/home",
+    path: "/",
     index: true,
     element: <LandingPage />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
   {
     path: "/register",
@@ -48,14 +103,14 @@ const BrowserRouter = createBrowserRouter([
     loader: registerLoader,
   },
   {
-    path: "/",
+    path: "/home",
     id: "root",
     element: <RootLayout />,
     errorElement: <ErrorPage />,
     loader: rootLayoutLoader,
     children: [
       {
-        path: "/tour-guide-profile/:id",
+        path: "tour-guide-profile/:id",
         // element: <TourGuideProfile />,
         element: (
           <RouteGuard account_types={[AccountType.TourGuide]}>
@@ -64,25 +119,25 @@ const BrowserRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/advertiser-profile/:id",
+        path: "advertiser-profile/:id",
         // element: <AdvertiserProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Advertiser]}>
-            <AdvertiserProfile />
+            <AdvertiserProfile />,
           </RouteGuard>
         ),
       },
       {
-        path: "/seller-profile/:id",
+        path: "seller-profile/:id",
         // element: <SellerProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Seller]}>
-            <SellerProfile />
+            <SellerProfile />,
           </RouteGuard>
         ),
       },
       {
-        path: "/tourist-profile/:id",
+        path: "tourist-profile/:id",
         // element: <TouristProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Tourist]}>
@@ -92,29 +147,48 @@ const BrowserRouter = createBrowserRouter([
         loader: touristProfileLoader,
       },
       {
-        path: "/myproducts-admin",
-        element: <AdminProducts />,
-        children: [],
-      },
-      {
-        path: "/all-products",
-        element: <AllProducts />,
-        children: [],
-      },
-      {
-        path: "/myproducts-seller",
+        path: "my-products-seller",
         element: <SellerProducts />,
-        children: [],
       },
       {
-        path: "/AdminDashboard",
+        path: "all-products",
+        element: <AllProducts />,
+      },
+      {
+        path: "admin-dashboard",
         element: <AdminDashboard />,
+        children: [
+          {
+            path: "tag",
+            element: <Tag />,
+          },
+          {
+            path: "prefrence-tag",
+            element: <PrefrenceTag />,
+          },
+          {
+            path: "activity-category",
+            element: <Category />,
+          },
+          {
+            path: "my-products-admin",
+            element: <AdminProducts />,
+          },
+        ],
       },
       {
-        path: "/activity",
+        path: "crud-users-assets",
+        element: <CrudUserAssets />,
+      },
+      {
+        path: "my-museums",
+        element: <AllMuseums />,
+      },
+      {
+        path: "activity",
         element: (
           <RouteGuard account_types={[AccountType.Advertiser]}>
-            <Outlet />
+            <Outlet />,
           </RouteGuard>
         ),
         children: [
@@ -137,31 +211,11 @@ const BrowserRouter = createBrowserRouter([
           },
         ],
       },
-      {
-        path: "/Tag",
-        element: <Tag />,
-      },
-      {
-        path: "/PrefrenceTag",
-        element: <PrefrenceTag />,
-      },
-      {
-        path: "/ActivityCategory",
-        element: <Category />,
-      },
-      {
-        path: "/users-assets",
-        element: <UsersAssets />,
-      },
-      {
-        path: "/crud-users-assets",
-        element: <CrudUserAssets />,
-      },
-      {
-        path: "/all-museums",
-        element: <AllMuseums />,
-      },
     ],
+  },
+  {
+    path: "users-assets",
+    element: <UsersAssets />,
   },
   {
     path: "*",

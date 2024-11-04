@@ -6,7 +6,7 @@ export default function NameAndDescription({
   fontColor: string;
 }) {
   return (
-    <div className="flex w-[75%] flex-col items-center pl-24">
+    <div className="flex w-[75%] h-fitp-4 mx-12 flex-col items-center">
       <motion.h1
         className={`text-8xl font-headline ${fontColor} relative tracking-tight`}
         initial={{ opacity: 0, y: 20 }}

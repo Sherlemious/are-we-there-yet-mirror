@@ -19,11 +19,11 @@ export default function LandingPage() {
   }, [imgIndex]);
 
   return (
-    <motion.div className="h-auto">
+    <motion.div className="h-full">
       <AnimatePresence initial={false}>
         <motion.div
           key={imgIndex}
-          className="absolute -z-10 h-screen w-screen"
+          className="absolute -z-10 h-full w-screen"
           initial={{ opacity: 0.3 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

@@ -58,11 +58,12 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
   };
 
   const handleMouseLeave = () => {
+    setIndicatorStyle({});
     setHoveredIndex(-1);
   };
 
   return (
-    <div className="flex items-center pb-20 pt-7">
+    <div className="z-10 flex items-center bg-secondary-light_grey/50 py-7">
       <div className="flex w-full justify-center">
         <nav ref={navRef} className="relative ml-52 flex w-1/2 justify-around">
           {/* Animated underline indicator */}
@@ -73,7 +74,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
 
           <NavLink
             ref={(el) => (linkRefs.current[0] = el!)}
-            to="/home"
+            to={user.account_type === AccountType.None ? "/" : "/home"}
             className={(props) => handleStyles(props)}
             onMouseEnter={() => handleMouseEnter(0)}
             onMouseLeave={handleMouseLeave}
@@ -107,6 +108,17 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
           >
             Itineraries
           </NavLink>
+          {user.account_type !== AccountType.None && (
+            <NavLink
+              ref={(el) => (linkRefs.current[4] = el!)}
+              to="/products"
+              className={(props) => handleStyles(props)}
+              onMouseEnter={() => handleMouseEnter(4)}
+              onMouseLeave={handleMouseLeave}
+            >
+              Products
+            </NavLink>
+          )}
         </nav>
       </div>
       <div className="flex w-[15%] items-center gap-7">
@@ -114,23 +126,29 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
           <UserCog
             onClick={() => {
               if (user.account_type === AccountType.TourGuide) {
-                return navigate(`/tour-guide-profile/${user._id}`);
+                return navigate(`/home/tour-guide-profile/${user._id}`);
+              }
+
+              if (user.account_type === AccountType.Admin) {
+                return navigate('/home/admin-dashboard');
               }
 
               return navigate(
-                `/${user.account_type.toLowerCase()}-profile/${user._id}`,
+                `/home/${user.account_type.toLowerCase()}-profile/${user._id}`,
               );
             }}
             size={45}
             className="rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-80"
           />
         )}
-        <Button
-          onClick={() => navigate("/register")}
-          className="min-w-fit rounded-2xl bg-accent-gold p-2 text-body text-black transition-all duration-150 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Register Now
-        </Button>
+        {user.account_type === AccountType.None && (
+          <Button
+            onClick={() => navigate("/register")}
+            className="min-w-fit rounded-2xl bg-accent-gold p-2 text-body text-black transition-all duration-150 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Register Now
+          </Button>
+        )}
       </div>
     </div>
   );
