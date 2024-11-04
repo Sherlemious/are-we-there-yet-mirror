@@ -34,7 +34,7 @@ const Modal = forwardRef(function Modal(
     <dialog
       ref={dialog}
       onClose={onClose}
-      className="backdrop:bg-base-black/15 w-2/3 rounded-lg p-12 shadow-md outline-none"
+      className="backdrop:bg-base-black/15 w-1/2 rounded-lg p-12 shadow-md outline-none"
     >
       <div className="border-system-neutral-3 flex border-b py-6">
         <h1 className="flex-grow text-xl font-semibold">{title}</h1>
