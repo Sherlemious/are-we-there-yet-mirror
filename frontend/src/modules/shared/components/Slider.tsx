@@ -8,8 +8,8 @@ import {
   ChevronsLeft,
 } from "lucide-react";
 import Button from "./Button";
-import axios from "axios";
 import toast from "react-hot-toast";
+import axiosInstance from "../services/axiosInstance";
 
 const customStyles = {
   container: "h-auto w-full border-2 border-gray-300 pr-14 pt-14 pl-20 pb-14",
@@ -100,10 +100,7 @@ const Slider = ({
       const updatedList = list.filter((_, i) => i !== index);
       const updateData = { [updateProp]: updatedList };
 
-      const resPromise = axios.patch(
-        `https://are-we-there-yet-mirror.onrender.com/api/users/${id}`,
-        updateData,
-      );
+      const resPromise = axiosInstance.patch(`/users/${id}`, updateData);
 
       toast.promise(
         resPromise,
@@ -173,10 +170,7 @@ const Slider = ({
       const updatedList = [...list, newItemText];
       const updateData = { [updateProp]: updatedList };
 
-      const resPromise = axios.patch(
-        `https://are-we-there-yet-mirror.onrender.com/api/users/${id}`,
-        updateData,
-      );
+      const resPromise = axiosInstance.patch(`users/${id}`, updateData);
 
       toast.promise(
         resPromise,
