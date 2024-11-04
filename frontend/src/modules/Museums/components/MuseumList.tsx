@@ -83,8 +83,7 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
                  <div className={customStyles.infoRow}>
                   <Clock size={20} className={customStyles.icon} />
                   <p className={customStyles.slideText}>{museum.opening_hours}</p>
-                </div>
-                
+                </div>                
                 
                 <div className={customStyles.ticketPrices}>
                 <p className={`${customStyles.slideText} font-bold text-accent-dark-blue text-center flex items-center justify-center`}>
@@ -104,32 +103,15 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
                         <p className={customStyles.slideText2}>${museum.ticket_prices.student}</p>
                         </div>
                       </div>
-
                 <div className={`${customStyles.infoRow} mt-2`}>
                   <MapPin size={50} className={customStyles.icon} />
                   <p className={customStyles.slideText}>{museum.location.name}</p>
                 </div>
                 </div>
-
-
               </GenericCard>
-              
-                  {/* Tags
-                  <p className={customStyles.slideText}>Tags:</p>
-                  {museum.tags.map((tag, i) => (
-                    <div key={i} className={customStyles.tagContainer}>
-                      <p className={`${customStyles.slideText} font-bold`}><span className="font-normal">{tag}</span></p>
-                    </div>
-                  ))}
-                  <p className={`${customStyles.slideText} font-bold`}>Opening Hours: <span className="font-normal">{museum.opening_hours}</span></p>
-                  <p className={`${customStyles.slideText} font-bold`}>Location: <span className="font-normal">{museum.location.name}</span></p>
-                  <p className={`${customStyles.slideText} font-bold`}>Ticket Prices:</p>
-                  <p className={customStyles.slideText}>Foreigner: {museum.ticket_prices.foreigner}</p>
-                  <p className={customStyles.slideText}>Native: {museum.ticket_prices.native}</p>
-                  <p className={customStyles.slideText}>Student: {museum.ticket_prices.student}</p> */}
+ 
               </div>
             ))}
-
             {/* Plus Button to Add New Museum */}
             <div className={customStyles.slide}>
                 <div onClick={() => AddmodalRef.current?.open()} className={customStyles.addSlideDiv}>
@@ -167,8 +149,6 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
           </div>
         )}
       </Modal>
-      
-
       <Modal ref={AddmodalRef} title="Add New Museum">
         <div>
           <MuseumForm addModalRef={AddmodalRef} onSubmit= {onCreate} />
@@ -179,22 +159,14 @@ const MuseumList: React.FC<MuseumListProps> = ({ museums, role, onCreate, onEdit
 };
 
 const customStyles = {
-  container: "h-auto max-h-[85vh] bg-secondary-white max-w-fit border-2 border-gray-300 pr-14 pt-4 pl-20 pb-10 mx-auto",
+  container: "h-auto max-h-[100vh] bg-secondary-white max-w-fit border-2 border-gray-300 pr-2 pt-4 pl-10 pb-10 mx-auto",
   sliderContainer: "relative",
   sliderContent: "overflow-hidden",
-  sliderWrapper: "grid grid-cols-3 gap-12 max-h-[65vh] overflow-y-auto pr-5", // Set a max height and make it scrollable
-  slide: "w-[22%] h-[100%] flex-shrink-0 px-2 transition-all duration-600 m-6",
-  slideContent: "h-[50vh] w-[35vh] overflow-auto border-2 border-gray-300 bg-white p-6 relative cursor-pointer",
-  slideTitle: "mb-2 font-bold",
+  sliderWrapper: "grid grid-cols-3 gap-12 max-h-[70vh] overflow-y-auto pr-6 pt-2", // Set a max height and make it scrollable
   slideText: "text-sm mt-1",
-  removeButton: 'absolute group top-1 right-1 z-2 rounded-full border border-gray-500 bg-background-button p-1 hover:bg-accent-gold focus:outline-none duration-150',
+  slide: "w-[50%] h-[100%] flex-shrink-0 px-2 transition-all duration-600 m-6",
   addSlideDiv: "flex items-center justify-center h-[50vh] w-[35vh] border-2 border-dashed border-gray-300 bg-white cursor-pointer hover:bg-gray-50",
   addSlideIcon: "text-gray-400 w-16 h-16",
-  imageContainer: 'w-full h-[150px] overflow-hidden mb-4', // Container for image with set height
-  image: 'w-full h-full object-cover', // Image should cover the container without distortion
-  tagContainer: 'flex flex-col gap-2 mt-2',
-  editButton: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
-  editSection: 'mt-4',
   infoRow: "flex items-center justify-center mb-2", // Center align info rows
   ticketPrices: "text-center mt-2",
   ticketRow: "flex justify-between", // Flex container for the ticket row
