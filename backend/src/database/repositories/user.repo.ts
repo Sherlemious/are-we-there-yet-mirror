@@ -6,7 +6,7 @@ import { get } from 'http';
 
 class UserRepository {
   async getUsers() {
-    return await User.find();
+    return await User.find().populate(['attachments']);
   }
 
   async findUserById(id: string): Promise<UserType | null> {
