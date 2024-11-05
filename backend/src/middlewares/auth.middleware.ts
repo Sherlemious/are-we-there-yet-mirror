@@ -47,6 +47,7 @@ const openPaths = [
   '/api/itineraries/get',
   '/api/museums/getall',
   '/api/activities',
+  '/api/attachments',
 ];
 
 const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
