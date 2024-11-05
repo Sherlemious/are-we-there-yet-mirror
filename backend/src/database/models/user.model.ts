@@ -82,6 +82,9 @@ const userSchema = new mongoose.Schema(
     average_rating: {
       type: Number,
     },
+    itinerary_bookings: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'booking' }],
+    },
     modified_by: {
       type: Schema.Types.ObjectId,
       ref: 'user',

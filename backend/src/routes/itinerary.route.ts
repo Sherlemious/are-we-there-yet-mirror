@@ -10,8 +10,11 @@ import {
   toggleItineraryActive,
   flagItinerary,
 } from '../controllers/itinerary.controller';
+import BookingController from '../controllers/booking.controller';
 
 const itineraryRouter = Router();
+
+itineraryRouter.post('/bookings', BookingController.bookItinerary);
 
 itineraryRouter.get('/get', getItineraries);
 itineraryRouter.get('/mine', getItinerariesCreatedByUser);

@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 export enum accountType {
   Admin = 'Admin',
   Tourist = 'Tourist',
@@ -35,4 +37,5 @@ export interface UserType {
   // Tourist
   loyalty_points: number;
   wallet?: number;
+  itinerary_bookings: [Types.ObjectId];
 }
