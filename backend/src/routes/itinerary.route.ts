@@ -9,6 +9,7 @@ import {
   getItinerariesCreatedByUser,
   toggleItineraryActive,
   flagItinerary,
+  getUserWhoCreatedItinerary,
 } from '../controllers/itinerary.controller';
 
 const itineraryRouter = Router();
@@ -23,5 +24,6 @@ itineraryRouter.get('/', filterItineraries);
 itineraryRouter.patch('/:id/activate', (req, res) => toggleItineraryActive(req, res, true));
 itineraryRouter.patch('/:id/deactivate', (req, res) => toggleItineraryActive(req, res, false));
 itineraryRouter.put('/flag/:id', flagItinerary);
+itineraryRouter.get('/creator/:id', getUserWhoCreatedItinerary);
 
 export default itineraryRouter;

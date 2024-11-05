@@ -45,6 +45,12 @@ class ItineraryRepo {
     Validator.validateId(id, 'Invalid itinerary ID');
     await Itinerary.findByIdAndUpdate(id, { active: active });
   }
+
+  async getUserWhoCreatedItinerary(id: string) {
+    Validator.validateId(id, 'Invalid itinerary ID');
+    const itinerary = await Itinerary.findById(id);
+    return itinerary?.created_by;
+  }
 }
 
 export default new ItineraryRepo();
