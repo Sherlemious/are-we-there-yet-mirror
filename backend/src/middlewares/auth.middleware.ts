@@ -41,7 +41,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const openPaths = ['/api/auth/register', '/api/auth/login'];
+const openPaths = ['/api/auth/register', '/api/auth/login', '/api/attachments'];
 
 const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
   if (openPaths.some((path) => req.path.startsWith(path))) {
