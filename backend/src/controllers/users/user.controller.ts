@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import userRepo from '../../database/repositories/user.repo';
 import { logger } from '../../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../../types/ResponseStatusCodes.types';
-import bcrypt from 'bcrypt';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -80,9 +79,6 @@ const findUserById = async (req: Request, res: Response) => {
 const updateUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    if (req.body.dob) {
-      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Cannot change dob' });
-    }
     const user = req.body;
     await userRepo.updateUser(userId, user);
     const response = {
@@ -114,41 +110,27 @@ const requestAccountDeletion = async (req: Request, res: Response) => {
 };
 
 const ChangeUserPassword = async (req: Request, res: Response) => {
-  const password = req.body.password;
-
-  // Check if password is provided
-  if (!password) {
-    res.status(400).json({ message: 'Password is required' });
-    return;
-  }
-
-  // Find the user by ID using repository
-  const user = await userRepo.findUserById(req.user.userId);
-  if (!user) {
-    res.status(404).json({ message: 'User not found' });
-    return;
-  }
-
   try {
-    // Hash the new password
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const password = req.body.password;
+    await userRepo.ChangeUserPassword(req.params.id, password);
+    const response = {
+      message: 'Password updated successfully',
+      data: { userId: req.params.id, password: password },
+    };
 
-    // Update the user's password in the database
-    await userRepo.ChangeUserPassword(user._id, hashedPassword);
-
-    res.status(200).json({ message: 'Password changed successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'An error occurred while changing the password' });
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error updating password: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
 };
 
 const acceptTerms = async (req: Request, res: Response) => {
   try {
-    await userRepo.acceptTerms(req.user.userId);
+    await userRepo.acceptTerms(req.params.id);
     const response = {
       message: 'Terms accepted successfully',
-      data: { userId: req.user.userId },
+      data: { userId: req.params.id },
     };
 
     res.status(ResponseStatusCodes.OK).json(response);
@@ -174,6 +156,36 @@ const rejectUser = async (req: Request, res: Response) => {
   }
 };
 
+const getItinerary = async (req: Request, res: Response) => {
+  try {
+    const itineraries = await userRepo.getItinerary(req.user.userId);
+    const response = {
+      message: 'Itineraries fetched successfully',
+      data: { itineraries: itineraries },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching itineraries: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const getActivity = async (req: Request, res: Response) => {
+  try {
+    const activities = await userRepo.getActivity(req.user.userId);
+    const response = {
+      message: 'Activities fetched successfully',
+      data: { activities: activities },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching activities: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 export {
   getUsers,
   deleteUser,
@@ -185,4 +197,6 @@ export {
   ChangeUserPassword,
   acceptTerms,
   rejectUser,
+  getItinerary,
+  getActivity,
 };
