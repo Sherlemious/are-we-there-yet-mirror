@@ -37,7 +37,7 @@ const ComplaintsTable: React.FC<ComplaintsTableProps> = ({
       header: "Status",
       accessor: "status",
       render: (status) => (
-        <span className={`px-2 py-1 rounded-full text-sm font-semibold ${status === "Pending" ? " bg-primary-green text-gray-900" : "bg-green-200 text-green-900"}`}>
+        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${status === "Pending" ? " bg-primary-green text-gray-900" : "bg-green-600 text-white"}`}>
           {status}
         </span>
       ),
