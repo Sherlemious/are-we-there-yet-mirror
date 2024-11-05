@@ -24,7 +24,7 @@ export interface UserType {
   nationality: string;
   rejected: boolean;
   termsAndConditions: boolean;
-
+  attachment: [Types.ObjectId];
   // Tour guide
   years_of_experience?: number;
   previous_work?: [string];
