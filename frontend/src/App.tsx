@@ -24,6 +24,9 @@ import { SellerProfile } from "./modules/Seller/App";
 import { TouristProfile, touristProfileLoader } from "./modules/Tourist/App";
 import { Toaster } from "react-hot-toast";
 import { UsersAssets } from "./modules/shared/pages/UsersAssets";
+import { MyActivities } from "./modules/shared/pages/MyActivities";
+import { MyItineraries } from "./modules/shared/pages/MyItineraries";
+import { MyMuseums } from "./modules/shared/pages/MyMuseums";
 import { UsersAssets as CrudUserAssets } from "./modules/TourGuide/pages/UsersAssets";
 import { AllMuseums } from "./modules/Museums/App";
 import { loader as activityLoader } from "./modules/Activity/pages/Activity";
@@ -64,7 +67,7 @@ const Login = () => {
           })
           .catch((err) => console.log(err));
       }}
-      className="container mx-auto mt-9 space-y-4 bg-secondary-white"
+      className="bg-secondary-white container mx-auto mt-9 space-y-4"
     >
       <input
         type="email"
@@ -78,7 +81,7 @@ const Login = () => {
       />
       <button
         type="submit"
-        className="w-full rounded-full border bg-accent-dark-blue p-2 text-white"
+        className="bg-accent-dark-blue w-full rounded-full border p-2 text-white"
       >
         Login
       </button>
@@ -211,11 +214,27 @@ const BrowserRouter = createBrowserRouter([
           },
         ],
       },
+      {
+        path: "my-activities", // TODO: User assets as i don't know where to put it
+        element: <MyActivities />,
+      },
+      {
+        path: "my-itineraries", // TODO: User assets as i don't know where to put it
+        element: <MyItineraries />,
+      },
+      {
+        path: "my-museum", // TODO: User assets as i don't know where to put it
+        element: <MyMuseums />,
+      },
     ],
   },
   {
     path: "users-assets",
     element: <UsersAssets />,
+  },
+  {
+    path: "activity",
+    element: <MyActivities />,
   },
   {
     path: "*",
