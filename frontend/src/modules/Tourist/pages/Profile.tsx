@@ -28,6 +28,7 @@ export default function Profile() {
         fieldNames.email,
         fieldNames.nationality,
         fieldNames.password,
+        fieldNames.loyaltyPoints,
       ]}
       mappingNeeded
       initialFormValues={{
@@ -38,6 +39,10 @@ export default function Profile() {
         Email: user.email || "",
         Nationality: user.nationality || "",
         Password: "",
+        loyaltyPoints:
+          user.loyaltyPoints === undefined
+            ? ""
+            : user.loyaltyPoints?.toString(),
       }}
     />
   );

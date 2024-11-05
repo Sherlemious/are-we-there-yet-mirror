@@ -10,6 +10,7 @@ import {
   Globe,
   Info,
   Clock,
+  Coins,
 } from "lucide-react";
 import { useState, useEffect, useRef, useContext } from "react";
 import EditModal, { formModalRef } from "../../shared/components/FormEditModal";
@@ -45,6 +46,20 @@ const NewProf = ({
   const modalRef = useRef<formModalRef>(null);
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+
+  const handleRedeemPoints = async () => {
+    if (user.loyaltyPoints) {
+      const cashEquivalent = user.loyaltyPoints; // 1 point = 1 EGP ???
+      setUser((prevUser) => ({
+        ...prevUser,
+        wallet: (prevUser.wallet ?? 0) + cashEquivalent,
+        loyaltyPoints: 0,
+      }));
+      toast.success(`You have redeemed EGP ${cashEquivalent}`);
+    } else {
+      toast.error("You have no loyalty points to redeem");
+    }
+  };
 
   const handleSave = async (data: Record<string, string>) => {
     if (
@@ -240,8 +255,20 @@ const NewProf = ({
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Wallet className="h-5 w-5 flex-shrink-0 text-primary-blue" />
-                  <span className="text-slate-600">{user.wallet}</span>
+                  <span className="text-slate-600">EGP {user.wallet}</span>
                 </div>
+                <div className="flex items-center gap-3">
+                  <Coins className="h-5 w-5 flex-shrink-0 text-primary-blue" />
+                  <span className="text-slate-600">
+                    {user.loyaltyPoints ?? 0} Points
+                  </span>
+                </div>
+                <button
+                  onClick={handleRedeemPoints}
+                  className="mt-4 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                >
+                  Redeem Points
+                </button>
               </div>
             </div>
           </div>
