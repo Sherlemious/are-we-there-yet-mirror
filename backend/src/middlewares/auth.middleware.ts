@@ -41,10 +41,16 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const openPaths = ['/api/auth/register', '/api/auth/login', '/api/attachments'];
+const openPaths = [
+  '/api/auth/register',
+  '/api/auth/login',
+  '/api/itineraries/get',
+  '/api/museums/getall',
+  '/api/activities',
+];
 
 const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
-  if (openPaths.some((path) => req.path.startsWith(path))) {
+  if (openPaths.includes(req.path)) {
     return next();
   }
   return authenticateToken(req, res, next);
