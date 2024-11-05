@@ -43,6 +43,7 @@ import Register from "./modules/Register/pages/Register";
 import { registerAction, registerLoader } from "./modules/Register/App";
 import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
+import AllComplaints from "./modules/Complaints/pages/AllComplaints";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -186,6 +187,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "my-museums",
         element: <AllMuseums />,
+      },
+      {
+        path: "my-complaints",
+        element: <AllComplaints />,
       },
       {
         path: "activity",
