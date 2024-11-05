@@ -67,7 +67,7 @@ const Login = () => {
           })
           .catch((err) => console.log(err));
       }}
-      className="bg-secondary-white container mx-auto mt-9 space-y-4"
+      className="container mx-auto mt-9 space-y-4 bg-secondary-white"
     >
       <input
         type="email"
@@ -81,7 +81,7 @@ const Login = () => {
       />
       <button
         type="submit"
-        className="bg-accent-dark-blue w-full rounded-full border p-2 text-white"
+        className="w-full rounded-full border bg-accent-dark-blue p-2 text-white"
       >
         Login
       </button>
@@ -235,6 +235,10 @@ const BrowserRouter = createBrowserRouter([
   {
     path: "activity",
     element: <MyActivities />,
+  },
+  {
+    path: "itineraries",
+    element: <MyItineraries />,
   },
   {
     path: "*",
