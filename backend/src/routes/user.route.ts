@@ -14,6 +14,8 @@ import {
   ChangeUserPassword,
   acceptTerms,
   rejectUser,
+  getItinerary,
+  getActivity,
 } from '../controllers/users/user.controller';
 
 const router = Router();
@@ -27,6 +29,8 @@ router.use('/admins', adminRouter);
 // User routes
 router.get('/', getUsers);
 router.patch('/requestDeletion', requestAccountDeletion);
+router.get('/getItineraries', getItinerary);
+router.get('/getActivities', getActivity);
 router.patch('/:id/accept-user', acceptUser);
 router.delete('/:id', deleteUser);
 router.patch('/:id', updateUser);

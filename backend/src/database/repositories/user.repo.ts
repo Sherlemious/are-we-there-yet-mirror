@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { User } from '../models/user.model';
 import { UserType } from '../../types/User.types';
 import { accountType } from '../../types/User.types';
+import { get } from 'http';
 
 class UserRepository {
   async getUsers() {
@@ -59,6 +60,14 @@ class UserRepository {
 
   async notRejectUser(id: string) {
     return await User.updateOne({ _id: new ObjectId(id) }, { rejected: false });
+  }
+
+  async getItinerary(id: string) {
+    return await User.findById({ _id: new ObjectId(id) }).select('itinerary_bookings -_id');
+  }
+
+  async getActivity(id: string) {
+    return await User.findById({ _id: new ObjectId(id) }).select('activity_bookings -_id');
   }
 }
 

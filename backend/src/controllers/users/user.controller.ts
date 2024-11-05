@@ -156,6 +156,36 @@ const rejectUser = async (req: Request, res: Response) => {
   }
 };
 
+const getItinerary = async (req: Request, res: Response) => {
+  try {
+    const itineraries = await userRepo.getItinerary(req.user.userId);
+    const response = {
+      message: 'Itineraries fetched successfully',
+      data: { itineraries: itineraries },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching itineraries: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const getActivity = async (req: Request, res: Response) => {
+  try {
+    const activities = await userRepo.getActivity(req.user.userId);
+    const response = {
+      message: 'Activities fetched successfully',
+      data: { activities: activities },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching activities: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 export {
   getUsers,
   deleteUser,
@@ -167,4 +197,6 @@ export {
   ChangeUserPassword,
   acceptTerms,
   rejectUser,
+  getItinerary,
+  getActivity,
 };
