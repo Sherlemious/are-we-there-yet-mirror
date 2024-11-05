@@ -156,8 +156,11 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "admin-dashboard",
-        element: <AdminDashboard />,
         children: [
+          {
+            index: true,
+            element: <AdminDashboard />,
+          },
           {
             path: "tag",
             element: <Tag />,

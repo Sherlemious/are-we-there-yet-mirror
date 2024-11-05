@@ -22,7 +22,7 @@ const Table = ({
   actions?: ActionProps;
 }) => {
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-secondary-light_grey bg-secondary-white shadow-lg">
+    <div className="w-full overflow-hidden rounded-xl border border-secondary-light_grey bg-secondary-white/70 shadow-lg">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>

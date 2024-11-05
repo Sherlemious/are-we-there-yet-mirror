@@ -19,12 +19,12 @@ function ActivityTable() {
     {
       header: "Date",
       accessor: "datetime",
-      render: (value: string) => <>{formatDate(value)}</>,
+      render: (value: string) => formatDate(value),
     },
     {
       header: "Time",
       accessor: "datetime",
-      render: (value: string) => <>{formatTime(value)}</>,
+      render: (value: string) => formatTime(value),
     },
     {
       header: "Location",
