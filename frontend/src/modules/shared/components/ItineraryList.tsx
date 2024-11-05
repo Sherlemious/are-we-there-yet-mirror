@@ -60,7 +60,7 @@ async function getMyItineraries() {
     );
 
     // sort the data on rating
-    tempData.sort((a, b) => b.rating - a.rating); // TODO: replace with actual rating
+    // tempData.sort((a, b) => b.rating - a.rating); // TODO: replace with actual rating
 
     return await tempData;
   } catch (error) {
@@ -278,7 +278,7 @@ function ItineraryCard({
 }) {
   return (
     <div
-      className="bg-card h-full w-full cursor-pointer rounded-lg border border-gray-300 p-4 shadow-lg transition duration-200 hover:shadow-md"
+      className="h-full w-full cursor-pointer rounded-lg border border-gray-300 bg-card p-4 shadow-lg transition duration-200 hover:shadow-sm"
       onClick={onCardClick}
     >
       {/* Itinerary name */}
@@ -376,6 +376,16 @@ export function ItineraryList() {
     );
   }, [searchQuery, budget, date, ratings, data]);
 
+  // handle sorting
+  const [isAscending, setIsAscending] = useState<boolean>(true);
+  useEffect(() => {
+    if (!filteredData) return;
+    // data.sort((a, b) => (isAscending ? a.price - b.price : b.price - a.price));
+    filteredData.sort((a, b) =>
+      isAscending ? a.rating - b.rating : b.rating - a.rating,
+    );
+  }, [isAscending, filteredData]);
+
   return (
     <>
       {loading && (
@@ -389,7 +399,7 @@ export function ItineraryList() {
       {!loading && !error && (
         <>
           {/* Toolbar */}
-          <div className="grid grid-cols-4 gap-6 p-6">
+          <div className="grid grid-cols-5 gap-6 p-6">
             <input
               type="text"
               placeholder="Search"
@@ -421,6 +431,12 @@ export function ItineraryList() {
                 setRatings(e.target.value ? parseInt(e.target.value) : null)
               }
             />
+            <button
+              className="h-full w-full rounded-lg bg-accent-gold font-bold text-white"
+              onClick={() => setIsAscending(!isAscending)}
+            >
+              {isAscending ? "Sort Descending" : "Sort Ascending"}
+            </button>
           </div>
 
           {/* Body */}
