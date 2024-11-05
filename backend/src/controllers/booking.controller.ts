@@ -24,6 +24,26 @@ class BookingController {
       });
     }
   }
+
+  async bookActivity(req: Request, res: Response) {
+    try {
+      Validator.validateId(req.body.activity_id, 'incorrect activity id');
+
+      const booking = await bookingRepo.bookActivity(req.user.userId, req.body.activity_id);
+
+      const response = {
+        message: 'Booking successful',
+        data: { booking: booking },
+      };
+
+      res.status(ResponseStatusCodes.CREATED).send(response);
+    } catch (error: any) {
+      logger.error(`Error occurred while booking activity: ${error.message}`);
+      res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: `Error occurred while booking activity: ${error.message}`,
+      });
+    }
+  }
 }
 
 export default new BookingController();

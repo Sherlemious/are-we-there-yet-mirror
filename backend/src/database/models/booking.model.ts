@@ -10,7 +10,10 @@ const bookingSchema = new Schema(
     itinerary: {
       type: Schema.Types.ObjectId,
       ref: 'itinerary',
-      unique: true,
+    },
+    activity: {
+      type: Schema.Types.ObjectId,
+      ref: 'activity',
     },
     status: {
       type: String,

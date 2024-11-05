@@ -85,6 +85,9 @@ const userSchema = new mongoose.Schema(
     itinerary_bookings: {
       type: [{ type: Schema.Types.ObjectId, ref: 'booking' }],
     },
+    activity_bookings: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'booking' }],
+    },
     modified_by: {
       type: Schema.Types.ObjectId,
       ref: 'user',

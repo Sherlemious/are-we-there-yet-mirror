@@ -8,6 +8,13 @@ class BookingRepo {
 
     return booking;
   }
+
+  async bookActivity(userId: string, activityId: string) {
+    const booking = await Booking.create({ user: userId, activity: activityId });
+    await User.findByIdAndUpdate(userId, { $push: { activity_bookings: booking._id } });
+
+    return booking;
+  }
 }
 
 export default new BookingRepo();

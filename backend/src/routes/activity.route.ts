@@ -7,8 +7,11 @@ import {
   createActivity,
   getActivitiesByCreator,
 } from '../controllers/activity.controller';
+import BookingController from '../controllers/booking.controller';
 
 const activityRouter = Router();
+
+activityRouter.post('/bookings', BookingController.bookActivity);
 
 activityRouter.get('/', getAllActivities);
 activityRouter.get('/mine', getActivitiesByCreator);
