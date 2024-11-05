@@ -16,9 +16,15 @@ interface ComplaintsTableProps {
 }
 
 const ComplaintsTable: React.FC<ComplaintsTableProps> = ({
-  complaints,
-  onEditComplaint,
-}) => {
+    complaints,
+    onEditComplaint,
+  }) => {
+    // Sort complaints: Resolved first, then Pending
+    const sortedComplaints = [...complaints].sort((a, b) => {
+      if (a.status === "Pending" && b.status === "Resolved") return 1;
+      if (a.status === "Resolved" && b.status === "Pending") return -1;
+      return 0; // Maintain original order if both are the same status
+    });
   const columns: TableColumn[] = [
     { header: "Title", accessor: "title" },
     { header: "Description", accessor: "body" },
@@ -41,13 +47,13 @@ const ComplaintsTable: React.FC<ComplaintsTableProps> = ({
   const actions: ActionProps = {
     onEdit: (id: string) => {
       const complaint = complaints.find((c) => c._id === id);
-      if (complaint) {
+      if (complaint && complaint.status === "Pending") { // Allow edit only for Pending complaints
         onEditComplaint(complaint);
       }
-    },
+    },  
   };
 
-  return <Table data={complaints} columns={columns} actions={actions} />;
+  return <Table data={sortedComplaints} columns={columns} actions={actions} />;
 };
 
 export default ComplaintsTable;

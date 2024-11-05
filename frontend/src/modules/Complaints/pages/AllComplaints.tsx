@@ -20,6 +20,7 @@ const AllComplaints: React.FC = () => {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const modalRef = useRef<ModalRef>(null);
   const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
+  const [refresh, setRefresh] = useState(0); // State for refresh trigger
 
   const handleOpenModal = (complaint?: Complaint) => {
     setEditingComplaint(complaint || null);
@@ -41,7 +42,7 @@ const AllComplaints: React.FC = () => {
       }
     };
     fetchComplaints();
-  }, []);
+  }, [refresh]);
 
   const handleCreateOrUpdateComplaint = async (complaintData: { title: string; body: string }) => {
     try {
@@ -73,6 +74,7 @@ const AllComplaints: React.FC = () => {
     } catch (error) {
       toast.error("An error occurred.");
     } finally {
+      setRefresh((prev) => prev + 1); // Increment the refresh state
       handleCloseModal(); // Close the modal after submit
     }
   };

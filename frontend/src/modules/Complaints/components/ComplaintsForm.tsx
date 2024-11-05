@@ -49,6 +49,7 @@ const ComplaintsForm: React.FC<ComplaintsFormProps> = ({
           value={body}
           onChange={(e) => setBody(e.target.value)}
           required
+          rows={4}
           className="border p-2 rounded w-full"
         />
       </label>
