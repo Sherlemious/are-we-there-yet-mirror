@@ -16,6 +16,10 @@ class BookingRepo {
     return booking;
   }
 
+  async cancelBooking(bookingId: string) {
+    return await Booking.findByIdAndUpdate(bookingId, { status: 'cancelled' });
+  }
+
   async checkItineraryBooked(itineraryId: string): Promise<boolean> {
     const booking = await Booking.find({ itineraryId: itineraryId });
 

@@ -69,11 +69,34 @@ class UserRepository {
   }
 
   async getItinerary(id: string) {
-    return await User.findById({ _id: new ObjectId(id) }).select('itinerary_bookings -_id');
+    return await User.findById({ _id: new ObjectId(id) }).populate({
+      path: 'itinerary_bookings',
+      populate: {
+        path: 'itinerary',
+        populate: [{ path: 'tags' }, { path: 'activities.activity' }, { path: 'created_by', model: 'User' }],
+      },
+    });
   }
 
   async getActivity(id: string) {
-    return await User.findById({ _id: new ObjectId(id) }).select('activity_bookings -_id');
+    return await User.findById({ _id: new ObjectId(id) }).populate({
+      path: 'activity_bookings',
+      populate: {
+        path: 'activity',
+        populate: [{ path: 'tags' }, { path: 'category' }],
+      },
+    });
+  }
+
+  async cancelActivityBooking(id: string, booking_id: string) {
+    return await User.updateOne({ _id: new ObjectId(id) }, { $pull: { activity_bookings: new ObjectId(booking_id) } });
+  }
+
+  async cancelItineraryBooking(id: string, booking_id: string) {
+    return await User.updateOne(
+      { _id: new ObjectId(id) },
+      { $pull: { itinerary_bookings: new ObjectId(booking_id) } }
+    );
   }
 }
 

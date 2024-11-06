@@ -31,6 +31,10 @@ class ActivityRepo {
   async getActivitiesByCreator(creator: string) {
     return await Activity.find({ created_by: creator }).populate(['tags', 'category']);
   }
+
+  async getActivitiesStartDate(id: string) {
+    return await Activity.findById(id).select('datetime');
+  }
 }
 
 export default new ActivityRepo();

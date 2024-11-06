@@ -18,6 +18,8 @@ import {
   rejectUser,
   getItinerary,
   getActivity,
+  cancelActivityBooking,
+  cancelItineraryBooking,
 } from '../controllers/users/user.controller';
 
 const router = Router();
@@ -34,6 +36,8 @@ router.get('/', getUsers);
 router.patch('/requestDeletion', requestAccountDeletion);
 router.get('/getItineraries', getItinerary);
 router.get('/getActivities', getActivity);
+router.patch('/cancelActivityBooking', cancelActivityBooking);
+router.patch('/cancelItineraryBooking', cancelItineraryBooking);
 router.patch('/:id/accept-user', acceptUser);
 router.delete('/:id', deleteUser);
 router.get('/:id', findUserById);
