@@ -1,12 +1,23 @@
 import { Request, Response } from 'express';
-import ItineraryRepo from '../database/repositories/itinerary.repo';
+import mongoose from 'mongoose';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
-import mongoose from 'mongoose';
+import { accountType } from '../types/User.types';
+import ItineraryRepo from '../database/repositories/itinerary.repo';
+import BookingRepo from '../database/repositories/booking.repo';
+import { ItineraryType } from '../types/Itinerary.types';
 
 const getItineraries = async (req: Request, res: Response) => {
   try {
-    const itineraries = await ItineraryRepo.getItineraries();
+    let itineraries = await ItineraryRepo.getItineraries();
+    const userType = req.user.accountType;
+    if (userType === accountType.Tourist) {
+      /* Filter out any archived itineraries.
+      This is shit code, this is like the 4th or 5th choice when it comes to implementing such feature 
+      but I can't do this anymore.
+      */
+      itineraries = itineraries.filter((itinerary) => !itinerary.flagged && itinerary.active);
+    }
     const response = {
       message: 'Itineraries fetched successfully',
       data: { itineraries: itineraries },
@@ -84,7 +95,12 @@ const updateItinerary = async (req: Request, res: Response) => {
 
 const deleteItinerary = async (req: Request, res: Response) => {
   try {
-    const deleteRes = await ItineraryRepo.deleteItinerary(req.params.id);
+    const ItineraryId: string = req.params.id;
+
+    if (await BookingRepo.checkItineraryBooked(ItineraryId)) {
+      res.status(402).json({ message: 'Cannot delete Itinerary as it is already booked' });
+    }
+    const deleteRes = await ItineraryRepo.deleteItinerary(ItineraryId);
     const response = {
       message: 'Itinerary deleted successfully',
       data: { itinerary: deleteRes },

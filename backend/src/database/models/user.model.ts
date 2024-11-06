@@ -82,6 +82,9 @@ const userSchema = new mongoose.Schema(
     reviews: {
       type: [reviewSchema],
     },
+    preferences: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
+    },
     average_rating: {
       type: Number,
       default: 0,

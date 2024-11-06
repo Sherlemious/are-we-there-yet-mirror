@@ -6,12 +6,12 @@ import { ProductType } from '../../types/Product.types';
 class ProductRepo {
   async findProductById(id: string) {
     Validator.validateId(id, 'Invalid product ID');
-    return await Product.findById({ _id: new ObjectId(id) }).populate('tags');
+    return await Product.findById({ _id: new ObjectId(id) }).populate(['tags', 'pictures']);
   }
 
-  async getProductById(id: string): Promise<ProductType | null> {
+  async getProductById(id: string) {
     Validator.validateId(id, 'Invalid product ID');
-    return await Product.findById({ _id: new ObjectId(id) });
+    return await Product.findById({ _id: new ObjectId(id) }).populate(['tags', 'pictures']);
   }
 
   async createProduct(product: any) {
@@ -30,7 +30,7 @@ class ProductRepo {
 
   async getProducts(attributeName?: string, attributeValue?: RegExp | string) {
     const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
-    return await Product.find(query).populate('tags');
+    return await Product.find(query).populate(['tags', 'pictures']);
   }
 
   async getPriceMinMax() {
@@ -46,7 +46,7 @@ class ProductRepo {
   }
 
   async getProductsByPriceRange(minPrice: number, maxPrice: number) {
-    return await Product.find({ price: { $gte: minPrice, $lte: maxPrice } });
+    return await Product.find({ price: { $gte: minPrice, $lte: maxPrice } }).populate(['tags', 'pictures']);
   }
 
   async filterProductsBySeller(seller: string) {

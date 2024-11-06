@@ -153,13 +153,13 @@ async function addProductReview(req: Request, res: Response) {
     const productId = req.params.id;
     const review = req.body;
 
-    const product: ProductType | null = await productRepo.getProductById(productId);
+    const product = await productRepo.getProductById(productId);
     if (!product) {
       res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
       return;
     }
 
-    const reviews: ReviewType[] = product.reviews || [];
+    const reviews = product.reviews || [];
     const previousRating = product.average_rating || 0;
     const newRating: number = (previousRating * reviews.length + review.rating) / (reviews.length + 1);
     await productRepo.addReview(productId, review);
@@ -181,13 +181,13 @@ async function deleteProductReview(req: Request, res: Response) {
     const productId = req.params.id;
     const reviewId = new mongoose.Types.ObjectId(req.params.review_id);
 
-    const product: ProductType | null = await productRepo.getProductById(productId);
+    const product = await productRepo.getProductById(productId);
     if (!product) {
       res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
       return;
     }
 
-    const reviews: ReviewType[] = product.reviews || [];
+    const reviews = product.reviews || [];
     const reviewIndex = reviews.findIndex((review) => review._id.toString() === reviewId.toString());
     if (reviewIndex === -1) {
       res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Review not found', data: [] });
@@ -219,7 +219,7 @@ async function deleteProductReview(req: Request, res: Response) {
 async function getAvailableQuantityAndSales(req: Request, res: Response) {
   try {
     const productId = req.params.id;
-    const product: ProductType | null = await productRepo.getProductById(productId);
+    const product = await productRepo.getProductById(productId);
     if (!product) {
       res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
       return;
@@ -241,7 +241,7 @@ async function buyProduct(req: Request, res: Response) {
   try {
     const productId = req.params.id;
     const quantity = parseInt(req.body.quantity);
-    const product: ProductType | null = await productRepo.getProductById(productId);
+    const product = await productRepo.getProductById(productId);
     if (!product) {
       res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
       return;

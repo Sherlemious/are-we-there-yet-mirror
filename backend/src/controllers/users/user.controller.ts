@@ -63,7 +63,7 @@ const acceptUser = async (req: Request, res: Response) => {
 
 const findUserById = async (req: Request, res: Response) => {
   try {
-    const user = await userRepo.findUserById(req.params.id);
+    const user = await userRepo.getUserWithAttachments(req.params.id);
     const response = {
       message: 'User fetched successfully',
       data: { user: user },

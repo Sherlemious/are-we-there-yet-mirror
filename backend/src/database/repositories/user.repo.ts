@@ -2,7 +2,6 @@ import { ObjectId } from 'mongodb';
 import { User } from '../models/user.model';
 import { UserType } from '../../types/User.types';
 import { accountType } from '../../types/User.types';
-import { get } from 'http';
 
 class UserRepository {
   async getUsers() {
@@ -11,6 +10,10 @@ class UserRepository {
 
   async findUserById(id: string): Promise<UserType | null> {
     return await User.findById({ _id: new ObjectId(id) });
+  }
+
+  async getUserWithAttachments(id: string) {
+    return await User.findById({ _id: new ObjectId(id) }).populate(['profile_pic', 'attachments', 'preferences']);
   }
 
   async createUser(user: UserType) {

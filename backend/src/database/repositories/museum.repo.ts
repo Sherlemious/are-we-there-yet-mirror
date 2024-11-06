@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { getTagIds } from '../models/tag.model';
 import { Museum } from '../models/museum.model';
 import { MuseumType } from '../../types/Museum.types';
 import Validator from '../../utils/Validator.utils';
@@ -11,7 +10,7 @@ class MuseumRepo {
   }
   async findMuseumById(id: string) {
     Validator.validateId(id, 'Invalid museum ID');
-    return await Museum.findById(id).populate('tags');
+    return await Museum.findById(id).populate(['tags', 'pictures']);
   }
 
   async findMuseumsByTags(tagIds: ObjectId[]) {
