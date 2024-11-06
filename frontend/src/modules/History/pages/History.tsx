@@ -6,6 +6,7 @@ import Modal, { ModalRef } from "@/modules/shared/components/Modal";
 import axiosInstance from "@/modules/shared/services/axiosInstance";
 import ReviewsForm from "../components/ReviewsForm";
 import toast from "react-hot-toast";
+import ActivitiesTable from "../components/ActivitiesTable";
 
 interface TourGuide {
     _id: string;
@@ -15,14 +16,26 @@ interface TourGuide {
     years_of_experience?: number;
     average_rating?: number;
   }
-
+  interface Activity {
+    _id: string;
+    name: string;
+    datetime: Date;
+    location: { name: string };
+    price: number;
+    category: string;
+    tags: { name: string }[];
+    specialDiscounts: number;
+    average_rating?: number;
+  }
 export function History(){
 
 const sectionName: string = 'History';
 const [currentTab, setCurrentTab] = useState('tour guides');
 const { user } = useContext(UserContext);
 const [tourGuides, setTourGuides] = useState<TourGuide[]>([]);
+const [activities, setActivities] = useState<Activity[]>([]);
 const [objectId, setObjectId] = useState<string>("");
+const [objectType, setObjectType] = useState<string>("");
 const modalRef = useRef<ModalRef>(null);
 const [refresh, setRefresh] = useState(0); // State for refresh trigger
 
@@ -31,12 +44,23 @@ useEffect(() => {
     const fetchTourGuides = async () => {
       try {
         const response = await axiosInstance.get("/users/tourGuides");
+        console.log(response.data.data);
         setTourGuides(response.data.data.tourGuides);
       } catch (error) {
         console.error("Error fetching tourGuides:", error);
       }
     };
+    const fetchActivities = async () => {
+      try {
+        const response = await axiosInstance.get("/activities/");
+        console.log(response.data.data);
+        setActivities(response.data.data);
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+      }
+    };
     fetchTourGuides();
+    fetchActivities();
   }, [refresh]);
 
 const handleCreateRating = async (modelType, modelId, review: { rating: number; comment: string }, ) => {
@@ -54,11 +78,13 @@ const handleCreateRating = async (modelType, modelId, review: { rating: number; 
         }
 };
 
-const handleOpenModal = (tourGuide: object) => {
-    setObjectId(tourGuide._id);
-    console.log(objectId);
+const handleOpenModal = (object: { _id: string; type: string }) => {
+    setObjectId(object._id); 
+    setObjectType(object.type);
+    console.log(objectId); 
+    console.log(objectType);
     modalRef.current?.open();
-  };
+};
 
   const handleCloseModal = () => {
     modalRef.current?.close();
@@ -96,7 +122,7 @@ return (
 </div>
     <Modal ref={modalRef} onClose={handleCloseModal}>
         <ReviewsForm 
-          objectType="users"
+          objectType={objectType}
           objectId={objectId}
           initialValues={{ rating: 0, comment: "" }}
           onClose={handleCloseModal} 
@@ -106,7 +132,7 @@ return (
     {/* This is the main content */}
     <div className="w-full h-fit border-black border-2 mb-16 flex flex-col">
       {currentTab === 'tour guide'  && <TourGuidesTable tourGuides={tourGuides} onEditRating = {handleOpenModal}  /> }
-      {currentTab === 'activities' }
+      {currentTab === 'activities' && <ActivitiesTable activities={activities} onEditRating = {handleOpenModal} />}
       {currentTab === 'itinerary' } 
     </div>
   </div>

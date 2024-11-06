@@ -12,7 +12,7 @@ interface TourGuide {
 
 interface TourGuidesTableProps {
   tourGuides: TourGuide[];
-  onEditRating: (tourGuide: TourGuide) => void; // Change here
+  onEditRating: (object: { _id: string; type: string }) => void; // Change here
 }
 
 const TourGuidesTable: React.FC<TourGuidesTableProps> = ({ tourGuides, onEditRating }) => {
@@ -38,7 +38,7 @@ const TourGuidesTable: React.FC<TourGuidesTableProps> = ({ tourGuides, onEditRat
     onEdit: (id: string) => {
       const tourGuide = tourGuides.find((c) => c._id === id);
       if (tourGuide) { // Allow edit only for Pending complaints
-        onEditRating(tourGuide);
+        onEditRating({ _id: id, type: "users" });
       }
     },  
   };
