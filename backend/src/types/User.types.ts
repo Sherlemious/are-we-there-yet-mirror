@@ -31,6 +31,7 @@ export interface UserType {
   // Advertiser
   website?: string;
   hotline?: string;
+  profile_pic?: Types.ObjectId;
   company_profile?: [string];
   // Seller
   description?: string;

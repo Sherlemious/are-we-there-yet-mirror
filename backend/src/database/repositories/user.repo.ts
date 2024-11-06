@@ -13,7 +13,10 @@ class UserRepository {
   }
 
   async getUserWithAttachments(id: string) {
-    return await User.findById({ _id: new ObjectId(id) }).populate(['profile_pic', 'attachments', 'preferences']);
+    return await User.findById({ _id: new ObjectId(id) })
+      .populate('profile_pic')
+      .populate('attachments')
+      .populate('preferences');
   }
 
   async createUser(user: UserType) {

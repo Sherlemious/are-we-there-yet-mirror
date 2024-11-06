@@ -8,7 +8,7 @@ class AuthRepo {
   }
 
   async me(userId: String) {
-    return await User.findById(userId);
+    return await User.findById(userId).populate(['preferences', 'profile_pic', 'attachments']);
   }
 }
 

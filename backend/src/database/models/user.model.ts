@@ -73,9 +73,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    profile_pic: {
-      type: { type: Schema.Types.ObjectId, ref: 'attachment' },
-    },
+    profile_pic: { type: Schema.Types.ObjectId, ref: 'attachment' },
     attachments: {
       type: [{ type: Schema.Types.ObjectId, ref: 'attachment' }],
     },
