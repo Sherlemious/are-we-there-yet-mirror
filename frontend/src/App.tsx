@@ -23,9 +23,11 @@ import { SellerProfile } from "./modules/Seller/App";
 
 import { TouristProfile, touristProfileLoader } from "./modules/Tourist/App";
 import { Toaster } from "react-hot-toast";
-import { UsersAssets } from "./modules/shared/pages/UsersAssets";
+import { AllActivities } from "./modules/shared/pages/MyActivities";
+import { AllItineraries } from "./modules/shared/pages/MyItineraries";
+import { AllMuseums } from "./modules/shared/pages/MyMuseums";
 import { UsersAssets as CrudUserAssets } from "./modules/TourGuide/pages/UsersAssets";
-import { AllMuseums } from "./modules/Museums/App";
+import { MyMuseums } from "./modules/Museums/App";
 import { loader as activityLoader } from "./modules/Activity/pages/Activity";
 import {
   loader as activityAddLoader,
@@ -186,14 +188,14 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "my-museums",
-        element: <AllMuseums />,
+        element: <MyMuseums />,
       },
       {
         path: "my-complaints",
         element: <AllComplaints />,
       },
       {
-        path: "activity",
+        path: "my-activities",
         element: (
           <RouteGuard account_types={[AccountType.Advertiser]}>
             <Outlet />,
@@ -222,8 +224,16 @@ const BrowserRouter = createBrowserRouter([
     ],
   },
   {
-    path: "users-assets",
-    element: <UsersAssets />,
+    path: "all-activities",
+    element: <AllActivities />,
+  },
+  {
+    path: "all-itineraries",
+    element: <AllItineraries />,
+  },
+  {
+    path: "all-museums",
+    element: <AllMuseums />,
   },
   {
     path: "*",
