@@ -33,18 +33,19 @@ router.use('/tourists', touristRouter);
 
 // User routes
 router.get('/', getUsers);
+router.post('/', createUser);
 router.patch('/requestDeletion', requestAccountDeletion);
 router.get('/getItineraries', getItinerary);
 router.get('/getActivities', getActivity);
 router.patch('/cancelActivityBooking', cancelActivityBooking);
 router.patch('/cancelItineraryBooking', cancelItineraryBooking);
+router.patch('/changePassword', ChangeUserPassword);
+router.patch('/acceptTerms/:id', acceptTerms);
+router.patch('/rejectUser/:id', rejectUser);
+
 router.patch('/:id/accept-user', acceptUser);
 router.delete('/:id', deleteUser);
 router.get('/:id', findUserById);
 router.patch('/:id', updateUser);
-router.post('/', createUser);
-router.patch('/changePassword/:id', ChangeUserPassword);
-router.patch('/acceptTerms/:id', acceptTerms);
-router.patch('/rejectUser/:id', rejectUser);
 
 export default router;
