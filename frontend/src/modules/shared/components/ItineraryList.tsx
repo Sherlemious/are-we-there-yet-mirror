@@ -7,8 +7,8 @@ async function getMyItineraries() {
     const resPromise = await axiosInstance.get("/itineraries/get");
 
     // format the data
-    const res = await resPromise.data;
-    const tempData: Itinerary[] = await res.data.itineraries.map(
+    const res = resPromise.data;
+    const tempData: Itinerary[] = res.data.itineraries.map(
       (item: any) => {
         const name = item.name === null ? "N/A" : item.name;
         const category = item.category === null ? "N/A" : item.category;
@@ -59,10 +59,7 @@ async function getMyItineraries() {
       },
     );
 
-    // sort the data on rating
-    // tempData.sort((a, b) => b.rating - a.rating); // TODO: replace with actual rating
-
-    return await tempData;
+    return tempData;
   } catch (error) {
     console.error("Error fetching user", error);
     throw error;

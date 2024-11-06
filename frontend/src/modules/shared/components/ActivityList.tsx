@@ -32,8 +32,8 @@ async function getMyActivities() {
     const resPromise = await axiosInstance.get("/activities");
 
     // format the data
-    const res = await resPromise.data;
-    const data: Activity[] = await res.data.map(
+    const res = resPromise.data;
+    const data: Activity[] = res.data.map(
       (item: {
         datetime: string;
         location: {
@@ -87,10 +87,9 @@ async function getMyActivities() {
       },
     );
 
-    // sort on price
-    await data.sort((a, b) => a.price - b.price); // TODO: make sorting based on a user preference
+    data.sort((a, b) => a.price - b.price);
 
-    return await data;
+    return data;
   } catch (error) {
     console.error("Error fetching user", error);
     throw error;
@@ -156,7 +155,7 @@ export function ActivityList() {
           : (a.ratings - b.ratings) * (sortingOption.isAscending ? 1 : -1),
       ),
     );
-  }, [sortingOption, data]);
+  }, [sortingOption]);
 
   // handle the search and filter
   const [searchQuery, setSearchQuery] = useState<string>("");

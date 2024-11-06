@@ -46,6 +46,7 @@ import { registerAction, registerLoader } from "./modules/Register/App";
 import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
+import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -92,8 +93,29 @@ const Login = () => {
 const BrowserRouter = createBrowserRouter([
   {
     path: "/",
-    index: true,
-    element: <LandingPage />,
+    element: <LandingPageLayout />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+      {
+        path: "all-activities",
+        element: <AllActivities />,
+      },
+      {
+        path: "all-itineraries",
+        element: <AllItineraries />,
+      },
+      {
+        path: "all-museums",
+        element: <AllMuseums />,
+      },
+      {
+        path: "all-products",
+        element: <AllProducts />,
+      },
+    ],
   },
   {
     path: "/login",
@@ -154,19 +176,11 @@ const BrowserRouter = createBrowserRouter([
         element: <SellerProducts />,
       },
       {
-        path: "all-products",
-        element: <AllProducts />,
-      },
-      {
         path: "admin-dashboard",
         children: [
           {
             index: true,
             element: <AdminDashboard />,
-          },
-          {
-            path: "tag",
-            element: <Tag />,
           },
           {
             path: "prefrence-tag",
@@ -181,6 +195,10 @@ const BrowserRouter = createBrowserRouter([
             element: <AdminProducts />,
           },
         ],
+      },
+      {
+        path: "tag",
+        element: <Tag />,
       },
       {
         path: "crud-users-assets",
@@ -222,18 +240,6 @@ const BrowserRouter = createBrowserRouter([
         ],
       },
     ],
-  },
-  {
-    path: "all-activities",
-    element: <AllActivities />,
-  },
-  {
-    path: "all-itineraries",
-    element: <AllItineraries />,
-  },
-  {
-    path: "all-museums",
-    element: <AllMuseums />,
   },
   {
     path: "*",

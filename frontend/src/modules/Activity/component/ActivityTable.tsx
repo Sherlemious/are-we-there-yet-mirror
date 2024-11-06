@@ -46,9 +46,9 @@ function ActivityTable() {
           {value.length === 0
             ? "No tags"
             : value.map(
-              (tag, index) =>
-                `${tag.name}${value.length - 1 !== index ? ", " : ""}`,
-            )}
+                (tag, index) =>
+                  `${tag.name}${value.length - 1 !== index ? ", " : ""}`,
+              )}
         </span>
       ),
     },
@@ -59,7 +59,13 @@ function ActivityTable() {
     {
       header: "Booking",
       accessor: "bookingOpen",
-      render: (value: boolean) => <span>{value ? "Open" : "Booked"}</span>,
+      render: (value: boolean) => (
+        <span
+          className={`${value ? "bg-green-500" : "bg-orange-500"} rounded-full p-3 text-white`}
+        >
+          {value ? "Open" : "Booked"}
+        </span>
+      ),
     },
   ];
 
