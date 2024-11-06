@@ -40,10 +40,10 @@ router.get('/getActivities', getActivity);
 router.patch('/cancelActivityBooking', cancelActivityBooking);
 router.patch('/cancelItineraryBooking', cancelItineraryBooking);
 router.patch('/changePassword', ChangeUserPassword);
-router.patch('/acceptTerms/:id', acceptTerms);
+router.patch('/accept-user/:id', acceptUser);
+router.patch('/acceptTerms', acceptTerms);
 router.patch('/rejectUser/:id', rejectUser);
 
-router.patch('/:id/accept-user', acceptUser);
 router.delete('/:id', deleteUser);
 router.get('/:id', findUserById);
 router.patch('/:id', updateUser);

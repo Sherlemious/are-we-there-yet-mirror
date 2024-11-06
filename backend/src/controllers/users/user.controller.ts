@@ -5,6 +5,7 @@ import { ResponseStatusCodes } from '../../types/ResponseStatusCodes.types';
 import bookingRepo from '../../database/repositories/booking.repo';
 import activityRepo from '../../database/repositories/activity.repo';
 import itineraryRepo from '../../database/repositories/itinerary.repo';
+import bcrypt from 'bcrypt';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -113,27 +114,41 @@ const requestAccountDeletion = async (req: Request, res: Response) => {
 };
 
 const ChangeUserPassword = async (req: Request, res: Response) => {
-  try {
-    const password = req.body.password;
-    await userRepo.ChangeUserPassword(req.params.id, password);
-    const response = {
-      message: 'Password updated successfully',
-      data: { userId: req.params.id, password: password },
-    };
+  const password = req.body.password;
 
-    res.status(ResponseStatusCodes.OK).json(response);
-  } catch (error: any) {
-    logger.error(`Error updating password: ${error.message}`);
-    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  // Check if password is provided
+  if (!password) {
+    res.status(400).json({ message: 'Password is required' });
+    return;
+  }
+
+  // Find the user by ID using repository
+  const user = await userRepo.findUserById(req.user.userId);
+  if (!user) {
+    res.status(404).json({ message: 'User not found' });
+    return;
+  }
+
+  try {
+    // Hash the new password
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Update the user's password in the database
+    await userRepo.ChangeUserPassword(user._id, hashedPassword);
+
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred while changing the password' });
   }
 };
 
 const acceptTerms = async (req: Request, res: Response) => {
   try {
-    await userRepo.acceptTerms(req.params.id);
+    await userRepo.acceptTerms(req.user.userId);
     const response = {
       message: 'Terms accepted successfully',
-      data: { userId: req.params.id },
+      data: { userId: req.user.userId },
     };
 
     res.status(ResponseStatusCodes.OK).json(response);
@@ -260,7 +275,7 @@ const cancelItineraryBooking = async (req: Request, res: Response) => {
       message: `Error occurred while cancelling itinerary booking: ${error.message}`,
     });
   }
-}
+};
 
 export {
   getUsers,
