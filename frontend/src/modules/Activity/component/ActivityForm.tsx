@@ -28,7 +28,13 @@ function ActivityForm({ method }: { method: FormMethod }) {
   const [location, setLocation] = useState(
     activity?.location || { latitude: 0, longitude: 0, name: "" },
   );
-  const [selectedTags, setSelectedTags] = useState<MultiSelectOption[]>([]);
+  const [selectedTags, setSelectedTags] = useState<MultiSelectOption[]>(
+    activity?.tags.map((tag) => ({
+      value: tag._id,
+      label: tag.name,
+      payload: tag,
+    })) || [],
+  );
 
   const isSubmitting = navigation.state === "submitting";
 
@@ -109,7 +115,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
             id="locationLat"
             name="locationLat"
             value={location.latitude}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Latitude"
           />
@@ -119,7 +125,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
             id="locationLng"
             name="locationLng"
             value={location.longitude}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Longitude"
           />
@@ -129,7 +135,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
             id="locationName"
             name="locationName"
             value={location.name}
-            onChange={() => {}}
+            onChange={() => { }}
             required
             placeholder="Location Name"
           />
@@ -296,7 +302,7 @@ export async function action({
       data: activityData,
     });
 
-    return redirect("/activity");
+    return redirect("..");
   } catch (e) {
     console.error("Error saving activity", e);
     return { message: "Error submitting" };

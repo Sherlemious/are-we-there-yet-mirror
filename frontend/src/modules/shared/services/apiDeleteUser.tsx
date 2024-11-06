@@ -1,14 +1,16 @@
 import toast from "react-hot-toast";
 import axiosInstance from "./axiosInstance";
 
-export async function deleteUser(id: string) {
+export async function requestAccountDeletion() {
   try {
-    const resPromise = axiosInstance.delete(`/users/${id}`) as Promise<unknown>;
+    const resPromise = axiosInstance.patch(
+      `/users/requestDeletion`,
+    ) as Promise<unknown>;
 
     toast.promise(resPromise, {
-      loading: "Deleting account...",
-      success: "Account deleted successfully",
-      error: "An error occurred while deleting your account",
+      loading: "Requesting account deletion...",
+      success: "Your request was successfully submitted",
+      error: "An error occurred while requesting to deleting your account",
     });
 
     return resPromise;
