@@ -44,7 +44,6 @@ useEffect(() => {
     const fetchTourGuides = async () => {
       try {
         const response = await axiosInstance.get("/users/tourGuides");
-        console.log(response.data.data);
         setTourGuides(response.data.data.tourGuides);
       } catch (error) {
         console.error("Error fetching tourGuides:", error);
@@ -52,9 +51,9 @@ useEffect(() => {
     };
     const fetchActivities = async () => {
       try {
-        const response = await axiosInstance.get("/activities/");
-        console.log(response.data.data);
-        setActivities(response.data.data);
+        const response = await axiosInstance.get("/users/getActivities");
+        console.log(response.data.data.activities.activity_bookings);
+        setActivities(response.data.data.activities.activity_bookings);
       } catch (error) {
         console.error("Error fetching activities:", error);
       }
@@ -102,12 +101,6 @@ return (
     {/* tab to choose which asset to view */}
     <div className="w-full h-fit border-2 flex flex-row justify-around bg-primary-green">
   <button
-    className={`w-fit h-full my-4 self-center text-xl ${currentTab === 'tour guide' ? 'font-bold text-white' : 'text-gray-900'} hover:text-white`}
-    onClick={() => handleTabChange('tour guide')}
-  >
-    Tour Guides
-  </button>
-  <button
     className={`w-fit h-full my-4 self-center text-xl ${currentTab === 'activities' ? 'font-bold text-white' : 'text-gray-900'} hover:text-white`}
     onClick={() => handleTabChange('activities')}
   >
@@ -118,6 +111,18 @@ return (
     onClick={() => handleTabChange('itinerary')}
   >
     Itineraries
+  </button>
+  <button
+    className={`w-fit h-full my-4 self-center text-xl ${currentTab === 'product' ? 'font-bold text-white' : 'text-gray-900'} hover:text-white`}
+    onClick={() => handleTabChange('product')}
+  >
+    Products
+  </button>
+  <button
+    className={`w-fit h-full my-4 self-center text-xl ${currentTab === 'tour guide' ? 'font-bold text-white' : 'text-gray-900'} hover:text-white`}
+    onClick={() => handleTabChange('tour guide')}
+  >
+    Tour Guides
   </button>
 </div>
     <Modal ref={modalRef} onClose={handleCloseModal}>
@@ -130,10 +135,30 @@ return (
         />
       </Modal>
     {/* This is the main content */}
-    <div className="w-full h-fit border-black border-2 mb-16 flex flex-col">
-      {currentTab === 'tour guide'  && <TourGuidesTable tourGuides={tourGuides} onEditRating = {handleOpenModal}  /> }
-      {currentTab === 'activities' && <ActivitiesTable activities={activities} onEditRating = {handleOpenModal} />}
-      {currentTab === 'itinerary' } 
+    <div className="w-full h-fit border-black border-2 mb-16 flex flex-col bg-primary-green">
+      {currentTab === 'activities' ? (
+        activities.length > 0 ? (
+          <ActivitiesTable activities={activities} onEditRating={handleOpenModal} />
+        ) : (
+          <div className="text-center text-2xl text-gray-900">No attended activities</div>
+        )
+      ) : null}
+
+      {currentTab === 'tour guide' ? (
+        tourGuides.length > 0 ? (
+          <TourGuidesTable tourGuides={tourGuides} onEditRating={handleOpenModal} />
+        ) : (
+          <div className="text-center text-2xl text-gray-900">No tour guides booked with</div>
+        )
+      ) : null}
+
+      {currentTab === 'itinerary' ? (
+        <div className="text-center text-2xl text-gray-900">Itinerary content will go here</div>
+      ) : null}
+      
+      {currentTab === 'product' ? (
+        <div className="text-center text-2xl text-gray-900">Product content will go here</div>
+      ) : null}
     </div>
   </div>
 );
