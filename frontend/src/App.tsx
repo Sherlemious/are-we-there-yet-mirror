@@ -21,7 +21,11 @@ import { TourGuideProfile } from "./modules/TourGuide/App";
 import { AdvertiserProfile } from "./modules/Advertiser/App";
 import { SellerProfile } from "./modules/Seller/App";
 
-import { TouristProfile, touristProfileLoader } from "./modules/Tourist/App";
+import {
+  TouristProfile,
+  touristProfileLoader,
+  Bookings,
+} from "./modules/Tourist/App";
 import { Toaster } from "react-hot-toast";
 import { UsersAssets } from "./modules/shared/pages/UsersAssets";
 import { UsersAssets as CrudUserAssets } from "./modules/TourGuide/pages/UsersAssets";
@@ -110,6 +114,14 @@ const BrowserRouter = createBrowserRouter([
     errorElement: <ErrorPage />,
     loader: rootLayoutLoader,
     children: [
+      {
+        path: "bookings/:id",
+        element: (
+          <RouteGuard account_types={[AccountType.Tourist]}>
+            <Bookings />
+          </RouteGuard>
+        ),
+      },
       {
         path: "tour-guide-profile/:id",
         // element: <TourGuideProfile />,

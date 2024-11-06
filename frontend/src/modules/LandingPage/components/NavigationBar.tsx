@@ -65,13 +65,12 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
   return (
     <div className="z-10 flex items-center bg-secondary-light_grey/50 py-7">
       <div className="flex w-full justify-center">
-        <nav ref={navRef} className="relative ml-52 flex w-1/2 justify-around">
+        <nav ref={navRef} className="mx-26 relative flex w-3/4 justify-around">
           {/* Animated underline indicator */}
           <div
             className="absolute bottom-0 h-0.5 bg-accent-gold transition-all duration-200 ease-in-out"
             style={indicatorStyle}
           />
-
           <NavLink
             ref={(el) => (linkRefs.current[0] = el!)}
             to={user.account_type === AccountType.None ? "/" : "/home"}
@@ -119,6 +118,18 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               Products
             </NavLink>
           )}
+          {user.account_type === AccountType.Tourist && (
+            <NavLink
+              ref={(el) => (linkRefs.current[5] = el!)}
+              to={`/home/bookings/${user._id}`}
+              className={(props) => handleStyles(props)}
+              onMouseEnter={() => handleMouseEnter(5)}
+              onMouseLeave={handleMouseLeave}
+            >
+              Bookings
+            </NavLink>
+          )}
+          ;
         </nav>
       </div>
       <div className="flex w-[15%] items-center gap-7">
@@ -130,7 +141,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               }
 
               if (user.account_type === AccountType.Admin) {
-                return navigate('/home/admin-dashboard');
+                return navigate("/home/admin-dashboard");
               }
 
               return navigate(
