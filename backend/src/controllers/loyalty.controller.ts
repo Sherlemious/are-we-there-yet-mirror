@@ -8,7 +8,7 @@ import { UserType } from '../types/User.types';
 async function redeemPoints(req: Request, res: Response) {
   try {
     const userId: string = req.user.userId;
-    const user: UserType | null = await userRepo.findUserById(userId);
+    const user = await userRepo.findUserById(userId);
     if (!user) throw new Error('User not found');
     const { points } = req.body;
     if (user.loyalty_points < points) {
@@ -21,7 +21,7 @@ async function redeemPoints(req: Request, res: Response) {
     user.wallet += points * 0.01;
 
     // Update user
-    await userRepo.updateUser(userId, user);
+    await userRepo.updateUser(userId, user as UserType);
     res.status(ResponseStatusCodes.OK).json({ message: 'Points redeemed successfully' });
   } catch (error: any) {
     logger.error(`Error redeeming points: ${error.message}`);
@@ -32,7 +32,7 @@ async function redeemPoints(req: Request, res: Response) {
 async function getLoyaltyLevel(req: Request, res: Response) {
   try {
     const userId: string = req.user.userId;
-    const user: UserType | null = await userRepo.findUserById(userId);
+    const user = await userRepo.findUserById(userId);
     if (!user) throw new Error('User not found');
     const points = user.loyalty_points;
     let level = 0;

@@ -35,6 +35,7 @@ export interface UserType {
   // Seller
   description?: string;
   // Tourist
+  preferences: [string];
   loyalty_points: number;
   wallet?: number;
   itinerary_bookings: [Types.ObjectId];

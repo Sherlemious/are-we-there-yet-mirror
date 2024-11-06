@@ -15,6 +15,12 @@ class BookingRepo {
 
     return booking;
   }
+
+  async checkItineraryBooked(itineraryId: string): Promise<boolean> {
+    const booking = await Booking.find({ itineraryId: itineraryId });
+
+    return !!booking;
+  }
 }
 
 export default new BookingRepo();
