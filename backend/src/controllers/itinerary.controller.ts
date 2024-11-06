@@ -194,21 +194,6 @@ const flagItinerary = async (req: Request, res: Response) => {
   }
 };
 
-const getUserWhoCreatedItinerary = async (req: Request, res: Response) => {
-  try {
-    const userId = await ItineraryRepo.getUserWhoCreatedItinerary(req.params.id);
-    const response = {
-      message: 'User fetched successfully',
-      data: { userId: userId },
-    };
-
-    res.status(ResponseStatusCodes.OK).json(response);
-  } catch (error: any) {
-    logger.error(`Error fetching user who created itinerary: ${error.message}`);
-    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
-  }
-};
-
 export {
   getItineraries,
   findItineraryById,
@@ -219,5 +204,4 @@ export {
   getItinerariesCreatedByUser,
   flagItinerary,
   toggleItineraryActive,
-  getUserWhoCreatedItinerary,
 };

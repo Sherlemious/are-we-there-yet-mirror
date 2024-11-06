@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import userRepo from '../../database/repositories/user.repo';
 import { logger } from '../../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../../types/ResponseStatusCodes.types';
+import bookingRepo from '../../database/repositories/booking.repo';
+import activityRepo from '../../database/repositories/activity.repo';
+import itineraryRepo from '../../database/repositories/itinerary.repo';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -186,6 +189,79 @@ const getActivity = async (req: Request, res: Response) => {
   }
 };
 
+const cancelActivityBooking = async (req: Request, res: Response) => {
+  try {
+    const activityDate = await activityRepo.getActivitiesStartDate(req.body.activity_id);
+    if (!activityDate) {
+      res.status(ResponseStatusCodes.NOT_FOUND).send({
+        message: 'Activity not found',
+      });
+      return;
+    }
+    const currentTime = new Date();
+    const activityStartTime = new Date(activityDate.datetime);
+    const timeDifference = activityStartTime.getTime() - currentTime.getTime();
+    if (timeDifference < 48 * 60 * 60 * 1000) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).send({
+        message: 'You can only cancel the booking at least 48 hours before the activity starts.',
+      });
+      return;
+    }
+    const booking = await bookingRepo.cancelBooking(req.body.booking_id);
+    await userRepo.cancelActivityBooking(req.user.userId, req.body.booking_id);
+
+    res.status(ResponseStatusCodes.OK).send({
+      message: 'Booking cancelled successfully',
+      data: { booking: booking },
+    });
+  } catch (error: any) {
+    logger.error(`Error occurred while cancelling activity booking: ${error.message}`);
+    res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).send({
+      message: `Error occurred while cancelling activity booking: ${error.message}`,
+    });
+  }
+};
+
+const cancelItineraryBooking = async (req: Request, res: Response) => {
+  try {
+    const itinerary = await itineraryRepo.getItineraryStartDate(req.body.itinerary_id);
+    if (!itinerary) {
+      res.status(ResponseStatusCodes.NOT_FOUND).send({
+        message: 'Itinerary not found',
+      });
+      return;
+    }
+    const currentTime = new Date();
+    if (!itinerary.timeline || itinerary.timeline.length === 0) {
+      res.status(ResponseStatusCodes.NOT_FOUND).send({
+        message: 'Itinerary does not have time',
+      });
+      return;
+    }
+    const timelineItem = JSON.parse(itinerary.timeline[0]);
+    const activityStartTime = new Date(timelineItem.start);
+    const timeDifference = activityStartTime.getTime() - currentTime.getTime();
+    if (timeDifference < 48 * 60 * 60 * 1000) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).send({
+        message: 'You can only cancel the booking at least 48 hours before the itinerary starts.',
+      });
+      return;
+    }
+    const booking = await bookingRepo.cancelBooking(req.body.booking_id);
+    await userRepo.cancelItineraryBooking(req.user.userId, req.body.booking_id);
+
+    res.status(ResponseStatusCodes.OK).send({
+      message: 'Booking cancelled successfully',
+      data: { booking: booking },
+    });
+  } catch (error: any) {
+    logger.error(`Error occurred while cancelling itinerary booking: ${error.message}`);
+    res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).send({
+      message: `Error occurred while cancelling itinerary booking: ${error.message}`,
+    });
+  }
+}
+
 export {
   getUsers,
   deleteUser,
@@ -199,4 +275,6 @@ export {
   rejectUser,
   getItinerary,
   getActivity,
+  cancelActivityBooking,
+  cancelItineraryBooking,
 };
