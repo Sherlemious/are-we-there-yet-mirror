@@ -44,16 +44,16 @@ export async function updateUser(
     return toast.error("Invalid hotline number");
   }
 
-  const keys = prepareData(data, data["account_type"]);
+  const APIReqObj = prepareData(data, data["account_type"]);
 
-  if (!keys) {
+  if (!APIReqObj) {
     return;
   }
 
   try {
     const resPromise = axiosInstance.patch(
       `/users/${id}`,
-      keys,
+      APIReqObj,
     ) as Promise<unknown>;
 
     toast.promise(
@@ -83,86 +83,114 @@ function prepareData(
   data: { [key: string]: FormDataEntryValue },
   account_type: FormDataEntryValue,
 ) {
-  const keys: { [key: string]: FormDataEntryValue } = {};
+  const dataToSend: { [key: string]: FormDataEntryValue } = {};
 
   if (account_type === userRoles.tourist) {
     if (data["email"]) {
-      keys["email"] = data["email"];
-    }
-    if (data["password"]) {
-      keys["password"] = data["password"];
+      if (!validateFormDataValue(fieldNames.email, data.email as string)) {
+        return toast.error("Invalid email address");
+      }
+      dataToSend["email"] = data["email"];
     }
     if (data["dob"]) {
-      keys["dob"] = data["dob"];
+      dataToSend["dob"] = data["dob"];
     }
     if (data["job"]) {
-      keys["job"] = data["job"];
+      if (/\d/.test(data["job"] as string)) {
+        return toast.error("Job field should not include numbers");
+      }
+      dataToSend["job"] = data["job"];
     }
     if (data["mobile_number"]) {
-      keys["mobile_number"] = data["mobile_number"];
+      dataToSend["mobile_number"] = data["mobile_number"];
     }
 
     if (data["nationality"]) {
-      keys["nationality"] = data["nationality"];
+      dataToSend["nationality"] = data["nationality"];
     }
     if (data["wallet"]) {
-      keys["wallet"] = data["wallet"];
+      dataToSend["wallet"] = data["wallet"];
+    }
+    if (data["profile_pic"]) {
+      dataToSend["profile_pic"] = data["profile_pic"];
     }
 
-    return keys;
+    return dataToSend;
   }
 
   if (account_type === userRoles.tourGuide) {
     if (data["email"]) {
-      keys["email"] = data["email"];
-    }
-    if (data["password"]) {
-      keys["password"] = data["password"];
+      if (!validateFormDataValue(fieldNames.email, data.email as string)) {
+        return toast.error("Invalid email address");
+      }
+      dataToSend["email"] = data["email"];
     }
     if (data["mobile_number"]) {
       {
-        keys["mobile_number"] = data["mobile_number"];
+        dataToSend["mobile_number"] = data["mobile_number"];
       }
     }
 
     if (data["years_of_experience"]) {
-      keys["years_of_experience"] = data["years_of_experience"];
+      dataToSend["years_of_experience"] = data["years_of_experience"];
     }
-    return keys;
+
+    if (data["profile_pic"]) {
+      dataToSend["profile_pic"] = data["profile_pic"];
+    }
+    return dataToSend;
   }
 
   if (account_type === userRoles.seller) {
     if (data["email"]) {
-      keys["email"] = data["email"];
-    }
-    if (data["password"]) {
-      keys["password"] = data["password"];
+      if (!validateFormDataValue(fieldNames.email, data.email as string)) {
+        return toast.error("Invalid email address");
+      }
+      dataToSend["email"] = data["email"];
     }
     if (data["description"]) {
-      keys["description"] = data["description"];
+      dataToSend["description"] = data["description"];
     }
 
     if (data["name"]) {
-      keys["username"] = data["name"];
+      dataToSend["username"] = data["name"];
     }
-    return keys;
+
+    if (data["profile_pic"]) {
+      dataToSend["profile_pic"] = data["profile_pic"];
+    }
+    return dataToSend;
   }
 
   if (account_type === userRoles.advertiser) {
     if (data["email"]) {
-      keys["email"] = data["email"];
-    }
-    if (data["password"]) {
-      keys["password"] = data["password"];
+      if (!validateFormDataValue(fieldNames.email, data.email as string)) {
+        return toast.error("Invalid email address");
+      }
+      dataToSend["email"] = data["email"];
     }
     if (data[fieldNames.hotline]) {
-      keys["hotline"] = data[fieldNames.hotline];
+      dataToSend["hotline"] = data[fieldNames.hotline];
     }
 
     if (data["website"]) {
-      keys["website"] = data["website"];
+      if (
+        !(
+          (data["website"] as string).includes("http://") ||
+          (data["website"] as string).includes("https://") ||
+          (data["website"] as string).includes("www.") ||
+          (data["website"] as string).includes(".com")
+        )
+      ) {
+        return toast.error("Invalid website address");
+      }
+      dataToSend["website"] = data["website"];
     }
-    return keys;
+
+    if (data["profile_pic"]) {
+      dataToSend["profile_pic"] = data["profile_pic"];
+    }
+    return dataToSend;
   }
   return;
 }

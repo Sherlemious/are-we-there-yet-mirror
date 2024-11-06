@@ -1,4 +1,4 @@
-import { imgLinks } from "@/modules/shared/utils/constants";
+// import { imgLinks } from "@/modules/shared/utils/constants";
 import {
   Mail,
   Camera,
@@ -11,16 +11,18 @@ import {
   Info,
   Clock,
 } from "lucide-react";
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useRef, useContext } from "react";
 import EditModal, { formModalRef } from "../../shared/components/FormEditModal";
 import { UserContext } from "@/modules/shared/store/user-context";
 import toast from "react-hot-toast";
-import { deleteUser } from "../services/apiDeleteUser";
+import { requestAccountDeletion } from "../services/apiDeleteUser";
 // import { uploadProfilePicture } from "../services/apiUpdateProfilePicture";
 import { useNavigate } from "react-router";
-import { AccountType } from "../types/User.types";
-
-const imgs = Object.values(imgLinks.landing_page);
+import { apiAddDocs } from "@/modules/Register/services/apiAddDocs";
+import { updateUser } from "../services/apiUpdateUser";
+import { validateFormDataValue } from "@/modules/Register/utils/helpers";
+import { fieldNames } from "../constants/inputNames";
+import { updatePassword } from "../services/apiUpdatePassword";
 
 interface NewProfProps {
   countries?: { name: { common: string } }[];
@@ -44,7 +46,6 @@ const NewProf: React.FC<NewProfProps> = ({
   endpoint,
   initialFormValues,
 }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<formModalRef>(null);
@@ -55,33 +56,39 @@ const NewProf: React.FC<NewProfProps> = ({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
-    console.log(file);
-    // if (!file) return;
-    // // Validate file type
-    // if (!file.type.startsWith("image/")) {
-    //   toast.error("Please upload an image file");
-    //   return;
-    // }
-    // // Validate file size (5MB)
-    // const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
-    // if (file.size > MAX_FILE_SIZE) {
-    //   toast.error("File size should be less than 5MB");
-    //   return;
-    // }
-    // try {
-    //   setIsUploading(true);
-    //   // const { imageUrl } = await uploadProfilePicture(user._id, file);
-    //   setUser((prev) => ({
-    //     ...prev,
-    //     // profilePicture: imageUrl,
-    //   }));
-    //   toast.success("Profile picture updated successfully");
-    // } catch (error) {
-    //   console.error("Error uploading profile picture:", error);
-    //   toast.error("Failed to update profile picture");
-    // } finally {
-    //   setIsUploading(false);
-    // }
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await apiAddDocs(formData);
+      const id = res.data._id;
+      const url = res.data.url;
+
+      await updateUser(user._id, {
+        account_type: user.account_type,
+        profile_pic: id,
+      });
+
+      setUser((prev) => ({
+        ...prev,
+        profile_pic: { url, _id: id },
+      }));
+
+      toast.success("Profile picture updated successfully");
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      toast.error("Failed to update profile picture");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleCameraClick = () => {
@@ -89,6 +96,7 @@ const NewProf: React.FC<NewProfProps> = ({
   };
 
   const handleSave = async (data: Record<string, string>) => {
+    // validate nationality
     if (
       fieldsIncludeNationality &&
       data["Nationality"] &&
@@ -98,6 +106,7 @@ const NewProf: React.FC<NewProfProps> = ({
       return;
     }
 
+    // map form keys to API fields => { formKey: APIField }
     const fieldsMap: Record<string, string> = {};
     if (mappingNeeded) {
       for (const key in initialFormValues) {
@@ -106,6 +115,7 @@ const NewProf: React.FC<NewProfProps> = ({
       }
     }
 
+    // map data to API fields -> { APIField: value }, where APIField is the field name in the API and value is the value from the form
     const mappedData = Object.entries(data).reduce<Record<string, string>>(
       (acc, [key, value]) => ({
         ...acc,
@@ -114,39 +124,50 @@ const NewProf: React.FC<NewProfProps> = ({
       {},
     );
 
+    // Update password
+    console.log("Mapped Data:", mappedData);
+    if (mappedData.password) {
+      if (
+        !validateFormDataValue(
+          fieldNames.password,
+          mappedData.password as string,
+        )
+      ) {
+        return toast.error(
+          "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+        );
+      }
+      await updatePassword(mappedData.password);
+    }
+
+    // append account type if needed
     if (accountTypeNeededInAPICall) {
       mappedData["account_type"] = user.account_type;
     }
 
+    // Remove dob field if present
     if (mappedData["dob"]) delete mappedData["dob"];
 
+    // call API
     try {
-      await endpoint(user._id, mappedData);
-      setUser((prev) => ({ ...prev, ...mappedData }));
-      // toast.success("Profile updated successfully");
+      const res = (await endpoint(user._id, mappedData)) as { status: number };
+
+      if (res.status === 200) {
+        setUser((prev) => ({ ...prev, ...mappedData }));
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
-      // toast.error("Failed to update profile");
     }
   };
 
-  const deleteAccount = async (id: string) => {
+  const onDeleteReq = async () => {
     try {
-      const res = (await deleteUser(id)) as { status: number };
+      await requestAccountDeletion();
 
-      if (res.status === 200) {
-        setUser({
-          _id: "",
-          password: "",
-          username: "",
-          account_type: AccountType.None,
-        });
-        navigate("/home");
-        toast.success("Account deleted successfully");
-      }
+      navigate("/home");
     } catch (error) {
       console.error("Error deleting account:", error);
-      toast.error("Failed to delete account");
+      toast.error("Request to delete account failed");
     }
   };
 
@@ -155,14 +176,6 @@ const NewProf: React.FC<NewProfProps> = ({
       ...initialFormValues,
     });
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imgs.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const renderProfileContent = () => {
     switch (user.account_type.toLowerCase()) {
@@ -286,7 +299,7 @@ const NewProf: React.FC<NewProfProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Wallet className="h-5 w-5 flex-shrink-0 text-primary-blue" />
-                  <span className="text-slate-600">{user.wallet || "NA"}</span>
+                  <span className="text-slate-600">{user.wallet}</span>
                 </div>
               </div>
             </div>
@@ -297,26 +310,6 @@ const NewProf: React.FC<NewProfProps> = ({
 
   return (
     <div className="relative min-h-screen">
-      {/* Background Images */}
-      <div className="fixed inset-0">
-        {imgs.map((image, index) => (
-          <div
-            key={image}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              currentImageIndex === index ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              backgroundImage: `url(${image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "blur(8px)",
-              transform: "scale(1.1)",
-            }}
-          />
-        ))}
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
-
       {/* Content */}
       <div className="relative flex min-h-screen items-center justify-center">
         <div className="w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
@@ -324,10 +317,10 @@ const NewProf: React.FC<NewProfProps> = ({
             <div className="flex flex-col gap-12 lg:flex-row">
               <div className="flex flex-col items-center lg:items-center">
                 <div className="relative">
-                  {user.picture ? (
+                  {user.profile_pic ? (
                     <div className="h-40 w-40 overflow-hidden rounded-full border-4 border-white shadow-lg">
                       <img
-                        src={user.picture}
+                        src={user.profile_pic.url}
                         alt="Profile"
                         className="h-full w-full object-cover"
                       />
@@ -385,7 +378,7 @@ const NewProf: React.FC<NewProfProps> = ({
                 ref={modalRef}
                 fields={Object.keys(initialFormValues)}
                 onSave={handleSave}
-                onDeleteAccount={() => deleteAccount(user._id)}
+                onDeleteAccount={() => onDeleteReq()}
               />
             </div>
           </div>

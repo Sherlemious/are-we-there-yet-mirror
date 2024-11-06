@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { imgLinks } from "@/modules/shared/utils/constants";
 import {
   useActionData,
@@ -15,7 +21,7 @@ import { userRoles } from "@/modules/shared/constants/roles";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserContext } from "@/modules/shared/store/user-context";
 import { UserType } from "@/modules/shared/types/User.types";
-import { fadeIn, formVariants } from "../styles/animations";
+import { formVariants } from "../styles/animations";
 import { apiAddDocs } from "../services/apiAddDocs";
 import { handleUserRegistration } from "../services/apiHandleUserRegistration";
 import FormHeader from "./FormHeader";
@@ -23,6 +29,8 @@ import GeneralRegister from "./GeneralRegister";
 import TouristRegister from "./TouristRegister";
 import TourGuideDocUpload from "./TourGuideDocUpload";
 import AdvertiserOrSellerDocUpload from "./AdvertiserOrSellerDocUpload";
+import SubmitButton from "./SubmitButton";
+import { apiGetTermsAndConditions } from "../services/apiGetTermsAndConditions";
 
 const imgs = Object.values(imgLinks.landing_page);
 
@@ -36,6 +44,7 @@ type NewData = {
   dob?: string;
   mobile_number?: string;
   documentIds?: string[];
+  acceptedTerms?: boolean;
 };
 
 const RegistrationForm = () => {
@@ -43,12 +52,18 @@ const RegistrationForm = () => {
   const [nationality, setNationality] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [oneOfFieldsIsEmpty, setOneOfFieldsIsEmpty] = useState(true);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const navigation = useNavigation();
   const submit = useSubmit();
-  const countries = useLoaderData() as { name: { common: string } }[];
+  const { countries, terms } = useLoaderData() as {
+    countries: { name: { common: string } }[];
+    terms: string;
+  };
+
   const navigate = useNavigate();
-  const countryNames = countries.map((country) => country.name.common);
+  const countryNames = countries?.map((country) => country.name.common);
   countryNames.sort();
   const res = useActionData() as {
     status: number;
@@ -91,7 +106,6 @@ const RegistrationForm = () => {
       }));
     }
 
-    // Reset the input value to allow uploading the same file again
     e.target.value = "";
   };
 
@@ -114,33 +128,76 @@ const RegistrationForm = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  // const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
+  //   const formData = new FormData(e.currentTarget);
+  //   const data = Object.fromEntries(formData);
+
+  //   for (const key in data) {
+  //     if (data[key] === "" && key !== "acceptedTerms") {
+  //       setOneOfFieldsIsEmpty(true);
+  //       return;
+  //     }
+  //   }
+
+  //   setOneOfFieldsIsEmpty(false);
+  // };
+
   const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData);
+    let requiredFields = ["username", "email", "password"];
 
-    for (const key in data) {
-      if (data[key] === "") {
-        setOneOfFieldsIsEmpty(true);
-        return;
-      }
+    // Add required fields based on user type
+    if (userType === userRoles.tourist) {
+      requiredFields = [
+        ...requiredFields,
+        "job",
+        "nationality",
+        "dob",
+        "mobile_number",
+      ];
     }
 
-    setOneOfFieldsIsEmpty(false);
+    // Check if any required field is empty
+    const hasEmptyFields = requiredFields.some((field) => {
+      const value = data[field];
+      return !value || (typeof value === "string" && value.trim() === "");
+    });
+
+    // Additional check for nationality since it's handled separately
+    if (userType === userRoles.tourist && !nationality) {
+      setOneOfFieldsIsEmpty(true);
+      return;
+    }
+
+    setOneOfFieldsIsEmpty(hasEmptyFields);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (oneOfFieldsIsEmpty) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (!acceptedTerms) {
+      toast.error("Please accept the terms and conditions to continue");
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
-    // remove the document fields from the form data
     formData.delete("personalId");
     formData.delete("certificates");
     formData.delete("taxDocument");
 
     const data = Object.fromEntries(formData);
+
+    console.log(data);
+
     const ids = [];
 
     if (userType !== userRoles.tourist) {
-      //loop through the documents object and append each file to the fileData
       for (const key in documents) {
         const fileData = new FormData();
         if (
@@ -167,6 +224,8 @@ const RegistrationForm = () => {
         }
       }
     }
+
+    console.log(documents);
     console.log(ids);
 
     if (!validateFormDataValue(fieldNames.email, data.email as string)) {
@@ -189,6 +248,7 @@ const RegistrationForm = () => {
     formRef.current?.reset();
     setNationality("");
     setOneOfFieldsIsEmpty(true);
+    setAcceptedTerms(false);
     setDocuments({
       personalId: null,
       certificates: [],
@@ -267,7 +327,6 @@ const RegistrationForm = () => {
                     />
                   )}
 
-                  {/* Document upload section for tour guide */}
                   {userType === userRoles.tourGuide && (
                     <TourGuideDocUpload
                       setDocuments={setDocuments}
@@ -276,7 +335,6 @@ const RegistrationForm = () => {
                     />
                   )}
 
-                  {/* Document upload section for advertiser and seller */}
                   {(userType === userRoles.advertiser ||
                     userType === userRoles.seller) && (
                     <AdvertiserOrSellerDocUpload
@@ -286,23 +344,52 @@ const RegistrationForm = () => {
                     />
                   )}
                 </div>
+                <input
+                  type="hidden"
+                  name="acceptedTerms"
+                  value={acceptedTerms.toString()}
+                />
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    checked={acceptedTerms}
+                    onCheckedChange={(checked) =>
+                      setAcceptedTerms(checked as boolean)
+                    }
+                    className="border-white"
+                  />
+                  <label htmlFor="terms" className="text-sm text-white">
+                    I accept the{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowTerms(true)}
+                      className="text-yellow-400 hover:underline"
+                    >
+                      terms and conditions
+                    </button>
+                  </label>
+                </div>
 
-                <motion.div
-                  variants={fadeIn}
-                  className="flex transform flex-col gap-2"
-                >
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || oneOfFieldsIsEmpty}
-                    className="w-full bg-yellow-500 font-bold text-black hover:bg-yellow-600 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {isSubmitting ? "Creating account..." : "Create my account"}
-                  </Button>
-                </motion.div>
+                <SubmitButton
+                  isSubmitting={isSubmitting}
+                  oneOfFieldsIsEmpty={oneOfFieldsIsEmpty || !acceptedTerms}
+                />
               </Form>
             </motion.div>
           )}
         </AnimatePresence>
+
+        <Dialog open={showTerms} onOpenChange={setShowTerms}>
+          <DialogContent className="max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Terms and Conditions</DialogTitle>
+            </DialogHeader>
+            <div
+              className="mt-4 text-sm"
+              dangerouslySetInnerHTML={{ __html: terms }}
+            />
+          </DialogContent>
+        </Dialog>
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -311,7 +398,7 @@ const RegistrationForm = () => {
           className="mt-4 text-center text-white"
         >
           Already have an account?{" "}
-          <a href="#" className="ml-2 text-yellow-400 hover:underline">
+          <a href="/login" className="ml-2 text-yellow-400 hover:underline">
             Sign in
           </a>
         </motion.p>
@@ -326,6 +413,7 @@ export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const documentIds = [];
+  const termsAccepted = true;
 
   if (
     data.userRole === userRoles.tourGuide ||
@@ -338,15 +426,14 @@ export async function action({ request }: { request: Request }) {
     }
   }
 
-  //remove the documentIds from the data object
   delete data.documentIds;
+  delete data.acceptedTerms;
 
   const newData = {
     ...data,
     documentIds,
+    acceptedTerms: termsAccepted,
   } as NewData;
-
-  console.log(newData);
 
   if (data.userRole === userRoles.tourist) {
     const res = await handleUserRegistration({
@@ -360,6 +447,7 @@ export async function action({ request }: { request: Request }) {
         nationality: newData.nationality,
         dob: newData.dob,
         mobile_number: newData.mobile_number,
+        termsAndConditions: newData.acceptedTerms,
       },
       successRedirect: "/tourist-profile",
     });
@@ -374,6 +462,7 @@ export async function action({ request }: { request: Request }) {
         email: data.email,
         password: data.password,
         attachments: documentIds,
+        termsAndConditions: newData.acceptedTerms,
       },
       successRedirect: "/tour-guide-profile",
     });
@@ -388,6 +477,7 @@ export async function action({ request }: { request: Request }) {
         email: newData.email,
         password: newData.password,
         attachments: newData.documentIds,
+        termsAndConditions: newData.acceptedTerms,
       },
       successRedirect: "/advertiser-profile",
     });
@@ -402,6 +492,7 @@ export async function action({ request }: { request: Request }) {
         email: newData.email,
         password: newData.password,
         attachments: newData.documentIds,
+        termsAndConditions: newData.acceptedTerms,
       },
       successRedirect: "/seller-profile",
     });
@@ -412,5 +503,11 @@ export async function action({ request }: { request: Request }) {
 export async function loader() {
   const response = await fetch(`https://restcountries.com/v3.1/all`);
   const data = await response.json();
-  return data;
+
+  const terms = await apiGetTermsAndConditions();
+
+  return {
+    countries: data,
+    terms,
+  };
 }
