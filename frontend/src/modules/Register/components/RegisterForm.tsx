@@ -1,14 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { imgLinks } from "@/modules/shared/utils/constants";
 import {
   useActionData,
@@ -20,48 +11,31 @@ import { Form, useSubmit } from "react-router-dom";
 import { validateFormDataValue } from "../utils/helpers";
 import toast from "react-hot-toast";
 import { fieldNames } from "../../shared/constants/inputNames";
-import { handleUserRegistration } from "../services/apiHandleUserRegistration";
 import { userRoles } from "@/modules/shared/constants/roles";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserContext } from "@/modules/shared/store/user-context";
 import { UserType } from "@/modules/shared/types/User.types";
+import { fadeIn, formVariants } from "../styles/animations";
+import { apiAddDocs } from "../services/apiAddDocs";
+import { handleUserRegistration } from "../services/apiHandleUserRegistration";
+import FormHeader from "./FormHeader";
+import GeneralRegister from "./GeneralRegister";
+import TouristRegister from "./TouristRegister";
+import TourGuideDocUpload from "./TourGuideDocUpload";
+import AdvertiserOrSellerDocUpload from "./AdvertiserOrSellerDocUpload";
 
 const imgs = Object.values(imgLinks.landing_page);
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
-};
-
-const formVariants = {
-  hidden: {
-    height: 0,
-    opacity: 0,
-    y: 20,
-  },
-  visible: {
-    height: "auto",
-    opacity: 1,
-    y: 0,
-    transition: {
-      height: {
-        duration: 0.4,
-        ease: [0.04, 0.62, 0.23, 0.98],
-      },
-      opacity: { duration: 0.3, delay: 0.1 },
-      y: { duration: 0.3, delay: 0.1 },
-    },
-  },
-  exit: {
-    height: 0,
-    opacity: 0,
-    y: -20,
-    transition: {
-      height: { duration: 0.3 },
-      opacity: { duration: 0.2 },
-    },
-  },
+type NewData = {
+  userRole: string;
+  username: string;
+  email: string;
+  password: string;
+  job?: string;
+  nationality?: string;
+  dob?: string;
+  mobile_number?: string;
+  documentIds?: string[];
 };
 
 const RegistrationForm = () => {
@@ -74,7 +48,8 @@ const RegistrationForm = () => {
   const submit = useSubmit();
   const countries = useLoaderData() as { name: { common: string } }[];
   const navigate = useNavigate();
-
+  const countryNames = countries.map((country) => country.name.common);
+  countryNames.sort();
   const res = useActionData() as {
     status: number;
     data: {
@@ -85,22 +60,49 @@ const RegistrationForm = () => {
     };
   };
 
-  const { user, setUser } = useContext(UserContext);
+  const [documents, setDocuments] = useState<{
+    personalId: File | null;
+    certificates: File[];
+    taxDocument: File | null;
+  }>({
+    personalId: null,
+    certificates: [],
+    taxDocument: null,
+  });
+
+  const { setUser } = useContext(UserContext);
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    fieldName: string,
+  ) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    if (fieldName === "certificates") {
+      setDocuments((prev) => ({
+        ...prev,
+        [fieldName]: [...prev.certificates, ...Array.from(files)],
+      }));
+    } else {
+      setDocuments((prev) => ({
+        ...prev,
+        [fieldName]: files[0],
+      }));
+    }
+
+    // Reset the input value to allow uploading the same file again
+    e.target.value = "";
+  };
 
   useEffect(() => {
     if (res?.status === 200) {
       setUser({
         ...res.data.data.user,
       });
-
       navigate("/home");
     }
-  }, [res]);
-
-  console.log(user);
-
-  const countryNames = countries.map((country) => country.name.common);
-  countryNames.sort();
+  }, [res, setUser, navigate]);
 
   const isSubmitting = navigation.state === "submitting";
 
@@ -111,17 +113,6 @@ const RegistrationForm = () => {
 
     return () => clearInterval(intervalId);
   }, []);
-
-  const userTypes = [
-    { id: userRoles.tourist, label: "Tourist" },
-    { id: userRoles.advertiser, label: "Advertiser" },
-    { id: userRoles.seller, label: "Seller" },
-    { id: userRoles.tourGuide, label: "Tour Guide" },
-  ];
-
-  const handleUserTypeChange = (value: string) => {
-    setUserType(value);
-  };
 
   const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
@@ -137,10 +128,46 @@ const RegistrationForm = () => {
     setOneOfFieldsIsEmpty(false);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    // remove the document fields from the form data
+    formData.delete("personalId");
+    formData.delete("certificates");
+    formData.delete("taxDocument");
+
     const data = Object.fromEntries(formData);
+    const ids = [];
+
+    if (userType !== userRoles.tourist) {
+      //loop through the documents object and append each file to the fileData
+      for (const key in documents) {
+        const fileData = new FormData();
+        if (
+          documents[key as keyof typeof documents] &&
+          key !== "certificates"
+        ) {
+          fileData.append(
+            "file",
+            documents[key as keyof typeof documents] as Blob,
+          );
+          const res = await apiAddDocs(fileData);
+          ids.push(res.data._id);
+        }
+
+        if (key === "certificates") {
+          for (const file of documents[
+            key as keyof typeof documents
+          ] as File[]) {
+            const fileData = new FormData();
+            fileData.append("file", file);
+            const res = await apiAddDocs(fileData);
+            ids.push(res.data._id);
+          }
+        }
+      }
+    }
+    console.log(ids);
 
     if (!validateFormDataValue(fieldNames.email, data.email as string)) {
       return toast.error("Invalid email address");
@@ -152,23 +179,21 @@ const RegistrationForm = () => {
       );
     }
 
-    if (
-      userType === "tourist" &&
-      !validateFormDataValue(
-        fieldNames.mobileNumber,
-        data.mobileNumber as string,
-      )
-    ) {
-      return toast.error("Invalid mobile number");
+    if (ids.length > 0) {
+      formData.append("documentIds", JSON.stringify(ids));
     }
-
-    submit(e.currentTarget);
+    submit(formData, { method: "post" });
   };
 
   useEffect(() => {
     formRef.current?.reset();
     setNationality("");
     setOneOfFieldsIsEmpty(true);
+    setDocuments({
+      personalId: null,
+      certificates: [],
+      taxDocument: null,
+    });
   }, [userType]);
 
   return (
@@ -198,38 +223,7 @@ const RegistrationForm = () => {
         transition={{ duration: 0.6 }}
         className="relative z-10 w-full max-w-2xl rounded-lg bg-black bg-opacity-30 p-8 backdrop-blur-sm"
       >
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="transform transition-all duration-500 ease-in-out"
-        >
-          <h1 className="mb-2 text-center text-4xl font-bold text-white">
-            Are we there yet?
-          </h1>
-          <h2 className="mb-6 text-center text-2xl text-yellow-400">Almost!</h2>
-        </motion.div>
-
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="mb-6 flex transform flex-col gap-2"
-        >
-          <Label className="text-white">Who are you?</Label>
-          <Select value={userType} onValueChange={handleUserTypeChange}>
-            <SelectTrigger className="bg-white bg-opacity-20 text-white">
-              <SelectValue placeholder="Select your role" />
-            </SelectTrigger>
-            <SelectContent>
-              {userTypes.map((type) => (
-                <SelectItem key={type.id} value={type.id}>
-                  {type.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </motion.div>
+        <FormHeader setUserType={setUserType} userType={userType} />
 
         <AnimatePresence mode="wait">
           {userType && (
@@ -263,134 +257,33 @@ const RegistrationForm = () => {
                       : "grid-cols-1"
                   } gap-4`}
                 >
-                  <motion.div
-                    variants={fadeIn}
-                    className="flex transform flex-col gap-2"
-                  >
-                    <Label htmlFor="email" className="text-white">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      name={fieldNames.email}
-                      type="email"
-                      placeholder="Enter your email"
-                      required
-                      className="bg-white bg-opacity-20 text-white placeholder-white"
-                    />
-                  </motion.div>
-
-                  <motion.div
-                    variants={fadeIn}
-                    className="flex transform flex-col gap-2"
-                  >
-                    <Label htmlFor="username" className="text-white">
-                      Username
-                    </Label>
-                    <Input
-                      id="username"
-                      name={fieldNames.username}
-                      type="text"
-                      placeholder="Choose a username"
-                      required
-                      className="bg-white bg-opacity-20 text-white placeholder-white"
-                    />
-                  </motion.div>
-
-                  <motion.div
-                    variants={fadeIn}
-                    className="flex transform flex-col gap-2"
-                  >
-                    <Label htmlFor="password" className="text-white">
-                      Password
-                    </Label>
-                    <Input
-                      id="password"
-                      name={fieldNames.password}
-                      type="password"
-                      placeholder="Create a password"
-                      required
-                      className="bg-white bg-opacity-20 text-white placeholder-white"
-                    />
-                  </motion.div>
+                  {userType !== userRoles.tourist && <GeneralRegister />}
 
                   {userType === userRoles.tourist && (
-                    <>
-                      <motion.div
-                        variants={fadeIn}
-                        className="flex transform flex-col gap-2"
-                      >
-                        <Label htmlFor="nationality" className="text-white">
-                          Nationality
-                        </Label>
-                        <Select
-                          value={nationality}
-                          onValueChange={setNationality}
-                        >
-                          <SelectTrigger className="bg-white bg-opacity-20 text-white">
-                            <SelectValue placeholder="Select your nationality" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {countryNames.map((country) => (
-                              <SelectItem key={country} value={country}>
-                                {country}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </motion.div>
+                    <TouristRegister
+                      countryNames={countryNames}
+                      setNationality={setNationality}
+                      nationality={nationality}
+                    />
+                  )}
 
-                      <motion.div
-                        variants={fadeIn}
-                        className="flex transform flex-col gap-2"
-                      >
-                        <Label htmlFor="mobileNumber" className="text-white">
-                          Mobile Number
-                        </Label>
-                        <Input
-                          id="mobileNumber"
-                          name={fieldNames.mobileNumber}
-                          type="tel"
-                          placeholder="Your mobile number"
-                          required
-                          className="bg-white bg-opacity-20 text-white placeholder-white"
-                        />
-                      </motion.div>
+                  {/* Document upload section for tour guide */}
+                  {userType === userRoles.tourGuide && (
+                    <TourGuideDocUpload
+                      setDocuments={setDocuments}
+                      documents={documents}
+                      handleFileChange={handleFileChange}
+                    />
+                  )}
 
-                      <motion.div
-                        variants={fadeIn}
-                        className="flex transform flex-col gap-2"
-                      >
-                        <Label htmlFor="dateOfBirth" className="text-white">
-                          Date of Birth
-                        </Label>
-                        <Input
-                          id="dateOfBirth"
-                          name={fieldNames.dateOfBirth}
-                          type="date"
-                          required
-                          max={new Date().toISOString().slice(0, 10)}
-                          className="bg-white bg-opacity-20 text-white placeholder-white"
-                        />
-                      </motion.div>
-
-                      <motion.div
-                        variants={fadeIn}
-                        className="col-span-2 flex transform flex-col gap-2"
-                      >
-                        <Label htmlFor="occupation" className="text-white">
-                          Occupation
-                        </Label>
-                        <Input
-                          id="occupation"
-                          name={fieldNames.occupation}
-                          type="text"
-                          placeholder="Your occupation"
-                          required
-                          className="bg-white bg-opacity-20 text-white placeholder-white"
-                        />
-                      </motion.div>
-                    </>
+                  {/* Document upload section for advertiser and seller */}
+                  {(userType === userRoles.advertiser ||
+                    userType === userRoles.seller) && (
+                    <AdvertiserOrSellerDocUpload
+                      setDocuments={setDocuments}
+                      documents={documents}
+                      handleFileChange={handleFileChange}
+                    />
                   )}
                 </div>
 
@@ -417,7 +310,7 @@ const RegistrationForm = () => {
           transition={{ delay: 0.4, duration: 0.5 }}
           className="mt-4 text-center text-white"
         >
-          Already have an account?
+          Already have an account?{" "}
           <a href="#" className="ml-2 text-yellow-400 hover:underline">
             Sign in
           </a>
@@ -432,21 +325,41 @@ export default RegistrationForm;
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
+  const documentIds = [];
 
-  console.log(data);
+  if (
+    data.userRole === userRoles.tourGuide ||
+    data.userRole === userRoles.advertiser ||
+    data.userRole === userRoles.seller
+  ) {
+    const docs = JSON.parse(data.documentIds as string);
+    for (const doc of docs) {
+      documentIds.push(doc);
+    }
+  }
+
+  //remove the documentIds from the data object
+  delete data.documentIds;
+
+  const newData = {
+    ...data,
+    documentIds,
+  } as NewData;
+
+  console.log(newData);
 
   if (data.userRole === userRoles.tourist) {
     const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
-        account_type: data.userRole,
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        job: data.occupation,
-        nationality: data.nationality,
-        dob: data[fieldNames.dateOfBirth],
-        mobile_number: data[fieldNames.mobileNumber],
+        account_type: newData.userRole,
+        username: newData.username,
+        email: newData.email,
+        password: newData.password,
+        job: newData.job,
+        nationality: newData.nationality,
+        dob: newData.dob,
+        mobile_number: newData.mobile_number,
       },
       successRedirect: "/tourist-profile",
     });
@@ -460,6 +373,7 @@ export async function action({ request }: { request: Request }) {
         username: data.username,
         email: data.email,
         password: data.password,
+        attachments: documentIds,
       },
       successRedirect: "/tour-guide-profile",
     });
@@ -469,10 +383,11 @@ export async function action({ request }: { request: Request }) {
     const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
-        account_type: data.userRole,
-        username: data.username,
-        email: data.email,
-        password: data.password,
+        account_type: newData.userRole,
+        username: newData.username,
+        email: newData.email,
+        password: newData.password,
+        attachments: newData.documentIds,
       },
       successRedirect: "/advertiser-profile",
     });
@@ -482,10 +397,11 @@ export async function action({ request }: { request: Request }) {
     const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
-        account_type: data.userRole,
-        username: data.username,
-        email: data.email,
-        password: data.password,
+        account_type: newData.userRole,
+        username: newData.username,
+        email: newData.email,
+        password: newData.password,
+        attachments: newData.documentIds,
       },
       successRedirect: "/seller-profile",
     });

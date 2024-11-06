@@ -16,20 +16,13 @@ import EditModal, { formModalRef } from "../../shared/components/FormEditModal";
 import { UserContext } from "@/modules/shared/store/user-context";
 import toast from "react-hot-toast";
 import { deleteUser } from "../services/apiDeleteUser";
-import { AccountType } from "../types/User.types";
+// import { uploadProfilePicture } from "../services/apiUpdateProfilePicture";
 import { useNavigate } from "react-router";
+import { AccountType } from "../types/User.types";
 
 const imgs = Object.values(imgLinks.landing_page);
 
-const NewProf = ({
-  countries = [],
-  fieldsIncludeNationality = false,
-  mappingNeeded = false,
-  APICallFields,
-  accountTypeNeededInAPICall = false,
-  endpoint,
-  initialFormValues,
-}: {
+interface NewProfProps {
   countries?: { name: { common: string } }[];
   fieldsIncludeNationality?: boolean;
   mappingNeeded?: boolean;
@@ -40,11 +33,60 @@ const NewProf = ({
     id: string,
     data: { [key: string]: FormDataEntryValue },
   ) => Promise<unknown>;
+}
+
+const NewProf: React.FC<NewProfProps> = ({
+  countries = [],
+  fieldsIncludeNationality = false,
+  mappingNeeded = false,
+  APICallFields,
+  accountTypeNeededInAPICall = false,
+  endpoint,
+  initialFormValues,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<formModalRef>(null);
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    console.log(file);
+    // if (!file) return;
+    // // Validate file type
+    // if (!file.type.startsWith("image/")) {
+    //   toast.error("Please upload an image file");
+    //   return;
+    // }
+    // // Validate file size (5MB)
+    // const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    // if (file.size > MAX_FILE_SIZE) {
+    //   toast.error("File size should be less than 5MB");
+    //   return;
+    // }
+    // try {
+    //   setIsUploading(true);
+    //   // const { imageUrl } = await uploadProfilePicture(user._id, file);
+    //   setUser((prev) => ({
+    //     ...prev,
+    //     // profilePicture: imageUrl,
+    //   }));
+    //   toast.success("Profile picture updated successfully");
+    // } catch (error) {
+    //   console.error("Error uploading profile picture:", error);
+    //   toast.error("Failed to update profile picture");
+    // } finally {
+    //   setIsUploading(false);
+    // }
+  };
+
+  const handleCameraClick = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleSave = async (data: Record<string, string>) => {
     if (
@@ -67,31 +109,30 @@ const NewProf = ({
     const mappedData = Object.entries(data).reduce<Record<string, string>>(
       (acc, [key, value]) => ({
         ...acc,
-        [fieldsMap[key]]: value,
+        [fieldsMap[key] || key]: value,
       }),
       {},
     );
-    if (accountTypeNeededInAPICall)
+
+    if (accountTypeNeededInAPICall) {
       mappedData["account_type"] = user.account_type;
+    }
 
-    await endpoint(user._id, mappedData);
+    if (mappedData["dob"]) delete mappedData["dob"];
 
-    console.log("Saved data:", mappedData);
-
-    setUser((prev) => ({ ...prev, ...mappedData }));
-  };
-
-  const openModal = () => {
-    modalRef.current?.open({
-      ...initialFormValues,
-    });
+    try {
+      await endpoint(user._id, mappedData);
+      setUser((prev) => ({ ...prev, ...mappedData }));
+      // toast.success("Profile updated successfully");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      // toast.error("Failed to update profile");
+    }
   };
 
   const deleteAccount = async (id: string) => {
-    console.log("Deleting account... with id: ", id);
     try {
       const res = (await deleteUser(id)) as { status: number };
-      console.log(res);
 
       if (res.status === 200) {
         setUser({
@@ -101,10 +142,18 @@ const NewProf = ({
           account_type: AccountType.None,
         });
         navigate("/home");
+        toast.success("Account deleted successfully");
       }
     } catch (error) {
       console.error("Error deleting account:", error);
+      toast.error("Failed to delete account");
     }
+  };
+
+  const openModal = () => {
+    modalRef.current?.open({
+      ...initialFormValues,
+    });
   };
 
   useEffect(() => {
@@ -191,10 +240,9 @@ const NewProf = ({
           </div>
         );
 
-      default: // Tourist profile (keeping original layout)
+      default: // Tourist profile
         return (
           <div className="grid flex-1 grid-cols-1 gap-x-8 gap-y-6 pt-10 md:grid-cols-3">
-            {/* Contact Section */}
             <div className="space-y-6">
               <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
                 Contact Details
@@ -211,7 +259,6 @@ const NewProf = ({
               </div>
             </div>
 
-            {/* Personal Section */}
             <div className="space-y-6">
               <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
                 Personal Info
@@ -232,7 +279,6 @@ const NewProf = ({
               </div>
             </div>
 
-            {/* Payment Section */}
             <div className="space-y-6">
               <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
                 Payment Info
@@ -240,7 +286,7 @@ const NewProf = ({
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Wallet className="h-5 w-5 flex-shrink-0 text-primary-blue" />
-                  <span className="text-slate-600">{user.wallet}</span>
+                  <span className="text-slate-600">{user.wallet || "NA"}</span>
                 </div>
               </div>
             </div>
@@ -274,20 +320,44 @@ const NewProf = ({
       {/* Content */}
       <div className="relative flex min-h-screen items-center justify-center">
         <div className="w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          {/* Profile Card */}
           <div className="rounded-xl border border-secondary-light_grey bg-secondary-light_grey p-8 shadow-lg backdrop-blur-sm">
             <div className="flex flex-col gap-12 lg:flex-row">
-              {/* Left Column - Avatar and Basic Info */}
               <div className="flex flex-col items-center lg:items-center">
                 <div className="relative">
-                  <div className="flex h-40 w-40 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-primary-blue to-primary-green shadow-lg">
-                    <span className="text-4xl font-bold text-white">
-                      {user.username?.[0]?.toUpperCase() || "NA"}
-                    </span>
-                  </div>
-                  <button className="absolute bottom-2 right-2 rounded-full bg-white p-2 shadow-md transition-shadow hover:shadow-lg">
+                  {user.picture ? (
+                    <div className="h-40 w-40 overflow-hidden rounded-full border-4 border-white shadow-lg">
+                      <img
+                        src={user.picture}
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-40 w-40 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-primary-blue to-primary-green shadow-lg">
+                      <span className="text-4xl font-bold text-white">
+                        {user.username?.[0]?.toUpperCase() || "NA"}
+                      </span>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleCameraClick}
+                    className="absolute bottom-2 right-2 rounded-full bg-white p-2 shadow-md transition-shadow hover:shadow-lg disabled:opacity-50"
+                    disabled={isUploading}
+                  >
                     <Camera className="h-5 w-5 text-primary-blue" />
                   </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  {isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent"></div>
+                    </div>
+                  )}
                 </div>
                 <h1 className="mt-4 text-2xl font-bold text-accent-dark-blue">
                   {user.username}
@@ -304,7 +374,7 @@ const NewProf = ({
             </div>
 
             {/* Edit Button */}
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex justify-end space-x-4">
               <button
                 onClick={openModal}
                 className="rounded-lg bg-accent-dark-blue px-8 py-3 text-white transition-colors hover:bg-accent-dark-blue/80"

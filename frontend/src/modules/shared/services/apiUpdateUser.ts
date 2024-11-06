@@ -59,8 +59,8 @@ export async function updateUser(
     toast.promise(
       resPromise,
       {
-        loading: "Updating user...",
-        success: "User updated",
+        loading: "Updating Profile...",
+        success: "Profile Updated Successfully",
         error: "Failed to update user",
       },
       {
