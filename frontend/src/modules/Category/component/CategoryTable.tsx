@@ -1,7 +1,8 @@
-import { Pencil, X } from 'lucide-react';
 import { Category } from '../types/Category';
 import UpdatePopup from './update-popup';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import Table, { type TableColumn } from "../../shared/components/Table";
+
 
 interface CategoryTableProps {
   Categories: Category[];
@@ -10,47 +11,40 @@ interface CategoryTableProps {
 }
 
 function CategoryTable({ Categories, onDeleteCategory, setCategories }: CategoryTableProps) {
-  console.log(Categories);
+  const dialogRef = useRef<HTMLDialogElement>();
+  const [updateId, setUpdateId] = useState("");
+  const tableColumns: TableColumn[] = [
+    {
+      header: "Name",
+      accessor: "name",
+    },
+  ];
+
+  const handleEdit = (id: string) => {
+    setUpdateId(id);
+    dialogRef.current?.showModal();
+  };
   return (
-    <div className=" mx-auto max-w-2xl p-4">
-      <div className="rounded-md border p-4">
-        <div className="mb-4 rounded-md border">
-          <div className="grid grid-cols-12 bg-gray-100 p-3 font-semibold">
-            <div className="col-span-8">Name</div>
-            <div className="col-span-2 flex justify-end">Actions</div>
-          </div>
-        </div>
-        {/* {Categories.filter((Category) => Category.name).map((Category) => { */}
-        {Categories.map((category) => {
-          const dialogRef = useRef<HTMLDialogElement>();
-          return (
-            <div key={category._id} className="mb-2 rounded-md border last:mb-0">
-              <div className="grid grid-cols-12 items-center p-3">
-                <div className="col-span-8">{category.name}</div>
-                <div className="col-span-2 flex justify-end">
-                  <button className="text-gray-600 hover:text-gray-800">
-                    <Pencil onClick={() => dialogRef.current?.showModal()} size={20} />
-                  </button>
-                  <UpdatePopup
-                    dialogRef={dialogRef}
-                    _id={category._id}
-                    title="Update a Preference Category"
-                    setCategories={setCategories}
-                  />
-                  <button
-                    onClick={() => onDeleteCategory(category._id)} // Delete based on _id
-                    className="text-gray-600 hover:text-gray-800"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+    <>
+      <div className="container mx-auto max-w-5xl p-4">
+        <Table
+          data={Categories}
+          columns={tableColumns}
+          actions={{
+            onDelete: onDeleteCategory,
+            onEdit: handleEdit,
+          }}
+        />
       </div>
-    </div>
+      <UpdatePopup
+        dialogRef={dialogRef}
+        _id={updateId}
+        title="Update a Preference Tag"
+        setCategories={setCategories}
+      />
+    </>
   );
+
 }
 
 export default CategoryTable;

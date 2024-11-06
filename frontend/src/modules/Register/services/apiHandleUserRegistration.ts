@@ -1,19 +1,23 @@
 import toast from "react-hot-toast";
-import { redirect } from "react-router-dom";
+// import { redirect } from "react-router-dom";
 import axiosInstance from "../../shared/services/axiosInstance";
+import { AxiosResponse } from "axios";
 
 // Generic function for handling form submission, API request, and redirect
 export async function handleUserRegistration({
   endpoint,
   requestData,
-  successRedirect,
+  // successRedirect,
 }: {
   endpoint: string;
   requestData: object;
   successRedirect: string;
 }) {
   try {
-    const resPromise = axiosInstance.post(endpoint, requestData);
+    const resPromise = axiosInstance.post(
+      endpoint,
+      requestData,
+    ) as Promise<AxiosResponse>;
 
     toast.promise(
       resPromise,
@@ -52,7 +56,8 @@ export async function handleUserRegistration({
     if (res.status === 200) {
       console.log(res);
       localStorage.setItem("token", res.data.data.jwt); // Store the user ID in local storage
-      return redirect(`${successRedirect}/${res.data.data.user._id}`); // Redirect to the specified route
+      // return redirect(`${successRedirect}/${res.data.data.user._id}`); // Redirect to the specified route
+      return res;
     }
   } catch (error) {
     console.error("Request failed:", error);

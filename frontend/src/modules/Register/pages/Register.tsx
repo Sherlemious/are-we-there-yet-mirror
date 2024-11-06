@@ -1,16 +1,14 @@
-import { useState } from "react";
-import Greeting from "../../shared/components/Greeting";
-import Dropdown from "../components/Dropdown";
 import RegisterForm from "../components/RegisterForm";
+import { motion } from "framer-motion";
 
 export default function Register() {
-  const [selectedRole, setSelectedRole] = useState("");
-
   return (
-    <div className="flex h-screen flex-col gap-20 p-24">
-      <Greeting signedIn={false} />
-      <Dropdown selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
-      <RegisterForm userRole={selectedRole} />
-    </div>
+    <motion.div
+      initial={{ opacity: 0.6 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <RegisterForm />
+    </motion.div>
   );
 }

@@ -1,9 +1,9 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 import { AccountType, UserType } from "../types/User.types";
 
 type UserContextObj = {
   user: UserType;
-  setUser: (user: UserType) => void;
+  setUser: React.Dispatch<React.SetStateAction<UserType>>;
 };
 
 export const UserContext = createContext<UserContextObj>({

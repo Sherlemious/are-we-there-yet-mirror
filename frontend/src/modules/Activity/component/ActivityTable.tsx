@@ -1,13 +1,67 @@
-import { Pencil, X } from "lucide-react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { LoaderDataType } from "../pages/Activity";
 import axiosInstance from "../../shared/services/axiosInstance";
+import type { TableColumn } from "../../shared/components/Table";
+import type { TagType } from "../../shared/types/Tag.types";
+import Table from "../../shared/components/Table";
 
 function ActivityTable() {
   const { activites: loaded_activites } = useLoaderData() as LoaderDataType;
   const [activities, setActivities] = useState(loaded_activites);
+  const navigate = useNavigate();
+
+  const tableColumns: TableColumn[] = [
+    {
+      header: "Name",
+      accessor: "name",
+    },
+    {
+      header: "Date",
+      accessor: "datetime",
+      render: (value: string) => formatDate(value),
+    },
+    {
+      header: "Time",
+      accessor: "datetime",
+      render: (value: string) => formatTime(value),
+    },
+    {
+      header: "Location",
+      accessor: "location.name",
+    },
+    {
+      header: "Price",
+      accessor: "price",
+    },
+    {
+      header: "Category",
+      accessor: "category.name",
+    },
+    {
+      header: "Tags",
+      accessor: "tags",
+      render: (value: TagType[]) => (
+        <span>
+          {value.length === 0
+            ? "No tags"
+            : value.map(
+              (tag, index) =>
+                `${tag.name}${value.length - 1 !== index ? ", " : ""}`,
+            )}
+        </span>
+      ),
+    },
+    {
+      header: "Special Discount",
+      accessor: "specialDiscounts",
+    },
+    {
+      header: "Booking",
+      accessor: "bookingOpen",
+      render: (value: boolean) => <span>{value ? "Open" : "Booked"}</span>,
+    },
+  ];
 
   const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -24,6 +78,15 @@ function ActivityTable() {
       hour: "numeric",
       minute: "numeric",
     });
+  };
+
+  const handleEditActivity = (id: string) => {
+    const activity = activities.find((activity) => activity._id === id);
+    if (!activity) {
+      console.error("Activity not found");
+      return;
+    }
+    navigate(`edit/${activity._id}`);
   };
 
   const handleDeleteActivity = async (id: string) => {
@@ -43,63 +106,15 @@ function ActivityTable() {
   };
 
   return (
-    <div className="p-4">
-      <table className="w-full rounded-md border p-4">
-        <thead>
-          <tr className="bg-gray-100 text-center">
-            <th className="py-2">Name</th>
-            <th className="py-2">Date</th>
-            <th className="py-2">Time</th>
-            <th className="py-2">Location</th>
-            <th className="py-2">Price</th>
-            <th className="py-2">Category</th>
-            <th className="py-2">Tags</th>
-            <th className="py-2">Special Discount</th>
-            <th className="py-2">Booking</th>
-            <th className="py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {activities.map((activity) => (
-            <tr key={activity._id} className="text-center">
-              <td className="p-2">{activity.name}</td>
-              <td className="p-2">{formatDate(activity.datetime)}</td>
-              <td className="p-2">{formatTime(activity.datetime)}</td>
-              <td className="p-2">{activity.location?.name}</td>
-              <td className="p-2">{activity.price}</td>
-              <td className="p-2">{activity.category?.name}</td>
-              <td className="p-2">
-                <span>
-                  {activity.tags.length === 0
-                    ? "No tags"
-                    : activity.tags.map(
-                      (tag, index) =>
-                        `${tag.name}${activity.tags.length - 1 !== index ? ", " : ""}`,
-                    )}
-                </span>
-              </td>
-              <td className="p-2">{activity.specialDiscounts}</td>
-              <td className="p-2">
-                {activity.bookingOpen ? "Open" : "Booked"}
-              </td>
-              <td className="flex justify-center p-2">
-                <Link
-                  to={`edit/${activity._id}`}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  <Pencil size={20} />
-                </Link>
-                <button
-                  onClick={() => handleDeleteActivity(activity._id)}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  <X size={20} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="container mx-auto">
+      <Table
+        data={activities}
+        columns={tableColumns}
+        actions={{
+          onEdit: handleEditActivity,
+          onDelete: handleDeleteActivity,
+        }}
+      />
     </div>
   );
 }

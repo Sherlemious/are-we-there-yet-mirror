@@ -1,66 +1,50 @@
-import GeneralSettings from "../components/GeneralSettings";
-import Greeting from "../../shared/components/Greeting";
 import { useLoaderData } from "react-router";
-import { getUser } from "../../shared/services/apiGetUserInfo";
 import { LoaderFunctionArgs } from "react-router";
-
-type User = {
-  accepted: boolean;
-  account_type: string;
-  createdAt: string;
-  email: string;
-  password: string;
-  updatedAt: string;
-  username: string;
-  __v: number;
-  _id: string;
-  mobile_number: string;
-  years_of_experience: number;
-  job: string;
-  nationality: string;
-  dob: string;
-  wallet: string;
-};
+import NewProf from "../../shared/components/NewProf";
+import { updateUser } from "@/modules/shared/services/apiUpdateUser";
+import { fieldNames } from "@/modules/shared/constants/inputNames";
+import { UserContext } from "@/modules/shared/store/user-context";
+import { useContext } from "react";
 
 export default function Profile() {
   const loaderData = useLoaderData() as {
-    user: { data: { user: User } };
     countries: { name: { common: string } }[];
   };
+  const countries = loaderData.countries.sort();
 
-  const user = loaderData.user;
-  const {
-    username,
-    email,
-    password,
-    job,
-    account_type,
-    nationality,
-    mobile_number,
-    dob,
-    wallet,
-  } = user.data.user;
-
-  const countries = loaderData.countries;
+  const { user } = useContext(UserContext);
 
   return (
-    <div className="mx-7 my-20">
-      <div className="w-fit">
-        <Greeting name={username} signedIn={true} title="Profile" />
-      </div>
-      <GeneralSettings
-        wallet={wallet}
-        mobileNumber={mobile_number}
-        dob={dob}
-        username={username}
-        email={email}
-        password={password}
-        job={job}
-        account_type={account_type}
-        userNationality={nationality}
-        countries={countries}
-      />
-    </div>
+    <NewProf
+      countries={countries}
+      accountTypeNeededInAPICall={true}
+      endpoint={updateUser}
+      fieldsIncludeNationality={true}
+      APICallFields={[
+        fieldNames.dateOfBirth,
+        fieldNames.wallet,
+        fieldNames.mobileNumber,
+        fieldNames.occupation,
+        fieldNames.email,
+        fieldNames.nationality,
+        fieldNames.password,
+        fieldNames.loyaltyPoints,
+      ]}
+      mappingNeeded
+      initialFormValues={{
+        "Date of Birth": user.dob?.slice(0, 10) || "",
+        Wallet: user.wallet === undefined ? "" : user.wallet?.toString(),
+        Mobile: user.mobile_number || "",
+        Occupation: user.job || "",
+        Email: user.email || "",
+        Nationality: user.nationality || "",
+        Password: "",
+        loyaltyPoints:
+          user.loyaltyPoints === undefined
+            ? ""
+            : user.loyaltyPoints?.toString(),
+      }}
+    />
   );
 }
 
@@ -68,14 +52,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
   if (!params.id) {
     throw new Error("User ID is required");
   }
-  const userRes = await getUser(params.id);
-  const userData = userRes.data;
 
   const countriesResponse = await fetch(`https://restcountries.com/v3.1/all`);
   const countriesData = await countriesResponse.json();
 
   const data = {
-    user: userData,
     countries: countriesData,
   };
 
