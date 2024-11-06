@@ -87,5 +87,9 @@ class ProductRepo {
   async archiveProduct(productId: string) {
     return await Product.updateOne({ _id: new ObjectId(productId) }, { archive: true });
   }
+
+  async unarchiveProduct(productId: string) {
+    return await Product.updateOne({ _id: new ObjectId(productId) }, { archive: false });
+  }
 }
 export default new ProductRepo();
