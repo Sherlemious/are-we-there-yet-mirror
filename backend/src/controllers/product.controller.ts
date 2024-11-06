@@ -269,6 +269,17 @@ async function archiveProduct(req: Request, res: Response) {
   }
 }
 
+async function unarchiveProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    await productRepo.unarchiveProduct(productId);
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product unarchived successfully', data: { productId } });
+  } catch (error: any) {
+    logger.error(`Error unarchiving product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
 export {
   findProductById,
   createProduct,
@@ -281,6 +292,7 @@ export {
   addProductReview,
   deleteProductReview,
   getAvailableQuantityAndSales,
+  unarchiveProduct,
   buyProduct,
   archiveProduct,
 };

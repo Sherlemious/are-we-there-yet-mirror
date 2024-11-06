@@ -14,6 +14,7 @@ import {
   getAvailableQuantityAndSales,
   buyProduct,
   archiveProduct,
+  unarchiveProduct,
 } from '../controllers/product.controller';
 
 const router = Router();
@@ -32,5 +33,6 @@ router.post('/', createProduct);
 router.get('/available-quantity-sales/:id', getAvailableQuantityAndSales);
 router.patch('/buy/:id', buyProduct);
 router.patch('/archive/:id', archiveProduct);
+router.patch('/unarchive/:id', unarchiveProduct);
 
 export default router;
