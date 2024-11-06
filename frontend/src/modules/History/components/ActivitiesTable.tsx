@@ -23,9 +23,10 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
     { header: "Name", accessor: "name" },
     { header: "Date", accessor: "datetime", render: (datetime: Date) => new Date(datetime).toLocaleString() },
     { header: "Location", accessor: "location.name" },
+    // { header: "Category", accessor: "category" },
     { header: "Price", accessor: "price", render: (price: number) => `$${price.toFixed(2)}` },
     { header: "Tags", accessor: "tags", render: (tags: { name: string }[]) => (
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {tags.map((tag, index) => (
             <span
               key={index}
