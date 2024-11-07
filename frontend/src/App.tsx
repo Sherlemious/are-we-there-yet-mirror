@@ -66,7 +66,7 @@ const Login = () => {
             setUser(data.data.user);
             navigate("/home");
           })
-          .catch((err) => console.log(err));
+          .catch((err) => console.error(err));
       }}
       className="container mx-auto mt-9 space-y-4 bg-secondary-white"
     >

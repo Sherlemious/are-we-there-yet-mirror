@@ -41,7 +41,6 @@ const Header = ({
 
       localStorage.setItem(`${accountType}Token`, response.data.data.jwt);
       const newUser = await response.data;
-      // Optionally, you can trigger a state update or callback to refresh the user list
       const userId = newUser.data.user._id;
       const user = await getUser(userId);
       setUsers((prevUsers) => [
@@ -58,11 +57,7 @@ const Header = ({
       console.error("Error adding user:", error);
     }
   };
-  // async function getUser(id: string) {
-  //   return fetch(`https://are-we-there-yet-mirror.onrender.com/api/users/${id}`)
-  //     .then((response) => response.json())
-  //     .then((data) => data.data.user);
-  // }
+
   async function getUser(id: string) {
     try {
       const response = await axiosInstance.get(`/users/${id}`);
@@ -93,9 +88,9 @@ const Header = ({
   const { user } = useContext(UserContext);
 
   return (
-    <header className="flex items-center justify-between bg-gray-100 p-4">
-      <div className="flex flex-col justify-end p-14 text-text-primary">
-        <div className="w-full max-w-[50vw] divide-y-2 divide-borders-bottomBorder">
+    <header className="flex items-center justify-between p-4">
+      <div className="flex flex-col justify-end p-14 text-primary-blue">
+        <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
           <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
           <h3 className="py-4 text-2xl font-bold">Users</h3>
         </div>
