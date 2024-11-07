@@ -1,4 +1,5 @@
 // import { imgLinks } from "@/modules/shared/utils/constants";
+import axiosInstance from "@/modules/shared/services/axiosInstance";
 import {
   Mail,
   Camera,
@@ -11,8 +12,9 @@ import {
   Info,
   Clock,
   Coins,
+  Award,
 } from "lucide-react";
-import { useState, useRef, useContext } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import EditModal, { formModalRef } from "../../shared/components/FormEditModal";
 import { UserContext } from "@/modules/shared/store/user-context";
 import toast from "react-hot-toast";
@@ -25,19 +27,6 @@ import { fieldNames } from "../constants/inputNames";
 import { updatePassword } from "../services/apiUpdatePassword";
 
 interface NewProfProps {
-import axiosInstance from "../../shared/services/axiosInstance";
-
-const imgs = Object.values(imgLinks.landing_page);
-
-const NewProf = ({
-  countries = [],
-  fieldsIncludeNationality = false,
-  mappingNeeded = false,
-  APICallFields,
-  accountTypeNeededInAPICall = false,
-  endpoint,
-  initialFormValues,
-}: {
   countries?: { name: { common: string } }[];
   fieldsIncludeNationality?: boolean;
   mappingNeeded?: boolean;
@@ -64,26 +53,101 @@ const NewProf: React.FC<NewProfProps> = ({
   const modalRef = useRef<formModalRef>(null);
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const [loyaltyLevel, setLoyaltyLevel] = useState<number | null>(null);
+
+  const fetchLoyaltyLevel = async () => {
+    try {
+      const response = await axiosInstance.get("/users/tourists/loyalty");
+      setLoyaltyLevel(response.data.data.level);
+    } catch (error) {
+      console.error("Error fetching loyalty level:", error);
+      toast.error("Failed to fetch loyalty level");
+    }
+  };
+
+  useEffect(() => {
+    fetchLoyaltyLevel();
+  }, []);
+
+  // const handleRedeemPoints = async () => {
+  //   if (user.loyalty_points) {
+  //     try {
+  //       const response = await axiosInstance.post("/users/tourists/redeem", {
+  //         points: user.loyalty_points,
+  //       });
+  //       console.log(response.data);
+  //       const cashEquivalent = response.data.cashEquivalent; // Assuming the API returns the cash equivalent
+  //       console.log(response.data);
+  //       setUser((prevUser) => ({
+  //         ...prevUser,
+  //         wallet: (prevUser.wallet ?? 0) + cashEquivalent,
+  //         loyalty_points: 0,
+  //       }));
+  //       toast.success(`You have redeemed EGP ${cashEquivalent}`);
+  //       await fetchLoyaltyLevel();
+  //     } catch (error) {
+  //       toast.error("Failed to redeem points");
+  //       console.error("Error redeeming points:", error);
+  //     }
+  //   } else {
+  //     toast.error("You have no loyalty points to redeem");
+  //   }
+  // };
 
   const handleRedeemPoints = async () => {
-    if (user.loyaltyPoints) {
+    if (user.loyalty_points) {
       try {
-        const response = await axiosInstance.post("/redeem", {
-          points: user.loyaltyPoints,
+        await axiosInstance.post("/users/tourists/redeem", {
+          points: user.loyalty_points,
         });
-        const cashEquivalent = response.data.cashEquivalent; // Assuming the API returns the cash equivalent
+
+        // Fetch the updated user data
+        const updatedUserResponse = await axiosInstance.get(
+          `/users/${user._id}`,
+        );
+        const updatedUser = updatedUserResponse.data.data;
+
+        // Update the user's points and wallet in the frontend state
         setUser((prevUser) => ({
           ...prevUser,
-          wallet: (prevUser.wallet ?? 0) + cashEquivalent,
-          loyaltyPoints: 0,
+          wallet: updatedUser.wallet,
+          loyalty_points: updatedUser.loyalty_points,
         }));
-        toast.success(`You have redeemed EGP ${cashEquivalent}`);
+
+        toast.success("You have redeemed your points successfully");
+        await fetchLoyaltyLevel();
       } catch (error) {
         toast.error("Failed to redeem points");
         console.error("Error redeeming points:", error);
       }
     } else {
       toast.error("You have no loyalty points to redeem");
+    }
+  };
+
+  const handleAddloyalty_points = async () => {
+    try {
+      const pointsToAdd = 100000;
+      const updatedUser = {
+        loyalty_points: (user.loyalty_points ?? 0) + pointsToAdd,
+      };
+
+      // Update points on the backend
+      await axiosInstance.patch(`/users/${user._id}`, updatedUser);
+
+      // Update the user's points in the frontend state
+      setUser((prevUser) => ({
+        ...prevUser,
+        loyalty_points: updatedUser.loyalty_points,
+      }));
+
+      // Re-fetch the loyalty level to ensure it's updated
+      await fetchLoyaltyLevel();
+
+      toast.success(`Added ${pointsToAdd} loyalty points`);
+    } catch (error) {
+      toast.error("Failed to add loyalty points");
+      console.error("Error adding loyalty points:", error);
     }
   };
 
@@ -339,14 +403,24 @@ const NewProf: React.FC<NewProfProps> = ({
                 <div className="flex items-center gap-3">
                   <Coins className="h-5 w-5 flex-shrink-0 text-primary-blue" />
                   <span className="text-slate-600">
-                    {user.loyaltyPoints ?? 0} Points
+                    {user.loyalty_points} Points
                   </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Award className="h-5 w-5 flex-shrink-0 text-primary-blue" />
+                  <span className="text-slate-600">level {loyaltyLevel}</span>
                 </div>
                 <button
                   onClick={handleRedeemPoints}
                   className="mt-4 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
                 >
                   Redeem Points
+                </button>
+                <button
+                  onClick={handleAddloyalty_points}
+                  className="mt-4 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                >
+                  Add Loyalty Points
                 </button>
               </div>
             </div>

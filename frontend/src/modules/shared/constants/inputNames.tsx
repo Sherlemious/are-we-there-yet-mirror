@@ -12,7 +12,7 @@ export const fieldNames = {
   link: "website",
   name: "name",
   wallet: "wallet",
-  loyaltyPoints: "loyaltyPoints",
+  loyalty_points: "loyalty_points",
 };
 
 // export interface UserType {
