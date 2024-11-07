@@ -27,7 +27,7 @@ async function getMuseums() {
     const response = await axiosInstance.get("/museums/getall");
 
     // format the data
-    const tempData: Museum[] = await response.data.data.museums.map(
+    const tempData: Museum[] = response.data.data.museums.map(
       (item: any) => {
         const name = item.name ?? "N/A";
 
@@ -61,7 +61,7 @@ async function getMuseums() {
         };
       },
     );
-    return await tempData;
+    return tempData;
   } catch (error) {
     throw new Error(`Failed to fetch data: ${error.message}`);
   }

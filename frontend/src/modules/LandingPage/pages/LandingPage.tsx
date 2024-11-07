@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { imgLinks } from "../../shared/utils/constants";
 import ImageSlider from "../components/ImageSlider";
 import NameAndDescription from "../components/NameAndDescription";
-import NavigationBar from "../components/NavigationBar";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function LandingPage() {
@@ -23,7 +22,7 @@ export default function LandingPage() {
       <AnimatePresence initial={false}>
         <motion.div
           key={imgIndex}
-          className="absolute -z-10 h-full w-screen"
+          className="absolute inset-0 -z-10 h-full w-screen"
           initial={{ opacity: 0.3 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -40,7 +39,6 @@ export default function LandingPage() {
         </motion.div>
       </AnimatePresence>
 
-      <NavigationBar fontColor={fontColor} />
       <div className="flex pt-48">
         <NameAndDescription fontColor={fontColor} />
         <ImageSlider setIndex={setImgIndex} />
