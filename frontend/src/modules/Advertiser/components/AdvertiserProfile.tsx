@@ -131,8 +131,8 @@ export default function AdvertiserProfile({ user }: { user: UserType }) {
                 </div>
                 {isEditing ? (
                   <Textarea
-                    id="specialities"
-                    name="specialities"
+                    id="specialties"
+                    name="specialties"
                     value={companyProfile.specialties}
                     onChange={handleChange}
                     placeholder="Enter your company specialties"

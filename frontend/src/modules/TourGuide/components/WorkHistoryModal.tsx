@@ -45,6 +45,9 @@ export default function WorkHistoryModal({
                 formData.entries(),
               ) as unknown as WorkHistory;
               handleSaveWorkHistory(workData);
+
+              // Reset form
+              e.currentTarget.reset();
             }}
           >
             <div className="grid grid-cols-2 gap-4">
@@ -98,7 +101,7 @@ export default function WorkHistoryModal({
                 <input
                   type="date"
                   name="startDate"
-                  defaultValue={editingWorkHistory?.startDate}
+                  defaultValue={editingWorkHistory?.startDate.slice(0, 10)}
                   className="mt-1 w-full rounded-md border p-2"
                   required
                 />
@@ -111,7 +114,7 @@ export default function WorkHistoryModal({
                 <input
                   type="date"
                   name="endDate"
-                  defaultValue={editingWorkHistory?.endDate}
+                  defaultValue={editingWorkHistory?.endDate.slice(0, 10)}
                   className="mt-1 w-full rounded-md border p-2"
                 />
               </div>
@@ -151,7 +154,7 @@ export default function WorkHistoryModal({
                 </label>
                 <textarea
                   name="description"
-                  defaultValue={editingWorkHistory?.description}
+                  defaultValue={editingWorkHistory?.description || ""}
                   className="mt-1 h-32 w-full rounded-md border p-2"
                   required
                 />

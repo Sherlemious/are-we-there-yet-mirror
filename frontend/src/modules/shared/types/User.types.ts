@@ -37,6 +37,7 @@ export interface UserType {
     location: string;
     locationType: string;
     description: string;
+    _id: string;
   }[];
   // Advertiser
   website?: string;

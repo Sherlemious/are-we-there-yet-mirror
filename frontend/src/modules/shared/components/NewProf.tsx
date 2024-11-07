@@ -161,29 +161,37 @@ const NewProf: React.FC<NewProfProps> = ({
     }
   };
 
-  const handleEditWorkHistory = (work: WorkHistory) => {
+  const handleEditWorkHistory = async (work: WorkHistory) => {
     setEditingWorkHistory(work);
 
-    setShowWorkHistoryModal(true);
+    try {
+      if (user.previous_work) {
+        setUser((prev) => ({
+          ...prev,
+          previous_work: prev.previous_work?.filter(
+            (item) => item._id !== work._id,
+          ),
+        }));
+      }
+
+      setShowWorkHistoryModal(true);
+    } catch (error) {
+      console.error("Error updating work history:", error);
+      toast.error("Failed to update work history");
+    }
   };
 
   const handleSaveWorkHistory = async (work: WorkHistory) => {
     try {
       // review this part
-      console.log("work", work);
-      const allWorks = [
-        ...(user.previous_work || []),
-        { ...work, id: user.previous_work?.length || 0 },
-      ];
-      console.log("allWorks", allWorks);
+      const allWorks = [work, ...(user.previous_work || [])];
 
       await updateUser(user._id, undefined, allWorks);
 
       setUser((prev) => ({
         ...prev,
-        previous_works: prev.previous_work?.push(work) || [],
+        previous_works: prev.previous_work?.unshift(work) || [],
       }));
-      /////////////////////////////////
 
       setShowWorkHistoryModal(false);
       setEditingWorkHistory(null);

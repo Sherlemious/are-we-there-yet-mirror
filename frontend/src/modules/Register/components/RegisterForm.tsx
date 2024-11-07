@@ -111,31 +111,6 @@ const RegistrationForm = () => {
 
   useEffect(() => {
     if (res?.status === 200) {
-      //review this part
-      if (
-        res.data.data.user.account_type === userRoles.tourGuide &&
-        res.data.data.user.previous_work &&
-        res.data.data.user.previous_work.length > 0
-      ) {
-        const newPrevWorks = res.data.data.user.previous_work.map(
-          (work, index) => {
-            return {
-              ...work,
-              id: index,
-            };
-          },
-        );
-
-        // remove previous_work from user object
-        delete res.data.data.user.previous_work;
-
-        setUser({
-          ...res.data.data.user,
-          previous_work: newPrevWorks,
-        });
-      }
-      //////////////////
-
       setUser({
         ...res.data.data.user,
       });

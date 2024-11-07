@@ -7,4 +7,5 @@ export interface WorkHistory {
   location: string;
   locationType: string;
   description: string;
+  _id: string;
 }

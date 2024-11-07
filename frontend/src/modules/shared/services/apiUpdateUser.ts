@@ -27,22 +27,26 @@ export async function updateUser(
     specialties: string;
   },
 ) {
-  console.log("Updating with:", data);
+  if (!data && !previous_work && !company_profile)
+    console.log("Updating with:", data);
+
+  if (previous_work)
+    console.log("Updating with:", { previous_work: previous_work });
+
+  if (company_profile)
+    console.log("Updating with:", { company_profile: company_profile });
 
   if (previous_work) {
-    const resPromise = axiosInstance.patch(
-      `/users/${id}`,
-      previous_work,
-    ) as Promise<unknown>;
-
-    console.log(resPromise);
+    axiosInstance.patch(`/users/${id}`, {
+      previous_work: previous_work,
+    });
+    return;
   }
 
   if (company_profile) {
-    const resPromise = axiosInstance.patch(
-      `/users/${id}`,
-      company_profile,
-    ) as Promise<unknown>;
+    const resPromise = axiosInstance.patch(`/users/${id}`, {
+      company_profile: company_profile,
+    }) as Promise<unknown>;
 
     console.log(resPromise);
   }
