@@ -58,6 +58,7 @@ const NewProf: React.FC<NewProfProps> = ({
   const [loyaltyLevel, setLoyaltyLevel] = useState(0);
   const [wallet, setWallet] = useState(0);
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [loyaltyPointsToRedeem, setLoyaltyPointsToRedeem] = useState(0);
 
   useEffect(() => {
     const fetchLoyaltyLevel = async () => {
@@ -87,13 +88,19 @@ const NewProf: React.FC<NewProfProps> = ({
 
   const handleRedeemPoints = async () => {
     try {
-      const redeemResponse = await axiosInstance.post("/users/tourists/redeem");
-      console.log("Redeem Response:", redeemResponse);
+      await axiosInstance.post("/users/tourists/redeem", {
+        points: loyaltyPointsToRedeem,
+      });
 
-      const response = await getUser(user._id);
-      console.log("User Info Response:", response.data);
+      const [response, levelResponse] = await Promise.all([
+        getUser(user._id),
+        axiosInstance.get("/users/tourists/loyalty"),
+      ]);
+
+      setLoyaltyLevel(levelResponse.data.data.level);
       setWallet(response.data.data.user.wallet);
       setLoyaltyPoints(response.data.data.user.loyalty_points);
+      setLoyaltyPointsToRedeem(0);
     } catch (error) {
       console.error("Error redeeming points:", error);
     }
@@ -363,12 +370,28 @@ const NewProf: React.FC<NewProfProps> = ({
                     level {loyaltyLevel !== null ? loyaltyLevel : "Loading..."}
                   </span>
                 </div>
-                <button
-                  onClick={handleRedeemPoints}
-                  className="mt-4 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                <form
+                  className="flex flex-col items-center gap-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleRedeemPoints();
+                  }}
                 >
-                  Redeem Points
-                </button>
+                  <input
+                    type="number"
+                    className="w-full rounded-lg border border-secondary-light_grey px-4 py-2 text-slate-600"
+                    placeholder="Enter points to redeem"
+                    value={String(loyaltyPointsToRedeem)}
+                    onChange={(e) =>
+                      setLoyaltyPointsToRedeem(Number(e.target.value))
+                    }
+                    min={0}
+                    max={loyaltyPoints}
+                  />
+                  <button className="mt-4 w-full rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80">
+                    Redeem Points
+                  </button>
+                </form>
               </div>
             </div>
           </div>
