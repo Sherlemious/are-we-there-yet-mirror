@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { deleteUser } from "../services/apiDeleteUser";
 import { AccountType } from "../types/User.types";
 import { useNavigate } from "react-router";
+import axiosInstance from "../../shared/services/axiosInstance";
 
 const imgs = Object.values(imgLinks.landing_page);
 
@@ -49,13 +50,21 @@ const NewProf = ({
 
   const handleRedeemPoints = async () => {
     if (user.loyaltyPoints) {
-      const cashEquivalent = user.loyaltyPoints; // 1 point = 1 EGP ???
-      setUser((prevUser) => ({
-        ...prevUser,
-        wallet: (prevUser.wallet ?? 0) + cashEquivalent,
-        loyaltyPoints: 0,
-      }));
-      toast.success(`You have redeemed EGP ${cashEquivalent}`);
+      try {
+        const response = await axiosInstance.post("/redeem", {
+          points: user.loyaltyPoints,
+        });
+        const cashEquivalent = response.data.cashEquivalent; // Assuming the API returns the cash equivalent
+        setUser((prevUser) => ({
+          ...prevUser,
+          wallet: (prevUser.wallet ?? 0) + cashEquivalent,
+          loyaltyPoints: 0,
+        }));
+        toast.success(`You have redeemed EGP ${cashEquivalent}`);
+      } catch (error) {
+        toast.error("Failed to redeem points");
+        console.error("Error redeeming points:", error);
+      }
     } else {
       toast.error("You have no loyalty points to redeem");
     }
