@@ -37,5 +37,5 @@ export interface UserType {
   description?: string;
   // Tourist
   wallet?: number;
-  loyaltyPoints?: number;
+  loyalty_points: number;
 }
