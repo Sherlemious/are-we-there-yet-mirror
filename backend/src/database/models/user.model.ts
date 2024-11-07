@@ -4,6 +4,55 @@ import bcrypt from 'bcrypt';
 import { accountType } from '../../types/User.types';
 import { reviewSchema } from './review.model';
 
+const previousWorkSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  employmentType: {
+    type: String,
+    enum: ['full-time', 'part-time', 'contract', 'internship'],
+    required: true,
+  },
+  company: {
+    type: String,
+    required: true,
+  },
+  startDate: {
+    type: Date,
+    required: true,
+  },
+  endDate: {
+    type: Date,
+    required: true,
+  },
+  location: {
+    type: String,
+  },
+  locationType: {
+    type: String,
+    enum: ['remote', 'office'],
+    required: true,
+  },
+  description: {
+    type: String,
+  },
+});
+
+const companyProfileSchema = new mongoose.Schema({
+  industry: {
+    type: String,
+    required: true,
+  },
+  headquarters: {
+    type: String,
+    required: true,
+  },
+  specialities: {
+    type: String,
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     account_type: {
@@ -48,7 +97,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
     },
     previous_work: {
-      type: [String],
+      type: [previousWorkSchema],
     },
     website: {
       type: String,
@@ -57,7 +106,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     company_profile: {
-      type: [String],
+      type: [companyProfileSchema],
     },
     name: {
       type: String,

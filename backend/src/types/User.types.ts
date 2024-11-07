@@ -9,6 +9,23 @@ export enum accountType {
   TourismGovernor = 'TourismGovernor',
 }
 
+export interface previousWorkType {
+  title: string;
+  employmentType: string;
+  company: string;
+  startDate: Date;
+  endDate: Date;
+  location?: string;
+  locationType: string;
+  description?: string;
+}
+
+export interface companyProfileType {
+  industry: string;
+  headquarters: string;
+  specialities?: string;
+}
+
 export interface UserType {
   _id: string;
   password: string;
@@ -27,12 +44,12 @@ export interface UserType {
   attachment: [Types.ObjectId];
   // Tour guide
   years_of_experience?: number;
-  previous_work?: [string];
+  previous_work?: [previousWorkType];
   // Advertiser
   website?: string;
   hotline?: string;
   profile_pic?: Types.ObjectId;
-  company_profile?: [string];
+  company_profile?: [companyProfileType];
   // Seller
   description?: string;
   // Tourist
