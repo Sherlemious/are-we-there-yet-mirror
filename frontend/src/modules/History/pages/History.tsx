@@ -215,7 +215,7 @@ return (
       ) : null}
       
       {currentTab === 'product' ? (
-        <div className="text-center text-2xl text-gray-900">Product content will go here</div>
+        <div className="text-center text-2xl text-gray-900 p-6 w-3/4 mx-auto">No products purchased</div>
       ) : null}
     </div>
   </div>
