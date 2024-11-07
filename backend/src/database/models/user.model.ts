@@ -106,7 +106,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     company_profile: {
-      type: [companyProfileSchema],
+      type: companyProfileSchema,
     },
     name: {
       type: String,

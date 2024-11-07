@@ -49,7 +49,7 @@ export interface UserType {
   website?: string;
   hotline?: string;
   profile_pic?: Types.ObjectId;
-  company_profile?: [companyProfileType];
+  company_profile?: companyProfileType;
   // Seller
   description?: string;
   // Tourist
