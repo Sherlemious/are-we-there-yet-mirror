@@ -52,15 +52,14 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  <ListItem title="Browse All" href="/activity">
+                  <ListItem title="Browse All" to="/all-activities">
                     View all available activities
                   </ListItem>
-                  <ListItem title="Featured" href="/activity/featured">
-                    Check out our featured activities
-                  </ListItem>
-                  <ListItem title="Categories" href="/activity/categories">
-                    Browse activities by category
-                  </ListItem>
+                  {user.account_type === AccountType.Advertiser && (
+                    <ListItem title="Browse My" to="/home/my-activities">
+                      View your activities
+                    </ListItem>
+                  )}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -77,18 +76,14 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  <ListItem title="All Locations" href="/historical-places">
+                  <ListItem title="All Locations" to="/all-museums">
                     Explore all historical locations
                   </ListItem>
-                  <ListItem
-                    title="Heritage Sites"
-                    href="/historical-places/heritage"
-                  >
-                    Discover heritage sites
-                  </ListItem>
-                  <ListItem title="Museums" href="/historical-places/museums">
-                    Visit our museums
-                  </ListItem>
+                  {user.account_type === AccountType.TourismGovernor && (
+                    <ListItem title="Add Location" to="/home/my-museums">
+                      Add a new location
+                    </ListItem>
+                  )}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -105,15 +100,14 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  <ListItem title="View All" href="/itineraries">
+                  <ListItem title="View All" to="/all-itineraries">
                     Browse all itineraries
                   </ListItem>
-                  <ListItem title="Create New" href="/itineraries/create">
-                    Plan your own itinerary
-                  </ListItem>
-                  <ListItem title="Popular" href="/itineraries/popular">
-                    Check out popular routes
-                  </ListItem>
+                  {user.account_type === AccountType.TourGuide && (
+                    <ListItem title="My Itineraries" to="/home/my-itineraries">
+                      View your itineraries
+                    </ListItem>
+                  )}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -131,15 +125,25 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    <ListItem title="All Products" href="/products">
+                    <ListItem title="All Products" to="/all-products">
                       View all products
                     </ListItem>
-                    <ListItem title="Featured" href="/products/featured">
-                      Featured products
-                    </ListItem>
-                    <ListItem title="Deals" href="/products/deals">
-                      Special deals and offers
-                    </ListItem>
+                    {user.account_type === AccountType.Seller && (
+                      <ListItem
+                        title="My Products"
+                        to="/home/my-products-seller"
+                      >
+                        View your products
+                      </ListItem>
+                    )}
+                    {user.account_type === AccountType.Admin && (
+                      <ListItem
+                        title="Admin"
+                        to="/home/admin-dashboard/my-products-admin"
+                      >
+                        Manage products
+                      </ListItem>
+                    )}
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>

@@ -4,14 +4,17 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
+  React.ElementRef<typeof NavLink>,
+  React.ComponentPropsWithoutRef<typeof NavLink> & {
+    children: React.ReactNode;
+    title: string;
+  }
+>(({ className, title, to, children, ...props }, ref) => {
   return (
     <li>
       <NavigationMenuLink asChild>
         <NavLink
-          to={"/"}
+          to={to}
           ref={ref}
           className={cn(
             "block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors",
