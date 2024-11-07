@@ -7,7 +7,7 @@ interface Activity {
   datetime: Date;
   location: { name: string };
   price: number;
-  category: string;
+  category: { name: string };
   tags: { name: string }[];
   specialDiscounts: number;
   average_rating?: number;
@@ -20,11 +20,11 @@ interface ActivitiesTableProps {
 
 const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRating }) => {
   const columns: TableColumn[] = [
-    { header: "Name", accessor: "name" },
+    { header: "Name", accessor: "name", render: (name) => (name !== undefined ? name : "N/A"),    },
     { header: "Date", accessor: "datetime", render: (datetime: Date) => new Date(datetime).toLocaleString() },
-    { header: "Location", accessor: "location.name" },
-    // { header: "Category", accessor: "category" },
-    { header: "Price", accessor: "price", render: (price: number) => `$${price.toFixed(2)}` },
+    { header: "Location", accessor: "location.name", render: (name) => (name !== undefined ? name : "N/A"), },
+    { header: "Category", accessor: "category.name", render: (name) => (name !== undefined ? name : "N/A"), },
+    { header: "Price", accessor: "price", render: (price: number) => `$${price}` },
     { header: "Tags", accessor: "tags", render: (tags: { name: string }[]) => (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag, index) => (
