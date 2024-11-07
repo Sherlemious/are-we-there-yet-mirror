@@ -1,5 +1,6 @@
 import MuseumList from "../components/MuseumList";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "../../shared/store/user-context";
 import {
   createMuseum,
   deleteMuseum,
@@ -11,6 +12,7 @@ import { Museum } from "../types/museum";
 
 const AllMuseums = () => {
   const [museums, setMuseums] = useState<Museum[]>([]);
+  const { user } = useContext(UserContext);
   useEffect(() => {
     const fetchMuseums = async () => {
       const data = await getMuseums();
@@ -68,7 +70,7 @@ const AllMuseums = () => {
   return (
     <div>
       <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-9 text-text-primary">
-        <h1 className="py-2 text-4xl font-bold">Welcome Tourism Governor</h1>
+        <h1 className="py-2 text-4xl font-bold">Welcome {user.username}</h1>
         <h3 className="py-2 text-2xl font-bold">Museums & Historical Places</h3>
       </div>
       <MuseumList

@@ -7,8 +7,8 @@ async function getMyItineraries() {
     const resPromise = await axiosInstance.get("/itineraries/get");
 
     // format the data
-    const res = await resPromise.data;
-    const tempData: Itinerary[] = await res.data.itineraries.map(
+    const res = resPromise.data;
+    const tempData: Itinerary[] = res.data.itineraries.map(
       (item: any) => {
         const name = item.name === null ? "N/A" : item.name;
         const category = item.category === null ? "N/A" : item.category;
@@ -59,10 +59,7 @@ async function getMyItineraries() {
       },
     );
 
-    // sort the data on rating
-    tempData.sort((a, b) => b.rating - a.rating); // TODO: replace with actual rating
-
-    return await tempData;
+    return tempData;
   } catch (error) {
     console.error("Error fetching user", error);
     throw error;
@@ -277,19 +274,27 @@ function ItineraryCard({
   onCardClick: () => void;
 }) {
   return (
-    <div className="h-full w-full border-2 border-black" onClick={onCardClick}>
+    <div
+      className="h-full w-full cursor-pointer rounded-lg border border-gray-300 bg-card p-4 shadow-lg transition duration-200 hover:shadow-sm"
+      onClick={onCardClick}
+    >
       {/* Itinerary name */}
-      <div className="p-2 text-center font-bold">{itinerary.name}</div>
-      {/* a vertical list of activities showing only a shortend datetime `day/month time` and the location with a max of 3 activities */}
-      <div className="grid-rows-auto grid gap-2 p-4 pt-0">
+      <div className="mb-2 text-center text-lg font-semibold text-gray-800">
+        {itinerary.name}
+      </div>
+
+      {/* Vertical list of activities showing shortened datetime and location, max 3 activities */}
+      <div className="grid gap-3">
         {itinerary.activities.length !== 0 ? (
           itinerary.activities.slice(0, 3).map((activity, index) => (
-            <div className="text-center" key={index}>
+            <div className="text-center text-base text-gray-600" key={index}>
               {formatActivity(activity)}
             </div>
           ))
         ) : (
-          <div className="text-center">No activities</div>
+          <div className="text-center text-base text-gray-500">
+            No activities
+          </div>
         )}
       </div>
     </div>
@@ -368,6 +373,16 @@ export function ItineraryList() {
     );
   }, [searchQuery, budget, date, ratings, data]);
 
+  // handle sorting
+  const [isAscending, setIsAscending] = useState<boolean>(true);
+  useEffect(() => {
+    if (!filteredData) return;
+    // data.sort((a, b) => (isAscending ? a.price - b.price : b.price - a.price));
+    filteredData.sort((a, b) =>
+      isAscending ? a.rating - b.rating : b.rating - a.rating,
+    );
+  }, [isAscending, filteredData]);
+
   return (
     <>
       {loading && (
@@ -380,19 +395,19 @@ export function ItineraryList() {
       )}
       {!loading && !error && (
         <>
-          {/* tool bar */}
-          <div className="grid grid-cols-4 gap-8 p-4">
+          {/* Toolbar */}
+          <div className="grid grid-cols-5 gap-6 p-6">
             <input
               type="text"
               placeholder="Search"
-              className="h-full w-full border-2 border-black p-4"
+              className="h-full w-full rounded-lg border border-gray-300 px-4 py-2"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <input
               type="number"
               placeholder="Max Budget"
-              className="w-full border-2 border-black p-4"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2"
               value={budget ?? ""}
               onChange={(e) =>
                 setBudget(e.target.value ? parseInt(e.target.value) : null)
@@ -400,22 +415,29 @@ export function ItineraryList() {
             />
             <input
               type="date"
-              className="w-full border-2 border-black p-4"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2"
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
             <input
               type="number"
               placeholder="Min Ratings"
-              className="w-full border-2 border-black p-4"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2"
               value={ratings ?? ""}
               onChange={(e) =>
                 setRatings(e.target.value ? parseInt(e.target.value) : null)
               }
             />
+            <button
+              className="h-full w-full rounded-lg bg-accent-gold font-bold text-white"
+              onClick={() => setIsAscending(!isAscending)}
+            >
+              {isAscending ? "Sort Descending" : "Sort Ascending"}
+            </button>
           </div>
-          {/* body */}
-          <div className="grid-rows-auto grid grid-cols-3 gap-8 p-8">
+
+          {/* Body */}
+          <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredData.map((itinerary, index) => (
               <ItineraryCard
                 itinerary={itinerary}
@@ -424,14 +446,14 @@ export function ItineraryList() {
               />
             ))}
           </div>
-          {/* modal */}
+
+          {/* Modal */}
           {selectedItinerary && (
             <ItineraryModal
               itinerary={selectedItinerary}
               onClose={handleCloseModal}
             />
           )}
-          ;
         </>
       )}
     </>

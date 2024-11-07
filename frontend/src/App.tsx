@@ -23,9 +23,11 @@ import { SellerProfile } from "./modules/Seller/App";
 
 import { TouristProfile, touristProfileLoader } from "./modules/Tourist/App";
 import { Toaster } from "react-hot-toast";
-import { UsersAssets } from "./modules/shared/pages/UsersAssets";
+import { AllActivities } from "./modules/shared/pages/MyActivities";
+import { AllItineraries } from "./modules/shared/pages/MyItineraries";
+import { AllMuseums } from "./modules/shared/pages/MyMuseums";
 import { UsersAssets as CrudUserAssets } from "./modules/TourGuide/pages/UsersAssets";
-import { AllMuseums } from "./modules/Museums/App";
+import { MyMuseums } from "./modules/Museums/App";
 import { loader as activityLoader } from "./modules/Activity/pages/Activity";
 import {
   loader as activityAddLoader,
@@ -43,6 +45,8 @@ import Register from "./modules/Register/pages/Register";
 import { registerAction, registerLoader } from "./modules/Register/App";
 import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
+import AllComplaints from "./modules/Complaints/pages/AllComplaints";
+import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -89,8 +93,29 @@ const Login = () => {
 const BrowserRouter = createBrowserRouter([
   {
     path: "/",
-    index: true,
-    element: <LandingPage />,
+    element: <LandingPageLayout />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+      {
+        path: "all-activities",
+        element: <AllActivities />,
+      },
+      {
+        path: "all-itineraries",
+        element: <AllItineraries />,
+      },
+      {
+        path: "all-museums",
+        element: <AllMuseums />,
+      },
+      {
+        path: "all-products",
+        element: <AllProducts />,
+      },
+    ],
   },
   {
     path: "/login",
@@ -151,16 +176,11 @@ const BrowserRouter = createBrowserRouter([
         element: <SellerProducts />,
       },
       {
-        path: "all-products",
-        element: <AllProducts />,
-      },
-      {
         path: "admin-dashboard",
-        element: <AdminDashboard />,
         children: [
           {
-            path: "tag",
-            element: <Tag />,
+            index: true,
+            element: <AdminDashboard />,
           },
           {
             path: "prefrence-tag",
@@ -177,15 +197,23 @@ const BrowserRouter = createBrowserRouter([
         ],
       },
       {
+        path: "tag",
+        element: <Tag />,
+      },
+      {
         path: "crud-users-assets",
         element: <CrudUserAssets />,
       },
       {
         path: "my-museums",
-        element: <AllMuseums />,
+        element: <MyMuseums />,
       },
       {
-        path: "activity",
+        path: "my-complaints",
+        element: <AllComplaints />,
+      },
+      {
+        path: "my-activities",
         element: (
           <RouteGuard account_types={[AccountType.Advertiser]}>
             <Outlet />,
@@ -212,10 +240,6 @@ const BrowserRouter = createBrowserRouter([
         ],
       },
     ],
-  },
-  {
-    path: "users-assets",
-    element: <UsersAssets />,
   },
   {
     path: "*",

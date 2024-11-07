@@ -13,9 +13,12 @@ import Map from "../../shared/components/Map";
 import { useState } from "react";
 import axiosInstance from "../../shared/services/axiosInstance";
 import { CategoryType } from "../../shared/types/Category.types";
-import { TagType } from "../../shared/types/Tag.types";
-import { ActivityType } from "../../shared/types/Activity.types";
+import { type TagType } from "../../shared/types/Tag.types";
+import { type ActivityType } from "../../shared/types/Activity.types";
 import { ApiResponse } from "../../shared/types/Response.types";
+import SearchMultiSelect, {
+  type MultiSelectOption,
+} from "@/modules/shared/components/SearchMultiSelect";
 
 function ActivityForm({ method }: { method: FormMethod }) {
   const data = useActionData() as { message?: string };
@@ -24,6 +27,13 @@ function ActivityForm({ method }: { method: FormMethod }) {
   const { categories, tags, activity } = useLoaderData() as LoaderDataType;
   const [location, setLocation] = useState(
     activity?.location || { latitude: 0, longitude: 0, name: "" },
+  );
+  const [selectedTags, setSelectedTags] = useState<MultiSelectOption[]>(
+    activity?.tags.map((tag) => ({
+      value: tag._id,
+      label: tag.name,
+      payload: tag,
+    })) || [],
   );
 
   const isSubmitting = navigation.state === "submitting";
@@ -42,14 +52,11 @@ function ActivityForm({ method }: { method: FormMethod }) {
   }
 
   return (
-    <Form
-      method={method}
-      className="h-full w-full rounded-lg bg-gray-100 p-6 shadow-md"
-    >
+    <Form method={method} className="h-full w-full rounded-lg p-6 shadow-md">
       <div className="mb-4">
         <label
           htmlFor="name"
-          className="mb-2 block font-semibold text-gray-700"
+          className="mb-2 block font-semibold text-primary-blue"
         >
           Name
         </label>
@@ -65,7 +72,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
       <div className="mb-4">
         <label
           htmlFor="datetime"
-          className="mb-2 block font-semibold text-gray-700"
+          className="mb-2 block font-semibold text-primary-blue"
         >
           Date
         </label>
@@ -82,7 +89,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
       <div className="mb-4">
         <label
           htmlFor="price"
-          className="mb-2 block font-semibold text-gray-700"
+          className="mb-2 block font-semibold text-primary-blue"
         >
           Price
         </label>
@@ -90,13 +97,17 @@ function ActivityForm({ method }: { method: FormMethod }) {
           type="number"
           id="price"
           name="price"
+          min="0"
           defaultValue={activity?.price}
           required
           className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
       </div>
 
-      <div className="h-full w-full">
+      <div className="mb-4 h-full w-full">
+        <span className="mb-2 block font-semibold text-primary-blue">
+          Location
+        </span>
         <div className="mb-2 flex gap-2">
           <input
             className="w-1/3 rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
@@ -144,13 +155,13 @@ function ActivityForm({ method }: { method: FormMethod }) {
               name: location.name,
             });
           }}
-          className="h-96 w-full rounded-md bg-gray-300"
+          className="h-96 w-full overflow-hidden rounded-lg border bg-gray-300"
         />
       </div>
       <div className="mb-4">
         <label
           htmlFor="category"
-          className="mb-2 block font-semibold text-gray-700"
+          className="mb-2 block font-semibold text-primary-blue"
         >
           Category
         </label>
@@ -168,30 +179,37 @@ function ActivityForm({ method }: { method: FormMethod }) {
         </select>
       </div>
 
-      <div className="mb-4">
-        <span className="mb-2 block font-semibold text-gray-700">Tags</span>
-        <div className="space-y-2">
-          {tags.map((tag) => (
-            <label key={tag._id} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                name="tags"
-                value={tag._id}
-                defaultChecked={activity?.tags
-                  .map((t) => t._id)
-                  .includes(tag._id)}
-                className="form-checkbox h-5 w-5 text-gray-600"
-              />
-              <span className="text-gray-700">{tag.name}</span>
-            </label>
-          ))}
-        </div>
+      <div className="mb-4 w-full">
+        <span className="mb-2 block w-full font-semibold text-primary-blue">
+          Tags
+        </span>
+        <SearchMultiSelect
+          options={tags.map((tag) => ({
+            value: tag._id,
+            label: tag.name,
+            payload: tag,
+          }))}
+          selectedItems={selectedTags}
+          onSelect={(tag) => {
+            setSelectedTags((prev) => [...prev, tag]);
+          }}
+          onRemove={(tag) => {
+            setSelectedTags((prev) =>
+              prev.filter((t) => t.value !== tag.value),
+            );
+          }}
+        />
+        <input
+          type="hidden"
+          name="tags"
+          value={selectedTags.map((t) => t.value)}
+        />
       </div>
 
       <div className="mb-4">
         <label
           htmlFor="specialDiscounts"
-          className="mb-2 block font-semibold text-gray-700"
+          className="mb-2 block font-semibold text-primary-blue"
         >
           Special Discount
         </label>
@@ -215,14 +233,14 @@ function ActivityForm({ method }: { method: FormMethod }) {
             defaultChecked={activity && !activity.bookingOpen}
             className="form-checkbox h-5 w-5 text-gray-600"
           />
-          <span className="font-semibold text-gray-700">Is Booked</span>
+          <span className="font-semibold text-primary-blue">Is Booked</span>
         </label>
       </div>
 
       <div className="flex gap-2">
         <button
           disabled={isSubmitting}
-          className="rounded-md bg-gray-600 px-4 py-2 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 disabled:opacity-50"
+          className="rounded-md bg-accent-dark-blue px-4 py-2 text-white hover:bg-accent-dark-blue/80 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-opacity-50 disabled:opacity-50"
         >
           {isSubmitting ? "Submitting..." : "Save"}
         </button>
@@ -230,7 +248,7 @@ function ActivityForm({ method }: { method: FormMethod }) {
           type="button"
           onClick={cancelHandler}
           disabled={isSubmitting}
-          className="rounded-md bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 disabled:opacity-50"
+          className="rounded-md bg-secondary-light_grey px-4 py-2 text-primary-blue hover:bg-secondary-light_grey/80 focus:outline-none focus:ring-2 focus:ring-secondary-light_grey focus:ring-opacity-50 disabled:opacity-50"
         >
           Cancel
         </button>
@@ -284,7 +302,7 @@ export async function action({
       data: activityData,
     });
 
-    return redirect("/activity");
+    return redirect("..");
   } catch (e) {
     console.error("Error saving activity", e);
     return { message: "Error submitting" };
