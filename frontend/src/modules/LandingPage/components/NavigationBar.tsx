@@ -1,9 +1,7 @@
 import { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { UserCog } from "lucide-react";
 import { UserContext } from "@/modules/shared/store/user-context";
 import { AccountType } from "@/modules/shared/types/User.types";
-import Button from "@/modules/shared/components/Button";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,17 +11,29 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import ListItem from "./NavigationDropDown";
+import { UserCog } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 export default function NavigationBar({ fontColor }: { fontColor: string }) {
   const navigate = useNavigate();
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   function handleStyles(props: { isActive: boolean }) {
     return cn(
-      "px-3 py-2  font-medium transition-all duration-200",
-      "hover:text-accent-gold ",
+      "px-3 py-2 font-medium transition-all duration-200",
+      "hover:text-accent-gold",
       props.isActive ? "text-accent-gold" : fontColor,
     );
+  }
+
+  function handleClearUser() {
+    setUser({
+      _id: "",
+      password: "",
+      username: "",
+      account_type: AccountType.None,
+    });
   }
 
   return (
@@ -40,7 +50,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavLink>
             </NavigationMenuItem>
 
-            <NavigationMenuItem>
+            <NavigationMenuItem className="relative">
               <NavigationMenuTrigger
                 className={cn(
                   handleStyles({ isActive: false }),
@@ -64,7 +74,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            <NavigationMenuItem>
+            <NavigationMenuItem className="relative">
               <NavigationMenuTrigger
                 className={cn(
                   handleStyles({ isActive: false }),
@@ -88,7 +98,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            <NavigationMenuItem>
+            <NavigationMenuItem className="relative">
               <NavigationMenuTrigger
                 className={cn(
                   handleStyles({ isActive: false }),
@@ -113,7 +123,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
             </NavigationMenuItem>
 
             {user.account_type !== AccountType.None && (
-              <NavigationMenuItem>
+              <NavigationMenuItem className="relative">
                 <NavigationMenuTrigger
                   className={cn(
                     handleStyles({ isActive: false }),
@@ -152,34 +162,41 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
         </NavigationMenu>
       </div>
 
-      <div className="flex w-[15%] items-center gap-7">
+      <div className="flex w-[12%] items-center gap-5">
         {user.account_type !== AccountType.None && (
           <UserCog
             onClick={() => {
               if (user.account_type === AccountType.TourGuide) {
                 return navigate(`/home/tour-guide-profile/${user._id}`);
               }
-
               if (user.account_type === AccountType.Admin) {
                 return navigate("/home/admin-dashboard");
               }
-
               return navigate(
                 `/home/${user.account_type.toLowerCase()}-profile/${user._id}`,
               );
             }}
-            size={45}
-            className="rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-80"
+            size={40}
+            className="rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-70"
           />
         )}
-        {user.account_type === AccountType.None && (
-          <Button
-            onClick={() => navigate("/register")}
-            className="min-w-fit rounded-2xl bg-accent-gold p-2 text-body text-black transition-all duration-150 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Register Now
-          </Button>
-        )}
+
+        <Button
+          variant="default"
+          onClick={() => {
+            if (user.account_type !== AccountType.None) {
+              //clear token
+              localStorage.removeItem("token");
+              //clear user
+              handleClearUser();
+              toast.success("Logged out successfully");
+              navigate("/");
+            } else navigate("/register");
+          }}
+          className={`min-w-fit rounded-2xl bg-accent-gold text-[20px] text-black transition-all duration-150 hover:bg-accent-gold/70 disabled:cursor-not-allowed disabled:opacity-50`}
+        >
+          {user.account_type === AccountType.None ? "Register Now" : "Logout"}
+        </Button>
       </div>
     </div>
   );

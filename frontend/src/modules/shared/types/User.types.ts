@@ -28,11 +28,24 @@ export interface UserType {
 
   // Tour guide
   years_of_experience?: number;
-  previous_work?: string[];
+  previous_work?: {
+    title: string;
+    employmentType: string;
+    company: string;
+    startDate: string;
+    endDate: string;
+    location: string;
+    locationType: string;
+    description: string;
+  }[];
   // Advertiser
   website?: string;
   hotline?: string;
-  company_profile?: string[];
+  company_profile?: {
+    industry: string;
+    headquarters: string;
+    specialties: string;
+  };
   // Seller
   description?: string;
   // Tourist
