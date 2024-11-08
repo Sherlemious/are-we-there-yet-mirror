@@ -8,6 +8,7 @@ import { ProductType } from '../types/Product.types';
 
 import productRepo from '../database/repositories/product.repo';
 import { ReviewType } from '../types/Review.types';
+import currencyConverterService from '../services/currencyConverter';
 
 const findProductById = async (req: Request, res: Response) => {
   try {
@@ -44,11 +45,23 @@ const deleteProduct = async (req: Request, res: Response) => {
 
 const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await productRepo.getProducts();
+    let products = await productRepo.getProducts();
+
+    const currency: string = await currencyConverterService.getRequestCurrency(req);
+    products = await Promise.all(
+      products.map(async (product) => {
+        if (!product.price) {
+          product.price = 0;
+        }
+        product.price = await currencyConverterService.convertPrice(product.price, currency);
+        return product;
+      })
+    );
 
     const response = {
       message: 'Products fetched successfully',
       data: { products },
+      currency: currency,
     };
 
     res.status(ResponseStatusCodes.OK).json(response);

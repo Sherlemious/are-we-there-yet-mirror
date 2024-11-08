@@ -5,6 +5,7 @@ import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import { accountType } from '../types/User.types';
 import ItineraryRepo from '../database/repositories/itinerary.repo';
 import BookingRepo from '../database/repositories/booking.repo';
+import currencyConverterService from '../services/currencyConverter';
 
 const getItineraries = async (req: Request, res: Response) => {
   try {
@@ -23,9 +24,18 @@ const getItineraries = async (req: Request, res: Response) => {
       itineraries = itineraries.filter((itinerary) => !itinerary.flagged && itinerary.active);
     }
 
+    const currency: string = await currencyConverterService.getRequestCurrency(req);
+    itineraries = await Promise.all(
+      itineraries.map(async (itinerary) => {
+        itinerary.price = await currencyConverterService.convertPrice(itinerary.price, currency);
+        return itinerary;
+      })
+    );
+
     const response = {
       message: 'Itineraries fetched successfully',
       data: { itineraries: itineraries },
+      currency: currency,
     };
 
     res.status(ResponseStatusCodes.OK).json(response);
@@ -103,7 +113,7 @@ const deleteItinerary = async (req: Request, res: Response) => {
     const ItineraryId: string = req.params.id;
 
     if (await BookingRepo.checkItineraryBooked(ItineraryId)) {
-      res.status(402).json({ message: 'Cannot delete Itinerary as it is already booked' });
+      res.status(ResponseStatusCodes.FORBIDDEN).json({ message: 'Cannot delete Itinerary as it is already booked' });
     }
     const deleteRes = await ItineraryRepo.deleteItinerary(ItineraryId);
     const response = {

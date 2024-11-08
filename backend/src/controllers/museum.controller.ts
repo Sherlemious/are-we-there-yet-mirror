@@ -3,13 +3,41 @@ import MuseumRepo from '../database/repositories/museum.repo';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import mongoose from 'mongoose';
+import currencyConverterService from '../services/currencyConverter';
 
 const getAllMuseums = async (req: Request, res: Response) => {
   try {
-    const museums = await MuseumRepo.getAllMuseums();
+    let museums = await MuseumRepo.getAllMuseums();
+
+    const currency: string = await currencyConverterService.getRequestCurrency(req);
+    museums = await Promise.all(
+      museums.map(async (museum) => {
+        if (museum.ticket_prices?.foreigner) {
+          museum.ticket_prices.foreigner = await currencyConverterService.convertPrice(
+            museum.ticket_prices?.foreigner,
+            currency
+          );
+        }
+        if (museum.ticket_prices?.native) {
+          museum.ticket_prices.native = await currencyConverterService.convertPrice(
+            museum.ticket_prices?.native,
+            currency
+          );
+        }
+        if (museum.ticket_prices?.student) {
+          museum.ticket_prices.student = await currencyConverterService.convertPrice(
+            museum.ticket_prices?.student,
+            currency
+          );
+        }
+        return museum;
+      })
+    );
+
     const response = {
       message: 'Museums fetched successfully',
       data: { museums: museums },
+      currency: currency,
     };
 
     res.status(ResponseStatusCodes.OK).json(response);
