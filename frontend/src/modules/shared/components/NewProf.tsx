@@ -1,4 +1,5 @@
 // import { imgLinks } from "@/modules/shared/utils/constants";
+import axiosInstance from "@/modules/shared/services/axiosInstance";
 import {
   Mail,
   Camera,
@@ -11,8 +12,9 @@ import {
   Info,
   Clock,
   Coins,
+  Award,
 } from "lucide-react";
-import { useState, useRef, useContext } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import EditModal, { formModalRef } from "../../shared/components/FormEditModal";
 import { UserContext } from "@/modules/shared/store/user-context";
 import toast from "react-hot-toast";
@@ -20,9 +22,11 @@ import { requestAccountDeletion } from "../services/apiDeleteUser";
 import { useNavigate } from "react-router";
 import { apiAddDocs } from "@/modules/Register/services/apiAddDocs";
 import { updateUser } from "../services/apiUpdateUser";
+import { getUser } from "../services/apiGetUserInfo";
 import { validateFormDataValue } from "@/modules/Register/utils/helpers";
 import { fieldNames } from "../constants/inputNames";
 import { updatePassword } from "../services/apiUpdatePassword";
+// import axios from "axios";
 
 interface NewProfProps {
   countries?: { name: { common: string } }[];
@@ -51,18 +55,54 @@ const NewProf: React.FC<NewProfProps> = ({
   const modalRef = useRef<formModalRef>(null);
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const [loyaltyLevel, setLoyaltyLevel] = useState(0);
+  const [wallet, setWallet] = useState(0);
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [loyaltyPointsToRedeem, setLoyaltyPointsToRedeem] = useState(0);
+
+  useEffect(() => {
+    const fetchLoyaltyLevel = async () => {
+      try {
+        const response = await axiosInstance.get("/users/tourists/loyalty");
+        console.log("Loyalty Level Response:", response.data.data.level);
+        setLoyaltyLevel(response.data.data.level);
+      } catch (error) {
+        console.error("Error fetching loyalty level:", error);
+      }
+    };
+
+    const fetchUserInfo = async () => {
+      try {
+        const response = await getUser(user._id);
+        console.log("User Info Response:", response.data);
+        setWallet(response.data.data.user.wallet);
+        setLoyaltyPoints(response.data.data.user.loyalty_points);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
+    fetchLoyaltyLevel();
+    fetchUserInfo();
+  }, []);
 
   const handleRedeemPoints = async () => {
-    if (user.loyaltyPoints) {
-      const cashEquivalent = user.loyaltyPoints; // 1 point = 1 EGP ???
-      setUser((prevUser) => ({
-        ...prevUser,
-        wallet: (prevUser.wallet ?? 0) + cashEquivalent,
-        loyaltyPoints: 0,
-      }));
-      toast.success(`You have redeemed EGP ${cashEquivalent}`);
-    } else {
-      toast.error("You have no loyalty points to redeem");
+    try {
+      await axiosInstance.post("/users/tourists/redeem", {
+        points: loyaltyPointsToRedeem,
+      });
+
+      const [response, levelResponse] = await Promise.all([
+        getUser(user._id),
+        axiosInstance.get("/users/tourists/loyalty"),
+      ]);
+
+      setLoyaltyLevel(levelResponse.data.data.level);
+      setWallet(response.data.data.user.wallet);
+      setLoyaltyPoints(response.data.data.user.loyalty_points);
+      setLoyaltyPointsToRedeem(0);
+    } catch (error) {
+      console.error("Error redeeming points:", error);
     }
   };
 
@@ -313,20 +353,45 @@ const NewProf: React.FC<NewProfProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Wallet className="h-5 w-5 flex-shrink-0 text-primary-blue" />
-                  <span className="text-slate-600">EGP {user.wallet}</span>
+                  <span className="text-slate-600">
+                    EGP {wallet !== null ? wallet : "Loading..."}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Coins className="h-5 w-5 flex-shrink-0 text-primary-blue" />
                   <span className="text-slate-600">
-                    {user.loyaltyPoints ?? 0} Points
+                    {loyaltyPoints !== null ? loyaltyPoints : "Loading..."}{" "}
+                    Points
                   </span>
                 </div>
-                <button
-                  onClick={handleRedeemPoints}
-                  className="mt-4 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                <div className="flex items-center gap-3">
+                  <Award className="h-5 w-5 flex-shrink-0 text-primary-blue" />
+                  <span className="text-slate-600">
+                    level {loyaltyLevel !== null ? loyaltyLevel : "Loading..."}
+                  </span>
+                </div>
+                <form
+                  className="flex flex-col items-center gap-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleRedeemPoints();
+                  }}
                 >
-                  Redeem Points
-                </button>
+                  <input
+                    type="number"
+                    className="w-full rounded-lg border border-secondary-light_grey px-4 py-2 text-slate-600"
+                    placeholder="Enter points to redeem"
+                    value={String(loyaltyPointsToRedeem)}
+                    onChange={(e) =>
+                      setLoyaltyPointsToRedeem(Number(e.target.value))
+                    }
+                    min={0}
+                    max={loyaltyPoints}
+                  />
+                  <button className="mt-4 w-full rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80">
+                    Redeem Points
+                  </button>
+                </form>
               </div>
             </div>
           </div>
