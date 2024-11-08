@@ -32,7 +32,7 @@ const ItineraryTable: React.FC<ItineraryTableProps> = ({ itineraries, onEditRati
     { header: "Name", accessor: "name" },
     { header: "Timeline", accessor: "timeline" },
     { header: "Language", accessor: "language" },
-    { header: "Price", accessor: "price", render: (price: number) => `$${price.toFixed(2)}` },
+    { header: "Price", accessor: "price" },
     {
         header: "Available Dates",
         accessor: "available_datetimes",

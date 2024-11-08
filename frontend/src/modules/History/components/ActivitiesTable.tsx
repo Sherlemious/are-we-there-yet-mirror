@@ -25,7 +25,7 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
     { header: "Time", accessor: "datetime", render: (datetime: Date) => new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
     { header: "Location", accessor: "location.name", render: (name) => (name !== undefined ? name : "N/A"), },
     { header: "Category", accessor: "category.name", render: (name) => (name !== undefined ? name : "N/A"), },
-    { header: "Price", accessor: "price", render: (price: number) => `$${price}` },
+    { header: "Price", accessor: "price"},
     { header: "Tags", accessor: "tags", render: (tags: { name: string }[]) => (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag, index) => (

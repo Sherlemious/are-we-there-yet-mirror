@@ -9,7 +9,7 @@ interface Product{
   available_quantity?: number;
   sales?: number;
   average_rating?: number;
-  // tags: { name: string }[];
+  tags: { name: string }[];
 }
 
 interface ProductTableProps {
@@ -21,20 +21,20 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEditRating }) =
     const columns: TableColumn[] = [
       { header: "Name", accessor: "name" },
       { header: "Description", accessor: "description" },
-      { header: "Price", accessor: "price", render: (price: number) => `$${price}` },
+      { header: "Price", accessor: "price"},
       { header: "Available Quantity", accessor: "available_quantity", render: (quantity) => (quantity !== undefined ? quantity : "0"), },
       { header: "Sales", accessor: "sales", render: (sales) => (sales !== undefined ? sales : "0"), },
-      // {
-      //     header: "Tags",
-      //     accessor: "tags",
-      //     render: (tags: { name: string }[]) =>
-      //         tags.map((tag, index) => (
-      //             <span key={index} className="bg-gray-400 text-black rounded-full px-3 py-1 text-sm">
-      //                 {tag.name}
-      //             </span>
-      //         ),
-      //         ),
-      // },
+      {
+          header: "Tags",
+          accessor: "tags",
+          render: (tags: { name: string }[]) =>
+              tags.map((tag, index) => (
+                  <span key={index} className="bg-gray-400 text-black rounded-full px-3 py-1 text-sm">
+                      {tag.name}
+                  </span>
+              ),
+              ),
+      },
       {
           header: "Ratings",
           accessor: "average_rating",

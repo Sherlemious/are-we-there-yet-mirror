@@ -58,7 +58,7 @@ interface Product{
   available_quantity?: number;
   sales?: number;
   average_rating?: number;
-//   tags: { name: string }[];
+  tags: { name: string }[];
 }
 
 export function History(){
@@ -146,11 +146,11 @@ useEffect(() => {
 const handleCreateRating = async (modelType, modelId, review: { rating: number; comment: string }, ) => {
         try {
         console.log(modelType, modelId, review);
+        modalRef.current?.close();
         const response = await axiosInstance.post("/reviews", {review, modelType, modelId});
         if(response.status === 200) {
         toast.success("Review submitted successfully!");
         }
-        modalRef.current?.close();
         setRefresh((prev) => prev + 1); // Increment the refresh state
         } catch (error) {
         console.error("Error creating review:", error);
