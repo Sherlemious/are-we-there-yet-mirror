@@ -25,7 +25,7 @@ const complaintSchema = new Schema({
   },
   created_by: {
     type: Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
     required: true,
   },
   created_at: {
