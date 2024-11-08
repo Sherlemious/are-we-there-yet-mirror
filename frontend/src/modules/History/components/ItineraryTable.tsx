@@ -81,7 +81,7 @@ const ItineraryTable: React.FC<ItineraryTableProps> = ({ itineraries, onEditRati
     {
       header: "Average Rating",
       accessor: "average_rating",
-      render: (rating) => (rating !== undefined ? rating.toFixed(1) : "N/A"),
+      render: (rating) => (rating !== undefined ? rating.toFixed(1) +"/5" : "N/A"),
     },
   ];
 

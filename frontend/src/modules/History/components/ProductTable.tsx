@@ -38,7 +38,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEditRating }) =
       {
           header: "Average Rating",
           accessor: "average_rating",
-          render: (rating) => (rating !== undefined ? rating.toFixed(1) : "N/A"),
+          render: (rating) => (rating !== undefined ? rating.toFixed(1) +"/5" : "N/A"),
         },
     ];
     const actions: ActionProps = {

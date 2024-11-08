@@ -21,7 +21,8 @@ interface ActivitiesTableProps {
 const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRating }) => {
   const columns: TableColumn[] = [
     { header: "Name", accessor: "name", render: (name) => (name !== undefined ? name : "N/A"),    },
-    { header: "Date", accessor: "datetime", render: (datetime: Date) => new Date(datetime).toLocaleString() },
+    { header: "Date", accessor: "datetime", render: (datetime: Date) => new Date(datetime).toLocaleDateString() },
+    { header: "Time", accessor: "datetime", render: (datetime: Date) => new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
     { header: "Location", accessor: "location.name", render: (name) => (name !== undefined ? name : "N/A"), },
     { header: "Category", accessor: "category.name", render: (name) => (name !== undefined ? name : "N/A"), },
     { header: "Price", accessor: "price", render: (price: number) => `$${price}` },
@@ -42,7 +43,7 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
     {
         header: "Average Rating",
         accessor: "average_rating",
-        render: (rating) => (rating !== undefined ? rating.toFixed(1) : "N/A"),
+        render: (rating) => (rating !== undefined ? rating.toFixed(1) + "/5" : "N/A"),
       },
   ];
 
