@@ -1,6 +1,6 @@
 import Greeting from "@/modules/shared/components/Greeting";
 import { UserContext } from "@/modules/shared/store/user-context";
-import { act, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import TourGuidesTable from "../components/TourGuidesTable";
 import Modal, { ModalRef } from "@/modules/shared/components/Modal";
 import axiosInstance from "@/modules/shared/services/axiosInstance";
