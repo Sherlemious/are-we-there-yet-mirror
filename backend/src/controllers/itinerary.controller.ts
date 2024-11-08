@@ -9,14 +9,20 @@ import BookingRepo from '../database/repositories/booking.repo';
 const getItineraries = async (req: Request, res: Response) => {
   try {
     let itineraries = await ItineraryRepo.getItineraries();
-    const userType = req.user.accountType;
-    if (userType === accountType.Tourist) {
-      /* Filter out any archived itineraries.
+
+    /* Filter out any archived itineraries.
       This is shit code, this is like the 4th or 5th choice when it comes to implementing such feature 
       but I can't do this anymore.
       */
+    let accType = '';
+    if (req.user) {
+      accType = req.user.accountType;
+    }
+
+    if (accType && accType != accountType.Seller && accType != accountType.Admin) {
       itineraries = itineraries.filter((itinerary) => !itinerary.flagged && itinerary.active);
     }
+
     const response = {
       message: 'Itineraries fetched successfully',
       data: { itineraries: itineraries },
