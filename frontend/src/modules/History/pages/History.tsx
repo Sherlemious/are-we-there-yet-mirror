@@ -129,8 +129,8 @@ useEffect(() => {
   const fetchProducts = async () => {
     try {
       const response = await axiosInstance.get("/products/");
-      console.log(response.data.data);
-      const products = response.data.data;
+      console.log(response.data.data.products);
+      const products = response.data.data.products;
       setProducts(products);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -218,35 +218,19 @@ return (
     {/* This is the main content */}
     <div className="w-full h-fit border-black border-2 mb-16 flex flex-col bg-primary-green">
       {currentTab === 'activities' ? (
-        activities.length > 0 ? (
           <ActivitiesTable activities={activities} onEditRating={handleOpenModal} />
-        ) : (
-          <div className="text-center text-2xl text-gray-900 p-6 w-3/4 mx-auto">No attended activities</div>
-        )
       ) : null}
 
       {currentTab === 'tour guide' ? (
-        tourGuides.length > 0 ? (
           <TourGuidesTable tourGuides={tourGuides} onEditRating={handleOpenModal} />
-        ) : (
-          <div className="text-center text-2xl text-gray-900 p-6 w-3/4 mx-auto">No tour guides booked</div>
-        )
       ) : null}
 
       {currentTab === 'itinerary' ? (
-        itineraries.length > 0 ? (
             <ItineraryTable itineraries={itineraries} onEditRating={handleOpenModal} />
-            ) : (
-            <div className="text-center text-2xl text-gray-900 p-6 w-3/4 mx-auto">No itineraries booked</div>
-            )
       ) : null}
       
       {currentTab === 'product' ? (
-        products.length > 0 ? (
             <ProductTable products={products} onEditRating={handleOpenModal} />
-        ) : (
-        <div className="text-center text-2xl text-gray-900 p-6 w-3/4 mx-auto">No products purchased</div>
-        )
       ) : null}
     </div>
   </div>

@@ -79,7 +79,7 @@ const ItineraryTable: React.FC<ItineraryTableProps> = ({ itineraries, onEditRati
     { header: "Drop-off Location", accessor: "drop_off_location.name" },
     { header: "Created By", accessor: "created_by.username" },
     {
-      header: "Average Rating",
+      header: "Ratings",
       accessor: "average_rating",
       render: (rating) => (rating !== undefined ? rating.toFixed(1) +"/5" : "N/A"),
     },

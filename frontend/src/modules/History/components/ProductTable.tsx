@@ -22,8 +22,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEditRating }) =
       { header: "Name", accessor: "name" },
       { header: "Description", accessor: "description" },
       { header: "Price", accessor: "price", render: (price: number) => `$${price}` },
-      { header: "Available Quantity", accessor: "available_quantity", render: (quantity) => (quantity !== undefined ? quantity : "N/A"), },
-      { header: "Sales", accessor: "sales", render: (sales) => (sales !== undefined ? sales : "N/A"), },
+      { header: "Available Quantity", accessor: "available_quantity", render: (quantity) => (quantity !== undefined ? quantity : "0"), },
+      { header: "Sales", accessor: "sales", render: (sales) => (sales !== undefined ? sales : "0"), },
       // {
       //     header: "Tags",
       //     accessor: "tags",
@@ -36,7 +36,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEditRating }) =
       //         ),
       // },
       {
-          header: "Average Rating",
+          header: "Ratings",
           accessor: "average_rating",
           render: (rating) => (rating !== undefined ? rating.toFixed(1) +"/5" : "N/A"),
         },

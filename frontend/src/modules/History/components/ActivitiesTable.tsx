@@ -41,7 +41,7 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
     },
     { header: "Special Discounts", accessor: "specialDiscounts", render: (discounts: number) => `${discounts}%` },
     {
-        header: "Average Rating",
+        header: "Ratings",
         accessor: "average_rating",
         render: (rating) => (rating !== undefined ? rating.toFixed(1) + "/5" : "N/A"),
       },

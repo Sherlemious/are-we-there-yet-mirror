@@ -29,7 +29,7 @@ const TourGuidesTable: React.FC<TourGuidesTableProps> = ({ tourGuides, onEditRat
       render: (experience) => (experience !== undefined ? experience : "N/A"),
     },
     {
-      header: "Average Rating",
+      header: "Ratings",
       accessor: "average_rating",
       render: (rating) => (rating !== undefined ? rating.toFixed(1) +"/5" : "N/A"),
     },
