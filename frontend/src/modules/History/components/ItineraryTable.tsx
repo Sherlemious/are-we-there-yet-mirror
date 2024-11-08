@@ -8,6 +8,7 @@ interface Itinerary {
   timeline: string;
   language: string;
   price: number;
+  average_rating?: number;
   created_by: { username: string };
   available_datetimes: Date[];
   accessibility: {
@@ -77,6 +78,11 @@ const ItineraryTable: React.FC<ItineraryTableProps> = ({ itineraries, onEditRati
     { header: "Created By", accessor: "created_by.username" },
     { header: "Pick-up Location", accessor: "pick_up_location.name" },
     { header: "Drop-off Location", accessor: "drop_off_location.name" },
+    {
+      header: "Average Rating",
+      accessor: "average_rating",
+      render: (rating) => (rating !== undefined ? rating.toFixed(1) : "N/A"),
+    },
   ];
 
   const actions: ActionProps = {

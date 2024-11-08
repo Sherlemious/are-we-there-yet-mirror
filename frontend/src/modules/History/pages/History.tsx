@@ -8,6 +8,7 @@ import ReviewsForm from "../components/ReviewsForm";
 import toast from "react-hot-toast";
 import ActivitiesTable from "../components/ActivitiesTable";
 import ItineraryTable from "../components/ItineraryTable";
+import ProductTable from "../components/ProductTable";
 
 interface TourGuide {
     _id: string;
@@ -44,9 +45,21 @@ interface TourGuide {
       serviceAnimalAllowed: boolean;
       accessibleParking: boolean;
     };
+    average_rating?: number;
     pick_up_location: { name: string };
     drop_off_location: { name: string };
   }
+
+interface Product{
+    _id: string;
+  name: string;
+  description: string;
+  price: number;
+  available_quantity?: number;
+  sales?: number;
+  average_rating?: number;
+//   tags: { name: string }[];
+}
 
 export function History(){
 
@@ -56,6 +69,7 @@ const { user } = useContext(UserContext);
 const [tourGuides, setTourGuides] = useState<TourGuide[]>([]);
 const [activities, setActivities] = useState<Activity[]>([]);
 const [itineraries, setItineraries] = useState<Itinerary[]>([]);
+const [products, setProducts] = useState<Product[]>([]);
 const [objectId, setObjectId] = useState<string>("");
 const [objectType, setObjectType] = useState<string>("");
 const modalRef = useRef<ModalRef>(null);
@@ -112,10 +126,20 @@ useEffect(() => {
       console.error("Error fetching activities:", error);
     }
   };
-
+  const fetchProducts = async () => {
+    try {
+      const response = await axiosInstance.get("/products/");
+      console.log(response.data.data);
+      const products = response.data.data;
+      setProducts(products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  }
   // Call all fetch functions inside useEffect
   fetchItineraries();
   fetchActivities();
+  fetchProducts();
 }, [refresh]);  // Only re-fetch when `refresh` changes
 
 
@@ -218,7 +242,11 @@ return (
       ) : null}
       
       {currentTab === 'product' ? (
+        products.length > 0 ? (
+            <ProductTable products={products} onEditRating={handleOpenModal} />
+        ) : (
         <div className="text-center text-2xl text-gray-900 p-6 w-3/4 mx-auto">No products purchased</div>
+        )
       ) : null}
     </div>
   </div>
