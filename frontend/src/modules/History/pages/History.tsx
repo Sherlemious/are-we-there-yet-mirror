@@ -14,7 +14,7 @@ interface TourGuide {
     _id: string;
     username: string;
     email: string;
-    mobilenumber: string;
+    mobile_number: string;
     years_of_experience?: number;
     average_rating?: number;
   }

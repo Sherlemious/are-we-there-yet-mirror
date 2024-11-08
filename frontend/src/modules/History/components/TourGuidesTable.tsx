@@ -5,7 +5,7 @@ interface TourGuide {
   _id: string;
   username: string;
   email: string;
-  mobilenumber: string;
+  mobile_number: string;
   years_of_experience?: number;
   average_rating?: number;
 }
@@ -21,7 +21,7 @@ const TourGuidesTable: React.FC<TourGuidesTableProps> = ({ tourGuides, onEditRat
     { header: "Email", accessor: "email" },
     { header: "Mobile Number", 
         accessor: "mobile_number",
-        render: (mobilenumber) => (mobilenumber !== undefined ? mobilenumber : "N/A"),
+        render: (mobile_number) => (mobile_number !== undefined ? mobile_number : "N/A"),
       },
     {
       header: "Experience (Years)",
