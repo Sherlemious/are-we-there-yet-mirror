@@ -7,7 +7,7 @@ class ComplaintRepo {
   }
 
   async getComplaints() {
-    return await Complaint.find();
+    return await Complaint.find().populate('created_by');
   }
 
   async getComplaintById(id: string) {
