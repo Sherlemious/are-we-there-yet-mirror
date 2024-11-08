@@ -36,6 +36,7 @@ interface TourGuide {
     language: string;
     price: number;
     available_datetimes: Date[];
+    created_by: { username: string };
     accessibility: {
       wheelchairAccessible: boolean;
       assistiveHearingDevices: boolean;
@@ -67,7 +68,9 @@ useEffect(() => {
       console.log(response.data.data.itineraries.itinerary_bookings);
 
       // Get the itineraries from the booking data
-      const itineraries = response.data.data.itineraries.itinerary_bookings.map(
+      const itineraries = response.data.data.itineraries.itinerary_bookings
+      .filter((booking) => booking.status === "attended")
+      .map(
         (booking) => booking.itinerary
       );
 

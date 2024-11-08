@@ -8,6 +8,7 @@ interface Itinerary {
   timeline: string;
   language: string;
   price: number;
+  created_by: { username: string };
   available_datetimes: Date[];
   accessibility: {
     wheelchairAccessible: boolean;
@@ -73,6 +74,7 @@ const ItineraryTable: React.FC<ItineraryTableProps> = ({ itineraries, onEditRati
         </div>
       ),
     },
+    { header: "Created By", accessor: "created_by.username" },
     { header: "Pick-up Location", accessor: "pick_up_location.name" },
     { header: "Drop-off Location", accessor: "drop_off_location.name" },
   ];
