@@ -136,27 +136,26 @@ function ItineraryModal({
     transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
     opacity: isVisible && !isClosing ? 1 : 0,
   };
-
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       style={modalOverlayStyle}
     >
       <div
-        className="relative h-auto w-full max-w-[80vw] border-2 border-black bg-white p-4"
+        className="relative h-auto w-full max-w-[85vw] rounded-lg border border-borders-primary bg-secondary-white p-8 shadow-lg"
         style={modalContentStyle}
       >
         {/* Close button */}
         <button
           onClick={handleModalClose}
-          className="absolute right-2 top-2 m-4 text-xl font-bold"
+          className="absolute right-4 top-4 rounded-full p-2 text-accent-dark-blue transition-colors hover:bg-secondary-light_grey"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="black"
+            stroke="currentColor"
           >
             <path
               strokeLinecap="round"
@@ -166,100 +165,118 @@ function ItineraryModal({
             />
           </svg>
         </button>
-        <div>
+
+        <div className="space-y-8">
           {/* Itinerary name */}
-          <div className="my-8 w-fit text-left text-xl font-bold">
-            {itinerary.name}
-            {/* add an underline */}
-            <div className="border-b-2 border-black"></div>
+          <div className="inline-block">
+            <h2 className="text-headline font-headline text-accent-dark-blue">
+              {itinerary.name}
+            </h2>
+            <div className="mt-2 h-1 w-full rounded-full bg-primary-blue"></div>
           </div>
+
           {/* Itinerary details */}
-          <div className="mx-8 mb-8 grid grid-cols-3 gap-8">
-            {/* random info*/}
-            <div className="grid-rows-auto grid grid-cols-2 gap-4">
-              <div className="col-span-1>">
-                <div className="text-lg font-bold">Language</div>
-                <div>{itinerary.language}</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold">Price</div>
-                <div>{itinerary.price}</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold">Dropoff Location</div>
-                <div>{itinerary.dropoffLocation}</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold">Pickup Location</div>
-                <div>{itinerary.pickupLocation}</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold">Category</div>
-                <div>{itinerary.category}</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold">Tags</div>
-                <div>{itinerary.tags.join(", ")}</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold">Rating</div>
-                <div>{itinerary.rating}/5</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold">Accessibilities</div>
-                <div>{itinerary.accessibilities ? "Yes" : "No"}</div>
-              </div>
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            {/* Basic Info */}
+            <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6">
+              {[
+                { label: "Language", value: itinerary.language },
+                { label: "Price", value: itinerary.price },
+                {
+                  label: "Dropoff Location",
+                  value: itinerary.dropoffLocation,
+                },
+                { label: "Pickup Location", value: itinerary.pickupLocation },
+                { label: "Category", value: itinerary.category },
+                { label: "Tags", value: itinerary.tags.join(", ") },
+                { label: "Rating", value: `${itinerary.rating}/5` },
+                {
+                  label: "Accessibilities",
+                  value: itinerary.accessibilities ? "Yes" : "No",
+                },
+              ].map((item, index) => (
+                <div key={index} className="space-y-1">
+                  <div className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                    {item.label}
+                  </div>
+                  <div className="text-body text-text-primary">
+                    {item.value}
+                  </div>
+                </div>
+              ))}
             </div>
+
             {/* Activities */}
-            <div>
-              <div className="text-lg font-bold">Activities</div>
+            <div className="space-y-4">
+              <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                Activities
+              </h3>
               {itinerary.activities.length !== 0 ? (
-                /* show a table with all the activities in it the columns are DateTime (formatted), Location (formatted), Price*/
-                <table className="w-full border-collapse border-2">
-                  <thead>
-                    <tr className="border-b-2 text-left">
-                      <th>DateTime</th>
-                      <th>Location</th>
-                      <th>Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {itinerary.activities.map((activity, index) => (
-                      <tr key={index} className="border-b-2 text-left">
-                        <td>{formatDateTime(activity.date, activity.time)}</td>
-                        <td>{formatLocation(activity.location)}</td>
-                        <td>{activity.price}</td>
+                <div className="overflow-hidden rounded-lg border border-borders-primary">
+                  <table className="w-full">
+                    <thead className="bg-primary-blue text-secondary-white">
+                      <tr>
+                        <th className="p-4 text-left">DateTime</th>
+                        <th className="p-4 text-left">Location</th>
+                        <th className="p-4 text-left">Price</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {itinerary.activities.map((activity, index) => (
+                        <tr
+                          key={index}
+                          className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
+                        >
+                          <td className="p-4">
+                            {formatDateTime(activity.date, activity.time)}
+                          </td>
+                          <td className="p-4">
+                            {formatLocation(activity.location)}
+                          </td>
+                          <td className="p-4">{activity.price}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
-                <div className="text-left">No activities</div>
+                <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
+                  No activities available
+                </div>
               )}
             </div>
+
             {/* Date and Time */}
-            <div>
-              <div className="text-lg font-bold">Date & Time</div>
+            <div className="space-y-4">
+              <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                Available Dates & Times
+              </h3>
               {itinerary.availableDateTimes.length !== 0 ? (
-                // show a table with all the available date and time the columns are Date (formatted), Time (formatted)
-                <table className="w-full border-collapse border-2">
-                  <thead>
-                    <tr className="border-b-2 text-left">
-                      <th>Date</th>
-                      <th>Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {itinerary.availableDateTimes.map((dateTime, index) => (
-                      <tr key={index} className="border-b-2 text-left">
-                        <td>{formatDate(dateTime.date)}</td>
-                        <td>{formatTime(dateTime.time)}</td>
+                <div className="overflow-hidden rounded-lg border border-borders-primary">
+                  <table className="w-full">
+                    <thead className="bg-primary-green text-secondary-white">
+                      <tr>
+                        <th className="p-4 text-left">Date</th>
+                        <th className="p-4 text-left">Time</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {itinerary.availableDateTimes.map((dateTime, index) => (
+                        <tr
+                          key={index}
+                          className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
+                        >
+                          <td className="p-4">{formatDate(dateTime.date)}</td>
+                          <td className="p-4">{formatTime(dateTime.time)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
-                <div>No available date and time</div>
+                <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
+                  No available dates and times
+                </div>
               )}
             </div>
           </div>
@@ -277,19 +294,25 @@ function ItineraryCard({
   onCardClick: () => void;
 }) {
   return (
-    <div className="h-full w-full border-2 border-black" onClick={onCardClick}>
-      {/* Itinerary name */}
-      <div className="p-2 text-center font-bold">{itinerary.name}</div>
-      {/* a vertical list of activities showing only a shortend datetime `day/month time` and the location with a max of 3 activities */}
-      <div className="grid-rows-auto grid gap-2 p-4 pt-0">
+    <div
+      className="h-full w-full cursor-pointer rounded-lg border border-gray-200 bg-white shadow-lg transition-transform duration-200 hover:scale-105 hover:shadow-xl"
+      onClick={onCardClick}
+    >
+      {/* Itinerary Name */}
+      <div className="p-4 text-center text-lg font-semibold text-accent-dark-blue">
+        {itinerary.name}
+      </div>
+
+      {/* Activity List */}
+      <div className="grid gap-3 px-6 pb-4 pt-2">
         {itinerary.activities.length !== 0 ? (
           itinerary.activities.slice(0, 3).map((activity, index) => (
-            <div className="text-center" key={index}>
+            <div className="text-center text-gray-600" key={index}>
               {formatActivity(activity)}
             </div>
           ))
         ) : (
-          <div className="text-center">No activities</div>
+          <div className="text-center italic text-gray-500">No activities</div>
         )}
       </div>
     </div>
@@ -369,71 +392,125 @@ export function ItineraryList() {
   }, [searchQuery, budget, date, ratings, data]);
 
   return (
-    <>
+    <div className="space-y-8">
       {loading && (
-        <div className="text-center text-2xl font-bold">Loading...</div>
-      )}
-      {error && (
-        <div className="text-center text-2xl font-bold text-red-500">
-          {error}
+        <div className="flex h-64 items-center justify-center">
+          <div className="text-headline font-headline text-accent-dark-blue">
+            Loading...
+          </div>
         </div>
       )}
+
+      {error && (
+        <div className="flex h-64 items-center justify-center rounded-lg bg-destructive/10 p-6">
+          <div className="text-headline font-headline text-destructive">
+            {error}
+          </div>
+        </div>
+      )}
+
       {!loading && !error && (
-        <>
-          {/* tool bar */}
-          <div className="grid grid-cols-4 gap-8 p-4">
-            <input
-              type="text"
-              placeholder="Search"
-              className="h-full w-full border-2 border-black p-4"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Max Budget"
-              className="w-full border-2 border-black p-4"
-              value={budget ?? ""}
-              onChange={(e) =>
-                setBudget(e.target.value ? parseInt(e.target.value) : null)
-              }
-            />
-            <input
-              type="date"
-              className="w-full border-2 border-black p-4"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Min Ratings"
-              className="w-full border-2 border-black p-4"
-              value={ratings ?? ""}
-              onChange={(e) =>
-                setRatings(e.target.value ? parseInt(e.target.value) : null)
-              }
-            />
+        <div className="space-y-8">
+          {/* Toolbar */}
+          <div className="rounded-lg bg-secondary-light_grey p-8 shadow-lg">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {/* Search Input */}
+              <div className="space-y-2">
+                <label className="text-input_or_label font-sub_headings text-accent-dark-blue">
+                  Search
+                </label>
+                <input
+                  type="text"
+                  placeholder="Search itineraries..."
+                  className="h-12 w-full rounded-lg border border-borders-primary bg-secondary-white p-4 text-body shadow-inner transition-colors placeholder:text-muted-foreground focus:border-primary-blue focus:outline-none focus:ring-2 focus:ring-primary-blue/50"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              {/* Budget Input */}
+              <div className="space-y-2">
+                <label className="text-input_or_label font-sub_headings text-accent-dark-blue">
+                  Max Budget
+                </label>
+                <input
+                  type="number"
+                  placeholder="Enter maximum budget"
+                  className="h-12 w-full rounded-lg border border-borders-primary bg-secondary-white p-4 text-body shadow-inner transition-colors placeholder:text-muted-foreground focus:border-primary-blue focus:outline-none focus:ring-2 focus:ring-primary-blue/50"
+                  value={budget ?? ""}
+                  onChange={(e) =>
+                    setBudget(e.target.value ? parseInt(e.target.value) : null)
+                  }
+                />
+              </div>
+
+              {/* Date Input */}
+              <div className="space-y-2">
+                <label className="text-input_or_label font-sub_headings text-accent-dark-blue">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  className="h-12 w-full rounded-lg border border-borders-primary bg-secondary-white p-4 text-body shadow-inner transition-colors placeholder:text-muted-foreground focus:border-primary-blue focus:outline-none focus:ring-2 focus:ring-primary-blue/50"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </div>
+
+              {/* Ratings Input */}
+              <div className="space-y-2">
+                <label className="text-input_or_label font-sub_headings text-accent-dark-blue">
+                  Min Rating
+                </label>
+                <input
+                  type="number"
+                  placeholder="Minimum rating (1-5)"
+                  min="1"
+                  max="5"
+                  className="h-12 w-full rounded-lg border border-borders-primary bg-secondary-white p-4 text-body shadow-inner transition-colors placeholder:text-muted-foreground focus:border-primary-blue focus:outline-none focus:ring-2 focus:ring-primary-blue/50"
+                  value={ratings ?? ""}
+                  onChange={(e) =>
+                    setRatings(e.target.value ? parseInt(e.target.value) : null)
+                  }
+                />
+              </div>
+            </div>
           </div>
-          {/* body */}
-          <div className="grid-rows-auto grid grid-cols-3 gap-8 p-8">
-            {filteredData.map((itinerary, index) => (
-              <ItineraryCard
-                itinerary={itinerary}
-                key={index}
-                onCardClick={() => handleCardClick(itinerary)}
-              />
-            ))}
+
+          {/* Results */}
+          <div className="space-y-4">
+            <h2 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+              Available Itineraries
+            </h2>
+
+            {filteredData.length === 0 ? (
+              <div className="flex h-64 items-center justify-center rounded-lg bg-secondary-light_grey">
+                <p className="text-body text-muted-foreground">
+                  No itineraries found matching your criteria
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {filteredData.map((itinerary, index) => (
+                  <ItineraryCard
+                    key={index}
+                    itinerary={itinerary}
+                    onCardClick={() => handleCardClick(itinerary)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-          {/* modal */}
+
+          {/* Modal */}
           {selectedItinerary && (
             <ItineraryModal
               itinerary={selectedItinerary}
               onClose={handleCloseModal}
             />
           )}
-          ;
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 }
