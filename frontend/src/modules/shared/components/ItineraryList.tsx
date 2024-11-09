@@ -1,5 +1,6 @@
 import axiosInstance from "../services/axiosInstance";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "../../shared/store/user-context";
 
 async function getMyItineraries() {
   try {
@@ -80,6 +81,7 @@ const formatDateTime = (date: string, time: string) => {
   const formattedTime = parsedTime.toLocaleTimeString("en-GB");
   return `${formattedDate} ${formattedTime}`;
 };
+
 const formatLocation = (location: string) => {
   const maxLength = 12;
   if (location.length > maxLength) {
@@ -90,10 +92,12 @@ const formatLocation = (location: string) => {
 const formatActivity = (activity: Activity) => {
   return `${formatDateTime(activity.date, activity.time)} - ${formatLocation(activity.location)}`;
 };
+
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
   return parsedDate.toLocaleDateString("en-GB");
 };
+
 const formatTime = (time: string) => {
   const parsedTime = new Date(time);
   return parsedTime.toLocaleTimeString("en-GB");
@@ -110,6 +114,9 @@ function ItineraryModal({
   // states for the animation
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  const { user } = useContext(UserContext);
+  console.log(user);
 
   // handle the close button
   useEffect(() => {
