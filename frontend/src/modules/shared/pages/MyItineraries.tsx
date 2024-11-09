@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import Greeting from "../../shared/components/Greeting";
-// import { ActivityList } from "../components/ActivityList";
 import { ItineraryList } from "../components/ItineraryList";
 import { UserContext } from "../store/user-context";
 
