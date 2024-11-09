@@ -44,6 +44,7 @@ import { registerAction, registerLoader } from "./modules/Register/App";
 import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
+import AdminAllComplaints from "./modules/Complaints/pages/AdminAllComplaints";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -188,6 +189,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "my-complaints",
         element: <AllComplaints />,
+      },
+      {
+        path: "admin-complaints",
+        element: <AdminAllComplaints />,
       },
       {
         path: "activity",
