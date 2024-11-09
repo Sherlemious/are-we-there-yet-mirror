@@ -2,6 +2,8 @@ import axiosInstance from "../../../shared/services/axiosInstance";
 import { useEffect, useState } from "react";
 
 interface Activity {
+  _id: string;
+  booking_id: string;
   date: string;
   time: string;
   location: {
@@ -26,101 +28,6 @@ const formatText = (text: string) => {
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 };
 
-// async function getMyActivities() {
-//   try {
-//     // get the data via axios
-//     const resPromise = await axiosInstance.get("/users/getActivities");
-
-//     // format the data
-//     console.log(resPromise.data);
-
-//     const resBefore = resPromise.data.data.activities.activity_bookings;
-
-//     const res = resBefore.map((booking) => {
-//       const { activity } = booking;
-//       return {
-//         _id: activity._id,
-//         datetime: activity.datetime,
-//         location: activity.location,
-//         price: activity.price,
-//         category: activity.category,
-//         tags: activity.tags,
-//         specialDiscounts: activity.specialDiscounts,
-//         bookingOpen: activity.bookingOpen,
-//         created_by: activity.created_by,
-//         createdAt: activity.createdAt,
-//         updatedAt: activity.updatedAt,
-//         __v: activity.__v,
-//         average_rating: activity.average_rating,
-//         reviews: activity.reviews,
-//       };
-//     });
-
-//     // console.log(res);
-
-//     const data: Activity[] = res.data.map(
-//       (item: {
-//         datetime: string;
-//         location: {
-//           name: string;
-//           latitude: number;
-//           longitude: number;
-//         };
-//         price: number;
-//         category: {
-//           name: string;
-//         };
-//         tags: {
-//           name: string;
-//           type: string;
-//           historical_period: string;
-//         }[];
-//         specialDiscounts: number;
-//         bookingOpen: boolean;
-//       }) => {
-//         const datetime = item.datetime ?? "N/A";
-//         const date = new Date(datetime).toLocaleDateString();
-//         const time = new Date(datetime).toLocaleTimeString();
-
-//         const location = {
-//           name: item.location.name ?? "N/A",
-//           latitude: item.location.latitude ?? 0,
-//           longitude: item.location.longitude ?? 0,
-//         };
-//         const price = item.price ?? -1;
-//         let category = item.category ?? "N/A";
-//         category = category.name ?? "N/A";
-
-//         let tags = item.tags ?? [];
-//         tags = tags.map((tag) => tag.name ?? "N/A");
-
-//         const specialDiscounts = item.specialDiscounts ?? 0;
-//         const bookingOpen = item.bookingOpen ?? false;
-//         const ratings = Math.floor(Math.random() * 5) + 1; // TODO: Replace with actual ratings
-
-//         return {
-//           date,
-//           time,
-//           location,
-//           ratings,
-//           price,
-//           category,
-//           tags,
-//           specialDiscounts,
-//           bookingOpen,
-//         };
-//       },
-//     );
-
-//     data.sort((a, b) => a.price - b.price);
-
-//     return data;
-//   } catch (error) {
-//     console.error("Error fetching user", error);
-//     throw error;
-//   }
-// }
-
 async function getMyActivities() {
   try {
     // Get the data via axios
@@ -139,9 +46,10 @@ async function getMyActivities() {
 
     // Transform the data into the desired format
     const res = activityBookings.map((booking) => {
-      const { activity } = booking;
+      const { _id, activity } = booking;
       return {
         _id: activity?._id ?? "",
+        booking_id: _id ?? "",
         datetime: activity?.datetime ?? "",
         location: activity?.location ?? {
           name: "N/A",
@@ -178,6 +86,8 @@ async function getMyActivities() {
       const ratings = Math.floor(Math.random() * 5) + 1; // Mock ratings
 
       return {
+        _id: item._id,
+        booking_id: item.booking_id,
         date,
         time,
         location,
@@ -199,8 +109,49 @@ async function getMyActivities() {
   }
 }
 
+async function cancelBooking(activity_id: string, booking_id: string) {
+  try {
+    console.log("Cancelling booking:", activity_id, booking_id);
+
+    const response = await axiosInstance.patch("/users/cancelActivityBooking", {
+      activity_id,
+      booking_id,
+    });
+
+    if (response.status === 200) {
+      alert("Booking cancelled successfully!");
+      return true;
+    } else {
+      alert(response.data.message || "Failed to cancel booking.");
+      return false;
+    }
+  } catch (error: any) {
+    console.error("Error cancelling booking:", error.message);
+    alert("An error occurred while cancelling the booking.");
+    return false;
+  }
+}
+
 function ActivityCard({ activity }: { activity: Activity }) {
   const classes = "text-left text-[18px] text-ellipsis";
+
+  const handleCancel = async () => {
+    const confirmed = confirm("Are you sure you want to cancel this booking?");
+    if (confirmed) {
+      try {
+        const success = await cancelBooking(activity._id, activity.booking_id);
+        if (success) {
+          window.location.reload(); // Reload to refresh data if successful
+        } else {
+          alert("Failed to cancel booking.");
+        }
+      } catch (error) {
+        console.error("Error cancelling booking:", error);
+        alert("An error occurred while cancelling the booking.");
+      }
+    }
+  };
+
   return (
     <div className="grid min-h-[8rem] w-full grid-cols-9 gap-8 rounded-lg border border-gray-300 bg-card px-4 py-4">
       <div className={classes}>{activity.date}</div>
@@ -216,6 +167,13 @@ function ActivityCard({ activity }: { activity: Activity }) {
       <div className="text-left text-base">
         {activity.bookingOpen ? "Open" : "Closed"}
       </div>
+      <button
+        className="col-span-9 justify-self-end rounded bg-red-500 px-3 py-2 text-white"
+        onClick={handleCancel}
+        // disabled={!activity.bookingOpen}
+      >
+        Cancel
+      </button>
     </div>
   );
 }
