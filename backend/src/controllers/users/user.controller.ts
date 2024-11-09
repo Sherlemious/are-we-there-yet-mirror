@@ -118,14 +118,14 @@ const ChangeUserPassword = async (req: Request, res: Response) => {
 
   // Check if password is provided
   if (!password) {
-    res.status(400).json({ message: 'Password is required' });
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Password is required' });
     return;
   }
 
   // Find the user by ID using repository
   const user = await userRepo.findUserById(req.user.userId);
   if (!user) {
-    res.status(404).json({ message: 'User not found' });
+    res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'User not found' });
     return;
   }
 
@@ -137,9 +137,11 @@ const ChangeUserPassword = async (req: Request, res: Response) => {
     // Update the user's password in the database
     await userRepo.ChangeUserPassword(user._id, hashedPassword);
 
-    res.status(200).json({ message: 'Password changed successfully' });
+    res.status(ResponseStatusCodes.OK).json({ message: 'Password changed successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while changing the password' });
+    res
+      .status(ResponseStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: 'An error occurred while changing the password' });
   }
 };
 

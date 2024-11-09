@@ -31,6 +31,11 @@ class AuthController {
         return;
       }
 
+      if (!user.accepted || user.rejected) {
+        res.status(ResponseStatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized', data: null });
+        return;
+      }
+
       const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
       if (!isPasswordValid) {
         res.status(ResponseStatusCodes.BAD_REQUEST).send({ message: 'Invalid password', data: null });

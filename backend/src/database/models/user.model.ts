@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema(
     accepted: {
       type: Boolean,
       required: true,
+      default: true,
+    },
+    rejected: {
+      type: Boolean,
       default: false,
     },
     email: {
@@ -148,10 +152,6 @@ const userSchema = new mongoose.Schema(
     modified_by: {
       type: Schema.Types.ObjectId,
       ref: 'user',
-    },
-    rejected: {
-      type: Boolean,
-      default: false,
     },
     termsAndConditions: {
       type: Boolean,
