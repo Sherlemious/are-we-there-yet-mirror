@@ -151,7 +151,7 @@ function ViewComplaint({ viewingComplaint, handleCloseModal }) {
             </h2>
             <div className="flex items-start gap-2">
               <span className="font-semibold text-gray-600">Body:</span>
-              <p className="max-w-[350px] text-gray-700 text-text-primary">
+              <p className="max-w-[350px] truncate text-gray-700 text-text-primary">
                 {viewingComplaint?.body || "No Description"}
               </p>
             </div>
