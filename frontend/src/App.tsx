@@ -47,6 +47,7 @@ import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
 import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
+import Booking from "./modules/Booking/pages/Booking";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -114,6 +115,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "all-products",
         element: <AllProducts />,
+      },
+      {
+        path: "booking",
+        element: <Booking />,
       },
     ],
   },
