@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -193,8 +194,6 @@ const RegistrationForm = () => {
 
     const data = Object.fromEntries(formData);
 
-    console.log(data);
-
     const ids = [];
 
     if (userType !== userRoles.tourist) {
@@ -224,9 +223,6 @@ const RegistrationForm = () => {
         }
       }
     }
-
-    console.log(documents);
-    console.log(ids);
 
     if (!validateFormDataValue(fieldNames.email, data.email as string)) {
       return toast.error("Invalid email address");
@@ -383,6 +379,7 @@ const RegistrationForm = () => {
           <DialogContent className="max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Terms and Conditions</DialogTitle>
+              <DialogDescription />
             </DialogHeader>
             <div
               className="mt-4 text-sm"

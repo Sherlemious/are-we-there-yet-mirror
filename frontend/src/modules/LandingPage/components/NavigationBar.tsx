@@ -22,8 +22,8 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
   function handleStyles(props: { isActive: boolean }) {
     return cn(
       "px-3 py-2 font-medium transition-all duration-200",
-      "hover:text-accent-gold",
-      props.isActive ? "text-accent-gold" : fontColor,
+      "hover:text-accent-gold hover:drop-shadow-glow",
+      props.isActive ? "text-accent-gold drop-shadow-glow" : fontColor,
     );
   }
 
@@ -37,9 +37,12 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
   }
 
   return (
-    <div className="z-10 flex items-center bg-secondary-light_grey/50 py-7">
+    <div className="relative z-10 flex items-center py-7">
+      {/* Backdrop blur container */}
+      <div className="absolute inset-0 -z-10 bg-black/10 backdrop-blur-md" />
+
       <div className="flex w-full justify-center">
-        <NavigationMenu className="relative ml-52">
+        <NavigationMenu className="relative ml-72">
           <NavigationMenuList className="flex justify-around space-x-8">
             <NavigationMenuItem className="text-sub-headings">
               <NavLink
@@ -55,12 +58,12 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                 className={cn(
                   handleStyles({ isActive: false }),
                   "bg-transparent hover:bg-transparent",
-                  "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                  "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
                 )}
               >
                 Activities
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+              <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                   <ListItem title="Browse All" to="/all-activities">
                     View all available activities
@@ -79,12 +82,12 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                 className={cn(
                   handleStyles({ isActive: false }),
                   "bg-transparent hover:bg-transparent",
-                  "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                  "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
                 )}
               >
                 Historical Places
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+              <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                   <ListItem title="All Locations" to="/all-museums">
                     Explore all historical locations
@@ -103,12 +106,12 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                 className={cn(
                   handleStyles({ isActive: false }),
                   "bg-transparent hover:bg-transparent",
-                  "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                  "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
                 )}
               >
                 Itineraries
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+              <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                   <ListItem title="View All" to="/all-itineraries">
                     Browse all itineraries
@@ -128,12 +131,12 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                   className={cn(
                     handleStyles({ isActive: false }),
                     "bg-transparent hover:bg-transparent",
-                    "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                    "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
                   )}
                 >
                   Products
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                     <ListItem title="All Products" to="/all-products">
                       View all products
@@ -177,7 +180,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               );
             }}
             size={40}
-            className="rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-70"
+            className="hover:shadow-glow rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-70"
           />
         )}
 
@@ -185,15 +188,13 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
           variant="default"
           onClick={() => {
             if (user.account_type !== AccountType.None) {
-              //clear token
-              localStorage.removeItem("token");
-              //clear user
               handleClearUser();
+              localStorage.removeItem("token");
               toast.success("Logged out successfully");
               navigate("/");
             } else navigate("/register");
           }}
-          className={`min-w-fit rounded-2xl bg-accent-gold text-[20px] text-black transition-all duration-150 hover:bg-accent-gold/70 disabled:cursor-not-allowed disabled:opacity-50`}
+          className="hover:shadow-glow min-w-fit rounded-2xl bg-accent-gold text-[20px] text-black transition-all duration-150 hover:bg-accent-gold/70 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {user.account_type === AccountType.None ? "Register Now" : "Logout"}
         </Button>

@@ -1,3 +1,5 @@
+import { TagType } from "./Tag.types";
+
 export enum AccountType {
   None = "None",
   Admin = "Admin",
@@ -25,6 +27,7 @@ export interface UserType {
   name?: string;
   accepted?: boolean;
   nationality?: string;
+  deletionRequested?: boolean;
 
   // Tour guide
   years_of_experience?: number;
@@ -52,4 +55,5 @@ export interface UserType {
   // Tourist
   wallet?: number;
   loyaltyPoints?: number;
+  preferences?: TagType[];
 }

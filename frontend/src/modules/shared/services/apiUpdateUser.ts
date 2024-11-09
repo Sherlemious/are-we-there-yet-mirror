@@ -26,6 +26,7 @@ export async function updateUser(
     headquarters: string;
     specialties: string;
   },
+  tags?: string[],
 ) {
   if (previous_work) {
     axiosInstance.patch(`/users/${id}`, {
@@ -37,6 +38,13 @@ export async function updateUser(
   if (company_profile) {
     axiosInstance.patch(`/users/${id}`, {
       company_profile: company_profile,
+    });
+    return;
+  }
+
+  if (tags) {
+    axiosInstance.patch(`/users/${id}`, {
+      preferences: tags,
     });
     return;
   }

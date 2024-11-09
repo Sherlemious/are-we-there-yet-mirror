@@ -3,7 +3,6 @@ import EditModal, { formModalRef } from "../../shared/components/FormEditModal";
 import { UserContext } from "@/modules/shared/store/user-context";
 import toast from "react-hot-toast";
 import { requestAccountDeletion } from "../services/apiDeleteUser";
-import { useNavigate } from "react-router";
 import { apiAddDocs } from "@/modules/Register/services/apiAddDocs";
 import { updateUser } from "../services/apiUpdateUser";
 import { validateFormDataValue } from "@/modules/Register/utils/helpers";
@@ -16,6 +15,7 @@ import TouristProfile from "@/modules/Tourist/components/TouristProfile";
 import AdvertiserProfile from "@/modules/Advertiser/components/AdvertiserProfile";
 import SellerProfile from "@/modules/Seller/components/SellerProfile";
 import ProfilePicAndName from "./ProfilePicAndName";
+import { TagType } from "../types/Tag.types";
 
 interface NewProfProps {
   countries?: { name: { common: string } }[];
@@ -28,6 +28,7 @@ interface NewProfProps {
     id: string,
     data: { [key: string]: FormDataEntryValue },
   ) => Promise<unknown>;
+  tags: TagType[];
 }
 
 const NewProf: React.FC<NewProfProps> = ({
@@ -38,6 +39,7 @@ const NewProf: React.FC<NewProfProps> = ({
   accountTypeNeededInAPICall = false,
   endpoint,
   initialFormValues,
+  tags,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [showWorkHistoryModal, setShowWorkHistoryModal] = useState(false);
@@ -46,7 +48,6 @@ const NewProf: React.FC<NewProfProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<formModalRef>(null);
   const { user, setUser } = useContext(UserContext);
-  const navigate = useNavigate();
 
   const handleRedeemPoints = async () => {
     if (user.loyaltyPoints) {
@@ -90,8 +91,6 @@ const NewProf: React.FC<NewProfProps> = ({
         ...prev,
         profile_pic: { url, _id: id },
       }));
-
-      toast.success("Profile picture updated successfully");
     } catch (error) {
       console.error("Error uploading profile picture:", error);
       toast.error("Failed to update profile picture");
@@ -205,7 +204,6 @@ const NewProf: React.FC<NewProfProps> = ({
   const onDeleteReq = async () => {
     try {
       await requestAccountDeletion();
-      navigate("/home");
     } catch (error) {
       console.error("Error deleting account:", error);
       toast.error("Request to delete account failed");
@@ -238,7 +236,11 @@ const NewProf: React.FC<NewProfProps> = ({
 
       default: // Tourist profile
         return (
-          <TouristProfile user={user} handleRedeemPoints={handleRedeemPoints} />
+          <TouristProfile
+            tags={tags}
+            user={user}
+            handleRedeemPoints={handleRedeemPoints}
+          />
         );
     }
   };
@@ -247,7 +249,7 @@ const NewProf: React.FC<NewProfProps> = ({
     <div className="relative min-h-screen">
       <div className="relative flex min-h-screen items-center justify-center">
         <div className="w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="rounded-xl border border-secondary-light_grey bg-secondary-light_grey p-8 shadow-lg backdrop-blur-sm">
+          <div className="h-full rounded-xl border border-secondary-light_grey bg-secondary-light_grey p-8 shadow-lg backdrop-blur-sm">
             <div className="flex items-center gap-12 lg:flex-row">
               <ProfilePicAndName
                 user={user}

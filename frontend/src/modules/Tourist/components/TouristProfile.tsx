@@ -1,3 +1,4 @@
+import { TagType } from "@/modules/shared/types/Tag.types";
 import { UserType } from "@/modules/shared/types/User.types";
 import {
   Briefcase,
@@ -8,16 +9,36 @@ import {
   Phone,
   Wallet,
 } from "lucide-react";
+import { useState } from "react";
+import TouristSearchMultiSelect, {
+  MultiSelectOption,
+} from "./TouristSearchMultiSelect";
+import { updateUser } from "@/modules/shared/services/apiUpdateUser";
 
 export default function TouristProfile({
   user,
   handleRedeemPoints,
+  tags,
 }: {
   user: UserType;
   handleRedeemPoints: () => void;
+  tags: TagType[];
 }) {
+  const [selectedTags, setSelectedTags] = useState<MultiSelectOption[]>(
+    user.preferences?.map((tag) => ({
+      value: tag._id,
+      label: tag.name,
+      payload: tag,
+    })) ?? [],
+  );
+
+  async function handleUpdateTags() {
+    const newTagIds = selectedTags.map((tag) => tag.value);
+    await updateUser(user._id, undefined, undefined, undefined, newTagIds);
+  }
+
   return (
-    <>
+    <div className="flex w-full flex-col gap-10">
       <div className="grid flex-1 grid-cols-1 gap-x-8 gap-y-6 pt-10 md:grid-cols-3">
         <div className="space-y-6">
           <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
@@ -79,6 +100,33 @@ export default function TouristProfile({
           </div>
         </div>
       </div>
-    </>
+      <div className="flex flex-col space-y-6">
+        <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
+          Preference Tags
+        </h3>
+        <TouristSearchMultiSelect
+          initialSelectedItems={user.preferences?.map((tag) => ({
+            value: tag._id,
+            label: tag.name,
+            payload: tag,
+          }))}
+          onUpdate={handleUpdateTags}
+          options={tags?.map((tag) => ({
+            value: tag._id,
+            label: tag.name,
+            payload: tag,
+          }))}
+          selectedItems={selectedTags}
+          onSelect={(tag) => {
+            setSelectedTags((prev) => [...prev, tag]);
+          }}
+          onRemove={(tag) => {
+            setSelectedTags((prev) =>
+              prev.filter((t) => t.value !== tag.value),
+            );
+          }}
+        />
+      </div>
+    </div>
   );
 }
