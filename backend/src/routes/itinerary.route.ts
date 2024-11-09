@@ -25,6 +25,6 @@ itineraryRouter.delete('/:id', deleteItinerary);
 itineraryRouter.get('/', filterItineraries);
 itineraryRouter.patch('/:id/activate', (req, res) => toggleItineraryActive(req, res, true));
 itineraryRouter.patch('/:id/deactivate', (req, res) => toggleItineraryActive(req, res, false));
-itineraryRouter.put('/flag/:id', flagItinerary);
+itineraryRouter.patch('/toggleFlag/:id', flagItinerary);
 
 export default itineraryRouter;

@@ -199,11 +199,14 @@ const toggleItineraryActive = async (req: Request, res: Response, active: boolea
 
 const flagItinerary = async (req: Request, res: Response) => {
   try {
-    await ItineraryRepo.flagItinerary(req.params.id);
-    const newItinerary = await ItineraryRepo.findItineraryById(req.params.id);
+    Validator.validateId(req.params.id, 'Invalid itinerary ID');
+
+    const itinerary = await ItineraryRepo.findItineraryById(req.params.id);
+    await ItineraryRepo.toggleFlagItinerary(req.params.id, !itinerary?.flagged);
+
     const response = {
       message: 'Itinerary flagged successfully',
-      data: { itinerary: newItinerary },
+      data: { flagged: !itinerary?.flagged },
     };
 
     res.json(response);
