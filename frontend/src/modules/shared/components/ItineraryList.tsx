@@ -1,6 +1,7 @@
 import axiosInstance from "../services/axiosInstance";
 import { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../shared/store/user-context";
+import toast from "react-hot-toast";
 
 async function getMyItineraries() {
   try {
@@ -11,6 +12,7 @@ async function getMyItineraries() {
     const res = await resPromise.data;
     const tempData: Itinerary[] = await res.data.itineraries.map(
       (item: any) => {
+        const id = item._id;
         const name = item.name === null ? "N/A" : item.name;
         const category = item.category === null ? "N/A" : item.category;
         const tags = item.tags === null ? [] : item.tags.map((tag) => tag.name);
@@ -45,6 +47,7 @@ async function getMyItineraries() {
         const rating = Math.floor(Math.random() * 5) + 1; // TODO: replace with actual rating
 
         return {
+          id,
           name,
           category,
           rating,
@@ -116,7 +119,7 @@ function ItineraryModal({
   const [isClosing, setIsClosing] = useState(false);
 
   const { user } = useContext(UserContext);
-  console.log(user);
+  const isUserTourist = user?.account_type === "Tourist" || false;
 
   // handle the close button
   useEffect(() => {
@@ -143,6 +146,29 @@ function ItineraryModal({
     transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
     opacity: isVisible && !isClosing ? 1 : 0,
   };
+
+  // function to handle booking
+  const handleBooking = async () => {
+    try {
+      // init body
+      const body = {
+        itinerary_id: itinerary.id,
+      };
+
+      // make the booking
+      const resPromise = await axiosInstance.post(
+        "/itineraries/bookings",
+        body,
+      );
+      const res = await resPromise.data;
+
+      // show success message
+      toast.success(res.message);
+    } catch (error) {
+      toast.error(`Error booking itinerary: ${error.message}`);
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm"
@@ -183,9 +209,9 @@ function ItineraryModal({
           </div>
 
           {/* Itinerary details */}
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:grid-rows-2">
             {/* Basic Info */}
-            <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6">
+            <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
               {[
                 { label: "Language", value: itinerary.language },
                 { label: "Price", value: itinerary.price },
@@ -211,6 +237,30 @@ function ItineraryModal({
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* booking */}
+            <div className="space-y-6">
+              <div className="space-y-1">
+                <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                  Book Now
+                </h3>
+                <div className="text-body text-text-primary">
+                  Book this itinerary now to secure your spot
+                </div>
+              </div>
+              {isUserTourist ? (
+                <button
+                  onClick={handleBooking}
+                  className="hover:bg-primary-dark-blue focus:ring-primary-dark-blue h-12 w-full rounded-lg bg-primary-blue font-semibold text-secondary-white transition-colors focus:outline-none focus:ring-2"
+                >
+                  Book Now
+                </button>
+              ) : (
+                <div className="text-body text-text-primary">
+                  You need to be a tourist to book this itinerary
+                </div>
+              )}
             </div>
 
             {/* Activities */}
@@ -401,11 +451,26 @@ export function ItineraryList() {
   return (
     <div className="space-y-8">
       {loading && (
-        <div className="flex h-64 items-center justify-center">
-          <div className="text-headline font-headline text-accent-dark-blue">
-            Loading...
+        <>
+          {/* Toolbar */}
+          <div className="rounded-lg bg-secondary-light_grey p-8 shadow-lg">
+            <div className="text-headline font-headline text-accent-dark-blue">
+              Loading...
+            </div>
           </div>
-        </div>
+
+          {/* Results */}
+          <div className="space-y-4 rounded-lg bg-secondary-white p-8 shadow-lg">
+            <h2 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+              Available Itineraries
+            </h2>
+            <div className="flex h-64 items-center justify-center">
+              <div className="text-headline font-headline text-accent-dark-blue">
+                Loading...
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {error && (
@@ -485,7 +550,7 @@ export function ItineraryList() {
           </div>
 
           {/* Results */}
-          <div className="space-y-4">
+          <div className="space-y-4 rounded-lg bg-secondary-white p-8 shadow-lg">
             <h2 className="text-sub-headings font-sub_headings text-accent-dark-blue">
               Available Itineraries
             </h2>
