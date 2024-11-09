@@ -555,14 +555,14 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
       <>
         <span
           onClick={() => handleImageToggle("prev")}
-          className="absolute top-1/2 left-2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-accent-dark-blue text-2xl"
+          className="absolute top-1/2 left-2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-accent-dark-blue text-3xl"
         >
           {/* Left chevron icon */}
           &#10094;
         </span>
         <span
           onClick={() => handleImageToggle("next")}
-          className="absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-accent-dark-blue text-2xl"
+          className="absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-accent-dark-blue text-3xl"
         >
           {/* Right chevron icon */}
           &#10095;
@@ -571,7 +571,7 @@ const MuseumForm: React.FC<MuseumFormProps> = ({
         <button
           type="button"
           onClick={() => handleDeletePicture(imageIndex)}
-          className="absolute top-1 right-2 text-gray-500 hover:text-red-600 focus:outline-none text-2xl"
+          className="absolute top-1 right-2 text-gray-500 hover:text-red-600 focus:outline-none text-3x1"
           aria-label="Delete picture"
         >
           &#10005; {/* "X" icon */}

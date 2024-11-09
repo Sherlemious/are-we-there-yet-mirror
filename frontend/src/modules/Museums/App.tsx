@@ -1,1 +1,1 @@
-export { default as AllMuseums } from './pages/AllMuseums';
+export { default as MyMuseums } from './pages/AllMuseums';

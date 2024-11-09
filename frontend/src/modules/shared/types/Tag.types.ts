@@ -1,5 +1,5 @@
 export interface TagType {
-  _id: number;
+  _id: string;
   name: string;
   type: type;
   historical_period: string;

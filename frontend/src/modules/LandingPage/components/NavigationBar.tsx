@@ -1,126 +1,157 @@
-import Button from "@/modules/shared/components/Button";
+import { useContext } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { UserCog } from "lucide-react";
 import { UserContext } from "@/modules/shared/store/user-context";
 import { AccountType } from "@/modules/shared/types/User.types";
-import { UserCog } from "lucide-react";
-import { useState, useRef, useEffect, useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import Button from "@/modules/shared/components/Button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
+import ListItem from "./NavigationDropDown";
 
 export default function NavigationBar({ fontColor }: { fontColor: string }) {
-  const [hoveredIndex, setHoveredIndex] = useState(-1);
-  const [indicatorStyle, setIndicatorStyle] = useState({});
-  const navRef = useRef<HTMLAnchorElement>(null);
-  const linkRefs = useRef<HTMLAnchorElement[]>([]);
   const navigate = useNavigate();
-
   const { user } = useContext(UserContext);
 
-  // Update indicator position when active link or hover changes
-  const updateIndicator = (index: number) => {
-    if (index === -1) {
-      // Find active link when no hover
-      const activeLink = linkRefs.current.findIndex((link) =>
-        link?.classList.contains("is-active"),
-      );
-      if (activeLink !== -1) {
-        index = activeLink;
-      }
-    }
-
-    if (index !== -1 && linkRefs.current[index]) {
-      const link = linkRefs.current[index];
-      const navRect = navRef.current?.getBoundingClientRect() ?? { left: 0 };
-      const linkRect = link.getBoundingClientRect();
-
-      setIndicatorStyle({
-        left: `${linkRect.left - navRect.left}px`,
-        width: `${linkRect.width}px`,
-      });
-    }
-  };
-
   function handleStyles(props: { isActive: boolean }) {
-    const baseStyles =
-      " text-sub-headings hover:text-accent-gold transition-colors duration-200 ease-in-out ";
-
-    if (props.isActive) {
-      return `${baseStyles} is-active text-accent-gold underline underline-thickness-2 underline-offset-[8px]`;
-    }
-
-    return baseStyles + fontColor;
+    return cn(
+      "px-3 py-2  font-medium transition-all duration-200",
+      "hover:text-accent-gold ",
+      props.isActive ? "text-accent-gold" : fontColor,
+    );
   }
-
-  useEffect(() => {
-    updateIndicator(hoveredIndex);
-  }, [hoveredIndex]);
-
-  const handleMouseEnter = (index: number) => {
-    setHoveredIndex(index);
-  };
-
-  const handleMouseLeave = () => {
-    setIndicatorStyle({});
-    setHoveredIndex(-1);
-  };
 
   return (
     <div className="z-10 flex items-center bg-secondary-light_grey/50 py-7">
       <div className="flex w-full justify-center">
-        <nav ref={navRef} className="relative ml-52 flex w-1/2 justify-around">
-          {/* Animated underline indicator */}
-          <div
-            className="absolute bottom-0 h-0.5 bg-accent-gold transition-all duration-200 ease-in-out"
-            style={indicatorStyle}
-          />
+        <NavigationMenu className="relative ml-52">
+          <NavigationMenuList className="flex justify-around space-x-8">
+            <NavigationMenuItem className="text-sub-headings">
+              <NavLink
+                to={user.account_type === AccountType.None ? "/" : "/home"}
+                className={(props) => handleStyles(props)}
+              >
+                Home
+              </NavLink>
+            </NavigationMenuItem>
 
-          <NavLink
-            ref={(el) => (linkRefs.current[0] = el!)}
-            to={user.account_type === AccountType.None ? "/" : "/home"}
-            className={(props) => handleStyles(props)}
-            onMouseEnter={() => handleMouseEnter(0)}
-            onMouseLeave={handleMouseLeave}
-          >
-            Home
-          </NavLink>
-          <NavLink
-            ref={(el) => (linkRefs.current[1] = el!)}
-            to="/activity"
-            className={(props) => handleStyles(props)}
-            onMouseEnter={() => handleMouseEnter(1)}
-            onMouseLeave={handleMouseLeave}
-          >
-            Activities
-          </NavLink>
-          <NavLink
-            ref={(el) => (linkRefs.current[2] = el!)}
-            to="/historical-places"
-            className={(props) => handleStyles(props)}
-            onMouseEnter={() => handleMouseEnter(2)}
-            onMouseLeave={handleMouseLeave}
-          >
-            Historical Places
-          </NavLink>
-          <NavLink
-            ref={(el) => (linkRefs.current[3] = el!)}
-            to="/itineraries"
-            className={(props) => handleStyles(props)}
-            onMouseEnter={() => handleMouseEnter(3)}
-            onMouseLeave={handleMouseLeave}
-          >
-            Itineraries
-          </NavLink>
-          {user.account_type !== AccountType.None && (
-            <NavLink
-              ref={(el) => (linkRefs.current[4] = el!)}
-              to="/products"
-              className={(props) => handleStyles(props)}
-              onMouseEnter={() => handleMouseEnter(4)}
-              onMouseLeave={handleMouseLeave}
-            >
-              Products
-            </NavLink>
-          )}
-        </nav>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger
+                className={cn(
+                  handleStyles({ isActive: false }),
+                  "bg-transparent hover:bg-transparent",
+                  "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                )}
+              >
+                Activities
+              </NavigationMenuTrigger>
+              <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  <ListItem title="Browse All" to="/all-activities">
+                    View all available activities
+                  </ListItem>
+                  {user.account_type === AccountType.Advertiser && (
+                    <ListItem title="Browse My" to="/home/my-activities">
+                      View your activities
+                    </ListItem>
+                  )}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger
+                className={cn(
+                  handleStyles({ isActive: false }),
+                  "bg-transparent hover:bg-transparent",
+                  "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                )}
+              >
+                Historical Places
+              </NavigationMenuTrigger>
+              <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  <ListItem title="All Locations" to="/all-museums">
+                    Explore all historical locations
+                  </ListItem>
+                  {user.account_type === AccountType.TourismGovernor && (
+                    <ListItem title="Add Location" to="/home/my-museums">
+                      Add a new location
+                    </ListItem>
+                  )}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger
+                className={cn(
+                  handleStyles({ isActive: false }),
+                  "bg-transparent hover:bg-transparent",
+                  "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                )}
+              >
+                Itineraries
+              </NavigationMenuTrigger>
+              <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  <ListItem title="View All" to="/all-itineraries">
+                    Browse all itineraries
+                  </ListItem>
+                  {user.account_type === AccountType.TourGuide && (
+                    <ListItem title="My Itineraries" to="/home/my-itineraries">
+                      View your itineraries
+                    </ListItem>
+                  )}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            {user.account_type !== AccountType.None && (
+              <NavigationMenuItem>
+                <NavigationMenuTrigger
+                  className={cn(
+                    handleStyles({ isActive: false }),
+                    "bg-transparent hover:bg-transparent",
+                    "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                  )}
+                >
+                  Products
+                </NavigationMenuTrigger>
+                <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    <ListItem title="All Products" to="/all-products">
+                      View all products
+                    </ListItem>
+                    {user.account_type === AccountType.Seller && (
+                      <ListItem
+                        title="My Products"
+                        to="/home/my-products-seller"
+                      >
+                        View your products
+                      </ListItem>
+                    )}
+                    {user.account_type === AccountType.Admin && (
+                      <ListItem
+                        title="Admin"
+                        to="/home/admin-dashboard/my-products-admin"
+                      >
+                        Manage products
+                      </ListItem>
+                    )}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
+
       <div className="flex w-[15%] items-center gap-7">
         {user.account_type !== AccountType.None && (
           <UserCog
@@ -130,7 +161,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               }
 
               if (user.account_type === AccountType.Admin) {
-                return navigate('/home/admin-dashboard');
+                return navigate("/home/admin-dashboard");
               }
 
               return navigate(

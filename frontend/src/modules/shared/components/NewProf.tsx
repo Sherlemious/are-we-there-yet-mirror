@@ -1,4 +1,5 @@
-import { imgLinks } from "@/modules/shared/utils/constants";
+// import { imgLinks } from "@/modules/shared/utils/constants";
+import axiosInstance from "@/modules/shared/services/axiosInstance";
 import {
   Mail,
   Camera,
@@ -11,26 +12,23 @@ import {
   Info,
   Clock,
   Coins,
+  Award,
 } from "lucide-react";
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import EditModal, { formModalRef } from "../../shared/components/FormEditModal";
 import { UserContext } from "@/modules/shared/store/user-context";
 import toast from "react-hot-toast";
-import { deleteUser } from "../services/apiDeleteUser";
-import { AccountType } from "../types/User.types";
+import { requestAccountDeletion } from "../services/apiDeleteUser";
 import { useNavigate } from "react-router";
+import { apiAddDocs } from "@/modules/Register/services/apiAddDocs";
+import { updateUser } from "../services/apiUpdateUser";
+import { getUser } from "../services/apiGetUserInfo";
+import { validateFormDataValue } from "@/modules/Register/utils/helpers";
+import { fieldNames } from "../constants/inputNames";
+import { updatePassword } from "../services/apiUpdatePassword";
+// import axios from "axios";
 
-const imgs = Object.values(imgLinks.landing_page);
-
-const NewProf = ({
-  countries = [],
-  fieldsIncludeNationality = false,
-  mappingNeeded = false,
-  APICallFields,
-  accountTypeNeededInAPICall = false,
-  endpoint,
-  initialFormValues,
-}: {
+interface NewProfProps {
   countries?: { name: { common: string } }[];
   fieldsIncludeNationality?: boolean;
   mappingNeeded?: boolean;
@@ -41,27 +39,118 @@ const NewProf = ({
     id: string,
     data: { [key: string]: FormDataEntryValue },
   ) => Promise<unknown>;
+}
+
+const NewProf: React.FC<NewProfProps> = ({
+  countries = [],
+  fieldsIncludeNationality = false,
+  mappingNeeded = false,
+  APICallFields,
+  accountTypeNeededInAPICall = false,
+  endpoint,
+  initialFormValues,
 }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<formModalRef>(null);
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const [loyaltyLevel, setLoyaltyLevel] = useState(0);
+  const [wallet, setWallet] = useState(0);
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [loyaltyPointsToRedeem, setLoyaltyPointsToRedeem] = useState(0);
+
+  useEffect(() => {
+    const fetchLoyaltyLevel = async () => {
+      try {
+        const response = await axiosInstance.get("/users/tourists/loyalty");
+        console.log("Loyalty Level Response:", response.data.data.level);
+        setLoyaltyLevel(response.data.data.level);
+      } catch (error) {
+        console.error("Error fetching loyalty level:", error);
+      }
+    };
+
+    const fetchUserInfo = async () => {
+      try {
+        const response = await getUser(user._id);
+        console.log("User Info Response:", response.data);
+        setWallet(response.data.data.user.wallet);
+        setLoyaltyPoints(response.data.data.user.loyalty_points);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
+    fetchLoyaltyLevel();
+    fetchUserInfo();
+  }, []);
 
   const handleRedeemPoints = async () => {
-    if (user.loyaltyPoints) {
-      const cashEquivalent = user.loyaltyPoints; // 1 point = 1 EGP ???
-      setUser((prevUser) => ({
-        ...prevUser,
-        wallet: (prevUser.wallet ?? 0) + cashEquivalent,
-        loyaltyPoints: 0,
-      }));
-      toast.success(`You have redeemed EGP ${cashEquivalent}`);
-    } else {
-      toast.error("You have no loyalty points to redeem");
+    try {
+      await axiosInstance.post("/users/tourists/redeem", {
+        points: loyaltyPointsToRedeem,
+      });
+
+      const [response, levelResponse] = await Promise.all([
+        getUser(user._id),
+        axiosInstance.get("/users/tourists/loyalty"),
+      ]);
+
+      setLoyaltyLevel(levelResponse.data.data.level);
+      setWallet(response.data.data.user.wallet);
+      setLoyaltyPoints(response.data.data.user.loyalty_points);
+      setLoyaltyPointsToRedeem(0);
+    } catch (error) {
+      console.error("Error redeeming points:", error);
     }
   };
 
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await apiAddDocs(formData);
+      const id = res.data._id;
+      const url = res.data.url;
+
+      await updateUser(user._id, {
+        account_type: user.account_type,
+        profile_pic: id,
+      });
+
+      setUser((prev) => ({
+        ...prev,
+        profile_pic: { url, _id: id },
+      }));
+
+      toast.success("Profile picture updated successfully");
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      toast.error("Failed to update profile picture");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleCameraClick = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleSave = async (data: Record<string, string>) => {
+    // validate nationality
     if (
       fieldsIncludeNationality &&
       data["Nationality"] &&
@@ -71,6 +160,7 @@ const NewProf = ({
       return;
     }
 
+    // map form keys to API fields => { formKey: APIField }
     const fieldsMap: Record<string, string> = {};
     if (mappingNeeded) {
       for (const key in initialFormValues) {
@@ -79,21 +169,60 @@ const NewProf = ({
       }
     }
 
+    // map data to API fields -> { APIField: value }, where APIField is the field name in the API and value is the value from the form
     const mappedData = Object.entries(data).reduce<Record<string, string>>(
       (acc, [key, value]) => ({
         ...acc,
-        [fieldsMap[key]]: value,
+        [fieldsMap[key] || key]: value,
       }),
       {},
     );
-    if (accountTypeNeededInAPICall)
+
+    // Update password
+    console.log("Mapped Data:", mappedData);
+    if (mappedData.password) {
+      if (
+        !validateFormDataValue(
+          fieldNames.password,
+          mappedData.password as string,
+        )
+      ) {
+        return toast.error(
+          "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+        );
+      }
+      await updatePassword(mappedData.password);
+    }
+
+    // append account type if needed
+    if (accountTypeNeededInAPICall) {
       mappedData["account_type"] = user.account_type;
+    }
 
-    await endpoint(user._id, mappedData);
+    // Remove dob field if present
+    if (mappedData["dob"]) delete mappedData["dob"];
 
-    console.log("Saved data:", mappedData);
+    // call API
+    try {
+      const res = (await endpoint(user._id, mappedData)) as { status: number };
 
-    setUser((prev) => ({ ...prev, ...mappedData }));
+      if (res.status === 200) {
+        setUser((prev) => ({ ...prev, ...mappedData }));
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const onDeleteReq = async () => {
+    try {
+      await requestAccountDeletion();
+
+      navigate("/home");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      toast.error("Request to delete account failed");
+    }
   };
 
   const openModal = () => {
@@ -101,34 +230,6 @@ const NewProf = ({
       ...initialFormValues,
     });
   };
-
-  const deleteAccount = async (id: string) => {
-    console.log("Deleting account... with id: ", id);
-    try {
-      const res = (await deleteUser(id)) as { status: number };
-      console.log(res);
-
-      if (res.status === 200) {
-        setUser({
-          _id: "",
-          password: "",
-          username: "",
-          account_type: AccountType.None,
-        });
-        navigate("/home");
-      }
-    } catch (error) {
-      console.error("Error deleting account:", error);
-    }
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imgs.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const renderProfileContent = () => {
     switch (user.account_type.toLowerCase()) {
@@ -206,10 +307,9 @@ const NewProf = ({
           </div>
         );
 
-      default: // Tourist profile (keeping original layout)
+      default: // Tourist profile
         return (
           <div className="grid flex-1 grid-cols-1 gap-x-8 gap-y-6 pt-10 md:grid-cols-3">
-            {/* Contact Section */}
             <div className="space-y-6">
               <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
                 Contact Details
@@ -226,7 +326,6 @@ const NewProf = ({
               </div>
             </div>
 
-            {/* Personal Section */}
             <div className="space-y-6">
               <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
                 Personal Info
@@ -247,7 +346,6 @@ const NewProf = ({
               </div>
             </div>
 
-            {/* Payment Section */}
             <div className="space-y-6">
               <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
                 Payment Info
@@ -255,20 +353,45 @@ const NewProf = ({
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Wallet className="h-5 w-5 flex-shrink-0 text-primary-blue" />
-                  <span className="text-slate-600">EGP {user.wallet}</span>
+                  <span className="text-slate-600">
+                    EGP {wallet !== null ? wallet : "Loading..."}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Coins className="h-5 w-5 flex-shrink-0 text-primary-blue" />
                   <span className="text-slate-600">
-                    {user.loyaltyPoints ?? 0} Points
+                    {loyaltyPoints !== null ? loyaltyPoints : "Loading..."}{" "}
+                    Points
                   </span>
                 </div>
-                <button
-                  onClick={handleRedeemPoints}
-                  className="mt-4 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                <div className="flex items-center gap-3">
+                  <Award className="h-5 w-5 flex-shrink-0 text-primary-blue" />
+                  <span className="text-slate-600">
+                    level {loyaltyLevel !== null ? loyaltyLevel : "Loading..."}
+                  </span>
+                </div>
+                <form
+                  className="flex flex-col items-center gap-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleRedeemPoints();
+                  }}
                 >
-                  Redeem Points
-                </button>
+                  <input
+                    type="number"
+                    className="w-full rounded-lg border border-secondary-light_grey px-4 py-2 text-slate-600"
+                    placeholder="Enter points to redeem"
+                    value={String(loyaltyPointsToRedeem)}
+                    onChange={(e) =>
+                      setLoyaltyPointsToRedeem(Number(e.target.value))
+                    }
+                    min={0}
+                    max={loyaltyPoints}
+                  />
+                  <button className="mt-4 w-full rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80">
+                    Redeem Points
+                  </button>
+                </form>
               </div>
             </div>
           </div>
@@ -278,43 +401,47 @@ const NewProf = ({
 
   return (
     <div className="relative min-h-screen">
-      {/* Background Images */}
-      <div className="fixed inset-0">
-        {imgs.map((image, index) => (
-          <div
-            key={image}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              currentImageIndex === index ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              backgroundImage: `url(${image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "blur(8px)",
-              transform: "scale(1.1)",
-            }}
-          />
-        ))}
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
-
       {/* Content */}
       <div className="relative flex min-h-screen items-center justify-center">
         <div className="w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          {/* Profile Card */}
           <div className="rounded-xl border border-secondary-light_grey bg-secondary-light_grey p-8 shadow-lg backdrop-blur-sm">
             <div className="flex flex-col gap-12 lg:flex-row">
-              {/* Left Column - Avatar and Basic Info */}
               <div className="flex flex-col items-center lg:items-center">
                 <div className="relative">
-                  <div className="flex h-40 w-40 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-primary-blue to-primary-green shadow-lg">
-                    <span className="text-4xl font-bold text-white">
-                      {user.username?.[0]?.toUpperCase() || "NA"}
-                    </span>
-                  </div>
-                  <button className="absolute bottom-2 right-2 rounded-full bg-white p-2 shadow-md transition-shadow hover:shadow-lg">
+                  {user.profile_pic ? (
+                    <div className="h-40 w-40 overflow-hidden rounded-full border-4 border-white shadow-lg">
+                      <img
+                        src={user.profile_pic.url}
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-40 w-40 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-primary-blue to-primary-green shadow-lg">
+                      <span className="text-4xl font-bold text-white">
+                        {user.username?.[0]?.toUpperCase() || "NA"}
+                      </span>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleCameraClick}
+                    className="absolute bottom-2 right-2 rounded-full bg-white p-2 shadow-md transition-shadow hover:shadow-lg disabled:opacity-50"
+                    disabled={isUploading}
+                  >
                     <Camera className="h-5 w-5 text-primary-blue" />
                   </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  {isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent"></div>
+                    </div>
+                  )}
                 </div>
                 <h1 className="mt-4 text-2xl font-bold text-accent-dark-blue">
                   {user.username}
@@ -331,7 +458,7 @@ const NewProf = ({
             </div>
 
             {/* Edit Button */}
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex justify-end space-x-4">
               <button
                 onClick={openModal}
                 className="rounded-lg bg-accent-dark-blue px-8 py-3 text-white transition-colors hover:bg-accent-dark-blue/80"
@@ -342,7 +469,7 @@ const NewProf = ({
                 ref={modalRef}
                 fields={Object.keys(initialFormValues)}
                 onSave={handleSave}
-                onDeleteAccount={() => deleteAccount(user._id)}
+                onDeleteAccount={() => onDeleteReq()}
               />
             </div>
           </div>
