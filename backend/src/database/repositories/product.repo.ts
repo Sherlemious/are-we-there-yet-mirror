@@ -29,7 +29,7 @@ class ProductRepo {
 
   async getProducts(attributeName?: string, attributeValue?: RegExp | string) {
     const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
-    return await Product.find(query).populate(['tags', 'attachments']);
+    return await Product.find(query).populate(['tags']);
   }
 
   async getPriceMinMax() {
