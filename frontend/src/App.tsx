@@ -47,6 +47,9 @@ import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
 import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
+import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBookings";
+import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
+import { TransportationBookings } from "./modules/Tourist/pages/Bookings/TransportationBookings";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -114,6 +117,18 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "all-products",
         element: <AllProducts />,
+      },
+      {
+        path: "activity-bookings",
+        element: <ActivityBookings />,
+      },
+      {
+        path: "itinerary-bookings",
+        element: <ItineraryBookings />,
+      },
+      {
+        path: "transportation-bookings",
+        element: <TransportationBookings />,
       },
     ],
   },

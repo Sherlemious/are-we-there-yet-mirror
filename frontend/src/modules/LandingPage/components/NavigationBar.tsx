@@ -148,6 +148,36 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                 </NavigationMenuContent>
               </NavigationMenuItem>
             )}
+
+            {user.account_type === AccountType.Tourist && (
+              <NavigationMenuItem>
+                <NavigationMenuTrigger
+                  className={cn(
+                    handleStyles({ isActive: false }),
+                    "bg-transparent hover:bg-transparent",
+                    "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                  )}
+                >
+                  Bookings
+                </NavigationMenuTrigger>
+                <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    <ListItem title="Activities" to="/activity-bookings">
+                      View Activity Bookings
+                    </ListItem>
+                    <ListItem title="Itineraries" to="/itinerary-bookings">
+                      View Itinerary Bookings
+                    </ListItem>
+                    <ListItem
+                      title="Transportation"
+                      to="/transportation-bookings"
+                    >
+                      View Transportation Bookings
+                    </ListItem>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
