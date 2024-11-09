@@ -47,6 +47,9 @@ import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
 import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
+import FlagItineraries, {
+  loader as flagItinerariesLoader,
+} from "./modules/Admin/pages/FlagItineraries";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -193,6 +196,11 @@ const BrowserRouter = createBrowserRouter([
           {
             path: "my-products-admin",
             element: <AdminProducts />,
+          },
+          {
+            path: "flag-itineraries",
+            element: <FlagItineraries />,
+            loader: flagItinerariesLoader,
           },
         ],
       },

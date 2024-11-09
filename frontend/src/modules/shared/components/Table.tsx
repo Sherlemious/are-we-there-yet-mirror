@@ -36,7 +36,7 @@ const Table = ({
                 </th>
               ))}
               {actions && (
-                <th className="rounded-tr-lg p-5 text-left text-input_or_label font-headline text-secondary-white">
+                <th className="rounded-tr-lg p-5 text-center text-input_or_label font-headline text-secondary-white">
                   Actions
                 </th>
               )}
@@ -60,7 +60,7 @@ const Table = ({
                 ))}
                 {actions && (
                   <td className="p-5">
-                    <div className="flex items-center gap-3">
+                    <div className="flex justify-center items-center gap-3">
                       {actions.onEdit && (
                         <button
                           onClick={() => actions.onEdit?.(row._id)}

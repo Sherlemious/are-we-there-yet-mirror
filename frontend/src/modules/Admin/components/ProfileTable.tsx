@@ -4,6 +4,7 @@ import type { UserType } from "@/modules/shared/types/User.types";
 import Modal, { type ModalRef } from "@/modules/shared/components/Modal";
 import axiosInstance from "@/modules/shared/services/axiosInstance";
 import toast from "react-hot-toast";
+import { X } from "lucide-react";
 
 interface ProfileTableProps {
   profiles: UserType[];
@@ -95,11 +96,20 @@ function ProfileTable({
           }}
         />
       </div>
-      <Modal ref={modalRef}>
+      <Modal ref={modalRef} onClose={() => setSelectedUser(null)}>
         {selectedUser && (
           <>
-            <div className="flex justify-between">
-              <h1>Edit User</h1>
+            <div className="w-full flex justify-between">
+              <div className="w-full flex items-center justify-between">
+                <h1>Edit User</h1>
+
+                <button
+                  className="text-lg text-destructive"
+                  onClick={() => modalRef.current?.close()}
+                >
+                  <X size={24} />
+                </button>
+              </div>
               {!(selectedUser.accepted || selectedUser.rejected) && (
                 <div className="flex gap-3">
                   <button
