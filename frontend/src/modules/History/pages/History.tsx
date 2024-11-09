@@ -128,9 +128,9 @@ useEffect(() => {
   };
   const fetchProducts = async () => {
     try {
-      const response = await axiosInstance.get("/products/");
-      console.log(response.data.data.products);
-      const products = response.data.data.products;
+      const response = await axiosInstance.get("/users/purchasedProducts");
+      console.log(response.data.data.purchased_products);
+      const products = response.data.data.purchased_products;
       setProducts(products);
     } catch (error) {
       console.error("Error fetching products:", error);
