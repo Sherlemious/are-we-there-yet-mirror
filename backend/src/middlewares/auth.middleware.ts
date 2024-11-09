@@ -48,6 +48,8 @@ const openPaths = [
   { path: '/api/museums/getall', methods: ['GET'] },
   { path: '/api/activities', methods: ['GET'] },
   { path: '/api/attachments', methods: ['POST'] },
+  { path: '/api/termsAndConditions', methods: ['GET'] }, // Add /terms to the openPaths list
+
 ];
 
 const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
