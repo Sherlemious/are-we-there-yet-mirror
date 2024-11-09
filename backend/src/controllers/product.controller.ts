@@ -6,7 +6,7 @@ import { range } from '../utils/Rangify.utils';
 import { generateRanges } from '../utils/Rangify.utils';
 
 import productRepo from '../database/repositories/product.repo';
-import currencyConverterService from '../services/currencyConverter';
+import currencyConverterService from '../services/currencyConverter.service';
 import userRepo from '../database/repositories/user.repo';
 
 const findProductById = async (req: Request, res: Response) => {

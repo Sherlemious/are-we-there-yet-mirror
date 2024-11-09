@@ -5,7 +5,7 @@ import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import { accountType } from '../types/User.types';
 import ItineraryRepo from '../database/repositories/itinerary.repo';
 import BookingRepo from '../database/repositories/booking.repo';
-import currencyConverterService from '../services/currencyConverter';
+import currencyConverterService from '../services/currencyConverter.service';
 import Validator from '../utils/Validator.utils';
 
 const getItineraries = async (req: Request, res: Response) => {

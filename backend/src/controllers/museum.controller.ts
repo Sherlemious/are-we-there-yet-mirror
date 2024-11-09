@@ -3,7 +3,7 @@ import MuseumRepo from '../database/repositories/museum.repo';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import mongoose from 'mongoose';
-import currencyConverterService from '../services/currencyConverter';
+import currencyConverterService from '../services/currencyConverter.service';
 
 const getAllMuseums = async (req: Request, res: Response) => {
   try {
