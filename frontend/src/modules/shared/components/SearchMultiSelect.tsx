@@ -1,16 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 
-interface Option {
+export interface MultiSelectOption {
   value: string;
   label: string;
   payload?: any; // Payload can hold any additional data
 }
 
 interface SearchMultiSelectProps {
-  options: Option[];
-  selectedItems: Option[];
-  onSelect: (item: Option) => void;
-  onRemove: (item: Option) => void;
+  options: MultiSelectOption[];
+  selectedItems: MultiSelectOption[];
+  onSelect: (item: MultiSelectOption) => void;
+  onRemove: (item: MultiSelectOption) => void;
 }
 
 const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
@@ -19,11 +19,13 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
   onSelect,
   onRemove,
 }) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Ensure options are distinct by value
   const distinctOptions = useMemo(() => {
-    const uniqueOptions = new Map(options.map(option => [option.value, option]));
+    const uniqueOptions = new Map(
+      options.map((option) => [option.value, option]),
+    );
     return Array.from(uniqueOptions.values());
   }, [options]);
 
@@ -31,27 +33,27 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
     return distinctOptions.filter(
       (option) =>
         option.label?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !selectedItems.some(selected => selected.value === option.value)
+        !selectedItems.some((selected) => selected.value === option.value),
     );
   }, [distinctOptions, searchTerm, selectedItems]);
 
   return (
-    <div className="bg-[#F4F4F4] border border-borders-primary rounded-md p-4 w-full max-w-md relative">
-      <div className="flex items-start mb-2">
+    <div className="relative w-full rounded-md border border-borders-primary bg-[#F4F4F4] p-4">
+      <div className="mb-2 flex items-start">
         {/* Selected Items */}
-        <div className="flex flex-wrap mr-2">
+        <div className="mr-2 flex flex-wrap">
           {selectedItems.length === 0 ? (
             <div className="text-text-primary"></div>
           ) : (
             selectedItems.map((item) => (
               <span
                 key={item.value}
-                className="bg-primary-blue text-text-white rounded-full px-2 py-1 mr-2 mb-2 flex items-center shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
+                className="mb-2 mr-2 flex items-center rounded-full bg-primary-blue px-2 py-1 text-text-white shadow-sm transition-shadow duration-200 ease-in-out hover:shadow-md"
               >
                 {item.label}
                 <button
                   onClick={() => onRemove(item)}
-                  className="ml-1 text-accent-gold hover:text-gold"
+                  className="hover:text-gold ml-1 text-destructive"
                 >
                   &times;
                 </button>
@@ -66,8 +68,7 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
           placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ width: '100px' }} // Adjust width here
-          className="border border-borders-primary rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary-blue ml-auto shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
+          className="ml-auto w-[100px] rounded-md border border-borders-primary p-2 shadow-sm transition-shadow duration-200 ease-in-out hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-blue md:w-[50%] lg:w-[75%]"
         />
       </div>
 
@@ -75,10 +76,10 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
       {filteredOptions.length > 0 && (
         <div className="mt-2 max-h-40 overflow-hidden">
           <div
-            className="w-full shadow-lg max-h-40 overflow-y-auto"
+            className="max-h-40 w-full overflow-y-auto shadow-lg"
             style={{
-              scrollbarWidth: 'none', // For Firefox
-              msOverflowStyle: 'none', // For Internet Explorer and Edge
+              scrollbarWidth: "none", // For Firefox
+              msOverflowStyle: "none", // For Internet Explorer and Edge
             }}
           >
             {/* Hide scrollbar for Chrome, Safari, and Opera */}
@@ -93,7 +94,7 @@ const SearchMultiSelect: React.FC<SearchMultiSelectProps> = ({
               <div
                 key={option.value}
                 onClick={() => onSelect(option)}
-                className="p-2 hover:bg-background-button cursor-pointer transition-colors duration-200 ease-in-out rounded-md"
+                className="cursor-pointer rounded-md p-2 transition-colors duration-200 ease-in-out hover:bg-primary-green"
               >
                 {option.label}
               </div>

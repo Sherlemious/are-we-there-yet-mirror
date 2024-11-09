@@ -1,14 +1,11 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { imgLinks } from "@/modules/shared/utils/constants";
 import {
   useActionData,
@@ -20,48 +17,34 @@ import { Form, useSubmit } from "react-router-dom";
 import { validateFormDataValue } from "../utils/helpers";
 import toast from "react-hot-toast";
 import { fieldNames } from "../../shared/constants/inputNames";
-import { handleUserRegistration } from "../services/apiHandleUserRegistration";
 import { userRoles } from "@/modules/shared/constants/roles";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserContext } from "@/modules/shared/store/user-context";
 import { UserType } from "@/modules/shared/types/User.types";
+import { formVariants } from "../styles/animations";
+import { apiAddDocs } from "../services/apiAddDocs";
+import { handleUserRegistration } from "../services/apiHandleUserRegistration";
+import FormHeader from "./FormHeader";
+import GeneralRegister from "./GeneralRegister";
+import TouristRegister from "./TouristRegister";
+import TourGuideDocUpload from "./TourGuideDocUpload";
+import AdvertiserOrSellerDocUpload from "./AdvertiserOrSellerDocUpload";
+import SubmitButton from "./SubmitButton";
+import { apiGetTermsAndConditions } from "../services/apiGetTermsAndConditions";
 
 const imgs = Object.values(imgLinks.landing_page);
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
-};
-
-const formVariants = {
-  hidden: {
-    height: 0,
-    opacity: 0,
-    y: 20,
-  },
-  visible: {
-    height: "auto",
-    opacity: 1,
-    y: 0,
-    transition: {
-      height: {
-        duration: 0.4,
-        ease: [0.04, 0.62, 0.23, 0.98],
-      },
-      opacity: { duration: 0.3, delay: 0.1 },
-      y: { duration: 0.3, delay: 0.1 },
-    },
-  },
-  exit: {
-    height: 0,
-    opacity: 0,
-    y: -20,
-    transition: {
-      height: { duration: 0.3 },
-      opacity: { duration: 0.2 },
-    },
-  },
+type NewData = {
+  userRole: string;
+  username: string;
+  email: string;
+  password: string;
+  job?: string;
+  nationality?: string;
+  dob?: string;
+  mobile_number?: string;
+  documentIds?: string[];
+  acceptedTerms?: boolean;
 };
 
 const RegistrationForm = () => {
@@ -69,12 +52,19 @@ const RegistrationForm = () => {
   const [nationality, setNationality] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [oneOfFieldsIsEmpty, setOneOfFieldsIsEmpty] = useState(true);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const navigation = useNavigation();
   const submit = useSubmit();
-  const countries = useLoaderData() as { name: { common: string } }[];
-  const navigate = useNavigate();
+  const { countries, terms } = useLoaderData() as {
+    countries: { name: { common: string } }[];
+    terms: string;
+  };
 
+  const navigate = useNavigate();
+  const countryNames = countries?.map((country) => country.name.common);
+  countryNames.sort();
   const res = useActionData() as {
     status: number;
     data: {
@@ -85,22 +75,48 @@ const RegistrationForm = () => {
     };
   };
 
-  const { user, setUser } = useContext(UserContext);
+  const [documents, setDocuments] = useState<{
+    personalId: File | null;
+    certificates: File[];
+    taxDocument: File | null;
+  }>({
+    personalId: null,
+    certificates: [],
+    taxDocument: null,
+  });
+
+  const { setUser } = useContext(UserContext);
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    fieldName: string,
+  ) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    if (fieldName === "certificates") {
+      setDocuments((prev) => ({
+        ...prev,
+        [fieldName]: [...prev.certificates, ...Array.from(files)],
+      }));
+    } else {
+      setDocuments((prev) => ({
+        ...prev,
+        [fieldName]: files[0],
+      }));
+    }
+
+    e.target.value = "";
+  };
 
   useEffect(() => {
     if (res?.status === 200) {
       setUser({
         ...res.data.data.user,
       });
-
       navigate("/home");
     }
-  }, [res]);
-
-  console.log(user);
-
-  const countryNames = countries.map((country) => country.name.common);
-  countryNames.sort();
+  }, [res, setUser, navigate]);
 
   const isSubmitting = navigation.state === "submitting";
 
@@ -112,35 +128,105 @@ const RegistrationForm = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const userTypes = [
-    { id: userRoles.tourist, label: "Tourist" },
-    { id: userRoles.advertiser, label: "Advertiser" },
-    { id: userRoles.seller, label: "Seller" },
-    { id: userRoles.tourGuide, label: "Tour Guide" },
-  ];
+  // const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
+  //   const formData = new FormData(e.currentTarget);
+  //   const data = Object.fromEntries(formData);
 
-  const handleUserTypeChange = (value: string) => {
-    setUserType(value);
-  };
+  //   for (const key in data) {
+  //     if (data[key] === "" && key !== "acceptedTerms") {
+  //       setOneOfFieldsIsEmpty(true);
+  //       return;
+  //     }
+  //   }
+
+  //   setOneOfFieldsIsEmpty(false);
+  // };
 
   const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData);
+    let requiredFields = ["username", "email", "password"];
 
-    for (const key in data) {
-      if (data[key] === "") {
-        setOneOfFieldsIsEmpty(true);
-        return;
+    // Add required fields based on user type
+    if (userType === userRoles.tourist) {
+      requiredFields = [
+        ...requiredFields,
+        "job",
+        "nationality",
+        "dob",
+        "mobile_number",
+      ];
+    }
+
+    // Check if any required field is empty
+    const hasEmptyFields = requiredFields.some((field) => {
+      const value = data[field];
+      return !value || (typeof value === "string" && value.trim() === "");
+    });
+
+    // Additional check for nationality since it's handled separately
+    if (userType === userRoles.tourist && !nationality) {
+      setOneOfFieldsIsEmpty(true);
+      return;
+    }
+
+    setOneOfFieldsIsEmpty(hasEmptyFields);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (oneOfFieldsIsEmpty) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (!acceptedTerms) {
+      toast.error("Please accept the terms and conditions to continue");
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    formData.delete("personalId");
+    formData.delete("certificates");
+    formData.delete("taxDocument");
+
+    const data = Object.fromEntries(formData);
+
+    console.log(data);
+
+    const ids = [];
+
+    if (userType !== userRoles.tourist) {
+      for (const key in documents) {
+        const fileData = new FormData();
+        if (
+          documents[key as keyof typeof documents] &&
+          key !== "certificates"
+        ) {
+          fileData.append(
+            "file",
+            documents[key as keyof typeof documents] as Blob,
+          );
+          const res = await apiAddDocs(fileData);
+          ids.push(res.data._id);
+        }
+
+        if (key === "certificates") {
+          for (const file of documents[
+            key as keyof typeof documents
+          ] as File[]) {
+            const fileData = new FormData();
+            fileData.append("file", file);
+            const res = await apiAddDocs(fileData);
+            ids.push(res.data._id);
+          }
+        }
       }
     }
 
-    setOneOfFieldsIsEmpty(false);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData);
+    console.log(documents);
+    console.log(ids);
 
     if (!validateFormDataValue(fieldNames.email, data.email as string)) {
       return toast.error("Invalid email address");
@@ -152,23 +238,22 @@ const RegistrationForm = () => {
       );
     }
 
-    if (
-      userType === "tourist" &&
-      !validateFormDataValue(
-        fieldNames.mobileNumber,
-        data.mobileNumber as string,
-      )
-    ) {
-      return toast.error("Invalid mobile number");
+    if (ids.length > 0) {
+      formData.append("documentIds", JSON.stringify(ids));
     }
-
-    submit(e.currentTarget);
+    submit(formData, { method: "post" });
   };
 
   useEffect(() => {
     formRef.current?.reset();
     setNationality("");
     setOneOfFieldsIsEmpty(true);
+    setAcceptedTerms(false);
+    setDocuments({
+      personalId: null,
+      certificates: [],
+      taxDocument: null,
+    });
   }, [userType]);
 
   return (
@@ -198,38 +283,7 @@ const RegistrationForm = () => {
         transition={{ duration: 0.6 }}
         className="relative z-10 w-full max-w-2xl rounded-lg bg-black bg-opacity-30 p-8 backdrop-blur-sm"
       >
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="transform transition-all duration-500 ease-in-out"
-        >
-          <h1 className="mb-2 text-center text-4xl font-bold text-white">
-            Are we there yet?
-          </h1>
-          <h2 className="mb-6 text-center text-2xl text-yellow-400">Almost!</h2>
-        </motion.div>
-
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="mb-6 flex transform flex-col gap-2"
-        >
-          <Label className="text-white">Who are you?</Label>
-          <Select value={userType} onValueChange={handleUserTypeChange}>
-            <SelectTrigger className="bg-white bg-opacity-20 text-white">
-              <SelectValue placeholder="Select your role" />
-            </SelectTrigger>
-            <SelectContent>
-              {userTypes.map((type) => (
-                <SelectItem key={type.id} value={type.id}>
-                  {type.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </motion.div>
+        <FormHeader setUserType={setUserType} userType={userType} />
 
         <AnimatePresence mode="wait">
           {userType && (
@@ -263,153 +317,79 @@ const RegistrationForm = () => {
                       : "grid-cols-1"
                   } gap-4`}
                 >
-                  <motion.div
-                    variants={fadeIn}
-                    className="flex transform flex-col gap-2"
-                  >
-                    <Label htmlFor="email" className="text-white">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      name={fieldNames.email}
-                      type="email"
-                      placeholder="Enter your email"
-                      required
-                      className="bg-white bg-opacity-20 text-white placeholder-white"
-                    />
-                  </motion.div>
-
-                  <motion.div
-                    variants={fadeIn}
-                    className="flex transform flex-col gap-2"
-                  >
-                    <Label htmlFor="username" className="text-white">
-                      Username
-                    </Label>
-                    <Input
-                      id="username"
-                      name={fieldNames.username}
-                      type="text"
-                      placeholder="Choose a username"
-                      required
-                      className="bg-white bg-opacity-20 text-white placeholder-white"
-                    />
-                  </motion.div>
-
-                  <motion.div
-                    variants={fadeIn}
-                    className="flex transform flex-col gap-2"
-                  >
-                    <Label htmlFor="password" className="text-white">
-                      Password
-                    </Label>
-                    <Input
-                      id="password"
-                      name={fieldNames.password}
-                      type="password"
-                      placeholder="Create a password"
-                      required
-                      className="bg-white bg-opacity-20 text-white placeholder-white"
-                    />
-                  </motion.div>
+                  {userType !== userRoles.tourist && <GeneralRegister />}
 
                   {userType === userRoles.tourist && (
-                    <>
-                      <motion.div
-                        variants={fadeIn}
-                        className="flex transform flex-col gap-2"
-                      >
-                        <Label htmlFor="nationality" className="text-white">
-                          Nationality
-                        </Label>
-                        <Select
-                          value={nationality}
-                          onValueChange={setNationality}
-                        >
-                          <SelectTrigger className="bg-white bg-opacity-20 text-white">
-                            <SelectValue placeholder="Select your nationality" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {countryNames.map((country) => (
-                              <SelectItem key={country} value={country}>
-                                {country}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </motion.div>
+                    <TouristRegister
+                      countryNames={countryNames}
+                      setNationality={setNationality}
+                      nationality={nationality}
+                    />
+                  )}
 
-                      <motion.div
-                        variants={fadeIn}
-                        className="flex transform flex-col gap-2"
-                      >
-                        <Label htmlFor="mobileNumber" className="text-white">
-                          Mobile Number
-                        </Label>
-                        <Input
-                          id="mobileNumber"
-                          name={fieldNames.mobileNumber}
-                          type="tel"
-                          placeholder="Your mobile number"
-                          required
-                          className="bg-white bg-opacity-20 text-white placeholder-white"
-                        />
-                      </motion.div>
+                  {userType === userRoles.tourGuide && (
+                    <TourGuideDocUpload
+                      setDocuments={setDocuments}
+                      documents={documents}
+                      handleFileChange={handleFileChange}
+                    />
+                  )}
 
-                      <motion.div
-                        variants={fadeIn}
-                        className="flex transform flex-col gap-2"
-                      >
-                        <Label htmlFor="dateOfBirth" className="text-white">
-                          Date of Birth
-                        </Label>
-                        <Input
-                          id="dateOfBirth"
-                          name={fieldNames.dateOfBirth}
-                          type="date"
-                          required
-                          max={new Date().toISOString().slice(0, 10)}
-                          className="bg-white bg-opacity-20 text-white placeholder-white"
-                        />
-                      </motion.div>
-
-                      <motion.div
-                        variants={fadeIn}
-                        className="col-span-2 flex transform flex-col gap-2"
-                      >
-                        <Label htmlFor="occupation" className="text-white">
-                          Occupation
-                        </Label>
-                        <Input
-                          id="occupation"
-                          name={fieldNames.occupation}
-                          type="text"
-                          placeholder="Your occupation"
-                          required
-                          className="bg-white bg-opacity-20 text-white placeholder-white"
-                        />
-                      </motion.div>
-                    </>
+                  {(userType === userRoles.advertiser ||
+                    userType === userRoles.seller) && (
+                    <AdvertiserOrSellerDocUpload
+                      setDocuments={setDocuments}
+                      documents={documents}
+                      handleFileChange={handleFileChange}
+                    />
                   )}
                 </div>
+                <input
+                  type="hidden"
+                  name="acceptedTerms"
+                  value={acceptedTerms.toString()}
+                />
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    checked={acceptedTerms}
+                    onCheckedChange={(checked) =>
+                      setAcceptedTerms(checked as boolean)
+                    }
+                    className="border-white"
+                  />
+                  <label htmlFor="terms" className="text-sm text-white">
+                    I accept the{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowTerms(true)}
+                      className="text-yellow-400 hover:underline"
+                    >
+                      terms and conditions
+                    </button>
+                  </label>
+                </div>
 
-                <motion.div
-                  variants={fadeIn}
-                  className="flex transform flex-col gap-2"
-                >
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || oneOfFieldsIsEmpty}
-                    className="w-full bg-yellow-500 font-bold text-black hover:bg-yellow-600 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {isSubmitting ? "Creating account..." : "Create my account"}
-                  </Button>
-                </motion.div>
+                <SubmitButton
+                  isSubmitting={isSubmitting}
+                  oneOfFieldsIsEmpty={oneOfFieldsIsEmpty || !acceptedTerms}
+                />
               </Form>
             </motion.div>
           )}
         </AnimatePresence>
+
+        <Dialog open={showTerms} onOpenChange={setShowTerms}>
+          <DialogContent className="max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Terms and Conditions</DialogTitle>
+            </DialogHeader>
+            <div
+              className="mt-4 text-sm"
+              dangerouslySetInnerHTML={{ __html: terms }}
+            />
+          </DialogContent>
+        </Dialog>
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -417,8 +397,8 @@ const RegistrationForm = () => {
           transition={{ delay: 0.4, duration: 0.5 }}
           className="mt-4 text-center text-white"
         >
-          Already have an account?
-          <a href="#" className="ml-2 text-yellow-400 hover:underline">
+          Already have an account?{" "}
+          <a href="/login" className="ml-2 text-yellow-400 hover:underline">
             Sign in
           </a>
         </motion.p>
@@ -432,21 +412,42 @@ export default RegistrationForm;
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
+  const documentIds = [];
+  const termsAccepted = true;
 
-  console.log(data);
+  if (
+    data.userRole === userRoles.tourGuide ||
+    data.userRole === userRoles.advertiser ||
+    data.userRole === userRoles.seller
+  ) {
+    const docs = JSON.parse(data.documentIds as string);
+    for (const doc of docs) {
+      documentIds.push(doc);
+    }
+  }
+
+  delete data.documentIds;
+  delete data.acceptedTerms;
+
+  const newData = {
+    ...data,
+    documentIds,
+    acceptedTerms: termsAccepted,
+  } as NewData;
 
   if (data.userRole === userRoles.tourist) {
     const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
-        account_type: data.userRole,
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        job: data.occupation,
-        nationality: data.nationality,
-        dob: data[fieldNames.dateOfBirth],
-        mobile_number: data[fieldNames.mobileNumber],
+        account_type: newData.userRole,
+        username: newData.username,
+        email: newData.email,
+        password: newData.password,
+        job: newData.job,
+        nationality: newData.nationality,
+        dob: newData.dob,
+        mobile_number: newData.mobile_number,
+        termsAndConditions: newData.acceptedTerms,
       },
       successRedirect: "/tourist-profile",
     });
@@ -460,6 +461,8 @@ export async function action({ request }: { request: Request }) {
         username: data.username,
         email: data.email,
         password: data.password,
+        attachments: documentIds,
+        termsAndConditions: newData.acceptedTerms,
       },
       successRedirect: "/tour-guide-profile",
     });
@@ -469,10 +472,12 @@ export async function action({ request }: { request: Request }) {
     const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
-        account_type: data.userRole,
-        username: data.username,
-        email: data.email,
-        password: data.password,
+        account_type: newData.userRole,
+        username: newData.username,
+        email: newData.email,
+        password: newData.password,
+        attachments: newData.documentIds,
+        termsAndConditions: newData.acceptedTerms,
       },
       successRedirect: "/advertiser-profile",
     });
@@ -482,10 +487,12 @@ export async function action({ request }: { request: Request }) {
     const res = await handleUserRegistration({
       endpoint: "/auth/register",
       requestData: {
-        account_type: data.userRole,
-        username: data.username,
-        email: data.email,
-        password: data.password,
+        account_type: newData.userRole,
+        username: newData.username,
+        email: newData.email,
+        password: newData.password,
+        attachments: newData.documentIds,
+        termsAndConditions: newData.acceptedTerms,
       },
       successRedirect: "/seller-profile",
     });
@@ -496,5 +503,11 @@ export async function action({ request }: { request: Request }) {
 export async function loader() {
   const response = await fetch(`https://restcountries.com/v3.1/all`);
   const data = await response.json();
-  return data;
+
+  const terms = await apiGetTermsAndConditions();
+
+  return {
+    countries: data,
+    terms,
+  };
 }

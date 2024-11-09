@@ -27,7 +27,7 @@ async function getMuseums() {
     const response = await axiosInstance.get("/museums/getall");
 
     // format the data
-    const tempData: Museum[] = await response.data.data.museums.map(
+    const tempData: Museum[] = response.data.data.museums.map(
       (item: any) => {
         const name = item.name ?? "N/A";
 
@@ -61,7 +61,7 @@ async function getMuseums() {
         };
       },
     );
-    return await tempData;
+    return tempData;
   } catch (error) {
     throw new Error(`Failed to fetch data: ${error.message}`);
   }
@@ -243,38 +243,43 @@ function MuseumCard({
 }) {
   return (
     <div
-      className="h-full w-full border-2 border-black p-4"
+      className="bg-card h-full w-full cursor-pointer border-2 border-black p-4 transition-shadow duration-300 hover:shadow-lg"
       onClick={onCardClick}
     >
       {/* Museum picture */}
-      <img src={Museum.pictures[0]} className="mb-8 h-auto w-1/2" />
+      <img
+        src={Museum.pictures[0]}
+        alt={Museum.name}
+        className="mb-8 h-auto w-full rounded-md object-cover"
+      /> 
+      {/* TODO: need to get images from backend properly */}
+
       {/* Museum name */}
-      <div className="text-left font-bold">{Museum.name}</div>
+      <div className="mt-4 text-left text-lg font-bold">{Museum.name}</div>
+
       {/* Museum description */}
-      <div className="">{formatDescription(Museum.description)}</div>
+      <div className="mt-2 text-sm text-gray-700">
+        {formatDescription(Museum.description)}
+      </div>
     </div>
   );
 }
 
 export function MuseumList() {
   const [selectedMuseum, setSelectedMuseum] = useState<Museum | null>(null);
-  const handleCardClick = (Museum: Museum) => {
-    setSelectedMuseum(Museum);
-  };
-  const handleCloseModal = () => {
-    setSelectedMuseum(null);
-  };
-
-  // get the data
-  const [ data, setData ] = useState<Museum[]>([]);
-  const [ loading, setLoading ] = useState<boolean>(true);
-  const [ error, setError ] = useState<string | null>(null);
+  const [data, setData] = useState<Museum[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [allTags, setAllTags] = useState<string[]>([]);
+  const [tag, setTag] = useState<string>("");
+  const [filteredData, setFilteredData] = useState<Museum[]>([]);
 
   useEffect(() => {
     getMuseums()
       .then((data) => {
-        console.log(data);
         setData(data);
+        setAllTags(getAllTags(data));
         setLoading(false);
       })
       .catch((error) => {
@@ -283,23 +288,9 @@ export function MuseumList() {
       });
   }, []);
 
-  // handle the search and filter
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  const [allTags, setAllTags] = useState<string[]>([]);
-  const [tag, setTag] = useState<string>("");
-
-  const [filteredData, setFilteredData] = useState<Activity[]>([]);
-
-  // get all the tags
-  useEffect(() => {
-    setAllTags(getAllTags(data));
-  }, [data]);
-
   useEffect(() => {
     setFilteredData(
-      data?.filter((item) => {
-        // handle the search
+      data.filter((item) => {
         const matchesSearchQuery =
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -307,52 +298,53 @@ export function MuseumList() {
             tag.toLowerCase().includes(searchQuery.toLowerCase()),
           );
 
-        // handle then the tags
         const matchesTag = tag === "" || item.tags.includes(tag);
-
         return matchesSearchQuery && matchesTag;
       }),
     );
   }, [searchQuery, tag, data]);
 
+  const handleCardClick = (Museum: Museum) => setSelectedMuseum(Museum);
+  const handleCloseModal = () => setSelectedMuseum(null);
+
   return (
     <>
-      {loading && (
+      {loading ? (
         <div className="text-center text-2xl font-bold">Loading...</div>
-      )}
-      {error && <div className="text-center text-2xl font-bold">{error}</div>}
-      {!loading && !error && (
+      ) : error ? (
+        <div className="text-center text-2xl font-bold text-red-500">
+          {error}
+        </div>
+      ) : (
         <>
-          {/* tool bar */}
-          <div className="grid grid-cols-2 gap-8 p-4">
+          {/* Tool bar */}
+          <div className="grid grid-cols-2 gap-4 p-4">
             <input
               type="text"
-              placeholder="Search"
-              className="h-full w-full border-2 border-black p-4"
+              placeholder="Search museums..."
+              className="h-full w-full rounded-lg border-2 border-black p-4 focus:border-blue-500 focus:outline-none"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div className="grid h-full w-full grid-cols-[90%_10%] justify-between border-2 border-black p-4">
+            <div className="relative h-full w-full">
               <select
-                className="h-full w-full px-2"
-                style={{ appearance: "none" }}
+                className="h-full w-full appearance-none rounded-lg border-2 border-black p-4 focus:outline-none"
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
               >
                 <option value="">All Tags</option>
-                {allTags?.map((tag, index) => (
+                {allTags.map((tag, index) => (
                   <option value={tag} key={index}>
                     {tag}
                   </option>
                 ))}
               </select>
-              {/* dropdown icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 place-self-center"
+                className="pointer-events-none absolute right-4 top-1/2 h-6 w-6 -translate-y-1/2 transform"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="black"
+                stroke="currentColor"
               >
                 <path
                   strokeLinecap="round"
@@ -363,17 +355,25 @@ export function MuseumList() {
               </svg>
             </div>
           </div>
-          {/* body */}
-          <div className="grid-rows-auto grid grid-cols-3 gap-8 p-8">
-            {filteredData?.map((Museum, index) => (
-              <MuseumCard
-                Museum={Museum}
-                key={index}
-                onCardClick={() => handleCardClick(Museum)}
-              />
-            ))}
+
+          {/* Museum Cards */}
+          <div className="grid grid-cols-3 gap-6 p-4">
+            {filteredData.length > 0 ? (
+              filteredData.map((Museum, index) => (
+                <MuseumCard
+                  Museum={Museum}
+                  key={index}
+                  onCardClick={() => handleCardClick(Museum)}
+                />
+              ))
+            ) : (
+              <div className="col-span-3 text-center text-lg text-gray-500">
+                No museums found.
+              </div>
+            )}
           </div>
-          {/* modal */}
+
+          {/* Museum Modal */}
           {selectedMuseum && (
             <MuseumModal Museum={selectedMuseum} onClose={handleCloseModal} />
           )}

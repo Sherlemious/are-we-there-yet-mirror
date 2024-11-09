@@ -18,6 +18,10 @@ export interface UserType {
   mobile_number?: string;
   job?: string;
   picture?: string;
+  profile_pic?: {
+    url: string;
+    _id: string;
+  };
   name?: string;
   accepted?: boolean;
   nationality?: string;
@@ -33,5 +37,5 @@ export interface UserType {
   description?: string;
   // Tourist
   wallet?: number;
-  loyaltyPoints?: number;
+  loyalty_points: number;
 }
