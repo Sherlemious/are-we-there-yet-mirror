@@ -17,7 +17,7 @@ import { Dashboard as AdminDashboard } from "./modules/Admin/App";
 import { Tag } from "./modules/Tags/App";
 import { PrefrenceTag } from "./modules/PrefrenceTag/App";
 import { Category } from "./modules/Category/App";
-import { TourGuideProfile } from "./modules/TourGuide/App";
+import { MyItitinerariesLoader, TourGuideProfile } from "./modules/TourGuide/App";
 import { AdvertiserProfile } from "./modules/Advertiser/App";
 import { SellerProfile } from "./modules/Seller/App";
 
@@ -183,6 +183,7 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "crud-users-assets",
         element: <CrudUserAssets />,
+        loader: MyItitinerariesLoader,
       },
       {
         path: "my-museums",
