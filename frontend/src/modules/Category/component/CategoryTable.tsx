@@ -39,7 +39,7 @@ function CategoryTable({ Categories, onDeleteCategory, setCategories }: Category
       <UpdatePopup
         dialogRef={dialogRef}
         _id={updateId}
-        title="Update a Preference Tag"
+        title="Update Category"
         setCategories={setCategories}
       />
     </>

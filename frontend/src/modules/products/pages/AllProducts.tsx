@@ -3,6 +3,7 @@ import { getProducts } from "../Api/ProductService";
 import { Product } from "../types/product";
 import { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../shared/store/user-context";
+import Greeting from "@/modules/shared/components/Greeting";
 
 const AllProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -18,8 +19,7 @@ const AllProducts = () => {
   return (
     <div>
       <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-2 text-text-primary">
-        <h1 className="py-2 text-4xl font-bold">Welcome {user.username}</h1>
-        <h3 className="py-2 text-2xl font-bold">Products</h3>
+        <Greeting name={user.username} title="Products" signedIn />
       </div>
       <ProductList products={products} role="tourist" />
     </div>

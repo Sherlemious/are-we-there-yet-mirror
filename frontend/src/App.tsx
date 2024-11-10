@@ -47,6 +47,7 @@ import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
 import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
+import History from "./modules/History/pages/History";
 import FlagItineraries, {
   loader as flagItinerariesLoader,
 } from "./modules/Admin/pages/FlagItineraries";
@@ -219,6 +220,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "my-complaints",
         element: <AllComplaints />,
+      },
+      {
+        path: "history",
+        element: <History />
       },
       {
         path: "my-activities",

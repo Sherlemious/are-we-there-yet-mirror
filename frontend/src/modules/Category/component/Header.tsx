@@ -95,7 +95,7 @@ const Header = ({
           isOpen={isCategoryPopupOpen}
           onClose={() => setIsCategoryPopupOpen(false)}
           onAdd={handleAddCategory}
-          title="Add a Preference Category"
+          title="Add a Category"
           isHeader={true}
         />
       </div>
