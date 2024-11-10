@@ -11,7 +11,6 @@ const itinerarySchema = new Schema(
     },
     category: {
       type: { type: Schema.Types.ObjectId, ref: 'category' },
-      required: true,
     },
     active: {
       type: Boolean,
