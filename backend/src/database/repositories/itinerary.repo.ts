@@ -6,7 +6,7 @@ import Validator from '../../utils/Validator.utils';
 class ItineraryRepo {
   async getItineraries(attributeName?: string, attributeValue?: RegExp | string) {
     const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
-    return await Itinerary.find(query).populate(['tags', 'activities.activity']);
+    return await Itinerary.find(query).populate(['tags', 'activities.activity', 'category']);
   }
 
   async findItineraryById(id: string) {
