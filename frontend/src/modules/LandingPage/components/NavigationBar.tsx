@@ -97,16 +97,16 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                   "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
                 )}
               >
-                Historical Places
+                Historical Places/ Museums
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  <ListItem title="All Locations" to="/all-museums">
-                    Explore all historical locations
+                  <ListItem title="All Places" to="/all-museums">
+                    Explore all historical places/ museums
                   </ListItem>
                   {user.account_type === AccountType.TourismGovernor && (
-                    <ListItem title="Add Location" to="/home/my-museums">
-                      Add a new location
+                    <ListItem title="My Places" to="/home/my-museums">
+                      View your historical places/ museums
                     </ListItem>
                   )}
                 </ul>
@@ -264,6 +264,9 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
             onClick={() => {
               if (user.account_type === AccountType.TourGuide) {
                 return navigate(`/home/tour-guide-profile/${user._id}`);
+              }
+              if (user.account_type === AccountType.TourismGovernor) {
+                return navigate(`/home/tourism-governor-profile/${user._id}`);
               }
               if (user.account_type === AccountType.Admin) {
                 return navigate("/home/admin-dashboard");

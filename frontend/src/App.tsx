@@ -148,7 +148,7 @@ const BrowserRouter = createBrowserRouter([
     loader: rootLayoutLoader,
     children: [
       {
-        path: "/tourism-governor-profile",
+        path: "tourism-governor-profile/:id",
         element: <TourismGovernorProfile />,
       },
       {
