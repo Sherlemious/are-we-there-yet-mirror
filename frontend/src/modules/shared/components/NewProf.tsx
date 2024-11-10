@@ -30,7 +30,7 @@ interface NewProfProps {
     id: string,
     data: { [key: string]: FormDataEntryValue },
   ) => Promise<unknown>;
-  tags: TagType[];
+  tags?: TagType[];
 }
 
 const NewProf: React.FC<NewProfProps> = ({
@@ -240,14 +240,19 @@ const NewProf: React.FC<NewProfProps> = ({
       case "seller":
         return <SellerProfile user={user} />;
 
-      default: // Tourist profile
-        return (
+      case "tourist":
+        return tags === undefined ? (
+          <p>No Tags Found</p>
+        ) : (
           <TouristProfile
             tags={tags}
             user={user}
             handleRedeemPoints={handleRedeemPoints}
           />
         );
+      default:
+        console.error("Invalid account type: ", user.account_type);
+        return null;
     }
   };
 
