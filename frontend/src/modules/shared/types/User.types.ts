@@ -17,18 +17,25 @@ export interface UserType {
   dob?: string;
   mobile_number?: string;
   job?: string;
-  picture?: string;
-  profile_pic?: {
-    url: string;
-    _id: string;
-  };
   name?: string;
-  accepted?: boolean;
   nationality?: string;
-
+  accepted: boolean;
+  rejected: boolean;
+  deletionRequested: boolean;
+  termsAndConditions: boolean;
+  attachments?: {
+    _id: string;
+    original_name: string;
+    url: string;
+  }[];
+  profile_pic?: {
+    _id: string;
+    url: string;
+  };
   // Tour guide
   years_of_experience?: number;
   previous_work?: string[];
+  average_rating?: number;
   // Advertiser
   website?: string;
   hotline?: string;
@@ -36,6 +43,9 @@ export interface UserType {
   // Seller
   description?: string;
   // Tourist
+  preferences?: string[];
+  loyalty_points?: number;
   wallet?: number;
-  loyalty_points: number;
+  itinerary_bookings?: string[];
+  activity_bookings?: string[];
 }

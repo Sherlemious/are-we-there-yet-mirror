@@ -47,6 +47,9 @@ import { useContext } from "react";
 import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
 import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
+import FlagItineraries, {
+  loader as flagItinerariesLoader,
+} from "./modules/Admin/pages/FlagItineraries";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -66,7 +69,7 @@ const Login = () => {
             setUser(data.data.user);
             navigate("/home");
           })
-          .catch((err) => console.log(err));
+          .catch((err) => console.error(err));
       }}
       className="container mx-auto mt-9 space-y-4 bg-secondary-white"
     >
@@ -183,16 +186,21 @@ const BrowserRouter = createBrowserRouter([
             element: <AdminDashboard />,
           },
           {
-            path: "prefrence-tag",
+            path: "prefrence-tags",
             element: <PrefrenceTag />,
           },
           {
-            path: "activity-category",
+            path: "activity-categories",
             element: <Category />,
           },
           {
             path: "my-products-admin",
             element: <AdminProducts />,
+          },
+          {
+            path: "flag-itineraries",
+            element: <FlagItineraries />,
+            loader: flagItinerariesLoader,
           },
         ],
       },
