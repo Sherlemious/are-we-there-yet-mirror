@@ -17,7 +17,10 @@ import { Dashboard as AdminDashboard } from "./modules/Admin/App";
 import { Tag } from "./modules/Tags/App";
 import { PrefrenceTag } from "./modules/PrefrenceTag/App";
 import { Category } from "./modules/Category/App";
-import { TourGuideProfile } from "./modules/TourGuide/App";
+import {
+  MyItitinerariesLoader,
+  TourGuideProfile,
+} from "./modules/TourGuide/App";
 import { AdvertiserProfile } from "./modules/Advertiser/App";
 import { SellerProfile } from "./modules/Seller/App";
 
@@ -26,7 +29,7 @@ import { Toaster } from "react-hot-toast";
 import { AllActivities } from "./modules/shared/pages/MyActivities";
 import { AllItineraries } from "./modules/shared/pages/MyItineraries";
 import { AllMuseums } from "./modules/shared/pages/MyMuseums";
-import { UsersAssets as CrudUserAssets } from "./modules/TourGuide/pages/UsersAssets";
+import { MyItineraries } from "./modules/TourGuide/pages/UsersAssets";
 import { MyMuseums } from "./modules/Museums/App";
 import { loader as activityLoader } from "./modules/Activity/pages/Activity";
 import {
@@ -231,8 +234,9 @@ const BrowserRouter = createBrowserRouter([
         element: <Tag />,
       },
       {
-        path: "crud-users-assets",
-        element: <CrudUserAssets />,
+        path: "my-itineraries",
+        element: <MyItineraries />,
+        loader: MyItitinerariesLoader,
       },
       {
         path: "my-museums",

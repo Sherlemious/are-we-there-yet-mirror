@@ -2,6 +2,15 @@ import type { ActivityType } from "./Activity.types";
 import type { LocationType } from "./Location.types";
 import type { TagType } from "./Tag.types";
 
+export interface AccessibilityType {
+  _id: string;
+  wheelchairAccessible: boolean;
+  assistiveHearingDevices: boolean;
+  visualAidSupport: boolean;
+  serviceAnimalAllowed: boolean;
+  accessibleParking: boolean;
+}
+
 export interface ItineraryType {
   _id: string;
   name: string;
@@ -15,7 +24,7 @@ export interface ItineraryType {
   language: string;
   price: number;
   available_datetimes: string[];
-  accessibility: { [key: string]: boolean }[];
+  accessibility: AccessibilityType;
   pick_up_location: LocationType;
   drop_off_location: LocationType;
   flagged: boolean;
