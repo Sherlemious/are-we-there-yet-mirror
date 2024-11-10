@@ -51,6 +51,9 @@ import History from "./modules/History/pages/History";
 import FlagItineraries, {
   loader as flagItinerariesLoader,
 } from "./modules/Admin/pages/FlagItineraries";
+import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBookings";
+import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
+import { TransportationBookings } from "./modules/Tourist/pages/Bookings/TransportationBookings";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -118,6 +121,18 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "all-products",
         element: <AllProducts />,
+      },
+      {
+        path: "activity-bookings",
+        element: <ActivityBookings />,
+      },
+      {
+        path: "itinerary-bookings",
+        element: <ItineraryBookings />,
+      },
+      {
+        path: "transportation-bookings",
+        element: <TransportationBookings />,
       },
     ],
   },
@@ -223,7 +238,7 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "history",
-        element: <History />
+        element: <History />,
       },
       {
         path: "my-activities",
