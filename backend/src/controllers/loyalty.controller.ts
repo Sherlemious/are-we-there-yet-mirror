@@ -33,14 +33,12 @@ async function redeemPoints(req: Request, res: Response) {
 }
 
 function getLoyaltyLevel(points: number): number {
-  let level: number = 0;
+  let level: number = 1;
 
   if (points >= 1000000) {
     level = 3;
   } else if (points >= 500000) {
     level = 2;
-  } else if (points >= 100000) {
-    level = 1;
   }
 
   return level;
