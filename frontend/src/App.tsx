@@ -54,6 +54,7 @@ import FlagItineraries, {
 import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBookings";
 import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
 import { TransportationBookings } from "./modules/Tourist/pages/Bookings/TransportationBookings";
+import Booking from "./modules/Booking/pages/Booking";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -133,6 +134,8 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "transportation-bookings",
         element: <TransportationBookings />,
+        path: "booking",
+        element: <Booking />,
       },
     ],
   },
