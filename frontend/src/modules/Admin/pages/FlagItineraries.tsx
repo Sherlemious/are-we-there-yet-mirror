@@ -28,7 +28,7 @@ export default function FlagItineraries() {
     },
     {
       header: "Category",
-      accessor: "category",
+      accessor: "category.name",
     },
     {
       header: "Active",

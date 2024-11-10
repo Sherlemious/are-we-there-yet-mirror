@@ -38,7 +38,7 @@ function ItineraryModal({
   const [pickupLocation, setPickupLocation] = useState<LocationType>(
     itinerary?.pick_up_location || { name: "", latitude: 0, longitude: 0 },
   );
-  const [category, setCategory] = useState(itinerary?.category || "");
+  const [category, setCategory] = useState(itinerary?.category?.name || "");
   const [accessibilities, setAccessibilities] = useState<
     Omit<AccessibilityType, "_id">
   >({

@@ -77,6 +77,14 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                       View your activities
                     </ListItem>
                   )}
+                  {user.account_type === AccountType.Admin && (
+                    <ListItem
+                      title="Admin"
+                      to="/home/admin-dashboard/activity-categories"
+                    >
+                      Manage activities category
+                    </ListItem>
+                  )}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -123,6 +131,14 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                   {user.account_type === AccountType.TourGuide && (
                     <ListItem title="My Itineraries" to="/home/my-itineraries">
                       View your itineraries
+                    </ListItem>
+                  )}
+                  {user.account_type === AccountType.Admin && (
+                    <ListItem
+                      title="Admin"
+                      to="/home/admin-dashboard/flag-itineraries"
+                    >
+                      Manage itineraries
                     </ListItem>
                   )}
                 </ul>
@@ -179,18 +195,61 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    <ListItem title="Activities" to="/activity-bookings">
+                    <ListItem title="Activities" to="/home/activity-bookings">
                       View Activity Bookings
                     </ListItem>
-                    <ListItem title="Itineraries" to="/itinerary-bookings">
+                    <ListItem title="Itineraries" to="/home/itinerary-bookings">
                       View Itinerary Bookings
                     </ListItem>
                     <ListItem
                       title="Transportation"
-                      to="/transportation-bookings"
+                      to="/home/transportation-bookings"
                     >
                       View Transportation Bookings
                     </ListItem>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
+
+            {user.account_type === AccountType.Tourist && (
+              <NavigationMenuItem className="text-sub-headings">
+                <NavLink
+                  to="/home/history"
+                  className={(props) => handleStyles(props)}
+                >
+                  History
+                </NavLink>
+              </NavigationMenuItem>
+            )}
+
+            {(user.account_type === AccountType.Tourist ||
+              user.account_type === AccountType.Admin) && (
+              <NavigationMenuItem>
+                <NavigationMenuTrigger
+                  className={cn(
+                    handleStyles({ isActive: false }),
+                    "bg-transparent hover:bg-transparent",
+                    "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                  )}
+                >
+                  Complaints
+                </NavigationMenuTrigger>
+                <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {user.account_type === AccountType.Tourist && (
+                      <ListItem title="My Complaints" to="/home/my-complaints">
+                        My complaints
+                      </ListItem>
+                    )}
+                    {user.account_type === AccountType.Admin && (
+                      <ListItem
+                        title="Manage Complaints"
+                        to="/home/admin-dashboard/admin-complaints"
+                      >
+                        Manage complaints
+                      </ListItem>
+                    )}
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>

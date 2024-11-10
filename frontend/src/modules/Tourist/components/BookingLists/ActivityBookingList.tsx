@@ -159,7 +159,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
       <div className={classes}>{activity.location.name}</div>
       <div className={classes}>{activity.price}</div>
       <div className={classes}>{activity.ratings}/5</div>
-      <div className={classes}>{activity.category}</div>
+      <div className={classes}>{activity.category.name}</div>
       <div className={classes}>
         {activity.tags.map(formatText).join(", ") || "N/A"}
       </div>
@@ -235,7 +235,7 @@ export function ActivityBookingList() {
         const matchesSearchQuery =
           searchQuery === "" ||
           item.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.tags.some((tag) =>
             tag.toLowerCase().includes(searchQuery.toLowerCase()),
           );

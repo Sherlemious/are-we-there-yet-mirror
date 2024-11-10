@@ -1,6 +1,6 @@
 import Table, { type TableColumn } from "../../shared/components/Table";
 import { useEffect, useRef, useState } from "react";
-import type { UserType } from "@/modules/shared/types/User.types";
+import { AccountType, type UserType } from "@/modules/shared/types/User.types";
 import Modal, { type ModalRef } from "@/modules/shared/components/Modal";
 import axiosInstance from "@/modules/shared/services/axiosInstance";
 import toast from "react-hot-toast";
@@ -65,6 +65,8 @@ function ProfileTable({
 
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const modalRef = useRef<ModalRef>(null);
+  console.log(selectedUser);
+  
 
   useEffect(() => {
     if (!selectedUser) return;
@@ -99,8 +101,8 @@ function ProfileTable({
       <Modal ref={modalRef} onClose={() => setSelectedUser(null)}>
         {selectedUser && (
           <>
-            <div className="w-full flex justify-between">
-              <div className="w-full flex items-center justify-between">
+            <div className="flex w-full justify-between">
+              <div className="flex w-full items-center justify-between">
                 <h1>Edit User</h1>
 
                 <button
@@ -110,8 +112,24 @@ function ProfileTable({
                   <X size={24} />
                 </button>
               </div>
-              {!(selectedUser.accepted || selectedUser.rejected) && (
-                <div className="flex gap-3">
+            </div>
+            <img src={selectedUser.profile_pic?.url} alt="profile pic" />
+            {selectedUser.attachments?.map((attach) => (
+              <details key={attach._id}>
+                <summary>{attach.original_name}</summary>
+                <iframe
+                  src={attach.url}
+                  title={attach.original_name}
+                  width="100%"
+                  height="600px"
+                ></iframe>
+              </details>
+            ))}
+            {(selectedUser.account_type === AccountType.Seller ||
+              selectedUser.account_type === AccountType.Advertiser ||
+              selectedUser.account_type === AccountType.TourGuide) &&
+              !(selectedUser.accepted || selectedUser.rejected) && (
+                <div className="mt-9 flex gap-3">
                   <button
                     onClick={() =>
                       toast.promise(
@@ -178,19 +196,6 @@ function ProfileTable({
                   </button>
                 </div>
               )}
-            </div>
-            <img src={selectedUser.profile_pic?.url} alt="profile pic" />
-            {selectedUser.attachments?.map((attach) => (
-              <details key={attach._id}>
-                <summary>{attach.original_name}</summary>
-                <iframe
-                  src={attach.url}
-                  title={attach.original_name}
-                  width="100%"
-                  height="600px"
-                ></iframe>
-              </details>
-            ))}
           </>
         )}
       </Modal>

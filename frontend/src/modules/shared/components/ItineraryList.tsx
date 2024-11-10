@@ -220,7 +220,7 @@ function ItineraryModal({
                   value: itinerary.dropoffLocation,
                 },
                 { label: "Pickup Location", value: itinerary.pickupLocation },
-                { label: "Category", value: itinerary.category },
+                { label: "Category", value: itinerary.category.name },
                 { label: "Tags", value: itinerary.tags.join(", ") },
                 { label: "Rating", value: `${itinerary.rating}/5` },
                 {
@@ -419,7 +419,7 @@ export function ItineraryList() {
         const matchesSearchQuery =
           searchQuery === "" ||
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.tags.some((tag) =>
             tag.toLowerCase().includes(searchQuery.toLowerCase()),
           );

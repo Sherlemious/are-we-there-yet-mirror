@@ -5,9 +5,16 @@ import type {
 
 export type ItineraryPostType = Omit<
   ItineraryType,
-  "_id" | "tags" | "activities" | "accessibility" | "flagged" | "average_rating"
+  | "_id"
+  | "tags"
+  | "activities"
+  | "accessibility"
+  | "flagged"
+  | "average_rating"
+  | "category"
 > & {
   tags: string[];
   activities: { activity: string; duration: number }[];
   accessibility: Omit<AccessibilityType, "_id">;
+  category: string;
 };

@@ -127,22 +127,6 @@ const BrowserRouter = createBrowserRouter([
         path: "all-products",
         element: <AllProducts />,
       },
-      {
-        path: "activity-bookings",
-        element: <ActivityBookings />,
-      },
-      {
-        path: "itinerary-bookings",
-        element: <ItineraryBookings />,
-      },
-      {
-        path: "transportation-bookings",
-        element: <TransportationBookings />,
-      },
-      {
-        path: "booking",
-        element: <Booking />,
-      },
     ],
   },
   {
@@ -227,6 +211,10 @@ const BrowserRouter = createBrowserRouter([
             element: <FlagItineraries />,
             loader: flagItinerariesLoader,
           },
+          {
+            path: "admin-complaints",
+            element: <AdminAllComplaints />,
+          },
         ],
       },
       {
@@ -251,8 +239,16 @@ const BrowserRouter = createBrowserRouter([
         element: <History />,
       },
       {
-        path: "admin-complaints",
-        element: <AdminAllComplaints />,
+        path: "activity-bookings",
+        element: <ActivityBookings />,
+      },
+      {
+        path: "itinerary-bookings",
+        element: <ItineraryBookings />,
+      },
+      {
+        path: "transportation-bookings",
+        element: <Booking />,
       },
       {
         path: "my-activities",

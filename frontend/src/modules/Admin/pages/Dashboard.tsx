@@ -57,7 +57,11 @@ const Dashboard = () => {
         setUsers={setProfiles}
         setRefresh={setRefresh}
       />
-      <ProfileTable profiles={profiles} setProfiles={setProfiles} onDeleteProfile={handleDeleteProfile} />
+      <ProfileTable
+        profiles={profiles}
+        setProfiles={setProfiles}
+        onDeleteProfile={handleDeleteProfile}
+      />
     </div>
   );
 };

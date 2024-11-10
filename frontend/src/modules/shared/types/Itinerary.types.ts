@@ -1,4 +1,5 @@
 import type { ActivityType } from "./Activity.types";
+import type { CategoryType } from "./Category.types";
 import type { LocationType } from "./Location.types";
 import type { TagType } from "./Tag.types";
 
@@ -14,7 +15,7 @@ export interface AccessibilityType {
 export interface ItineraryType {
   _id: string;
   name: string;
-  category: string;
+  category: CategoryType;
   active: boolean;
   tags: TagType[];
   activities: { activity: ActivityType; duration: number }[];
