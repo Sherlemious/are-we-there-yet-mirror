@@ -47,16 +47,7 @@ const getProducts = async (req: Request, res: Response) => {
   try {
     let products = await productRepo.getProducts();
 
-    /* Filter out any archived itineraries.
-      This is shit code, this is like the 4th or 5th choice when it comes to implementing such feature 
-      but I can't do this anymore.
-      */
-    let accType = '';
-    if (req.user) {
-      accType = req.user.accountType;
-    }
-
-    if (accType && accType != accountType.Seller && accType != accountType.Admin) {
+    if (req.user.accountType != accountType.Admin) {
       products = products.filter((product) => !product.archive);
     }
 
