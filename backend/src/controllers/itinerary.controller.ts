@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
-import { accountType } from '../types/User.types';
 import ItineraryRepo from '../database/repositories/itinerary.repo';
 import BookingRepo from '../database/repositories/booking.repo';
 import currencyConverterService from '../services/currencyConverter.service';
@@ -11,18 +10,33 @@ import Validator from '../utils/Validator.utils';
 const getItineraries = async (req: Request, res: Response) => {
   try {
     let itineraries = await ItineraryRepo.getItineraries();
-    let accType = '';
-    if (req.user) {
-      accType = req.user.accountType;
-    }
 
-    if (![accountType.Admin, accountType.TourGuide].includes(accType as accountType)) {
-      itineraries = itineraries.filter((itinerary) => itinerary.active); // remove deactivated itineraries
-    }
+    itineraries = itineraries.filter((itinerary) => itinerary.active && !itinerary.flagged);
 
-    if (['', accountType.Tourist].includes(accType)) {
-      itineraries = itineraries.filter((itinerary) => !itinerary.flagged); // remove flagged itineraries
-    }
+    const currency: string = await currencyConverterService.getRequestCurrency(req);
+    itineraries = await Promise.all(
+      itineraries.map(async (itinerary) => {
+        itinerary.price = await currencyConverterService.convertPrice(itinerary.price, currency);
+        return itinerary;
+      })
+    );
+
+    const response = {
+      message: 'Itineraries fetched successfully',
+      data: { itineraries: itineraries },
+      currency: currency,
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching itineraries: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const adminGetItineraries = async (req: Request, res: Response) => {
+  try {
+    let itineraries = await ItineraryRepo.getItineraries();
 
     const currency: string = await currencyConverterService.getRequestCurrency(req);
     itineraries = await Promise.all(
@@ -217,6 +231,7 @@ const flagItinerary = async (req: Request, res: Response) => {
 
 export {
   getItineraries,
+  adminGetItineraries,
   findItineraryById,
   createItinerary,
   updateItinerary,
