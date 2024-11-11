@@ -3,22 +3,23 @@ import { toast } from "react-hot-toast";
 
 interface ComplaintsFormProps {
   onClose: () => void;
-  onSubmit: (data: { title: string; body: string }) => Promise<void>;
-  initialValues?: { title: string; body: string };
+  onSubmit: (data: { title: string; body: string; reviews: { comment: string; createdAt: string }[] }) => Promise<void>;
+  initialValues?: { title: string; body: string; reviews: { comment: string; createdAt: string }[] };
 }
 
 const ComplaintsForm: React.FC<ComplaintsFormProps> = ({
   onClose,
   onSubmit,
-  initialValues = { title: "", body: "" },
+  initialValues = { title: "", body: "", reviews: [] },
 }) => {
   const [title, setTitle] = useState(initialValues.title);
   const [body, setBody] = useState(initialValues.body);
+  const [reviews, setReviews] = useState(initialValues.reviews);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await onSubmit({ title, body });
+      await onSubmit({ title, body, reviews });
       onClose();
     } catch (error) {
       toast.error("An error occurred.");
@@ -28,6 +29,7 @@ const ComplaintsForm: React.FC<ComplaintsFormProps> = ({
   useEffect(() => {
     setTitle(initialValues.title);
     setBody(initialValues.body);
+    setReviews(initialValues.reviews);
   }, [initialValues]);
 
   return (
@@ -53,6 +55,23 @@ const ComplaintsForm: React.FC<ComplaintsFormProps> = ({
           className="border p-2 rounded w-full"
         />
       </label>
+      <div className="flex w-full flex-col gap-4 md:w-1/2">
+          {reviews.map((comment, index) => (
+            <div
+              key={index}
+              className="flex w-full flex-col gap-2 rounded-lg bg-gray-50 p-4 shadow-md"
+            >
+              <div className="flex flex-row items-center gap-2">
+                <span className="font-bold text-gray-600">Comment:</span>
+                <p className="text-text-primary">{comment.comment}</p>
+              </div>
+              <div className="flex flex-row items-center gap-2">
+                <span className="font-bold text-gray-600">Created At:</span>
+                <p className="text-sm text-gray-500">{new Date(comment.createdAt).toLocaleDateString()}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       <div className="flex justify-end space-x-2 mt-4">
         <button
           type="button"

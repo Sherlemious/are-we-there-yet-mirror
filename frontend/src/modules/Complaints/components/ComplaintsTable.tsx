@@ -6,6 +6,7 @@ interface Complaint {
   title: string;
   body: string;
   status: string;
+  reviews: {comment: string, createdAt: string}[];
   created_at: string;
   updated_at: string;
 }
