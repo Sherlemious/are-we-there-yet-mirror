@@ -11,7 +11,7 @@ class ItineraryRepo {
 
   async findItineraryById(id: string) {
     Validator.validateId(id, 'Invalid itinerary ID');
-    return await Itinerary.findById(id).populate(['tags', 'activities.activity']);
+    return await Itinerary.findById(id).populate(['tags', 'activities.activity', 'category']);
   }
 
   async createItinerary(itinerary: ItineraryType) {
@@ -28,11 +28,11 @@ class ItineraryRepo {
   }
 
   async filterItineraries(query: any) {
-    return await Itinerary.find(query).populate(['tags', 'activities.activity']);
+    return await Itinerary.find(query).populate(['tags', 'activities.activity', 'category']);
   }
 
   async getItinerariesByCreator(creator: string) {
-    return await Itinerary.find({ created_by: creator }).populate(['tags', 'activities.activity']);
+    return await Itinerary.find({ created_by: creator }).populate(['tags', 'activities.activity', 'category']);
   }
 
   async toggleFlagItinerary(id: string, flag: boolean) {

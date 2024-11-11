@@ -10,8 +10,8 @@ const itinerarySchema = new Schema(
       required: true,
     },
     category: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'category' }],
-      required: true,
+      type: Schema.Types.ObjectId,
+      ref: 'category',
     },
     active: {
       type: Boolean,
