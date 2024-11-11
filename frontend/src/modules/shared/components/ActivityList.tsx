@@ -100,7 +100,28 @@ async function getMyActivities() {
 
     return data;
   } catch (error) {
-    console.error("Error fetching user", error);
+    toast.error("Error fetching activities");
+    throw error;
+  }
+}
+
+async function getAllCategories() {
+  try {
+    // get the data via axios
+    const resPromise = await axiosInstance.get("/categories");
+
+    // format the data
+    const res = resPromise.data.data.categories;
+    const data = res.map((item: { name: string; _id: string }) => {
+      return {
+        name: item.name,
+        id: item._id,
+      };
+    });
+
+    return data;
+  } catch (error) {
+    toast.error(`Error fetching categories: ${error.message}`);
     throw error;
   }
 }
@@ -108,8 +129,9 @@ async function getMyActivities() {
 function availablePill({ text }: { text: string }) {
   const open = "bg-primary-green";
   const close = "bg-destructive";
-  const className = `rounded-full px-4 py-1 text-text-white text-center flex items-center justify-center ${text === "Open" ? open : close
-    }`;
+  const className = `rounded-full px-4 py-1 text-text-white text-center flex items-center justify-center ${
+    text === "Open" ? open : close
+  }`;
   return (
     <div className={className}>
       {text === "Open" ? <BookOpenCheck /> : <BookX />}
@@ -221,6 +243,9 @@ export function ActivityList() {
   const [data, setData] = useState<Activity[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ name: string; id: string }[]>(
+    [],
+  );
 
   // handle the sorting state
   const [sortingOption, setSortingOption] = useState<{
@@ -242,6 +267,8 @@ export function ActivityList() {
         setError(error.message);
         setLoading(false);
       });
+
+    getAllCategories().then((data) => setCategories(data));
   }, []);
 
   // handle the sorting
@@ -293,18 +320,18 @@ export function ActivityList() {
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* tool bar */}
-      <div className="grid grid-cols-6 gap-6 rounded-lg bg-secondary-light_grey px-4 py-8 shadow-lg">
+      <div className="grid grid-cols-7 gap-6 rounded-lg bg-secondary-light_grey px-4 py-8 shadow-lg">
         <input
           type="text"
           placeholder="Search"
-          className="h-full w-full rounded-lg border border-gray-300 p-3 shadow-lg"
+          className="w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-lg transition-colors hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <input
           type="number"
           placeholder="Max Budget"
-          className="h-full w-full rounded-lg border border-gray-300 p-3 shadow-lg"
+          className="w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-lg transition-colors hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={budget ?? ""}
           onChange={(e) =>
             setBudget(e.target.value ? parseInt(e.target.value) : null)
@@ -312,19 +339,38 @@ export function ActivityList() {
         />
         <input
           type="date"
-          className="h-full w-full rounded-lg border border-gray-300 p-3 shadow-lg"
+          className="w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-lg transition-colors hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
         <input
           type="number"
           placeholder="Min Ratings"
-          className="h-full w-full rounded-lg border border-gray-300 p-3 shadow-lg"
+          className="w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-lg transition-colors hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={ratings ?? ""}
           onChange={(e) =>
             setRatings(e.target.value ? parseInt(e.target.value) : null)
           }
         />
+        <select
+          className="w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-lg transition-colors hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) => {
+            if (e.target.value === "") {
+              setFilteredData(data ?? []);
+            }
+            setFilteredData(
+              data?.filter(
+                (item) =>
+                  item.category === e.target.value || e.target.value === "",
+              ) ?? [],
+            );
+          }}
+        >
+          <option value="">Select Category</option>
+          {categories.map((category) => (
+            <option key={category.id}>{category.name}</option>
+          ))}
+        </select>
         <button
           className="col-span-1 rounded-md bg-accent-dark-blue p-3 font-semibold text-white"
           onClick={() => {
