@@ -4,6 +4,7 @@ import { Share } from "lucide-react";
 import ShareLink from "./ShareLink";
 import { ModalRef } from "./Modal";
 import Modal from "./Modal";
+import toast from "react-hot-toast";
 
 // data
 interface Museum {
@@ -24,6 +25,13 @@ interface Museum {
     native: number;
     student: number;
   };
+}
+
+interface Tag {
+  id: string;
+  name: string;
+  type: string;
+  historical_period: string;
 }
 
 async function getMuseums() {
@@ -68,6 +76,43 @@ async function getMuseums() {
     });
     return tempData;
   } catch (error) {
+    toast.error("Failed to fetch data");
+    throw new Error(`Failed to fetch data: ${error.message}`);
+  }
+}
+
+async function getTags() {
+  try {
+    // fetch the data
+    const response = await axiosInstance.get("/tags");
+
+    // format the data
+    const tempData: Tag[] = response.data.data.tags.map(
+      (item: {
+        _id: string;
+        name: string;
+        type: string;
+        historical_period: string;
+      }) => {
+        //       "_id": "67311f168582273232a1260a",
+        // "name": "PTag",
+        // "type": "Preference",
+        // "historical_period": "Always",
+        const id = item._id;
+        const name = item.name ?? "N/A";
+        const type = item.type ?? "N/A";
+        const historical_period = item.historical_period ?? "N/A";
+        return {
+          id,
+          name,
+          type,
+          historical_period,
+        };
+      },
+    );
+    return tempData;
+  } catch (error) {
+    toast.error("Failed to fetch data");
     throw new Error(`Failed to fetch data: ${error.message}`);
   }
 }
@@ -87,14 +132,6 @@ const formatDescription = (description: string) => {
   }
   return description;
 };
-
-function getAllTags(data: Museum[]) {
-  let tags: string[] = [];
-  data?.forEach((item) => {
-    tags = [...tags, ...item.tags];
-  });
-  return [...new Set(tags)];
-}
 
 // main components
 function MuseumModal({
@@ -315,8 +352,15 @@ export function MuseumList() {
     getMuseums()
       .then((data) => {
         setData(data);
-        setAllTags(getAllTags(data));
         setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+    getTags()
+      .then((data) => {
+        setAllTags(data.map((tag) => tag.name));
       })
       .catch((error) => {
         setError(error.message);
