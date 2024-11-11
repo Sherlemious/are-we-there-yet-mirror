@@ -12,7 +12,11 @@ export interface ActivityType {
   tags: TagType[];
   specialDiscounts: number;
   bookingOpen: boolean;
+  average_rating: number;
+  reviews: { _id: string; user: string; rating: number; comment: string }[];
   created_by: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ActivityRefType {

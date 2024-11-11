@@ -44,7 +44,7 @@ async function getMyItineraries() {
         const accessibilities = item.accessibility;
         const pickupLocation = item.pick_up_location.name;
         const dropoffLocation = item.drop_off_location.name;
-        const rating = Math.floor(Math.random() * 5) + 1; // TODO: replace with actual rating
+        const rating = item.average_rating;
 
         return {
           id,
@@ -66,7 +66,7 @@ async function getMyItineraries() {
     // sort the data on rating
     tempData.sort((a, b) => b.rating - a.rating); // TODO: replace with actual rating
 
-    return await tempData;
+    return tempData;
   } catch (error) {
     console.error("Error fetching user", error);
     throw error;
@@ -419,7 +419,9 @@ export function ItineraryList() {
         const matchesSearchQuery =
           searchQuery === "" ||
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
           item.tags.some((tag) =>
             tag.toLowerCase().includes(searchQuery.toLowerCase()),
           );

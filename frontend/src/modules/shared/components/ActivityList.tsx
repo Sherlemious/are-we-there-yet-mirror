@@ -38,6 +38,7 @@ async function getMyActivities() {
     const res = resPromise.data;
     const data: Activity[] = res.data.map(
       (item: {
+        _id: string;
         datetime: string;
         location: {
           name: string;
@@ -55,6 +56,7 @@ async function getMyActivities() {
         }[];
         specialDiscounts: number;
         bookingOpen: boolean;
+        average_rating: number;
       }) => {
         const id = item._id;
         const datetime = item.datetime ?? "N/A";
@@ -67,15 +69,13 @@ async function getMyActivities() {
           longitude: item.location.longitude ?? 0,
         };
         const price = item.price ?? -1;
-        let category = item.category ?? "N/A";
-        category = category.name ?? "N/A";
+        const category = item.category.name ?? "N/A";
 
-        let tags = item.tags ?? [];
-        tags = tags.map((tag) => tag.name ?? "N/A");
+        const tags = item.tags.map((tag) => tag.name ?? "N/A") ?? [];
 
         const specialDiscounts = item.specialDiscounts ?? 0;
         const bookingOpen = item.bookingOpen ?? false;
-        const ratings = Math.floor(Math.random() * 5) + 1; // TODO: Replace with actual ratings
+        const ratings = item.average_rating ?? 0;
 
         return {
           id,
