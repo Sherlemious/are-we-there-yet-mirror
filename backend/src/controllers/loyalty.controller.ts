@@ -14,34 +14,17 @@ async function redeemPoints(req: Request, res: Response) {
 
     if (!user) throw new Error('User not found');
 
-    if (user.loyalty_points < points) {
-      throw new Error('Insufficient points');
-    }
-
-    user.loyalty_points -= points;
-    user.loyalty_level = getLoyaltyLevel(user.loyalty_points);
     user.wallet += points * 0.01;
 
     // Update user
     await userRepo.updateUser(userId, user as UserType);
+    await userRepo.updateUserLoyaltyPoints(userId, -points);
 
     res.status(ResponseStatusCodes.OK).json({ message: 'Points redeemed successfully' });
   } catch (error: any) {
     logger.error(`Error redeeming points: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message });
   }
-}
-
-function getLoyaltyLevel(points: number): number {
-  let level: number = 1;
-
-  if (points >= 1000000) {
-    level = 3;
-  } else if (points >= 500000) {
-    level = 2;
-  }
-
-  return level;
 }
 
 export { redeemPoints };

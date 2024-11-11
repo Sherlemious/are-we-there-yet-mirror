@@ -9,6 +9,7 @@ import {
   getItinerariesCreatedByUser,
   toggleItineraryActive,
   flagItinerary,
+  adminGetItineraries,
 } from '../controllers/itinerary.controller';
 import BookingController from '../controllers/booking.controller';
 
@@ -17,6 +18,7 @@ const itineraryRouter = Router();
 itineraryRouter.post('/bookings', BookingController.bookItinerary);
 
 itineraryRouter.get('/get', getItineraries);
+itineraryRouter.get('/admin', adminGetItineraries);
 itineraryRouter.get('/mine', getItinerariesCreatedByUser);
 itineraryRouter.get('/:id', findItineraryById);
 itineraryRouter.post('/', createItinerary);

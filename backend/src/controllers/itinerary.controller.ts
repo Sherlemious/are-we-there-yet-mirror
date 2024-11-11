@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
-import { accountType } from '../types/User.types';
 import ItineraryRepo from '../database/repositories/itinerary.repo';
 import BookingRepo from '../database/repositories/booking.repo';
 import currencyConverterService from '../services/currencyConverter.service';
@@ -12,18 +11,32 @@ const getItineraries = async (req: Request, res: Response) => {
   try {
     let itineraries = await ItineraryRepo.getItineraries();
 
-    /* Filter out any archived itineraries.
-      This is shit code, this is like the 4th or 5th choice when it comes to implementing such feature 
-      but I can't do this anymore.
-      */
-    let accType = '';
-    if (req.user) {
-      accType = req.user.accountType;
-    }
+    itineraries = itineraries.filter((itinerary) => itinerary.active && !itinerary.flagged);
 
-    if (accType && accType != accountType.Seller && accType != accountType.Admin) {
-      itineraries = itineraries.filter((itinerary) => !itinerary.flagged && itinerary.active);
-    }
+    const currency: string = await currencyConverterService.getRequestCurrency(req);
+    itineraries = await Promise.all(
+      itineraries.map(async (itinerary) => {
+        itinerary.price = await currencyConverterService.convertPrice(itinerary.price, currency);
+        return itinerary;
+      })
+    );
+
+    const response = {
+      message: 'Itineraries fetched successfully',
+      data: { itineraries: itineraries },
+      currency: currency,
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching itineraries: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const adminGetItineraries = async (req: Request, res: Response) => {
+  try {
+    let itineraries = await ItineraryRepo.getItineraries();
 
     const currency: string = await currencyConverterService.getRequestCurrency(req);
     itineraries = await Promise.all(
@@ -218,6 +231,7 @@ const flagItinerary = async (req: Request, res: Response) => {
 
 export {
   getItineraries,
+  adminGetItineraries,
   findItineraryById,
   createItinerary,
   updateItinerary,
