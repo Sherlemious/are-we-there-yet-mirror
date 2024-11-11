@@ -41,7 +41,7 @@ const Modal = forwardRef(function Modal(
     <dialog
       ref={dialog}
       onClose={onClose}
-      className="backdrop:bg-base-black/15 w-2/3 rounded-lg p-12 shadow-md outline-none"
+      className="backdrop:bg-base-black/15 w-[80%] overflow-y-auto rounded-lg p-12 shadow-md outline-none"
     >
       {children}
     </dialog>,

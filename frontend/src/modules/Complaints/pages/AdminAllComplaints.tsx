@@ -67,7 +67,7 @@ function Table({
   );
 }
 
-function ViewComplaint({ viewingComplaint, handleCloseModal }) {
+function ViewComplaint({ viewingComplaint, handleCloseModal, setRefresh }) {
   const [comments, setComments] = useState<
     {
       comment: string;
@@ -144,8 +144,11 @@ function ViewComplaint({ viewingComplaint, handleCloseModal }) {
       // post the comment
       await axiosInstance.patch(`/complaints/${id}`, body);
 
-      // refresh comments
-      setCommentRefresh(commentRefresh + 1);
+      // refresh
+      setRefresh((prev) => prev + 1);
+      setComments([]);
+      setNewComment("");
+      handleCloseModal();
 
       // toast
       toast.success("Complaint resolved successfully");
@@ -378,6 +381,7 @@ export default function AdminAllComplaints() {
         <ViewComplaint
           viewingComplaint={viewingComplaint}
           handleCloseModal={handleCloseModal}
+          setRefresh={setRefresh}
         />
       </Modal>
     </div>

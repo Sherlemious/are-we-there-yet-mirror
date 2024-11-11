@@ -147,6 +147,18 @@ const BrowserRouter = createBrowserRouter([
     loader: rootLayoutLoader,
     children: [
       {
+        path: "all-activities/*",
+        element: <AllActivities />,
+      },
+      {
+        path: "all-itineraries/*",
+        element: <AllItineraries />,
+      },
+      {
+        path: "all-museums/*",
+        element: <AllMuseums />,
+      },
+      {
         path: "tourism-governor-profile/:id",
         element: <TourismGovernorProfile />,
       },

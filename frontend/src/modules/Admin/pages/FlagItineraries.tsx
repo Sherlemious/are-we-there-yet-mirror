@@ -19,7 +19,6 @@ export default function FlagItineraries() {
   const selectedItinerary = itineraries.find(
     (itinerary) => itinerary._id === selectedId,
   );
-  console.log(itineraries, selectedItinerary, selectedId);
 
   const tableColumns: TableColumn[] = [
     {
@@ -121,7 +120,7 @@ export default function FlagItineraries() {
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <p className="text-lg">Category: {selectedItinerary.category}</p>
+              <p className="text-lg">Category: {selectedItinerary.category.name}</p>
               <p className="text-lg">
                 Active: {selectedItinerary.active ? "Yes" : "No"}
               </p>
@@ -189,6 +188,6 @@ export default function FlagItineraries() {
 
 export async function loader() {
   return axiosInstance
-    .get("/itineraries/get")
+    .get("/itineraries/admin")
     .then((res) => res.data.data.itineraries);
 }

@@ -115,7 +115,7 @@ export default function TouristProfile({
               <Award className="h-5 w-5 flex-shrink-0 text-primary-blue" />
               <span className="text-slate-600">level {user.loyalty_level}</span>
               <img
-                src={getBadge(user.loyalty_level)}
+                src={getBadge(user.loyalty_level || 1)}
                 alt="badge"
                 className="h-6 w-6"
               />

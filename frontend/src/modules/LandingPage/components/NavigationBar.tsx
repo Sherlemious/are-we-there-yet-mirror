@@ -49,10 +49,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
         <NavigationMenu className="relative mx-auto">
           <NavigationMenuList className="flex justify-around space-x-8">
             <NavigationMenuItem className="text-sub-headings">
-              <NavLink
-                to={user.account_type === AccountType.None ? "/" : "/home"}
-                className={(props) => handleStyles(props)}
-              >
+              <NavLink to="/home" className={(props) => handleStyles(props)}>
                 Home
               </NavLink>
             </NavigationMenuItem>
@@ -69,7 +66,14 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  <ListItem title="Browse All" to="/all-activities">
+                  <ListItem
+                    title="Browse All"
+                    to={
+                      user.account_type !== AccountType.None
+                        ? "/all-activities"
+                        : "/home/all-activities"
+                    }
+                  >
                     View all available activities
                   </ListItem>
                   {user.account_type === AccountType.Advertiser && (
@@ -101,7 +105,14 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  <ListItem title="All Places" to="/all-museums">
+                  <ListItem
+                    title="All Places"
+                    to={
+                      user.account_type !== AccountType.None
+                        ? "/all-museums"
+                        : "/home/all-museums"
+                    }
+                  >
                     Explore all historical places/ museums
                   </ListItem>
                   {user.account_type === AccountType.TourismGovernor && (
@@ -125,7 +136,14 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  <ListItem title="View All" to="/all-itineraries">
+                  <ListItem
+                    title="View All"
+                    to={
+                      user.account_type !== AccountType.None
+                        ? "/all-itineraries"
+                        : "/home/all-itineraries"
+                    }
+                  >
                     Browse all itineraries
                   </ListItem>
                   {user.account_type === AccountType.TourGuide && (

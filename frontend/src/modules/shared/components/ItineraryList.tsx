@@ -31,10 +31,10 @@ async function getMyItineraries() {
             };
           }
           return {
-            date: activity.activity.date,
-            time: activity.activity.time,
+            date: activity.activity.datetime,
+            time: activity.activity.datetime,
             location: activity.activity.location.name,
-            price: activity.price,
+            price: activity.activity.price,
           };
         });
         const language = item.language === null ? "N/A" : item.language;

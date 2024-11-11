@@ -74,7 +74,7 @@ export default function RootLayout() {
 
 export async function loader() {
   const token = localStorage.getItem("token");
-  if (!token) return redirect("/register");
+  if (!token) return redirect("/");
 
   try {
     const response =
