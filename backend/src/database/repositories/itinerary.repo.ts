@@ -32,7 +32,7 @@ class ItineraryRepo {
   }
 
   async getItinerariesByCreator(creator: string) {
-    return await Itinerary.find({ created_by: creator }).populate(['tags', 'activities.activity']);
+    return await Itinerary.find({ created_by: creator }).populate(['tags', 'activities.activity', 'category']);
   }
 
   async toggleFlagItinerary(id: string, flag: boolean) {
