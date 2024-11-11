@@ -15,6 +15,8 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
+    const currency = localStorage.getItem("currency") || "EGP";
+    config.headers["Currency"] = currency;
     return config;
   },
   (error) => {

@@ -45,6 +45,24 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
       {/* Backdrop blur container */}
       <div className="absolute inset-0 -z-10 bg-black/10 backdrop-blur-md" />
 
+      {/* change currency */}
+      <div className="ml-2 flex w-[12%] items-center gap-5">
+        <select
+          id="currency"
+          name="currency"
+          value={localStorage.getItem("currency") || "EGP"}
+          className="rounded-md border border-primary-green bg-transparent px-2 py-1 text-primary-blue"
+          onChange={(e) => {
+            localStorage.setItem("currency", e.target.value);
+            window.location.reload();
+          }}
+        >
+          <option value="EGP">EGP</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+        </select>
+      </div>
+
       <div className="flex w-full justify-center">
         <NavigationMenu className="relative mx-auto">
           <NavigationMenuList className="flex justify-around space-x-8">
@@ -69,7 +87,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                   <ListItem
                     title="Browse All"
                     to={
-                      user.account_type !== AccountType.None
+                      user.account_type === AccountType.None
                         ? "/all-activities"
                         : "/home/all-activities"
                     }
@@ -108,7 +126,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                   <ListItem
                     title="All Places"
                     to={
-                      user.account_type !== AccountType.None
+                      user.account_type === AccountType.None
                         ? "/all-museums"
                         : "/home/all-museums"
                     }
@@ -139,7 +157,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                   <ListItem
                     title="View All"
                     to={
-                      user.account_type !== AccountType.None
+                      user.account_type === AccountType.None
                         ? "/all-itineraries"
                         : "/home/all-itineraries"
                     }
@@ -243,35 +261,35 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
 
             {(user.account_type === AccountType.Tourist ||
               user.account_type === AccountType.Admin) && (
-              <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className={cn(
-                    handleStyles({ isActive: false }),
-                    "bg-transparent hover:bg-transparent",
-                    "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
-                  )}
-                >
-                  Complaints
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {user.account_type === AccountType.Tourist && (
-                      <ListItem title="My Complaints" to="/home/my-complaints">
-                        My complaints
-                      </ListItem>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger
+                    className={cn(
+                      handleStyles({ isActive: false }),
+                      "bg-transparent hover:bg-transparent",
+                      "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
                     )}
-                    {user.account_type === AccountType.Admin && (
-                      <ListItem
-                        title="Manage Complaints"
-                        to="/home/admin-dashboard/admin-complaints"
-                      >
-                        Manage complaints
-                      </ListItem>
-                    )}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            )}
+                  >
+                    Complaints
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                      {user.account_type === AccountType.Tourist && (
+                        <ListItem title="My Complaints" to="/home/my-complaints">
+                          My complaints
+                        </ListItem>
+                      )}
+                      {user.account_type === AccountType.Admin && (
+                        <ListItem
+                          title="Manage Complaints"
+                          to="/home/admin-dashboard/admin-complaints"
+                        >
+                          Manage complaints
+                        </ListItem>
+                      )}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              )}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
