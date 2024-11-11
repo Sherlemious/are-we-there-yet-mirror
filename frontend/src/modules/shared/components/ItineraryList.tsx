@@ -173,7 +173,6 @@ function ItineraryModal({
     }
   };
 
-  //
   // functions to handle the sharing modal
   const shareRef = useRef<ModalRef>(null);
   const [shareLink, setShareLink] = useState<string>("");
@@ -496,17 +495,6 @@ export function ItineraryList() {
   const itineraryID: string = url.split("/").pop() ?? "";
 
   // if the itineraryID from the query param is valid set the search filed to the itinerary name
-  // useEffect(() => {
-  //   // early exit if data hasnt loaded
-  //   if (!data) return;
-  //   // get the activity name given the id
-  //   for (const activity of data) {
-  //     if (activity.id === activityId) {
-  //       setSearchQuery(activity.name);
-  //       break;
-  //     }
-  //   }
-  // }, [data]);
   useEffect(() => {
     // early exit if data hasnt loaded
     if (!data) return;
