@@ -1,15 +1,16 @@
-import { Activity, Itinerary } from "./Types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ItineraryModal from "./CreateItineraryModal";
 import {
-  getActivities,
   useDeleteMyItinerary,
   useGetMyItineraries,
   useCreateMyItinerary,
   useActivateItinerary,
   useDeactivateItinerary,
+  useUpdateMyItinerary,
 } from "./Api";
 import { ItineraryCard } from "./ItineraryCard";
+import type { ItineraryType } from "@/modules/shared/types/Itinerary.types";
+import type { ItineraryPostType } from "./Types";
 
 function AddItineraryCard({ onAddClick }: { onAddClick: () => void }) {
   return (
@@ -24,44 +25,28 @@ function AddItineraryCard({ onAddClick }: { onAddClick: () => void }) {
 
 export function ItineraryList() {
   const { data, loading, error, fetchData } = useGetMyItineraries();
+  const { updateItinerary } = useUpdateMyItinerary();
   const {
     deleteItinerary,
     loading: deleteLoading,
     error: deleteError,
   } = useDeleteMyItinerary();
-  const [selectedItinerary, setSelectedItinerary] = useState<Itinerary | null>(
-    null,
-  );
+  const [selectedItinerary, setSelectedItinerary] =
+    useState<ItineraryType | null>(null);
 
   // untestest
 
   const { activateItinerary } = useActivateItinerary();
   const { deactivateItinerary } = useDeactivateItinerary();
   const [isCreating, setIsCreating] = useState(false);
-  const [activities, setActivities] = useState<Activity[]>([]);
   const {
     createItinerary,
     loading: createLoading,
     error: createError,
-  } = useCreateMyItinerary(activities); // Extract createItinerary
+  } = useCreateMyItinerary(); // Extract createItinerary
 
-  useEffect(() => {
-    const fetchActivities = async () => {
-      const data = await getActivities();
-      setActivities(data);
-    };
-    fetchActivities();
-  }, []);
-
-  const handleCardClick = (itinerary: Itinerary) => {
+  const handleCardClick = (itinerary: ItineraryType) => {
     setSelectedItinerary(itinerary);
-    // setIsCreating(false);
-    console.log(`Itinerary Name: ${itinerary.name}`);
-    console.log(`Selected Tags: ${JSON.stringify(itinerary.selectedTags)}`);
-    console.log(`Tags: ${JSON.stringify(itinerary.tags)}`);
-    console.log(`Tag IDs: ${JSON.stringify(itinerary.tagIds)}`);
-    console.log(`Activities: ${JSON.stringify(itinerary.activities)}`);
-    console.log(`Activity IDs: ${JSON.stringify(itinerary.activityIds)}`);
   };
 
   const handleCloseModal = () => {
@@ -73,7 +58,7 @@ export function ItineraryList() {
     setIsCreating(true);
   };
 
-  const handleSaveNewItinerary = async (newItinerary: Partial<Itinerary>) => {
+  const handleSaveNewItinerary = async (newItinerary: ItineraryPostType) => {
     await createItinerary(newItinerary);
     setIsCreating(false);
     setSelectedItinerary(null);
@@ -81,12 +66,13 @@ export function ItineraryList() {
   };
 
   const handleUpdateItinerary = async (
-    updatedItinerary: Partial<Itinerary>,
+    updatedItinerary: Partial<ItineraryPostType>,
   ) => {
-    await createItinerary(updatedItinerary); // Create the updated itinerary
-    if (selectedItinerary) {
-      await deleteItinerary(selectedItinerary.id); // Delete the old itinerary
+    if (!selectedItinerary) {
+      console.error("No itinerary selected");
+      return;
     }
+    await updateItinerary(selectedItinerary._id, updatedItinerary);
     setIsCreating(false);
     setSelectedItinerary(null);
     fetchData();
@@ -94,6 +80,18 @@ export function ItineraryList() {
 
   const handleDeleteClick = async (itineraryId: string) => {
     await deleteItinerary(itineraryId);
+    fetchData();
+  };
+
+  const handleActivateItinerary = async (itineraryId: string) => {
+    await activateItinerary(itineraryId);
+    setSelectedItinerary(null);
+    fetchData();
+  };
+
+  const handleDeactivateItinerary = async (itineraryId: string) => {
+    await deactivateItinerary(itineraryId);
+    setSelectedItinerary(null);
     fetchData();
   };
 
@@ -107,13 +105,13 @@ export function ItineraryList() {
 
   return (
     <>
-      <div className="bg-secondary-white grid-rows-auto grid grid-cols-3 gap-8 p-8">
+      <div className="grid-rows-auto grid grid-cols-3 gap-8 bg-secondary-white p-8">
         {data.map((itinerary, index) => (
           <ItineraryCard
             itinerary={itinerary}
             key={index}
             onCardClick={() => handleCardClick(itinerary)}
-            onDeleteClick={() => handleDeleteClick(itinerary.id)}
+            onDeleteClick={() => handleDeleteClick(itinerary._id)}
           />
         ))}
         <AddItineraryCard onAddClick={handleAddClick} />{" "}
@@ -125,8 +123,8 @@ export function ItineraryList() {
           onSave={handleSaveNewItinerary}
           onUpdate={handleUpdateItinerary}
           itinerary={selectedItinerary}
-          onActivate={activateItinerary}
-          onDeactivate={deactivateItinerary}
+          onActivate={handleActivateItinerary}
+          onDeactivate={handleDeactivateItinerary}
         />
       )}
     </>

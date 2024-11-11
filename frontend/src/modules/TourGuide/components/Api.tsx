@@ -1,17 +1,15 @@
-import { Activity, Itinerary, Tag, type ItineraryPostType } from "./Types";
+import { type ItineraryPostType } from "./Types";
 import axiosInstance from "../../shared/services/axiosInstance";
 import { CategoryType } from "@/modules/shared/types/Category.types";
 import { TagType } from "@/modules/shared/types/Tag.types";
 import { ApiResponse } from "@/modules/shared/types/Response.types";
 import { useEffect, useState } from "react";
-import { formatDateTime } from "./Helper";
 import { AxiosError } from "axios";
-
-//const API_URL = 'https://are-we-there-yet-mirror.onrender.com/api';
+import type { ItineraryType } from "@/modules/shared/types/Itinerary.types";
+import type { ActivityType } from "@/modules/shared/types/Activity.types";
 
 // Create an Itinerary
-
-export function useCreateMyItinerary(activities: Activity[]) {
+export function useCreateMyItinerary() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,7 +53,7 @@ export function useCreateMyItinerary(activities: Activity[]) {
 // Get all Itineraries
 
 export function useGetMyItineraries() {
-  const [data, setData] = useState<Itinerary[]>([]);
+  const [data, setData] = useState<ItineraryType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -72,59 +70,7 @@ export function useGetMyItineraries() {
       const parsedData = response.data;
       const itineraries = parsedData.data.itineraries;
 
-      const tempData: Itinerary[] = itineraries.map((item: any) => {
-        const name = item.name ?? "N/A";
-        const category = item.category ?? "N/A";
-        const activities = item.activities
-          ? item.activities.map((activity: Activity) => {
-              return {
-                duration: activity.duration ?? "N/A",
-                date: activity.date ?? "N/A",
-                time: activity.time ?? "N/A",
-                location: activity.location ?? "N/A",
-                price: activity.price ?? "N/A",
-                category: activity.category ?? "N/A",
-                tags: activity.tags ?? [],
-                discount: activity.discount ?? "N/A",
-                bookingOpen: activity.bookingOpen ?? false,
-              };
-            })
-          : [];
-        const language = item.language ?? "N/A";
-        const tags = item.tags
-          ? item.tags.map((tag: { name: string }) => tag.name)
-          : [];
-        const locations = item.locations
-          ? item.locations.map((location: { name: string }) => location.name)
-          : [];
-        const price = item.price ?? "N/A";
-        const timeline = item.timeline ?? "N/A";
-        const availableDateTimes = item.available_datetimes
-          ? item.available_datetimes.map((dateTime: string) => {
-              return formatDateTime(dateTime);
-            })
-          : [];
-        const accessibilities = item.accessibility ?? false;
-        const pickupLocation = item.pick_up_location?.name ?? "N/A";
-        const dropoffLocation = item.drop_off_location?.name ?? "N/A";
-        return {
-          id: item._id,
-          name,
-          category,
-          timeline,
-          tags,
-          activities,
-          locations,
-          language,
-          price,
-          availableDateTimes,
-          accessibilities,
-          pickupLocation,
-          dropoffLocation,
-        };
-      });
-
-      setData(tempData);
+      setData(itineraries);
       setLoading(false);
     } catch (error) {
       setError("Failed to fetch data");
@@ -137,6 +83,36 @@ export function useGetMyItineraries() {
   }, []);
 
   return { data, loading, error, fetchData };
+}
+
+export function useUpdateMyItinerary() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateItinerary = async (
+    itineraryId: string,
+    updatedItinerary: Partial<ItineraryPostType>,
+  ) => {
+    setLoading(true);
+    setError(null);
+
+    const url = `/itineraries/${itineraryId}`;
+
+    try {
+      const response = await axiosInstance.put(url, updatedItinerary);
+
+      if (response.status !== 200) {
+        throw new Error("Failed to delete itinerary");
+      }
+
+      setLoading(false);
+    } catch (error) {
+      setError("Failed to delete itinerary");
+      setLoading(false);
+    }
+  };
+
+  return { updateItinerary, loading, error };
 }
 
 // Delete an Itinerary
@@ -180,7 +156,7 @@ export const useActivateItinerary = () => {
     const url = `/itineraries/${itineraryId}/activate`;
 
     try {
-      const response = await axiosInstance.post(url);
+      const response = await axiosInstance.patch(url);
 
       if (response.status !== 200) {
         throw new Error("Failed to activate itinerary");
@@ -208,7 +184,7 @@ export const useDeactivateItinerary = () => {
     const url = `/itineraries/${itineraryId}/deactivate`;
 
     try {
-      const response = await axiosInstance.post(url);
+      const response = await axiosInstance.patch(url);
 
       if (response.status !== 200) {
         throw new Error("Failed to deactivate itinerary");
@@ -224,9 +200,9 @@ export const useDeactivateItinerary = () => {
   return { deactivateItinerary, loading, error };
 };
 
-export const getTags = async (): Promise<Tag[]> => {
+export const getTags = async (): Promise<TagType[]> => {
   try {
-    const response = await axiosInstance.get<{ data: { tags: Tag[] } }>(
+    const response = await axiosInstance.get<{ data: { tags: TagType[] } }>(
       `/tags`,
     );
     return response.data.data.tags;
@@ -236,9 +212,9 @@ export const getTags = async (): Promise<Tag[]> => {
   }
 };
 
-export const getActivities = async (): Promise<Activity[]> => {
+export const getActivities = async (): Promise<ActivityType[]> => {
   try {
-    const response = await axiosInstance.get<{ data: Activity[] }>(
+    const response = await axiosInstance.get<{ data: ActivityType[] }>(
       `/activities`,
     );
     return response.data.data;

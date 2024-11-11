@@ -12,6 +12,8 @@ export type ItineraryPostType = Omit<
   | "flagged"
   | "average_rating"
   | "category"
+  | "bookingOpen"
+  | "active"
 > & {
   tags: string[];
   activities: { activity: string; duration: number }[];

@@ -14,7 +14,7 @@ import { X } from "lucide-react";
 interface ItineraryModalProps {
   onClose: () => void;
   onSave: (itinerary: ItineraryPostType) => void;
-  onUpdate: (itinerary: Partial<ItineraryPostType> & { _id: string }) => void;
+  onUpdate: (itinerary: Partial<ItineraryPostType>) => void;
   onActivate: (itineraryId: string) => void;
   onDeactivate: (itineraryId: string) => void;
   itinerary?: Partial<ItineraryType> | null;
@@ -38,7 +38,7 @@ function ItineraryModal({
   const [pickupLocation, setPickupLocation] = useState<LocationType>(
     itinerary?.pick_up_location || { name: "", latitude: 0, longitude: 0 },
   );
-  const [category, setCategory] = useState(itinerary?.category?.name || "");
+  const [category, setCategory] = useState(itinerary?.category?._id || "");
   const [accessibilities, setAccessibilities] = useState<
     Omit<AccessibilityType, "_id">
   >({
@@ -51,11 +51,13 @@ function ItineraryModal({
       itinerary?.accessibility?.serviceAnimalAllowed || false,
     accessibleParking: itinerary?.accessibility?.accessibleParking || false,
   });
-  const [availableDateTimes, setAvailableDateTimes] = useState<string[]>([]);
+  const [availableDateTimes, setAvailableDateTimes] = useState<string[]>(
+    itinerary?.available_datetimes?.map((dt) => dt.slice(0, 16)) || [],
+  );
 
   const [selectedActivityId, setSelectedActivityId] = useState<string>("");
   const [selectedActivities, setSelectedActivities] = useState<ActivityType[]>(
-    [],
+    itinerary?.activities?.map((a) => a.activity) || [],
   );
   const [activityIds, setActivityIds] = useState<string[]>([]);
 
@@ -65,7 +67,12 @@ function ItineraryModal({
   const [tagIds, setTagIds] = useState<string[]>(
     itinerary?.tags?.map((t) => t._id) || [],
   );
-  const [mapToShow, setMapToShow] = useState<"dropoff" | "pickup" | "">("");
+  const [locations, setLocations] = useState<LocationType[]>(
+    itinerary?.locations || [],
+  );
+  const [mapToShow, setMapToShow] = useState<
+    "dropoff" | "pickup" | "locations" | ""
+  >("");
 
   const { activities, categories, tags } = useLoaderData() as {
     categories: CategoryType[];
@@ -96,27 +103,29 @@ function ItineraryModal({
         duration: 90,
       })),
       timeline,
-      active: true,
-      locations: [],
+      locations,
     };
     onSave(newItinerary);
   };
 
   // new untested
   const handleUpdate = () => {
-    const updatedItinerary: Partial<Itinerary> = {
+    const updatedItinerary: Partial<ItineraryPostType> = {
       name,
       language,
-      price,
-      dropoffLocation,
-      pickupLocation,
+      price: Number(price),
+      drop_off_location: dropoffLocation,
+      pick_up_location: pickupLocation,
       category,
       tags: tagIds,
-      accessibilities,
-      availableDateTimes2: availableDateTimes,
-      activities: selectedActivities,
+      accessibility: accessibilities,
+      available_datetimes: availableDateTimes,
+      activities: selectedActivities.map((activity) => ({
+        activity: activity._id,
+        duration: 90,
+      })),
       timeline,
-      selectedTags,
+      locations,
     };
     onUpdate(updatedItinerary);
   };
@@ -249,22 +258,70 @@ function ItineraryModal({
                 )}
               </div>
               {itinerary && (
-                <div className="mt-2 flex space-x-4">
+                <div className="mt-7 flex space-x-4">
                   <button
                     onClick={handleActivate}
-                    className="rounded bg-green-500 p-2 text-white"
+                    className="rounded bg-green-500 p-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={itinerary.active}
                   >
                     Activate
                   </button>
                   <button
                     onClick={handleDeactivate}
-                    className="rounded bg-red-500 p-2 text-white"
+                    className="rounded bg-red-500 p-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={!itinerary.active}
                   >
                     Deactivate
                   </button>
                 </div>
               )}
             </div>
+            {mapToShow !== "" && (
+              <div className="h-[20vh]">
+                {mapToShow === "locations" && (
+                  <Map
+                    onChange={(loc) => {
+                      setLocations([
+                        ...locations,
+                        {
+                          name: loc.name,
+                          latitude: loc.lat,
+                          longitude: loc.lng,
+                        },
+                      ]);
+                      setMapToShow("");
+                      setIsEdited(true);
+                    }}
+                  />
+                )}
+                {mapToShow === "dropoff" && (
+                  <Map
+                    onChange={(loc) => {
+                      setDropoffLocation({
+                        name: loc.name,
+                        latitude: loc.lat,
+                        longitude: loc.lng,
+                      });
+                      setMapToShow("");
+                      setIsEdited(true);
+                    }}
+                  />
+                )}
+                {mapToShow === "pickup" && (
+                  <Map
+                    onChange={(loc) => {
+                      setPickupLocation({
+                        name: loc.name,
+                        latitude: loc.lat,
+                        longitude: loc.lng,
+                      });
+                      setMapToShow("");
+                      setIsEdited(true);
+                    }}
+                  />
+                )}
+              </div>
+            )}
             {/* Itinerary details */}
             <div className="mb-8 gap-8">
               {/* random info*/}
@@ -369,7 +426,9 @@ function ItineraryModal({
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="tag-select">Choose a tag:</label>
+                  <label htmlFor="tag-select" className="font-bold">
+                    Choose a tag:
+                  </label>
                   <select
                     id="tag-select"
                     onChange={handleTagsChange}
@@ -474,9 +533,11 @@ function ItineraryModal({
                 </div>
               </div>
               {/* Activities */}
-              <div>
+              <div className="mt-2">
                 <div>
-                  <label htmlFor="activity-select">Choose an activity:</label>
+                  <label htmlFor="activity-select" className="font-bold">
+                    Choose an activity:
+                  </label>
                   <select
                     id="activity-select"
                     value={selectedActivityId}
@@ -497,7 +558,7 @@ function ItineraryModal({
                   </select>
                   <button
                     onClick={handleAddActivity}
-                    className="ml-2 rounded bg-blue-500 p-2 text-white"
+                    className="rounded bg-blue-500 p-2 text-white"
                   >
                     Add Activity
                   </button>
@@ -534,7 +595,15 @@ function ItineraryModal({
               </div>
               {/* Date and Time */}
               <div>
-                <div className="text-lg font-bold">Available Date & Time</div>
+                <div className="mt-2 text-lg font-bold">
+                  Available Date & Time
+                </div>
+                <button
+                  onClick={handleAddDateTime}
+                  className="my-4 rounded bg-blue-500 p-2 text-white"
+                >
+                  Add Date & Time
+                </button>
                 {availableDateTimes.length !== 0 ? (
                   <table className="w-full border-collapse border-2 text-sm">
                     <thead>
@@ -574,42 +643,48 @@ function ItineraryModal({
                 ) : (
                   <div>No available date and time</div>
                 )}
+              </div>
+              <div>
+                <div className="mt-2 text-lg font-bold">Locations</div>
                 <button
-                  onClick={handleAddDateTime}
                   className="mt-4 rounded bg-blue-500 p-2 text-white"
+                  onClick={() => setMapToShow("locations")}
                 >
-                  Add Date & Time
+                  Add Location
                 </button>
+                <div className="mt-4">
+                  {locations.length > 0 && (
+                    <table className="w-full border-collapse border-2 text-sm">
+                      <thead>
+                        <tr className="border-b-2 text-center">
+                          <th className="w-1/3 p-4">Name</th>
+                          <th className="w-1/3 p-4">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {locations.map((activity, index) => (
+                          <tr key={index} className="border-b-2 text-center">
+                            <td className="p-4">{activity.name}</td>
+                            <td className="p-4">
+                              <button
+                                onClick={() =>
+                                  setLocations(
+                                    locations.filter((_, i) => i !== index),
+                                  )
+                                }
+                                className="text-red-500"
+                              >
+                                Remove
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               </div>
             </div>
-            {mapToShow !== "" && (
-              <div className="h-[20vh]">
-                {mapToShow === "dropoff" && (
-                  <Map
-                    onChange={(loc) => {
-                      setDropoffLocation({
-                        name: loc.name,
-                        latitude: loc.lat,
-                        longitude: loc.lng,
-                      });
-                      setIsEdited(true);
-                    }}
-                  />
-                )}
-                {mapToShow === "pickup" && (
-                  <Map
-                    onChange={(loc) => {
-                      setPickupLocation({
-                        name: loc.name,
-                        latitude: loc.lat,
-                        longitude: loc.lng,
-                      });
-                      setIsEdited(true);
-                    }}
-                  />
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>

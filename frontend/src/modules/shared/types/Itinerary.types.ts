@@ -18,7 +18,7 @@ export interface ItineraryType {
   category: CategoryType;
   active: boolean;
   tags: TagType[];
-  activities: { activity: ActivityType; duration: number }[];
+  activities: {_id: string; activity: ActivityType; duration: number }[];
   locations: LocationType[];
   average_rating: number;
   timeline: string;
@@ -28,5 +28,6 @@ export interface ItineraryType {
   accessibility: AccessibilityType;
   pick_up_location: LocationType;
   drop_off_location: LocationType;
+  bookingOpen: boolean;
   flagged: boolean;
 }
