@@ -15,6 +15,9 @@ import TouristSearchMultiSelect, {
   MultiSelectOption,
 } from "./TouristSearchMultiSelect";
 import { updateUser } from "@/modules/shared/services/apiUpdateUser";
+import bronzeBadge from "../../../../../assets/badges/Bronze.png";
+import silverBadge from "../../../../../assets/badges/Silver.png";
+import goldBadge from "../../../../../assets/badges/Gold.png";
 
 export default function TouristProfile({
   user,
@@ -40,6 +43,18 @@ export default function TouristProfile({
   async function handleUpdateTags() {
     const newTagIds = selectedTags.map((tag) => tag.value);
     await updateUser(user._id, undefined, undefined, undefined, newTagIds);
+  }
+
+  function getBadge(level: number) {
+    switch (level) {
+      case 3:
+        return goldBadge;
+      case 2:
+        return silverBadge;
+      case 1:
+      default:
+        return bronzeBadge;
+    }
   }
 
   return (
@@ -99,6 +114,11 @@ export default function TouristProfile({
             <div className="flex items-center gap-3">
               <Award className="h-5 w-5 flex-shrink-0 text-primary-blue" />
               <span className="text-slate-600">level {user.loyalty_level}</span>
+              <img
+                src={getBadge(user.loyalty_level)}
+                alt="badge"
+                className="h-6 w-6"
+              />
             </div>
             <form
               className="flex flex-col items-center gap-3"
