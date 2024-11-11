@@ -41,6 +41,10 @@ const activitySchema = new Schema(
       type: Boolean,
       required: true,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
     created_by: {
       type: Schema.Types.ObjectId,
       ref: 'user',

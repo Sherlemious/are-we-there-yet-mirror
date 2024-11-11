@@ -24,7 +24,8 @@ class ActivityRepo {
   }
 
   async getAllActivities(attributeName?: string, attributeValue?: RegExp | string) {
-    const query = attributeName && attributeValue ? { [attributeName]: attributeValue } : {};
+    const query =
+      attributeName && attributeValue ? { [attributeName]: attributeValue, active: true } : { active: true };
     return await Activity.find(query).populate(['tags', 'category']);
   }
 
@@ -34,6 +35,10 @@ class ActivityRepo {
 
   async getActivitiesStartDate(id: string) {
     return await Activity.findById(id).select('datetime');
+  }
+
+  async deactivateActivitiesByCreator(creator: string) {
+    return await Activity.updateMany({ created_by: creator }, { active: false });
   }
 }
 
