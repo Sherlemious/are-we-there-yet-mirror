@@ -96,8 +96,8 @@ export default function NameAndDescription({
         <motion.p
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          className={`relative mx-auto mt-8 max-w-3xl text-center text-[4px] font-bold ${fontColor} transition-all duration-300 ${
-            isHovering ? "text-[22px] leading-loose opacity-90" : "opacity-40"
+          className={`relative mx-auto mt-8 max-w-3xl text-center font-bold ${fontColor} transition-all duration-300 ${
+            isHovering ? "text-[22px] leading-loose opacity-90" : "text-[4px] opacity-40"
           } `}
           style={{
             textShadow: isHovering ? "0 1px 2px rgba(0,0,0,0.1)" : "none",

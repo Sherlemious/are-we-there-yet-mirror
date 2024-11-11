@@ -57,7 +57,6 @@ import FlagItineraries, {
 } from "./modules/Admin/pages/FlagItineraries";
 import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBookings";
 import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
-import { TransportationBookings } from "./modules/Tourist/pages/Bookings/TransportationBookings";
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
 

@@ -46,7 +46,7 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
       <div className="absolute inset-0 -z-10 bg-black/10 backdrop-blur-md" />
 
       <div className="flex w-full justify-center">
-        <NavigationMenu className="relative ml-72">
+        <NavigationMenu className="relative mx-auto">
           <NavigationMenuList className="flex justify-around space-x-8">
             <NavigationMenuItem className="text-sub-headings">
               <NavLink
