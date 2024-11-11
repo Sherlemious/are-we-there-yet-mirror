@@ -13,18 +13,9 @@ const getItineraries = async (req: Request, res: Response) => {
 
     itineraries = itineraries.filter((itinerary) => itinerary.active && !itinerary.flagged);
 
-    const currency: string = await currencyConverterService.getRequestCurrency(req);
-    itineraries = await Promise.all(
-      itineraries.map(async (itinerary) => {
-        itinerary.price = await currencyConverterService.convertPrice(itinerary.price, currency);
-        return itinerary;
-      })
-    );
-
     const response = {
       message: 'Itineraries fetched successfully',
       data: { itineraries: itineraries },
-      currency: currency,
     };
 
     res.status(ResponseStatusCodes.OK).json(response);
@@ -38,18 +29,9 @@ const adminGetItineraries = async (req: Request, res: Response) => {
   try {
     let itineraries = await ItineraryRepo.getItineraries();
 
-    const currency: string = await currencyConverterService.getRequestCurrency(req);
-    itineraries = await Promise.all(
-      itineraries.map(async (itinerary) => {
-        itinerary.price = await currencyConverterService.convertPrice(itinerary.price, currency);
-        return itinerary;
-      })
-    );
-
     const response = {
       message: 'Itineraries fetched successfully',
       data: { itineraries: itineraries },
-      currency: currency,
     };
 
     res.status(ResponseStatusCodes.OK).json(response);
