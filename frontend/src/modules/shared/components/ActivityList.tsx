@@ -1,7 +1,9 @@
-import axiosInstance from "../services/axiosInstance";
-import { useEffect, useState, useContext } from "react";
-import { BookOpenCheck, BookX, Tag } from "lucide-react";
+import { BookOpenCheck, BookX, Tag, Share } from "lucide-react";
+import { useEffect, useState, useContext, useRef } from "react";
+import { ModalRef } from "@/modules/shared/components/Modal";
 import { UserContext } from "../../shared/store/user-context";
+import axiosInstance from "../services/axiosInstance";
+import ShareLink from "./ShareLink";
 import toast from "react-hot-toast";
 
 interface Activity {
@@ -173,72 +175,99 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
     }
   };
 
+  // functions to handle the sharing modal
+  const shareRef = useRef<ModalRef>(null);
+  const [shareLink, setShareLink] = useState<string>("");
+  const handleShare = (activity: Activity) => {
+    // get the base link
+    const baseLink: string = import.meta.env.VITE_FRONT_BASE_URL as string;
+
+    // get the activity link
+    const activityLink: string = "/all-activities";
+
+    // get the activity id
+    const activityId: string = activity.id;
+
+    // format the actual link
+    const link: string = `${baseLink}${activityLink}/${activityId}`;
+
+    // set the link
+    setShareLink(link);
+
+    // open the modal
+    shareRef.current?.open();
+  };
+
   // return the table
   return (
-    <table className="w-full rounded-lg bg-white p-4 shadow-lg">
-      <thead>
-        <tr>
-          <th className={headerClassName + " rounded-tl-lg"}>Name</th>
-          <th className={headerClassName}>Date</th>
-          <th className={headerClassName}>Time</th>
-          <th className={headerClassName}>Location</th>
-          <th className={headerClassName}>Price</th>
-          <th className={headerClassName}>Ratings</th>
-          <th className={headerClassName}>Category</th>
-          <th className={headerClassName}>Tags</th>
-          <th className={headerClassName}>Special Discounts</th>
-          {/* custom styling for rounded edges and for user type */}
-          <th
-            className={
-              headerClassName + (!isUserTourist ? " rounded-tr-lg" : "")
-            }
-          >
-            Booking Status
-          </th>
-          {/* booking option only for tourist */}
-          {isUserTourist && (
-            <th className={headerClassName + " rounded-tr-lg"}>Actions</th>
-          )}
-        </tr>
-      </thead>
-      <tbody>
-        {activities.map((activity, index) => (
-          <tr key={index}>
-            <td className={rowClassName}>{activity.name}</td>
-            <td className={rowClassName}>{activity.date}</td>
-            <td className={rowClassName}>{activity.time}</td>
-            <td className={rowClassName}>{activity.location.name}</td>
-            <td className={rowClassName}>{activity.price}</td>
-            <td className={rowClassName}>{activity.ratings}/5</td>
-            <td className={rowClassName}>{activity.category}</td>
-            <td className={rowClassName}>
-              {activity.tags.map(formatText).join(", ") || "N/A"}
-            </td>
-            <td className={rowClassName}>{activity.specialDiscounts}</td>
-            <td className={rowClassName}>
-              {availablePill({
-                text: activity.bookingOpen ? "Open" : "Closed",
-              })}
-            </td>
-            {/* booking option only for tourist */}
-            {isUserTourist && (
-              <td className={rowClassName}>
-                <button
-                  onClick={() => handleBooking(activity)}
-                  className="cursor-pointer rounded-lg bg-accent-dark-blue p-4 text-white transition-all duration-150 hover:scale-105"
-                >
-                  <Tag />
-                </button>
-              </td>
-            )}
+    <>
+      <table className="w-full rounded-lg bg-white p-4 shadow-lg">
+        <thead>
+          <tr>
+            <th className={headerClassName + " rounded-tl-lg"}>Name</th>
+            <th className={headerClassName}>Date</th>
+            <th className={headerClassName}>Time</th>
+            <th className={headerClassName}>Location</th>
+            <th className={headerClassName}>Price</th>
+            <th className={headerClassName}>Ratings</th>
+            <th className={headerClassName}>Category</th>
+            <th className={headerClassName}>Tags</th>
+            <th className={headerClassName}>Special Discounts</th>
+            <th className={headerClassName}>Booking Status</th>
+            {isUserTourist && <th className={headerClassName}>Actions</th>}
+            <th className={headerClassName + " rounded-tr-lg"}></th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {activities.map((activity, index) => (
+            <tr key={index}>
+              <td className={rowClassName}>{activity.name}</td>
+              <td className={rowClassName}>{activity.date}</td>
+              <td className={rowClassName}>{activity.time}</td>
+              <td className={rowClassName}>{activity.location.name}</td>
+              <td className={rowClassName}>{activity.price}</td>
+              <td className={rowClassName}>{activity.ratings}/5</td>
+              <td className={rowClassName}>{activity.category}</td>
+              <td className={rowClassName}>
+                {activity.tags.map(formatText).join(", ") || "N/A"}
+              </td>
+              <td className={rowClassName}>{activity.specialDiscounts}</td>
+              <td className={rowClassName}>
+                {availablePill({
+                  text: activity.bookingOpen ? "Open" : "Closed",
+                })}
+              </td>
+              {/* booking option only for tourist */}
+              {isUserTourist && (
+                <td className={rowClassName}>
+                  <button
+                    onClick={() => handleBooking(activity)}
+                    className="cursor-pointer rounded-lg bg-accent-dark-blue p-4 text-white transition-all duration-150 hover:scale-105"
+                  >
+                    <Tag />
+                  </button>
+                </td>
+              )}
+              <td
+                className={rowClassName}
+                onClick={() => handleShare(activity)}
+              >
+                <Share className="cursor-pointer transition-all duration-150 hover:scale-110" />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <ShareLink ref={shareRef} link={shareLink} />
+    </>
   );
 }
 
 export function ActivityList() {
+  // get the url
+  const url = window.location.href;
+  const activityId: string = url.split("/").pop() ?? "";
+
   // get the data using axios
   const [data, setData] = useState<Activity[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -293,6 +322,7 @@ export function ActivityList() {
 
   const [filteredData, setFilteredData] = useState<Activity[]>([]);
 
+  // update the filtered data
   useEffect(() => {
     if (!data) return;
     setFilteredData(
@@ -316,6 +346,19 @@ export function ActivityList() {
       }),
     );
   }, [searchQuery, budget, date, ratings, data]);
+
+  // if the activityId from the query param is valid set the search filed to the activity name
+  useEffect(() => {
+    // early exit if data hasnt loaded
+    if (!data) return;
+    // get the activity name given the id
+    for (const activity of data) {
+      if (activity.id === activityId) {
+        setSearchQuery(activity.name);
+        break;
+      }
+    }
+  }, [data]);
 
   return (
     <div className="flex flex-col gap-6 p-6">

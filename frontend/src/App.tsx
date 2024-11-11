@@ -112,7 +112,7 @@ const BrowserRouter = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: "all-activities",
+        path: "all-activities/*",
         element: <AllActivities />,
       },
       {
