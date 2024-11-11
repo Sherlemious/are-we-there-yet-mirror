@@ -1,5 +1,6 @@
 import axiosInstance from "../services/axiosInstance";
 import { useState, useEffect } from "react";
+import Modal from "./Modal";
 
 // data
 interface Museum {
@@ -27,40 +28,38 @@ async function getMuseums() {
     const response = await axiosInstance.get("/museums/getall");
 
     // format the data
-    const tempData: Museum[] = response.data.data.museums.map(
-      (item: any) => {
-        const name = item.name ?? "N/A";
+    const tempData: Museum[] = response.data.data.museums.map((item: any) => {
+      const name = item.name ?? "N/A";
 
-        let tags = item.tags ?? [];
-        tags = tags.map((tag: any) => tag.name ?? "N/A");
+      let tags = item.tags ?? [];
+      tags = tags.map((tag: any) => tag.name ?? "N/A");
 
-        const description = item.description ?? "N/A";
-        const category = item.category ?? "N/A";
-        const pictures = item.pictures ?? [];
-        const location = {
-          name: item.location.name ?? "N/A",
-          latitude: item.location.latitude ?? 0,
-          longitude: item.location.longitude ?? 0,
-        };
-        const opening_hours = item.opening_hours ?? "N/A";
-        const ticket_prices = {
-          foreigner: item.ticket_prices.foreigner ?? 0,
-          native: item.ticket_prices.native ?? 0,
-          student: item.ticket_prices.student ?? 0,
-        };
+      const description = item.description ?? "N/A";
+      const category = item.category ?? "N/A";
+      const pictures = item.pictures ?? [];
+      const location = {
+        name: item.location.name ?? "N/A",
+        latitude: item.location.latitude ?? 0,
+        longitude: item.location.longitude ?? 0,
+      };
+      const opening_hours = item.opening_hours ?? "N/A";
+      const ticket_prices = {
+        foreigner: item.ticket_prices.foreigner ?? 0,
+        native: item.ticket_prices.native ?? 0,
+        student: item.ticket_prices.student ?? 0,
+      };
 
-        return {
-          name,
-          tags,
-          description,
-          category,
-          pictures,
-          location,
-          opening_hours,
-          ticket_prices,
-        };
-      },
-    );
+      return {
+        name,
+        tags,
+        description,
+        category,
+        pictures,
+        location,
+        opening_hours,
+        ticket_prices,
+      };
+    });
     return tempData;
   } catch (error) {
     throw new Error(`Failed to fetch data: ${error.message}`);
@@ -130,107 +129,111 @@ function MuseumModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-      style={modalOverlayStyle}
-    >
+    <Modal open>
       <div
-        className="relative h-auto w-full max-w-[80vw] border-2 border-black bg-white p-4"
-        style={modalContentStyle}
+        className="flex items-center justify-center bg-black bg-opacity-50"
+        style={modalOverlayStyle}
       >
-        {/* Close button */}
-        <button
-          onClick={handleModalClose}
-          className="absolute right-2 top-2 m-4 text-xl font-bold"
+        <div
+          className="relative h-auto w-full max-w-[80vw] border-2 border-black bg-white p-4"
+          style={modalContentStyle}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="black"
+          {/* Close button */}
+          <button
+            onClick={handleModalClose}
+            className="absolute right-2 top-2 m-4 text-xl font-bold"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <div>
-          {/* Museum name */}
-          <div className="mx-4 my-8 w-fit text-left text-xl font-bold">
-            {Museum.name}
-            {/* add an underline */}
-            <div className="border-b-2 border-black"></div>
-          </div>
-          {/* Museum details */}
-          <div className="mx-8 mb-8 grid grid-cols-[70%_30%] gap-8 px-8">
-            {/* Museum info */}
-            <div className="grid-rows-auto col-start-1 col-end-1 grid grid-cols-2 gap-4">
-              {/* tags */}
-              <div>
-                <div className="text-left font-bold">Tags</div>
-                <div className="">
-                  {Museum.tags.length === 0 ? "N/A" : Museum.tags.join(", ")}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="black"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <div>
+            {/* Museum name */}
+            <div className="mx-4 my-8 w-fit text-left text-xl font-bold">
+              {Museum.name}
+              {/* add an underline */}
+              <div className="border-b-2 border-black"></div>
+            </div>
+            {/* Museum details */}
+            <div className="mx-8 mb-8 grid grid-cols-[70%_30%] gap-8 px-8">
+              {/* Museum info */}
+              <div className="grid-rows-auto col-start-1 col-end-1 grid grid-cols-2 gap-4">
+                {/* tags */}
+                <div>
+                  <div className="text-left font-bold">Tags</div>
+                  <div className="">
+                    {Museum.tags.length === 0 ? "N/A" : Museum.tags.join(", ")}
+                  </div>
+                </div>
+
+                {/* description */}
+                <div>
+                  <div className="text-left font-bold">Description</div>
+                  <div className="">
+                    {formatDescription(Museum.description)}
+                  </div>
+                </div>
+
+                {/* category */}
+                <div>
+                  <div className="text-left font-bold">Category</div>
+                  <div className="">{Museum.category}</div>
+                </div>
+
+                {/* location */}
+                <div>
+                  <div className="text-left font-bold">Location</div>
+                  <div className="">{formatLocation(Museum.location.name)}</div>
+                </div>
+
+                {/* opening hours */}
+                <div>
+                  <div className="text-left font-bold">Opening Hours</div>
+                  <div className="">{Museum.opening_hours}</div>
+                </div>
+
+                {/* ticket prices */}
+                <div>
+                  <div className="text-left font-bold">Ticket Prices</div>
+                  <table className="border-collapse border border-black">
+                    <thead>
+                      <tr className="border border-b-2">
+                        <th className="p-2">Foreigner</th>
+                        <th className="p-2">Native</th>
+                        <th className="p-2">Student</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border border-b-2">
+                        <td>{Museum.ticket_prices.foreigner}</td>
+                        <td>{Museum.ticket_prices.native}</td>
+                        <td>{Museum.ticket_prices.student}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
-
-              {/* description */}
-              <div>
-                <div className="text-left font-bold">Description</div>
-                <div className="">{formatDescription(Museum.description)}</div>
-              </div>
-
-              {/* category */}
-              <div>
-                <div className="text-left font-bold">Category</div>
-                <div className="">{Museum.category}</div>
-              </div>
-
-              {/* location */}
-              <div>
-                <div className="text-left font-bold">Location</div>
-                <div className="">{formatLocation(Museum.location.name)}</div>
-              </div>
-
-              {/* opening hours */}
-              <div>
-                <div className="text-left font-bold">Opening Hours</div>
-                <div className="">{Museum.opening_hours}</div>
-              </div>
-
-              {/* ticket prices */}
-              <div>
-                <div className="text-left font-bold">Ticket Prices</div>
-                <table className="border-collapse border border-black">
-                  <thead>
-                    <tr className="border border-b-2">
-                      <th className="p-2">Foreigner</th>
-                      <th className="p-2">Native</th>
-                      <th className="p-2">Student</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border border-b-2">
-                      <td>{Museum.ticket_prices.foreigner}</td>
-                      <td>{Museum.ticket_prices.native}</td>
-                      <td>{Museum.ticket_prices.student}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              {/* Museum picture */}
+              <img
+                src={Museum.pictures[0]}
+                className="col-start-2 col-end-2 h-auto w-full"
+              />
             </div>
-            {/* Museum picture */}
-            <img
-              src={Museum.pictures[0]}
-              className="col-start-2 col-end-2 h-auto w-full"
-            />
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -243,7 +246,7 @@ function MuseumCard({
 }) {
   return (
     <div
-      className="bg-card h-full w-full cursor-pointer border-2 border-black p-4 transition-shadow duration-300 hover:shadow-lg"
+      className="h-full w-full cursor-pointer border-2 border-black bg-card p-4 transition-shadow duration-300 hover:shadow-lg"
       onClick={onCardClick}
     >
       {/* Museum picture */}
@@ -251,7 +254,7 @@ function MuseumCard({
         src={Museum.pictures[0]}
         alt={Museum.name}
         className="mb-8 h-auto w-full rounded-md object-cover"
-      /> 
+      />
       {/* TODO: need to get images from backend properly */}
 
       {/* Museum name */}

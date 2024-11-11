@@ -2,6 +2,7 @@ import axiosInstance from "../services/axiosInstance";
 import { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../shared/store/user-context";
 import toast from "react-hot-toast";
+import Modal from "@/modules/shared/components/Modal";
 
 async function getMyItineraries() {
   try {
@@ -170,176 +171,178 @@ function ItineraryModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      style={modalOverlayStyle}
-    >
+    <Modal open>
       <div
-        className="relative h-auto w-full max-w-[85vw] rounded-lg border border-borders-primary bg-secondary-white p-8 shadow-lg"
-        style={modalContentStyle}
+        className="flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        style={modalOverlayStyle}
       >
-        {/* Close button */}
-        <button
-          onClick={handleModalClose}
-          className="absolute right-4 top-4 rounded-full p-2 text-accent-dark-blue transition-colors hover:bg-secondary-light_grey"
+        <div
+          className="relative h-auto w-full max-w-[85vw] rounded-lg border border-borders-primary bg-secondary-white p-8 shadow-lg"
+          style={modalContentStyle}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          {/* Close button */}
+          <button
+            onClick={handleModalClose}
+            className="absolute right-4 top-4 rounded-full p-2 text-accent-dark-blue transition-colors hover:bg-secondary-light_grey"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
 
-        <div className="space-y-8">
-          {/* Itinerary name */}
-          <div className="inline-block">
-            <h2 className="text-headline font-headline text-accent-dark-blue">
-              {itinerary.name}
-            </h2>
-            <div className="mt-2 h-1 w-full rounded-full bg-primary-blue"></div>
-          </div>
-
-          {/* Itinerary details */}
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:grid-rows-2">
-            {/* Basic Info */}
-            <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
-              {[
-                { label: "Language", value: itinerary.language },
-                { label: "Price", value: itinerary.price },
-                {
-                  label: "Dropoff Location",
-                  value: itinerary.dropoffLocation,
-                },
-                { label: "Pickup Location", value: itinerary.pickupLocation },
-                { label: "Category", value: itinerary.category.name },
-                { label: "Tags", value: itinerary.tags.join(", ") },
-                { label: "Rating", value: `${itinerary.rating}/5` },
-                {
-                  label: "Accessibilities",
-                  value: itinerary.accessibilities ? "Yes" : "No",
-                },
-              ].map((item, index) => (
-                <div key={index} className="space-y-1">
-                  <div className="text-sub-headings font-sub_headings text-accent-dark-blue">
-                    {item.label}
-                  </div>
-                  <div className="text-body text-text-primary">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
+          <div className="space-y-8">
+            {/* Itinerary name */}
+            <div className="inline-block">
+              <h2 className="text-headline font-headline text-accent-dark-blue">
+                {itinerary.name}
+              </h2>
+              <div className="mt-2 h-1 w-full rounded-full bg-primary-blue"></div>
             </div>
 
-            {/* booking */}
-            <div className="space-y-6">
-              <div className="space-y-1">
-                <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
-                  Book Now
-                </h3>
-                <div className="text-body text-text-primary">
-                  Book this itinerary now to secure your spot
-                </div>
+            {/* Itinerary details */}
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:grid-rows-2">
+              {/* Basic Info */}
+              <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
+                {[
+                  { label: "Language", value: itinerary.language },
+                  { label: "Price", value: itinerary.price },
+                  {
+                    label: "Dropoff Location",
+                    value: itinerary.dropoffLocation,
+                  },
+                  { label: "Pickup Location", value: itinerary.pickupLocation },
+                  { label: "Category", value: itinerary.category.name },
+                  { label: "Tags", value: itinerary.tags.join(", ") },
+                  { label: "Rating", value: `${itinerary.rating}/5` },
+                  {
+                    label: "Accessibilities",
+                    value: itinerary.accessibilities ? "Yes" : "No",
+                  },
+                ].map((item, index) => (
+                  <div key={index} className="space-y-1">
+                    <div className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                      {item.label}
+                    </div>
+                    <div className="text-body text-text-primary">
+                      {item.value}
+                    </div>
+                  </div>
+                ))}
               </div>
-              {isUserTourist ? (
-                <button
-                  onClick={handleBooking}
-                  className="hover:bg-primary-dark-blue focus:ring-primary-dark-blue h-12 w-full rounded-lg bg-primary-blue font-semibold text-secondary-white transition-colors focus:outline-none focus:ring-2"
-                >
-                  Book Now
-                </button>
-              ) : (
-                <div className="text-body text-text-primary">
-                  You need to be a tourist to book this itinerary
-                </div>
-              )}
-            </div>
 
-            {/* Activities */}
-            <div className="space-y-4">
-              <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
-                Activities
-              </h3>
-              {itinerary.activities.length !== 0 ? (
-                <div className="overflow-hidden rounded-lg border border-borders-primary">
-                  <table className="w-full">
-                    <thead className="bg-primary-blue text-secondary-white">
-                      <tr>
-                        <th className="p-4 text-left">DateTime</th>
-                        <th className="p-4 text-left">Location</th>
-                        <th className="p-4 text-left">Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {itinerary.activities.map((activity, index) => (
-                        <tr
-                          key={index}
-                          className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
-                        >
-                          <td className="p-4">
-                            {formatDateTime(activity.date, activity.time)}
-                          </td>
-                          <td className="p-4">
-                            {formatLocation(activity.location)}
-                          </td>
-                          <td className="p-4">{activity.price}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              {/* booking */}
+              <div className="space-y-6">
+                <div className="space-y-1">
+                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                    Book Now
+                  </h3>
+                  <div className="text-body text-text-primary">
+                    Book this itinerary now to secure your spot
+                  </div>
                 </div>
-              ) : (
-                <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
-                  No activities available
-                </div>
-              )}
-            </div>
+                {isUserTourist ? (
+                  <button
+                    onClick={handleBooking}
+                    className="hover:bg-primary-dark-blue focus:ring-primary-dark-blue h-12 w-full rounded-lg bg-primary-blue font-semibold text-secondary-white transition-colors focus:outline-none focus:ring-2"
+                  >
+                    Book Now
+                  </button>
+                ) : (
+                  <div className="text-body text-text-primary">
+                    You need to be a tourist to book this itinerary
+                  </div>
+                )}
+              </div>
 
-            {/* Date and Time */}
-            <div className="space-y-4">
-              <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
-                Available Dates & Times
-              </h3>
-              {itinerary.availableDateTimes.length !== 0 ? (
-                <div className="overflow-hidden rounded-lg border border-borders-primary">
-                  <table className="w-full">
-                    <thead className="bg-primary-green text-secondary-white">
-                      <tr>
-                        <th className="p-4 text-left">Date</th>
-                        <th className="p-4 text-left">Time</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {itinerary.availableDateTimes.map((dateTime, index) => (
-                        <tr
-                          key={index}
-                          className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
-                        >
-                          <td className="p-4">{formatDate(dateTime.date)}</td>
-                          <td className="p-4">{formatTime(dateTime.time)}</td>
+              {/* Activities */}
+              <div className="space-y-4">
+                <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                  Activities
+                </h3>
+                {itinerary.activities.length !== 0 ? (
+                  <div className="overflow-hidden rounded-lg border border-borders-primary">
+                    <table className="w-full">
+                      <thead className="bg-primary-blue text-secondary-white">
+                        <tr>
+                          <th className="p-4 text-left">DateTime</th>
+                          <th className="p-4 text-left">Location</th>
+                          <th className="p-4 text-left">Price</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
-                  No available dates and times
-                </div>
-              )}
+                      </thead>
+                      <tbody>
+                        {itinerary.activities.map((activity, index) => (
+                          <tr
+                            key={index}
+                            className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
+                          >
+                            <td className="p-4">
+                              {formatDateTime(activity.date, activity.time)}
+                            </td>
+                            <td className="p-4">
+                              {formatLocation(activity.location)}
+                            </td>
+                            <td className="p-4">{activity.price}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
+                    No activities available
+                  </div>
+                )}
+              </div>
+
+              {/* Date and Time */}
+              <div className="space-y-4">
+                <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                  Available Dates & Times
+                </h3>
+                {itinerary.availableDateTimes.length !== 0 ? (
+                  <div className="overflow-hidden rounded-lg border border-borders-primary">
+                    <table className="w-full">
+                      <thead className="bg-primary-green text-secondary-white">
+                        <tr>
+                          <th className="p-4 text-left">Date</th>
+                          <th className="p-4 text-left">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {itinerary.availableDateTimes.map((dateTime, index) => (
+                          <tr
+                            key={index}
+                            className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
+                          >
+                            <td className="p-4">{formatDate(dateTime.date)}</td>
+                            <td className="p-4">{formatTime(dateTime.time)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
+                    No available dates and times
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 
