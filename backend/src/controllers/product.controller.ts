@@ -60,7 +60,7 @@ const getProducts = async (req: Request, res: Response) => {
       products = products.filter((product) => !product.archive);
     }
 
-    const currency: string = await currencyConverterService.getRequestCurrency(req);
+    const currency: string = req.currency.currency;
     products = await Promise.all(
       products.map(async (product) => {
         if (!product.price) {

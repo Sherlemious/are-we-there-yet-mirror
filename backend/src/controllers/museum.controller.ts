@@ -9,7 +9,7 @@ const getAllMuseums = async (req: Request, res: Response) => {
   try {
     let museums = await MuseumRepo.getAllMuseums();
 
-    const currency: string = await currencyConverterService.getRequestCurrency(req);
+    const currency: string = await req.currency.currency;
     museums = await Promise.all(
       museums.map(async (museum) => {
         if (museum.ticket_prices?.foreigner) {

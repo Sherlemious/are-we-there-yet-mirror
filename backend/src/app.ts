@@ -4,6 +4,7 @@ import cors from 'cors';
 import { routes } from './routes/index';
 import { logger, logHttpRequests } from './middlewares/logger.middleware';
 import { authenticateUnlessOpen } from './middlewares/auth.middleware';
+import { currencySetter } from './middlewares/currencySetter.middleware';
 import mongoose from 'mongoose';
 import fileupload from 'express-fileupload';
 
@@ -17,6 +18,7 @@ app.use(fileupload({ useTempFiles: true })); // Enable file upload
 app.use(express.json());
 app.use(logHttpRequests);
 app.use(authenticateUnlessOpen);
+app.use(currencySetter);
 app.use('/api', routes);
 
 // MongoDB connection

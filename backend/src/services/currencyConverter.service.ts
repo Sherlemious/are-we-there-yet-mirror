@@ -1,5 +1,3 @@
-import { Request } from 'express';
-
 const backUpRates: { [key: string]: number } = {
   // As updated as possible in case the API fails
   EGP: 1,
@@ -8,18 +6,7 @@ const backUpRates: { [key: string]: number } = {
   GBP: 63.65,
 };
 
-const validCurrencies: string[] = ['EGP', 'USD', 'EUR', 'GBP'];
-
 export default class currencyConverterService {
-  static async getRequestCurrency(req: Request): Promise<string> {
-    if (req.body.currency) {
-      if (validCurrencies.includes(req.body.currency)) {
-        return req.body.currency;
-      }
-    }
-    return 'EGP';
-  }
-
   static async getConversionRate(to: string, from: string = 'EGP'): Promise<number> {
     try {
       const response = await fetch(`https://api.exchangeratesapi.io/latest?base=${from}`);
