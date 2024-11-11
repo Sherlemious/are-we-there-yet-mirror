@@ -43,14 +43,6 @@ const ComplaintsTable: React.FC<ComplaintsTableProps> = ({
         </span>
       ),
     },
-    { header: "Comments", accessor: "reviews", render: (reviews: { comment: string, createdAt: string }[]) => 
-        reviews.map((review, index) => (
-          <div key={index}>
-            {review.comment} <span className="text-gray-500">({new Date(review.createdAt).toLocaleDateString()})</span>
-          </div>
-        ))
-    ,
-    },
   ];
 
   const actions: ActionProps = {

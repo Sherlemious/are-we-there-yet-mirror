@@ -99,7 +99,7 @@ const AllComplaints: React.FC = () => {
       <Modal ref={modalRef} onClose={handleCloseModal}>
         <ComplaintsForm 
           onClose={handleCloseModal} 
-          initialValues={editingComplaint ? { title: editingComplaint.title, body: editingComplaint.body } : { title: "", body: "" }}
+          initialValues={editingComplaint ? { title: editingComplaint.title, body: editingComplaint.body, reviews: editingComplaint.reviews } : { title: "", body: "", reviews: []}}
           onSubmit={handleCreateOrUpdateComplaint}
         />
       </Modal>
