@@ -12,6 +12,17 @@ class AuthController {
     try {
       Validator.validatePassword(req.body.password);
 
+      let accepted: boolean = true;
+      if (
+        req.body.account_type === 'Advertiser' ||
+        req.body.account_type === 'TourGuide' ||
+        req.body.account_type === 'Seller'
+      ) {
+        accepted = false;
+      }
+
+      req.body.accepted = accepted;
+
       const user = await AuthRepo.register(req.body);
       const token = AuthService.generateAccessToken({ userId: user.id, accountType: req.body.account_type });
 
