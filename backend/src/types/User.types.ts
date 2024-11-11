@@ -30,7 +30,7 @@ export interface UserType {
   _id: string;
   password: string;
   username: string;
-  accountType: accountType;
+  account_type: accountType;
   email?: string;
   dob?: string;
   mobile_number: string;
