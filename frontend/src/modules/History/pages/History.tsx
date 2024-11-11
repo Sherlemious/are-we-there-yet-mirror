@@ -17,6 +17,7 @@ interface TourGuide {
   mobile_number: string;
   years_of_experience?: number;
   average_rating?: number;
+  reviews: {user: string, rating: number, comment: string}[];
 }
 interface Activity {
   _id: string;
@@ -28,6 +29,7 @@ interface Activity {
   tags: { name: string }[];
   specialDiscounts: number;
   average_rating?: number;
+  reviews: {user: string, rating: number, comment: string}[];
 }
 interface Itinerary {
   _id: string;
@@ -48,6 +50,7 @@ interface Itinerary {
   average_rating?: number;
   pick_up_location: { name: string };
   drop_off_location: { name: string };
+  reviews: {user: string, rating: number, comment: string}[];
 }
 
 interface Product {
@@ -59,6 +62,7 @@ interface Product {
   sales?: number;
   average_rating?: number;
   tags: { name: string }[];
+  reviews: {user: string, rating: number, comment: string}[];
 }
 
 export function History() {
