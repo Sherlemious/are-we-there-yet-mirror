@@ -181,42 +181,44 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            {user.account_type !== AccountType.None && (
-              <NavigationMenuItem className="relative">
-                <NavigationMenuTrigger
-                  className={cn(
-                    handleStyles({ isActive: false }),
-                    "bg-transparent hover:bg-transparent",
-                    "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
-                  )}
-                >
-                  Products
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    <ListItem title="All Products" to="/all-products">
-                      View all products
-                    </ListItem>
-                    {user.account_type === AccountType.Seller && (
-                      <ListItem
-                        title="My Products"
-                        to="/home/my-products-seller"
-                      >
-                        View your products
-                      </ListItem>
+            {(user.account_type === AccountType.Tourist ||
+              user.account_type === AccountType.Admin ||
+              user.account_type === AccountType.Seller) && (
+                <NavigationMenuItem className="relative">
+                  <NavigationMenuTrigger
+                    className={cn(
+                      handleStyles({ isActive: false }),
+                      "bg-transparent hover:bg-transparent",
+                      "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
                     )}
-                    {user.account_type === AccountType.Admin && (
-                      <ListItem
-                        title="Admin"
-                        to="/home/admin-dashboard/my-products-admin"
-                      >
-                        Manage products
+                  >
+                    Products
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                      <ListItem title="All Products" to="/home/all-products">
+                        View all products
                       </ListItem>
-                    )}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            )}
+                      {user.account_type === AccountType.Seller && (
+                        <ListItem
+                          title="My Products"
+                          to="/home/my-products-seller"
+                        >
+                          View your products
+                        </ListItem>
+                      )}
+                      {user.account_type === AccountType.Admin && (
+                        <ListItem
+                          title="Admin"
+                          to="/home/admin-dashboard/my-products-admin"
+                        >
+                          Manage products
+                        </ListItem>
+                      )}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              )}
 
             {user.account_type === AccountType.Tourist && (
               <NavigationMenuItem>

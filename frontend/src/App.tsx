@@ -123,10 +123,6 @@ const BrowserRouter = createBrowserRouter([
         path: "all-museums/*",
         element: <AllMuseums />,
       },
-      {
-        path: "all-products",
-        element: <AllProducts />,
-      },
     ],
   },
   {
@@ -157,6 +153,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "all-museums/*",
         element: <AllMuseums />,
+      },
+      {
+        path: "all-products",
+        element: <AllProducts />,
       },
       {
         path: "tourism-governor-profile/:id",
