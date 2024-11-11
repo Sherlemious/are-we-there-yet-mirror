@@ -5,6 +5,7 @@ import { UserContext } from "../../shared/store/user-context";
 import toast from "react-hot-toast";
 
 interface Activity {
+  name: string;
   date: string;
   time: string;
   location: {
@@ -39,6 +40,7 @@ async function getMyActivities() {
     const data: Activity[] = res.data.map(
       (item: {
         _id: string;
+        name: string;
         datetime: string;
         location: {
           name: string;
@@ -59,6 +61,7 @@ async function getMyActivities() {
         average_rating: number;
       }) => {
         const id = item._id;
+        const name = item.name;
         const datetime = item.datetime ?? "N/A";
         const date = new Date(datetime).toLocaleDateString();
         const time = new Date(datetime).toLocaleTimeString();
@@ -79,6 +82,7 @@ async function getMyActivities() {
 
         return {
           id,
+          name,
           date,
           time,
           location,
@@ -104,9 +108,8 @@ async function getMyActivities() {
 function availablePill({ text }: { text: string }) {
   const open = "bg-primary-green";
   const close = "bg-destructive";
-  const className = `rounded-full px-4 py-1 text-text-white text-center flex items-center justify-center ${
-    text === "Open" ? open : close
-  }`;
+  const className = `rounded-full px-4 py-1 text-text-white text-center flex items-center justify-center ${text === "Open" ? open : close
+    }`;
   return (
     <div className={className}>
       {text === "Open" ? <BookOpenCheck /> : <BookX />}
@@ -153,7 +156,8 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
     <table className="w-full rounded-lg bg-white p-4 shadow-lg">
       <thead>
         <tr>
-          <th className={headerClassName + " rounded-tl-lg"}>Date</th>
+          <th className={headerClassName + " rounded-tl-lg"}>Name</th>
+          <th className={headerClassName}>Date</th>
           <th className={headerClassName}>Time</th>
           <th className={headerClassName}>Location</th>
           <th className={headerClassName}>Price</th>
@@ -178,6 +182,7 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
       <tbody>
         {activities.map((activity, index) => (
           <tr key={index}>
+            <td className={rowClassName}>{activity.name}</td>
             <td className={rowClassName}>{activity.date}</td>
             <td className={rowClassName}>{activity.time}</td>
             <td className={rowClassName}>{activity.location.name}</td>
@@ -262,16 +267,13 @@ export function ActivityList() {
   const [filteredData, setFilteredData] = useState<Activity[]>([]);
 
   useEffect(() => {
+    if (!data) return;
     setFilteredData(
-      data?.filter((item) => {
+      data.filter((item) => {
         // Check each filter criteria
         const matchesSearchQuery =
           searchQuery === "" ||
-          item.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.tags.some((tag) =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase()),
-          );
+          item.name.toLowerCase().includes(searchQuery.toLowerCase());
 
         const matchesBudget = budget === null || item.price <= budget;
 
