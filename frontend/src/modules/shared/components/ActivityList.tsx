@@ -107,8 +107,10 @@ async function getMyActivities() {
   }
 }
 
-async function getAllCategories() {
+async function getAllCategories(user: any) {
   try {
+    // check if there is a user
+    if (user?.account_type === "None") return [];
     // get the data via axios
     const resPromise = await axiosInstance.get("/categories");
 
@@ -268,6 +270,9 @@ export function ActivityList() {
   const url = window.location.href;
   const activityId: string = url.split("/").pop() ?? "";
 
+  // get the user context
+  const { user } = useContext(UserContext);
+
   // get the data using axios
   const [data, setData] = useState<Activity[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -297,7 +302,7 @@ export function ActivityList() {
         setLoading(false);
       });
 
-    getAllCategories().then((data) => setCategories(data));
+    getAllCategories(user).then((data) => setCategories(data));
   }, []);
 
   // handle the sorting
@@ -395,25 +400,31 @@ export function ActivityList() {
             setRatings(e.target.value ? parseInt(e.target.value) : null)
           }
         />
-        <select
-          className="w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-lg transition-colors hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onChange={(e) => {
-            if (e.target.value === "") {
-              setFilteredData(data ?? []);
-            }
-            setFilteredData(
-              data?.filter(
-                (item) =>
-                  item.category === e.target.value || e.target.value === "",
-              ) ?? [],
-            );
-          }}
-        >
-          <option value="">Select Category</option>
-          {categories.map((category) => (
-            <option key={category.id}>{category.name}</option>
-          ))}
-        </select>
+        {categories.length !== 0 ? (
+          <select
+            className="w-full cursor-pointer appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-lg transition-colors hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => {
+              if (e.target.value === "") {
+                setFilteredData(data ?? []);
+              }
+              setFilteredData(
+                data?.filter(
+                  (item) =>
+                    item.category === e.target.value || e.target.value === "",
+                ) ?? [],
+              );
+            }}
+          >
+            <option value="">Select Category</option>
+            {categories.map((category) => (
+              <option key={category.id}>{category.name}</option>
+            ))}
+          </select>
+        ) : (
+          <div className="flex w-full cursor-pointer appearance-none items-center justify-between rounded-lg border border-gray-300 bg-white px-3 py-2 text-center text-sm shadow-lg transition-colors hover:border-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Log in to view categories
+          </div>
+        )}
         <button
           className="col-span-1 rounded-md bg-accent-dark-blue p-3 font-semibold text-white"
           onClick={() => {
