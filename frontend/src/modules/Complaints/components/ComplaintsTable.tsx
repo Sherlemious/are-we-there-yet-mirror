@@ -6,6 +6,7 @@ interface Complaint {
   title: string;
   body: string;
   status: string;
+  reviews: {comment: string, createdAt: string}[];
   created_at: string;
   updated_at: string;
 }
@@ -41,6 +42,14 @@ const ComplaintsTable: React.FC<ComplaintsTableProps> = ({
           {status}
         </span>
       ),
+    },
+    { header: "Comments", accessor: "reviews", render: (reviews: { comment: string, createdAt: string }[]) => 
+        reviews.map((review, index) => (
+          <div key={index}>
+            {review.comment} <span className="text-gray-500">({new Date(review.createdAt).toLocaleDateString()})</span>
+          </div>
+        ))
+    ,
     },
   ];
 

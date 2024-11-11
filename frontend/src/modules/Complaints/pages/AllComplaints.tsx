@@ -12,6 +12,7 @@ interface Complaint {
   title: string;
   body: string;
   status: string;
+  reviews: {comment: string, createdAt: string}[];
   created_at: string;
   updated_at: string;
 }
@@ -37,6 +38,7 @@ const AllComplaints: React.FC = () => {
     const fetchComplaints = async () => {
       try {
         const response = await axiosInstance.get("/complaints/mine");
+        console.log(response.data.data.complaints);
         setComplaints(response.data.data.complaints);
       } catch (error) {
         console.error("Error fetching complaints:", error);
