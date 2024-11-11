@@ -134,7 +134,25 @@ function ViewComplaint({ viewingComplaint, handleCloseModal }) {
     }
   };
 
-  const handleResolve = async () => {};
+  const handleResolve = async (id: string) => {
+    try {
+      // init the body
+      const body = {
+        status: "Resolved",
+      };
+
+      // post the comment
+      await axiosInstance.patch(`/complaints/${id}`, body);
+
+      // refresh comments
+      setCommentRefresh(commentRefresh + 1);
+
+      // toast
+      toast.success("Complaint resolved successfully");
+    } catch (error) {
+      toast.error(`Error commenting: ${error}`);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center gap-12 rounded-lg bg-white p-8 shadow-lg">
@@ -180,7 +198,7 @@ function ViewComplaint({ viewingComplaint, handleCloseModal }) {
           </div>
           <button
             className="mt-8 w-1/2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-transform duration-150 hover:scale-105"
-            onClick={handleResolve}
+            onClick={() => handleResolve(viewingComplaint?._id)}
           >
             Resolve
           </button>
