@@ -116,11 +116,11 @@ const BrowserRouter = createBrowserRouter([
         element: <AllActivities />,
       },
       {
-        path: "all-itineraries",
+        path: "all-itineraries/*",
         element: <AllItineraries />,
       },
       {
-        path: "all-museums",
+        path: "all-museums/*",
         element: <AllMuseums />,
       },
       {
