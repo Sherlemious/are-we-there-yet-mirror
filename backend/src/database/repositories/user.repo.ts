@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { User } from '../models/user.model';
 import { UserType } from '../../types/User.types';
 import { accountType } from '../../types/User.types';
+import getUserLevel from '../../utils/UserLevel.util';
 
 class UserRepository {
   async getUsers() {
@@ -34,6 +35,23 @@ class UserRepository {
 
   async updateUser(id: string, user: UserType) {
     return await User.updateOne({ _id: new ObjectId(id) }, user);
+  }
+
+  async updateUserLoyaltyPoints(id: string, points: number) {
+    const user = await this.findUserById(id);
+    const oldPoints = user?.loyalty_points ?? 0;
+    const newPoints = oldPoints + points;
+
+    if (newPoints < 0) {
+      throw new Error('Insufficient points');
+    }
+
+    return await User.findByIdAndUpdate(id, {
+      $set: {
+        loyalty_points: newPoints,
+        loyalty_level: getUserLevel(newPoints),
+      },
+    });
   }
 
   async acceptUser(id: string) {
