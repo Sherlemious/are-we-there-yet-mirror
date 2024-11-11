@@ -40,7 +40,7 @@ let activityRef = {
 
 let newItinerary: ItineraryType = {
   name: 'Test Itinerary',
-  category: 'Test Category',
+  category: '',
   tags: [],
   activities: [],
   locations: [location],
@@ -92,6 +92,8 @@ describe('Itinerary tests', () => {
       activityRef.activity = newActivity.body.data.activityId;
       newItinerary.tags.push(newTag.body.data.tagId);
       newItinerary.activities.push(activityRef);
+      newItinerary.category = newCategory.body.data.categoryId;
+
       const response = await requestWithAuth('post', '/api/itineraries').send(newItinerary);
 
       itineraryId = response.body.data.itineraryId;

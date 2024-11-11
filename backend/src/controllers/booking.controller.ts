@@ -4,6 +4,8 @@ import { logger } from '../middlewares/logger.middleware';
 import Validator from '../utils/Validator.utils';
 import bookingRepo from '../database/repositories/booking.repo';
 import { checkUserLegalAge } from '../utils/AgeVerification.utils';
+import userRepo from '../database/repositories/user.repo';
+import { LOYALTY_POINT_GAIN } from '../constants';
 
 class BookingController {
   async bookItinerary(req: Request, res: Response) {
@@ -11,10 +13,11 @@ class BookingController {
       Validator.validateId(req.body.itinerary_id, 'incorrect itinerary id');
 
       if (!(await checkUserLegalAge(req.user.userId))) {
-        res.status(403).json({ message: 'Cannot book as user is under 18' });
+        res.status(ResponseStatusCodes.FORBIDDEN).json({ message: 'Cannot book as user is under 18' });
         return;
       }
       const booking = await bookingRepo.bookItinerary(req.user.userId, req.body.itinerary_id);
+      await userRepo.updateUserLoyaltyPoints(req.user.userId, LOYALTY_POINT_GAIN);
 
       const response = {
         message: 'Booking successful',
@@ -35,11 +38,12 @@ class BookingController {
       Validator.validateId(req.body.activity_id, 'incorrect activity id');
 
       if (!(await checkUserLegalAge(req.user.userId))) {
-        res.status(403).json({ message: 'Cannot book as user is under 18' });
+        res.status(ResponseStatusCodes.FORBIDDEN).json({ message: 'Cannot book as user is under 18' });
         return;
       }
 
       const booking = await bookingRepo.bookActivity(req.user.userId, req.body.activity_id);
+      await userRepo.updateUserLoyaltyPoints(req.user.userId, LOYALTY_POINT_GAIN);
 
       const response = {
         message: 'Booking successful',
