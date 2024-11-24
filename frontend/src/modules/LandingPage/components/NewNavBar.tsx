@@ -56,9 +56,6 @@ export default function NewNavBar() {
     });
   }
 
-  console.log(user.account_type);
-  console.log(AccountType.TourGuide);
-
   function handleStyles(props: { isActive: boolean }) {
     return cn(
       styles.links.link.base,

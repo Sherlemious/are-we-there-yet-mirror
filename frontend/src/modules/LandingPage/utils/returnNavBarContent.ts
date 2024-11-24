@@ -14,8 +14,6 @@ import type { NavBarContent } from "./content";
 export function returnNavBarContentBasedOnUser(accountType: string) {
   const navBarContent: NavBarContent = {};
 
-  console.log(accountType);
-  console.log(AccountType.TourGuide);
   switch (accountType) {
     case AccountType.Tourist:
       navBarContent["links"] = TouristLinks;
