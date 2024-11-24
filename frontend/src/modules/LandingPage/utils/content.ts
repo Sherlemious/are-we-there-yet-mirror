@@ -8,22 +8,6 @@ export type NavBarContent = {
 
 export const TouristLinks = [
   {
-    name: "Home",
-    url: "/home",
-  },
-  {
-    name: "Activities",
-    url: "/home/all-activities",
-  },
-  {
-    name: "Historical Places/Museums",
-    url: "/home/all-museums",
-  },
-  {
-    name: "Itineraries",
-    url: "/home/all-itineraries",
-  },
-  {
     name: "Products",
     url: "/home/all-products",
   },
@@ -56,10 +40,6 @@ export const TouristLinks = [
 
 export const AdvertiserLinks = [
   {
-    name: "Home",
-    url: "/home",
-  },
-  {
     name: "Activities",
     list: [
       {
@@ -72,33 +52,9 @@ export const AdvertiserLinks = [
       },
     ],
   },
-  {
-    name: "Historical Places/Museums",
-    url: "/home/all-museums",
-  },
-  {
-    name: "Itineraries",
-    url: "/home/all-itineraries",
-  },
 ];
 
 export const SellerLinks = [
-  {
-    name: "Home",
-    url: "/home",
-  },
-  {
-    name: "Activities",
-    url: "/home/all-activities",
-  },
-  {
-    name: "Historical Places/Museums",
-    url: "/home/all-museums",
-  },
-  {
-    name: "Itineraries",
-    url: "/home/all-itineraries",
-  },
   {
     name: "Products",
     list: [
@@ -116,18 +72,6 @@ export const SellerLinks = [
 
 export const TourGuideLinks = [
   {
-    name: "Home",
-    url: "/home",
-  },
-  {
-    name: "Activities",
-    url: "/home/all-activities",
-  },
-  {
-    name: "Historical Places/Museums",
-    url: "/home/all-museums",
-  },
-  {
     name: "Itineraries",
     list: [
       {
@@ -143,10 +87,6 @@ export const TourGuideLinks = [
 ];
 
 export const AdminLinks = [
-  {
-    name: "Home",
-    url: "/home",
-  },
   {
     name: "Manage activities category",
     url: "/home/admin-dashboard/activity-categories",
@@ -176,38 +116,14 @@ export const AdminLinks = [
 
 export const TourismGovernorLinks = [
   {
-    name: "Home",
-    url: "/",
-  },
-  {
-    name: "Activities",
-    url: "/all-activities",
-  },
-  {
     name: "Browse My Historical Places/Museums",
     url: "/home/my-museums",
-  },
-  {
-    name: "Itineraries",
-    url: "all-itineraries",
   },
 ];
 
 export const GuestLinks = [
   {
-    name: "Home",
-    url: "/",
-  },
-  {
-    name: "Activities",
-    url: "/all-activities",
-  },
-  {
     name: "Historical Places/Museums",
     url: "/all-museums",
-  },
-  {
-    name: "Itineraries",
-    url: "all-itineraries",
   },
 ];

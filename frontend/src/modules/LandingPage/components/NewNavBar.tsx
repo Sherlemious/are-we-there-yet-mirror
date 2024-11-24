@@ -18,8 +18,8 @@ const styles = {
     image: "h-32 w-40",
   },
   links: {
-    list: "flex w-full list-none justify-evenly text-center",
-    item: "flex items-center text-sub-headings font-semibold",
+    list: "flex w-full list-none justify-evenly text-center items-center",
+    item: "flex items-center text-sub-headings ",
     link: {
       base: "px-3 py-2 font-medium transition-all duration-200 hover:text-accent-gold hover:drop-shadow-glow",
       active: "text-accent-gold drop-shadow-glow",
@@ -56,6 +56,9 @@ export default function NewNavBar() {
     });
   }
 
+  console.log(user.account_type);
+  console.log(AccountType.TourGuide);
+
   function handleStyles(props: { isActive: boolean }) {
     return cn(
       styles.links.link.base,
@@ -78,6 +81,63 @@ export default function NewNavBar() {
         </NavLink>
       }
       <ul className={styles.links.list}>
+        <NavLink to={"/home"} className={(props) => handleStyles(props)} end>
+          <span className="text-sub-headings">Home</span>
+        </NavLink>
+
+        {(user.account_type === AccountType.TourismGovernor ||
+          user.account_type === AccountType.None) && (
+          <NavLink
+            to="/all-activities"
+            className={(props) => handleStyles(props)}
+          >
+            <span className="text-sub-headings">Activities</span>
+          </NavLink>
+        )}
+        {(user.account_type === AccountType.Tourist ||
+          user.account_type === AccountType.Seller ||
+          user.account_type === AccountType.TourGuide) && (
+          <NavLink
+            to="/home/all-activities"
+            className={(props) => handleStyles(props)}
+          >
+            <span className="text-sub-headings">Activities</span>
+          </NavLink>
+        )}
+
+        {(user.account_type === AccountType.TourGuide ||
+          user.account_type === AccountType.Seller ||
+          user.account_type === AccountType.Advertiser ||
+          user.account_type === AccountType.Tourist) && (
+          <NavLink
+            to="/home/all-museums"
+            className={(props) => handleStyles(props)}
+          >
+            <span className="text-sub-headings">Historical Places/Museums</span>
+          </NavLink>
+        )}
+
+        {(user.account_type === AccountType.Seller ||
+          user.account_type === AccountType.Advertiser ||
+          user.account_type === AccountType.Tourist) && (
+          <NavLink
+            to="/home/all-itineraries"
+            className={(props) => handleStyles(props)}
+          >
+            <span className="text-sub-headings">Itineraries</span>
+          </NavLink>
+        )}
+
+        {(user.account_type === AccountType.TourismGovernor ||
+          user.account_type === AccountType.None) && (
+          <NavLink
+            to="all-itineraries"
+            className={(props) => handleStyles(props)}
+          >
+            <span className="text-sub-headings">Itineraries</span>
+          </NavLink>
+        )}
+
         {navBarItems?.links.map((item) => {
           if (!item.list) {
             return (
@@ -87,7 +147,6 @@ export default function NewNavBar() {
                   className={(props: { isActive: boolean }) =>
                     handleStyles(props)
                   }
-                  end
                 >
                   {item.name}
                 </NavLink>
