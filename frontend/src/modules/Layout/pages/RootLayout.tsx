@@ -8,7 +8,8 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../shared/store/user-context";
 
 import { imgLinks } from "../../shared/utils/constants";
-import NavigationBar from "@/modules/LandingPage/components/NavigationBar";
+import NewNavBar from "@/modules/LandingPage/components/NewNavBar";
+// import NavigationBar from "@/modules/LandingPage/components/NavigationBar";
 
 export default function RootLayout() {
   const userData = useLoaderData() as UserType;
@@ -63,7 +64,8 @@ export default function RootLayout() {
         <div className="absolute inset-0 bg-black opacity-50" />
       </div>
 
-      <NavigationBar fontColor={"text-black"} />
+      {/* <NavigationBar fontColor={"text-black"} /> */}
+      <NewNavBar />
 
       <main>
         <Outlet />

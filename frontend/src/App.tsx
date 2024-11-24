@@ -143,19 +143,23 @@ const BrowserRouter = createBrowserRouter([
     loader: rootLayoutLoader,
     children: [
       {
-        path: "all-activities/*",
+        index: true,
+        element: <LandingPage />,
+      },
+      {
+        path: "/home/all-activities/*",
         element: <AllActivities />,
       },
       {
-        path: "all-itineraries/*",
+        path: "/home/all-itineraries/*",
         element: <AllItineraries />,
       },
       {
-        path: "all-museums/*",
+        path: "/home/all-museums/*",
         element: <AllMuseums />,
       },
       {
-        path: "all-products",
+        path: "/home/all-products",
         element: <AllProducts />,
       },
       {

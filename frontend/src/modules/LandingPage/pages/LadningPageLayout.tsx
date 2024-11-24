@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import NavigationBar from "../components/NavigationBar";
+// import NavigationBar from "../components/NavigationBar";
 import { imgLinks } from "@/modules/shared/utils/constants";
 import { Outlet } from "react-router";
+import NewNavBar from "../../LandingPage/components/NewNavBar";
 
 export default function LandingPageLayout() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -21,8 +22,9 @@ export default function LandingPageLayout() {
         {imgs.map((image, index) => (
           <div
             key={image}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentImageIndex === index ? "opacity-100" : "opacity-0"
-              }`}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              currentImageIndex === index ? "opacity-100" : "opacity-0"
+            }`}
             style={{
               backgroundImage: `url(${image})`,
               backgroundSize: "cover",
@@ -34,7 +36,8 @@ export default function LandingPageLayout() {
         <div className="absolute inset-0 bg-black opacity-50" />
       </div>
 
-      <NavigationBar fontColor={"text-black"} />
+      {/* <NavigationBar fontColor={"text-black"} /> */}
+      <NewNavBar />
 
       <main>
         <Outlet />
