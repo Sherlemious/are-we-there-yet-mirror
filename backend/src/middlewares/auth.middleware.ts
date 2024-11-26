@@ -49,7 +49,8 @@ const openPaths = [
   { path: '/api/activities', methods: ['GET'] },
   { path: '/api/attachments', methods: ['POST'] },
   { path: '/api/termsAndConditions', methods: ['GET'] }, // Add /terms to the openPaths list
-
+  { path: '/api/tags', methods: ['GET'] },
+  { path: '/api/categories', methods: ['GET'] },
 ];
 
 const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
