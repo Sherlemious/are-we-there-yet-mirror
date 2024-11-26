@@ -39,8 +39,6 @@ import { AccountType } from "./modules/shared/types/User.types";
 import { LandingPage } from "./modules/LandingPage/App";
 import Register from "./modules/Register/pages/Register";
 import { registerAction, registerLoader } from "./modules/Register/App";
-// import { useContext } from "react";
-// import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
 import AdminAllComplaints from "./modules/Complaints/pages/AdminAllComplaints";
 import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
@@ -79,7 +77,6 @@ const BrowserRouter = createBrowserRouter([
   },
   {
     path: "/login",
-    // element: <Login />,
     element: <LoginPage />,
   },
   {
@@ -117,7 +114,6 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "tour-guide-profile/:id",
-        // element: <TourGuideProfile />,
         element: (
           <RouteGuard account_types={[AccountType.TourGuide]}>
             <TourGuideProfile />
@@ -126,7 +122,6 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "advertiser-profile/:id",
-        // element: <AdvertiserProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Advertiser]}>
             <AdvertiserProfile />,
@@ -135,7 +130,6 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "seller-profile/:id",
-        // element: <SellerProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Seller]}>
             <SellerProfile />,
@@ -144,7 +138,6 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "tourist-profile/:id",
-        // element: <TouristProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Tourist]}>
             <TouristProfile />
