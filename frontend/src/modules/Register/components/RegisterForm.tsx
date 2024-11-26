@@ -311,7 +311,7 @@ const RegistrationForm = () => {
                     userType === userRoles.tourist
                       ? "grid-cols-2"
                       : "grid-cols-1"
-                  } gap-4`}
+                  } gap-4 px-3`}
                 >
                   {userType !== userRoles.tourist && <GeneralRegister />}
 
@@ -345,14 +345,14 @@ const RegistrationForm = () => {
                   name="acceptedTerms"
                   value={acceptedTerms.toString()}
                 />
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 px-3">
                   <Checkbox
                     id="terms"
                     checked={acceptedTerms}
                     onCheckedChange={(checked) =>
                       setAcceptedTerms(checked as boolean)
                     }
-                    className="border-white"
+                    className="border-2 border-accent-gold focus:outline-none focus:ring-2 focus:ring-accent-gold"
                   />
                   <label htmlFor="terms" className="text-sm text-white">
                     I accept the{" "}
@@ -369,6 +369,7 @@ const RegistrationForm = () => {
                 <SubmitButton
                   isSubmitting={isSubmitting}
                   oneOfFieldsIsEmpty={oneOfFieldsIsEmpty || !acceptedTerms}
+                  logIn={false}
                 />
               </Form>
             </motion.div>
@@ -395,7 +396,7 @@ const RegistrationForm = () => {
           className="mt-4 text-center text-white"
         >
           Already have an account?{" "}
-          <a href="/login" className="ml-2 text-yellow-400 hover:underline">
+          <a href="/login" className="text-yellow-400 hover:underline">
             Sign in
           </a>
         </motion.p>

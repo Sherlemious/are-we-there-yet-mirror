@@ -1,8 +1,8 @@
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fieldNames } from "@/modules/shared/constants/inputNames";
 import { motion } from "framer-motion";
 import { fadeIn } from "../styles/animations";
+import { LoginOrRegisterInput } from "@/modules/shared/components/LoginOrRegisterInput";
 
 export default function GeneralRegister() {
   return (
@@ -11,7 +11,7 @@ export default function GeneralRegister() {
         <Label htmlFor="email" className="text-white">
           Email
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="email"
           name={fieldNames.email}
           type="email"
@@ -25,7 +25,7 @@ export default function GeneralRegister() {
         <Label htmlFor="username" className="text-white">
           Username
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="username"
           name={fieldNames.username}
           type="text"
@@ -39,7 +39,7 @@ export default function GeneralRegister() {
         <Label htmlFor="password" className="text-white">
           Password
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="password"
           name={fieldNames.password}
           type="password"

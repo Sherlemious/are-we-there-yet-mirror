@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { fadeIn } from "../styles/animations";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { fieldNames } from "@/modules/shared/constants/inputNames";
 import {
   Select,
@@ -11,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import React from "react";
+import { LoginOrRegisterInput } from "@/modules/shared/components/LoginOrRegisterInput";
 
 export default function TouristRegister({
   nationality,
@@ -29,7 +29,7 @@ export default function TouristRegister({
         <Label htmlFor="email" className="text-white">
           Email
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="email"
           name={fieldNames.email}
           type="email"
@@ -43,7 +43,7 @@ export default function TouristRegister({
         <Label htmlFor="username" className="text-white">
           Username
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="username"
           name={fieldNames.username}
           type="text"
@@ -57,7 +57,7 @@ export default function TouristRegister({
         <Label htmlFor="password" className="text-white">
           Password
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="password"
           name={fieldNames.password}
           type="password"
@@ -89,7 +89,7 @@ export default function TouristRegister({
         <Label htmlFor="mobileNumber" className="text-white">
           Mobile Number
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="mobileNumber"
           name={fieldNames.mobileNumber}
           type="tel"
@@ -103,7 +103,7 @@ export default function TouristRegister({
         <Label htmlFor="dateOfBirth" className="text-white">
           Date of Birth
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="dateOfBirth"
           name={fieldNames.dateOfBirth}
           type="date"
@@ -120,7 +120,7 @@ export default function TouristRegister({
         <Label htmlFor="occupation" className="text-white">
           Occupation
         </Label>
-        <Input
+        <LoginOrRegisterInput
           id="occupation"
           name={fieldNames.occupation}
           type="text"
