@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
 import { imgLinks } from "@/modules/shared/utils/constants";
 import SubmitButton from "@/modules/Register/components/SubmitButton";
 import { useNavigate, useNavigation } from "react-router";
@@ -7,7 +8,7 @@ import { LoginOrRegisterInput } from "@/modules/shared/components/LoginOrRegiste
 import toast from "react-hot-toast";
 import { handleUserLogin } from "../services/apiLogin";
 import { UserContext } from "@/modules/shared/store/user-context";
-import { Link } from "react-router-dom";
+import { Form } from "react-router-dom";
 
 const imgs = Object.values(imgLinks.landing_page);
 
@@ -15,6 +16,8 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [oneOfFieldsIsEmpty, setOneOfFieldsIsEmpty] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasPassword, setHasPassword] = useState(false);
   const { setUser } = useContext(UserContext);
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "loading";
@@ -31,11 +34,13 @@ const LoginForm = () => {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
 
-    if (!data.email || !data.password) {
-      setOneOfFieldsIsEmpty(true);
-      return;
-    }
-    setOneOfFieldsIsEmpty(false);
+    const emailIsEmpty = !data.email;
+    const passwordIsEmpty = !data.password;
+
+    setOneOfFieldsIsEmpty(emailIsEmpty || passwordIsEmpty);
+    setHasPassword(!passwordIsEmpty);
+
+    if (passwordIsEmpty) setShowPassword(false);
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -59,10 +64,13 @@ const LoginForm = () => {
         navigate("/home");
       }
     } catch (error) {
-      // Do nothing
       console.error(error);
     }
   }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
@@ -104,7 +112,7 @@ const LoginForm = () => {
           <p className="mb-8 text-center text-xl text-accent-gold">Almost!</p>
         </motion.div>
 
-        <form
+        <Form
           className="space-y-4"
           onSubmit={handleSubmit}
           onChange={handleFormChange}
@@ -126,13 +134,28 @@ const LoginForm = () => {
             <label htmlFor="password" className="mb-2 block text-sm text-white">
               Password
             </label>
-            <LoginOrRegisterInput
-              type="password"
-              id="password"
-              name="password"
-              className="w-full rounded-lg border border-white/20 bg-black bg-opacity-30 p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-gold"
-              placeholder="Enter your password"
-            />
+            <div className="relative">
+              <LoginOrRegisterInput
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                className="w-full rounded-lg border border-white/20 bg-black bg-opacity-30 p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-gold"
+                placeholder="Enter your password"
+              />
+              {hasPassword && (
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white focus:outline-none"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
 
           <SubmitButton
@@ -140,7 +163,7 @@ const LoginForm = () => {
             oneOfFieldsIsEmpty={oneOfFieldsIsEmpty}
             logIn={true}
           />
-        </form>
+        </Form>
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -149,9 +172,9 @@ const LoginForm = () => {
           className="mt-4 text-center text-white"
         >
           Don't have an account?{" "}
-          <Link to="/register" className="text-yellow-400 hover:underline">
+          <a href="/register" className="text-yellow-400 hover:underline">
             Create account
-          </Link>
+          </a>
         </motion.p>
       </motion.div>
     </div>

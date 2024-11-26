@@ -1,9 +1,4 @@
-import {
-  createBrowserRouter,
-  Outlet,
-  RouterProvider,
-  useNavigate,
-} from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import {
   ErrorPage,
   NotFoundPage,
@@ -38,9 +33,7 @@ import {
   action as activityFormAction,
 } from "./modules/Activity/component/ActivityForm";
 import { Activity, ActivityForm, EditActivity } from "./modules/Activity/App";
-import UserContextProvider, {
-  UserContext,
-} from "./modules/shared/store/user-context";
+import UserContextProvider from "./modules/shared/store/user-context";
 import { RouteGuard } from "./modules/shared/components/RouteGuard";
 import { AccountType } from "./modules/shared/types/User.types";
 import { LandingPage } from "./modules/LandingPage/App";
@@ -60,48 +53,6 @@ import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBoo
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
 import { LoginPage } from "./modules/Login/App";
-
-// const Login = () => {
-//   const { setUser } = useContext(UserContext);
-//   const navigate = useNavigate();
-
-//   return (
-//     <form
-//       onSubmit={(e) => {
-//         e.preventDefault();
-//         const email = (e.target as any).elements[0].value;
-//         const password = (e.target as any).elements[1].value;
-//         axiosInstance
-//           .post("/auth/login", { email, password })
-//           .then((res) => {
-//             const data = res.data as any;
-//             localStorage.setItem("token", data.data.jwt);
-//             setUser(data.data.user);
-//             navigate("/home");
-//           })
-//           .catch((err) => console.error(err));
-//       }}
-//       className="container mx-auto mt-9 space-y-4 bg-secondary-white"
-//     >
-//       <input
-//         type="email"
-//         placeholder="Email"
-//         className="w-full rounded-lg border p-3"
-//       />
-//       <input
-//         type="password"
-//         placeholder="Password"
-//         className="w-full rounded-lg border p-3"
-//       />
-//       <button
-//         type="submit"
-//         className="w-full rounded-full border bg-accent-dark-blue p-2 text-white"
-//       >
-//         Login
-//       </button>
-//     </form>
-//   );
-// };
 
 const BrowserRouter = createBrowserRouter([
   {

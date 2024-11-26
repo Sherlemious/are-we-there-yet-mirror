@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { fadeIn } from "../styles/animations";
 import { Label } from "@/components/ui/label";
 import { fieldNames } from "@/modules/shared/constants/inputNames";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -16,12 +17,18 @@ export default function TouristRegister({
   nationality,
   setNationality,
   countryNames,
+  showPassword,
+  setShowPassword,
+  hasPassword,
+  handlePasswordChange,
 }: {
   nationality: string;
-
   setNationality: React.Dispatch<React.SetStateAction<string>>;
-
   countryNames: string[];
+  showPassword: boolean;
+  setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
+  hasPassword: boolean;
+  handlePasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
     <>
@@ -57,14 +64,30 @@ export default function TouristRegister({
         <Label htmlFor="password" className="text-white">
           Password
         </Label>
-        <LoginOrRegisterInput
-          id="password"
-          name={fieldNames.password}
-          type="password"
-          placeholder="Create a password"
-          required
-          className="bg-white bg-opacity-20 text-white placeholder-white"
-        />
+        <div className="relative">
+          <LoginOrRegisterInput
+            id="password"
+            name={fieldNames.password}
+            type={showPassword ? "text" : "password"}
+            placeholder="Create a password"
+            required
+            className="bg-white bg-opacity-20 text-white placeholder-white"
+            onChange={handlePasswordChange}
+          />
+          {hasPassword && (
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white focus:outline-none"
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
+          )}
+        </div>
       </motion.div>
 
       <motion.div variants={fadeIn} className="flex transform flex-col gap-2">

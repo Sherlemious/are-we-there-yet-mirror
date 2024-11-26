@@ -59,6 +59,8 @@ const RegistrationForm = () => {
   const navigation = useNavigation();
   const submit = useSubmit();
   const { setUser } = useContext(UserContext);
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasPassword, setHasPassword] = useState(false);
 
   const { countries, terms } = useLoaderData() as {
     countries: { name: { common: string } }[];
@@ -128,20 +130,6 @@ const RegistrationForm = () => {
 
     return () => clearInterval(intervalId);
   }, []);
-
-  // const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
-  //   const formData = new FormData(e.currentTarget);
-  //   const data = Object.fromEntries(formData);
-
-  //   for (const key in data) {
-  //     if (data[key] === "" && key !== "acceptedTerms") {
-  //       setOneOfFieldsIsEmpty(true);
-  //       return;
-  //     }
-  //   }
-
-  //   setOneOfFieldsIsEmpty(false);
-  // };
 
   const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
@@ -250,7 +238,17 @@ const RegistrationForm = () => {
       certificates: [],
       taxDocument: null,
     });
+    setShowPassword(false);
+    setHasPassword(false);
   }, [userType]);
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isEmpty = e.target.value.length === 0;
+    setHasPassword(!isEmpty);
+    if (isEmpty) {
+      setShowPassword(false);
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
@@ -313,10 +311,21 @@ const RegistrationForm = () => {
                       : "grid-cols-1"
                   } gap-4 px-3`}
                 >
-                  {userType !== userRoles.tourist && <GeneralRegister />}
+                  {userType !== userRoles.tourist && (
+                    <GeneralRegister
+                      handlePasswordChange={handlePasswordChange}
+                      showPassword={showPassword}
+                      hasPassword={hasPassword}
+                      setShowPassword={setShowPassword}
+                    />
+                  )}
 
                   {userType === userRoles.tourist && (
                     <TouristRegister
+                      handlePasswordChange={handlePasswordChange}
+                      showPassword={showPassword}
+                      hasPassword={hasPassword}
+                      setShowPassword={setShowPassword}
                       countryNames={countryNames}
                       setNationality={setNationality}
                       nationality={nationality}
