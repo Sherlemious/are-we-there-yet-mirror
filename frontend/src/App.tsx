@@ -1,9 +1,4 @@
-import {
-  createBrowserRouter,
-  Outlet,
-  RouterProvider,
-  useNavigate,
-} from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import {
   ErrorPage,
   NotFoundPage,
@@ -38,16 +33,12 @@ import {
   action as activityFormAction,
 } from "./modules/Activity/component/ActivityForm";
 import { Activity, ActivityForm, EditActivity } from "./modules/Activity/App";
-import UserContextProvider, {
-  UserContext,
-} from "./modules/shared/store/user-context";
+import UserContextProvider from "./modules/shared/store/user-context";
 import { RouteGuard } from "./modules/shared/components/RouteGuard";
 import { AccountType } from "./modules/shared/types/User.types";
 import { LandingPage } from "./modules/LandingPage/App";
 import Register from "./modules/Register/pages/Register";
 import { registerAction, registerLoader } from "./modules/Register/App";
-import { useContext } from "react";
-import axiosInstance from "./modules/shared/services/axiosInstance";
 import AllComplaints from "./modules/Complaints/pages/AllComplaints";
 import AdminAllComplaints from "./modules/Complaints/pages/AdminAllComplaints";
 import LandingPageLayout from "./modules/LandingPage/pages/LadningPageLayout";
@@ -59,48 +50,7 @@ import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBooki
 import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
-
-const Login = () => {
-  const { setUser } = useContext(UserContext);
-  const navigate = useNavigate();
-
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const email = (e.target as any).elements[0].value;
-        const password = (e.target as any).elements[1].value;
-        axiosInstance
-          .post("/auth/login", { email, password })
-          .then((res) => {
-            const data = res.data as any;
-            localStorage.setItem("token", data.data.jwt);
-            setUser(data.data.user);
-            navigate("/home");
-          })
-          .catch((err) => console.error(err));
-      }}
-      className="container mx-auto mt-9 space-y-4 bg-secondary-white"
-    >
-      <input
-        type="email"
-        placeholder="Email"
-        className="w-full rounded-lg border p-3"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        className="w-full rounded-lg border p-3"
-      />
-      <button
-        type="submit"
-        className="w-full rounded-full border bg-accent-dark-blue p-2 text-white"
-      >
-        Login
-      </button>
-    </form>
-  );
-};
+import { LoginPage } from "./modules/Login/App";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -127,7 +77,7 @@ const BrowserRouter = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <LoginPage />,
   },
   {
     path: "/register",
@@ -164,7 +114,6 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "tour-guide-profile/:id",
-        // element: <TourGuideProfile />,
         element: (
           <RouteGuard account_types={[AccountType.TourGuide]}>
             <TourGuideProfile />
@@ -173,7 +122,6 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "advertiser-profile/:id",
-        // element: <AdvertiserProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Advertiser]}>
             <AdvertiserProfile />,
@@ -182,7 +130,6 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "seller-profile/:id",
-        // element: <SellerProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Seller]}>
             <SellerProfile />,
@@ -191,7 +138,6 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "tourist-profile/:id",
-        // element: <TouristProfile />,
         element: (
           <RouteGuard account_types={[AccountType.Tourist]}>
             <TouristProfile />
