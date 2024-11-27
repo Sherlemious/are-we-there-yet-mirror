@@ -10,7 +10,7 @@ import { AllProducts } from "./modules/products/App";
 import { SellerPage as SellerProducts } from "./modules/products/App";
 import { Dashboard as AdminDashboard } from "./modules/Admin/App";
 import { Tag } from "./modules/Tags/App";
-import { PrefrenceTag } from "./modules/PrefrenceTag/App";
+import { PreferenceTag } from "./modules/PreferenceTag/App";
 import { Category } from "./modules/Category/App";
 import {
   MyItitinerariesLoader,
@@ -161,8 +161,8 @@ const BrowserRouter = createBrowserRouter([
             element: <AdminDashboard />,
           },
           {
-            path: "prefrence-tags",
-            element: <PrefrenceTag />,
+            path: "preference-tags",
+            element: <PreferenceTag />,
           },
           {
             path: "activity-categories",
@@ -184,7 +184,7 @@ const BrowserRouter = createBrowserRouter([
         ],
       },
       {
-        path: "tag",
+        path: "my-tags",
         element: <Tag />,
       },
       {
