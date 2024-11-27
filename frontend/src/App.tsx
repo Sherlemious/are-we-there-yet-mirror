@@ -147,19 +147,19 @@ const BrowserRouter = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: "/home/all-activities/*",
+        path: "all-activities/*",
         element: <AllActivities />,
       },
       {
-        path: "/home/all-itineraries/*",
+        path: "all-itineraries/*",
         element: <AllItineraries />,
       },
       {
-        path: "/home/all-museums/*",
+        path: "all-museums/*",
         element: <AllMuseums />,
       },
       {
-        path: "/home/all-products",
+        path: "all-products",
         element: <AllProducts />,
       },
       {

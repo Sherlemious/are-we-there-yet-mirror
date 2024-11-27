@@ -2,7 +2,6 @@ import { AccountType } from "@/modules/shared/types/User.types";
 import {
   AdminLinks,
   AdvertiserLinks,
-  GuestLinks,
   SellerLinks,
   TourGuideLinks,
   TourismGovernorLinks,
@@ -40,7 +39,6 @@ export function returnNavBarContentBasedOnUser(accountType: string) {
       return navBarContent;
 
     default:
-      navBarContent["links"] = GuestLinks;
       return navBarContent;
   }
 }

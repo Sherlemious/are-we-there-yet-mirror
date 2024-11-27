@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { UserContext } from "@/modules/shared/store/user-context";
+import { AccountType } from "@/modules/shared/types/User.types";
+import { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 export default function NavBarDropdown({
@@ -12,12 +14,15 @@ export default function NavBarDropdown({
   const [showDropdown, setShowDropdown] = useState(false);
   const [isHoveringOnDiv, setIsHoveringOnDiv] = useState(false);
   const [, setIsVisible] = useState(false);
+  const { user } = useContext(UserContext);
 
   const { pathname } = useLocation();
 
+  console.log(list);
+
   function handleDropdownStyles(props: { isActive: boolean }) {
     return cn(
-      "block h-full w-full px-6 py-3 font-medium text-white/90 hover:text-yellow-400 duration-200 transition-all",
+      "block h-full w-full px-10 py-5 font-medium text-white/90 hover:text-yellow-400 duration-200 transition-all",
       props.isActive ? "text-yellow-400" : "text-white/90",
     );
   }
@@ -36,6 +41,14 @@ export default function NavBarDropdown({
     }
   }, [showDropdown]);
 
+  console.log(pathname);
+  console.log(
+    user?.account_type === AccountType.TourismGovernor &&
+      pathname.includes("activity-categories"),
+  );
+  console.log(user.account_type, AccountType.Admin);
+  console.log(pathname.includes(linkName.toLowerCase()));
+
   return (
     <div
       className="relative flex h-fit flex-col items-start hover:cursor-pointer"
@@ -52,7 +65,12 @@ export default function NavBarDropdown({
         <NavLink
           to={list[0].url}
           className={
-            pathname.includes(linkName.toLowerCase())
+            pathname.includes(linkName.toLowerCase()) ||
+            (pathname.includes("museums") &&
+              user?.account_type === AccountType.TourismGovernor) ||
+            (pathname.includes("/home/admin-dashboard/activity-categories") &&
+              user?.account_type === AccountType.Admin &&
+              linkName === "Activities")
               ? "hover:drop-shadow-glow drop-shadow-glow py-2 font-medium text-accent-gold transition-all"
               : "font-medium text-black"
           }
@@ -85,8 +103,8 @@ export default function NavBarDropdown({
                 handleDropdownStyles(props)
               }
               to={item.url}
-              end
               onClick={() => setShowDropdown(false)}
+              end
             >
               {item.name}
             </NavLink>

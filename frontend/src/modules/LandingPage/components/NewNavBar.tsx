@@ -43,6 +43,8 @@ export default function NewNavBar() {
     user?.account_type,
   );
 
+  console.log(navBarItems);
+
   function handleClearUser() {
     setUser({
       _id: "",
@@ -78,64 +80,89 @@ export default function NewNavBar() {
         </NavLink>
       }
       <ul className={styles.links.list}>
-        <NavLink to={"/home"} className={(props) => handleStyles(props)} end>
+        <NavLink
+          to={user.account_type === AccountType.None ? "/" : "/home"}
+          className={(props) => handleStyles(props)}
+          end
+        >
           <span className="text-sub-headings">Home</span>
         </NavLink>
 
-        {(user.account_type === AccountType.TourismGovernor ||
-          user.account_type === AccountType.None) && (
-          <NavLink
-            to="/all-activities"
-            className={(props) => handleStyles(props)}
-          >
-            <span className="text-sub-headings">Activities</span>
-          </NavLink>
-        )}
-        {(user.account_type === AccountType.Tourist ||
-          user.account_type === AccountType.Seller ||
-          user.account_type === AccountType.TourGuide) && (
-          <NavLink
-            to="/home/all-activities"
-            className={(props) => handleStyles(props)}
-          >
-            <span className="text-sub-headings">Activities</span>
-          </NavLink>
+        {user.account_type !== AccountType.Advertiser &&
+          user.account_type !== AccountType.Admin && (
+            <NavLink
+              to={
+                user.account_type === AccountType.None
+                  ? "/all-activities"
+                  : "/home/all-activities"
+              }
+              className={(props) => handleStyles(props)}
+            >
+              <span className="text-sub-headings">Activities</span>
+            </NavLink>
+          )}
+
+        {user.account_type === AccountType.Advertiser && (
+          <NavBarDropdown
+            linkName="Activities"
+            list={navBarItems.links[0].list!}
+            key={"Activities"}
+          />
         )}
 
-        {(user.account_type === AccountType.TourGuide ||
-          user.account_type === AccountType.Seller ||
-          user.account_type === AccountType.Advertiser ||
-          user.account_type === AccountType.Tourist) && (
+        {user.account_type === AccountType.Admin && (
+          <NavBarDropdown
+            linkName="Activities"
+            list={navBarItems.links[0].list!}
+            key={"Activities"}
+          />
+        )}
+
+        {user.account_type !== AccountType.TourismGovernor && (
           <NavLink
-            to="/home/all-museums"
+            to={
+              user.account_type === AccountType.None
+                ? "/all-museums"
+                : "/home/all-museums"
+            }
             className={(props) => handleStyles(props)}
           >
             <span className="text-sub-headings">Historical Places/Museums</span>
           </NavLink>
         )}
 
-        {(user.account_type === AccountType.Seller ||
-          user.account_type === AccountType.Advertiser ||
-          user.account_type === AccountType.Tourist) && (
-          <NavLink
-            to="/home/all-itineraries"
-            className={(props) => handleStyles(props)}
-          >
-            <span className="text-sub-headings">Itineraries</span>
-          </NavLink>
+        {user.account_type === AccountType.TourismGovernor && (
+          <NavBarDropdown
+            linkName="Historical Places/Museums"
+            list={navBarItems.links[0].list!}
+            key={"Historical Places/Museums"}
+          />
         )}
 
-        {(user.account_type === AccountType.TourismGovernor ||
-          user.account_type === AccountType.None) && (
-          <NavLink
-            to="all-itineraries"
-            className={(props) => handleStyles(props)}
-          >
-            <span className="text-sub-headings">Itineraries</span>
-          </NavLink>
+        {user.account_type !== AccountType.TourGuide &&
+          user.account_type !== AccountType.Admin && (
+            <NavLink
+              to={
+                user.account_type === AccountType.None
+                  ? "/all-itineraries"
+                  : "/home/all-itineraries"
+              }
+              className={(props) => handleStyles(props)}
+            >
+              <span className="text-sub-headings">Itineraries</span>
+            </NavLink>
+          )}
+
+        {user.account_type === AccountType.Admin && (
+          <NavBarDropdown
+            linkName="Itineraries"
+            list={navBarItems.links[2].list!}
+            key={"Itineraries"}
+          />
         )}
 
-        {navBarItems?.links.map((item) => {
+        {navBarItems?.links?.map((item) => {
+          console.log(item.name);
           if (!item.list) {
             return (
               <li key={item.name} className={styles.links.item}>
@@ -150,15 +177,25 @@ export default function NewNavBar() {
               </li>
             );
           }
-          return (
-            <NavBarDropdown
-              key={item.name}
-              list={item.list}
-              linkName={item.name}
-            />
-          );
+          if (
+            (user.account_type !== AccountType.Advertiser &&
+              user.account_type !== AccountType.Admin &&
+              user.account_type !== AccountType.TourismGovernor) ||
+            (item.name !== "Activities" &&
+              item.name !== "Itineraries" &&
+              item.name !== "Historical Places/Museums")
+          ) {
+            return (
+              <NavBarDropdown
+                key={item.name}
+                list={item.list}
+                linkName={item.name}
+              />
+            );
+          }
         })}
       </ul>
+
       <div className={styles.actions.wrapper}>
         {user.account_type !== AccountType.None && (
           <UserCog

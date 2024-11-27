@@ -43,11 +43,11 @@ export const AdvertiserLinks = [
     name: "Activities",
     list: [
       {
-        name: "Browse All Activities",
+        name: "All Activities",
         url: "/home/all-activities",
       },
       {
-        name: "Browse My Activities",
+        name: "My Activities",
         url: "/home/my-activities",
       },
     ],
@@ -59,11 +59,11 @@ export const SellerLinks = [
     name: "Products",
     list: [
       {
-        name: "Browse All Products",
+        name: "All Products",
         url: "/home/all-products",
       },
       {
-        name: "Browse My Products",
+        name: "My Products",
         url: "/home/my-products-seller",
       },
     ],
@@ -75,11 +75,11 @@ export const TourGuideLinks = [
     name: "Itineraries",
     list: [
       {
-        name: "Browse All Itineraries",
+        name: "All Itineraries",
         url: "/home/all-itineraries",
       },
       {
-        name: "Browse My Itineraries",
+        name: "My Itineraries",
         url: "/home/my-itineraries",
       },
     ],
@@ -88,23 +88,41 @@ export const TourGuideLinks = [
 
 export const AdminLinks = [
   {
-    name: "Manage activities category",
-    url: "/home/admin-dashboard/activity-categories",
-  },
-  {
-    name: "Manage itineraries",
-    url: "/home/admin-dashboard/flag-itineraries",
+    name: "Activities",
+    list: [
+      {
+        name: "All Activities",
+        url: "/home/all-activities",
+      },
+      {
+        name: "Manage activities category",
+        url: "/home/admin-dashboard/activity-categories",
+      },
+    ],
   },
   {
     name: "Products",
     list: [
       {
-        name: "Browse All Products",
+        name: "All Products",
         url: "/home/all-products",
       },
       {
         name: "Manage Products",
         url: "/home/admin-dashboard/my-products-admin",
+      },
+    ],
+  },
+  {
+    name: "Itineraries",
+    list: [
+      {
+        name: "All Itineraries",
+        url: "/home/all-itineraries",
+      },
+      {
+        name: "Manage itineraries",
+        url: "/home/admin-dashboard/flag-itineraries",
       },
     ],
   },
@@ -116,14 +134,13 @@ export const AdminLinks = [
 
 export const TourismGovernorLinks = [
   {
-    name: "Browse My Historical Places/Museums",
-    url: "/home/my-museums",
-  },
-];
-
-export const GuestLinks = [
-  {
     name: "Historical Places/Museums",
-    url: "/all-museums",
+    list: [
+      {
+        name: "All Historical Places/Museums",
+        url: "/home/all-museums",
+      },
+      { name: "My Historical Places/Museums", url: "/home/my-museums" },
+    ],
   },
 ];
