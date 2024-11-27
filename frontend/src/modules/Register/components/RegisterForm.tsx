@@ -59,6 +59,8 @@ const RegistrationForm = () => {
   const navigation = useNavigation();
   const submit = useSubmit();
   const { setUser } = useContext(UserContext);
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasPassword, setHasPassword] = useState(false);
 
   const { countries, terms } = useLoaderData() as {
     countries: { name: { common: string } }[];
@@ -128,20 +130,6 @@ const RegistrationForm = () => {
 
     return () => clearInterval(intervalId);
   }, []);
-
-  // const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
-  //   const formData = new FormData(e.currentTarget);
-  //   const data = Object.fromEntries(formData);
-
-  //   for (const key in data) {
-  //     if (data[key] === "" && key !== "acceptedTerms") {
-  //       setOneOfFieldsIsEmpty(true);
-  //       return;
-  //     }
-  //   }
-
-  //   setOneOfFieldsIsEmpty(false);
-  // };
 
   const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
@@ -250,7 +238,17 @@ const RegistrationForm = () => {
       certificates: [],
       taxDocument: null,
     });
+    setShowPassword(false);
+    setHasPassword(false);
   }, [userType]);
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isEmpty = e.target.value.length === 0;
+    setHasPassword(!isEmpty);
+    if (isEmpty) {
+      setShowPassword(false);
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
@@ -311,12 +309,23 @@ const RegistrationForm = () => {
                     userType === userRoles.tourist
                       ? "grid-cols-2"
                       : "grid-cols-1"
-                  } gap-4`}
+                  } gap-4 px-3`}
                 >
-                  {userType !== userRoles.tourist && <GeneralRegister />}
+                  {userType !== userRoles.tourist && (
+                    <GeneralRegister
+                      handlePasswordChange={handlePasswordChange}
+                      showPassword={showPassword}
+                      hasPassword={hasPassword}
+                      setShowPassword={setShowPassword}
+                    />
+                  )}
 
                   {userType === userRoles.tourist && (
                     <TouristRegister
+                      handlePasswordChange={handlePasswordChange}
+                      showPassword={showPassword}
+                      hasPassword={hasPassword}
+                      setShowPassword={setShowPassword}
                       countryNames={countryNames}
                       setNationality={setNationality}
                       nationality={nationality}
@@ -345,14 +354,14 @@ const RegistrationForm = () => {
                   name="acceptedTerms"
                   value={acceptedTerms.toString()}
                 />
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 px-3">
                   <Checkbox
                     id="terms"
                     checked={acceptedTerms}
                     onCheckedChange={(checked) =>
                       setAcceptedTerms(checked as boolean)
                     }
-                    className="border-white"
+                    className="border-2 border-accent-gold focus:outline-none focus:ring-2 focus:ring-accent-gold"
                   />
                   <label htmlFor="terms" className="text-sm text-white">
                     I accept the{" "}
@@ -369,6 +378,7 @@ const RegistrationForm = () => {
                 <SubmitButton
                   isSubmitting={isSubmitting}
                   oneOfFieldsIsEmpty={oneOfFieldsIsEmpty || !acceptedTerms}
+                  logIn={false}
                 />
               </Form>
             </motion.div>
@@ -395,7 +405,7 @@ const RegistrationForm = () => {
           className="mt-4 text-center text-white"
         >
           Already have an account?{" "}
-          <a href="/login" className="ml-2 text-yellow-400 hover:underline">
+          <a href="/login" className="text-yellow-400 hover:underline">
             Sign in
           </a>
         </motion.p>
