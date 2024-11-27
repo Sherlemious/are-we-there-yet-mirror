@@ -10,6 +10,7 @@ import { UserCog } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import NavBarDropdown from "./NavBarDropdown";
+import CurrencySelect from "./CurrencySelect";
 
 const styles = {
   nav: "relative z-10 flex h-[10vh] items-center bg-black/10 backdrop-blur-md",
@@ -34,7 +35,7 @@ const styles = {
     button:
       "hover:shadow-glow min-w-fit rounded-2xl bg-accent-gold text-[20px] text-black transition-all duration-150 hover:bg-accent-gold/70 disabled:cursor-not-allowed disabled:opacity-50",
     select:
-      "rounded-xl border-2 border-accent-gold bg-transparent px-3 py-1 text-black hover:border-accent-gold/70 transition-all duration-150 w-full",
+      "rounded-xl border-2 border-accent-gold bg-accent-gold font-medium text-[20px] px-3 py-1 text-black hover:border-accent-gold/70 transition-all duration-150 w-full",
   },
 };
 
@@ -229,23 +230,10 @@ export default function NewNavBar() {
             }}
             className={styles.actions.button}
           >
-            {user.account_type === AccountType.None ? "Register Now" : "Logout"}
+            {user.account_type === AccountType.None ? "Get Started" : "Logout"}
           </Button>
         </div>
-        <select
-          id="currency"
-          name="currency"
-          value={localStorage.getItem("currency") || "EGP"}
-          className={styles.actions.select}
-          onChange={(e) => {
-            localStorage.setItem("currency", e.target.value);
-            window.location.reload();
-          }}
-        >
-          <option value="EGP">EGP</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-        </select>
+        <CurrencySelect />
       </div>
     </nav>
   );

@@ -18,8 +18,6 @@ export default function NavBarDropdown({
 
   const { pathname } = useLocation();
 
-  console.log(list);
-
   function handleDropdownStyles(props: { isActive: boolean }) {
     return cn(
       "block h-full w-full px-10 py-5 font-medium text-white/90 hover:text-yellow-400 duration-200 transition-all",
@@ -40,14 +38,6 @@ export default function NavBarDropdown({
       setIsVisible(false);
     }
   }, [showDropdown]);
-
-  console.log(pathname);
-  console.log(
-    user?.account_type === AccountType.TourismGovernor &&
-      pathname.includes("activity-categories"),
-  );
-  console.log(user.account_type, AccountType.Admin);
-  console.log(pathname.includes(linkName.toLowerCase()));
 
   return (
     <div
