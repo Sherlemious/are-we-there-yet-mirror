@@ -141,6 +141,7 @@ export const TourismGovernorLinks = [
         url: "/home/all-museums",
       },
       { name: "My Historical Places/Museums", url: "/home/my-museums" },
+      { name: "My Tags", url: "/home/my-tags" },
     ],
   },
 ];

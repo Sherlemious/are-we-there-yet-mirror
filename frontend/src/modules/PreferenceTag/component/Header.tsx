@@ -21,30 +21,16 @@ const Header = ({
     historical_period: string,
   ) => {
     try {
-      // const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/tags', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ name, type, historical_period }),
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error('Failed to add tag');
-      // }
       const response = await axiosInstance.post("/tags", {
         name,
         type,
         historical_period,
       });
 
-      // const newTag = await response.json();
       const newTag = response.data; // Adjust according to your response structure
       console.log("Tag added:", newTag); // Log the added user
-      // Optionally, you can trigger a state update or callback to refresh the user list
       const tagId = newTag.data.tagId;
       const tag = await getTag(tagId);
-      // console.log('Tag:', tag); // Log the added user
       setTags((prevTags) => [
         ...prevTags,
         {
@@ -59,16 +45,10 @@ const Header = ({
       console.error("Error adding tag:", error);
     }
   };
-  // async function getTag(id: string) {
-  //   return fetch(`https://are-we-there-yet-mirror.onrender.com/api/tags/${id}`)
-  //     .then((response) => response.json())
-  //     .then((data) => data.data.tag[0]);
-  // }
   async function getTag(id: string) {
     try {
       // Send the GET request to the backend
       const response = await axiosInstance.get(`/tags/${id}`);
-      
       console.log(response.data.data); // Log the response data for debugging
       return response.data.data.tag[0]; // Adjust according to your response structure
     } catch (error) {
@@ -79,7 +59,7 @@ const Header = ({
   
 
   const handleAddTag = (name: string, historical_period: string) => {
-    addTag(name, "Preference", historical_period);
+    addTag(name, "preference", historical_period);
     setIsTagPopupOpen(false); // Close the popup after adding
   };
   const { user } = useContext(UserContext);
