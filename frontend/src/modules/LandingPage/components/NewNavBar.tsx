@@ -33,9 +33,11 @@ const styles = {
     userIcon:
       "hover:shadow-glow rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-70",
     button:
-      "hover:shadow-glow min-w-fit rounded-2xl bg-accent-gold text-[20px] text-black transition-all duration-150 hover:bg-accent-gold/70 disabled:cursor-not-allowed disabled:opacity-50",
+      "min-w-[180px] rounded-xl bg-accent-gold text-[20px] text-black font-semibold py-4 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50",
+    buttonAnimated:
+      "min-w-[180px] rounded-xl bg-accent-gold text-[20px] text-black font-semibold py-4 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50 motion-safe:animate-bounce",
     select:
-      "rounded-xl border-2 border-accent-gold bg-accent-gold font-medium text-[20px] px-3 py-1 text-black hover:border-accent-gold/70 transition-all duration-150 w-full",
+      " border border-gray-300 bg-white font-normal text-[16px] px-2 py-1 text-gray-700 hover:border-gray-400 transition-all duration-150 w-full",
   },
 };
 
@@ -228,7 +230,11 @@ export default function NewNavBar() {
                 navigate("/");
               } else navigate("/register");
             }}
-            className={styles.actions.button}
+            className={
+              user.account_type === AccountType.None
+                ? styles.actions.buttonAnimated
+                : styles.actions.button
+            }
           >
             {user.account_type === AccountType.None ? "Get Started" : "Logout"}
           </Button>
