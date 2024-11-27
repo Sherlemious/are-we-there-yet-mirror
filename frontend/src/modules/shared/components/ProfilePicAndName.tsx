@@ -1,5 +1,5 @@
 import { Camera } from "lucide-react";
-import { UserType } from "../types/User.types";
+import { AccountType, UserType } from "../types/User.types";
 
 export default function ProfilePicAndName({
   user,
@@ -14,6 +14,8 @@ export default function ProfilePicAndName({
   fileInputRef: React.RefObject<HTMLInputElement>;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
+  console.log(user.account_type);
+  console.log(AccountType.TourismGovernor);
   return (
     <div className="flex flex-col items-center lg:items-center">
       <div className="relative">
@@ -55,11 +57,18 @@ export default function ProfilePicAndName({
       <h1 className="mt-4 text-2xl font-bold text-accent-dark-blue">
         {user.username}
       </h1>
-      <p className="mt-1 text-primary-blue">
-        {user.account_type.toLowerCase() === "tourguide"
-          ? "Tour Guide"
-          : user.account_type || "NA"}
-      </p>
+      {user.account_type === AccountType.TourGuide && (
+        <p className="mt-1 text-primary-blue">Tour Guide</p>
+      )}
+
+      {user.account_type === AccountType.TourismGovernor && (
+        <p className="mt-1 text-primary-blue">Tourism Governor</p>
+      )}
+
+      {user.account_type !== AccountType.TourismGovernor &&
+        user.account_type !== AccountType.TourGuide && (
+          <p className="mt-1 text-primary-blue">{user.account_type}</p>
+        )}
     </div>
   );
 }

@@ -93,6 +93,10 @@ const BrowserRouter = createBrowserRouter([
     loader: rootLayoutLoader,
     children: [
       {
+        index: true,
+        element: <LandingPage />,
+      },
+      {
         path: "all-activities/*",
         element: <AllActivities />,
       },
