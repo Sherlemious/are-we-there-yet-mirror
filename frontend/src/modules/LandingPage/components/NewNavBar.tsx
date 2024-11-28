@@ -31,13 +31,13 @@ const styles = {
     wrapper: "mr-5 flex flex-col items-end gap-2",
     row: "flex items-center gap-5",
     userIcon:
-      "hover:shadow-glow rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-70",
+      "hover:shadow-glow rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:bg-accent-dark-blue hover:text-accent-gold",
     button:
       "min-w-[180px] rounded-xl bg-accent-gold text-[20px] text-black font-semibold py-4 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50",
     buttonAnimated:
       "min-w-[180px] rounded-xl bg-accent-gold text-[20px] text-black font-semibold py-4 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50 motion-safe:animate-bounce",
     select:
-      " border border-gray-300 bg-white font-normal text-[16px] px-2 py-1 text-gray-700 hover:border-gray-400 transition-all duration-150 w-full",
+      "border border-gray-300 bg-white font-normal text-[16px] px-2 py-1 text-gray-700 hover:border-gray-400 transition-all duration-150 w-full",
   },
 };
 
