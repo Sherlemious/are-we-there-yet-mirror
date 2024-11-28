@@ -3,6 +3,7 @@ import ProfileTable from "../components/ProfileTable";
 import Header from "../components/Header";
 import axiosInstance from "../../shared/services/axiosInstance";
 import type { UserType } from "@/modules/shared/types/User.types";
+import UsersStats from "../components/UsersStats";
 
 const Dashboard = () => {
   const [profiles, setProfiles] = useState<UserType[]>([]);
@@ -62,6 +63,7 @@ const Dashboard = () => {
         setProfiles={setProfiles}
         onDeleteProfile={handleDeleteProfile}
       />
+      <UsersStats />
     </div>
   );
 };

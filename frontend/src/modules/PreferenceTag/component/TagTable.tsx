@@ -26,7 +26,7 @@ function TagTable({ Tags, onDeleteTag, setTags }: TagTableProps) {
 
   return (
     <>
-      <div className="container mx-auto">
+      <div className="w-96 container mx-auto">
         <Table
           data={Tags}
           columns={tableColumns}
