@@ -203,11 +203,13 @@ export default function NewNavBar() {
 
       <div className={styles.actions.wrapper}>
         <div className={styles.actions.row}>
+        {user.account_type !== AccountType.None && (
         <NotificationBell
             notifications={notifications}
             onClearNotifications={() => setNotifications([])}
           />
-          {user.account_type !== AccountType.None && (
+        )}
+          {user.account_type !== AccountType.None && user.account_type !== AccountType.TourismGovernor&& (
             <UserCog
               onClick={() => {
                 if (user.account_type === AccountType.TourGuide) {
