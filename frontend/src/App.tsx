@@ -51,6 +51,8 @@ import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBoo
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
 import { LoginPage } from "./modules/Login/App";
+import ForgotPasswordForm from "./modules/Login/components/ForgetPasswordForm";
+import LoginForm from "./modules/Login/components/LoginForm";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -78,6 +80,16 @@ const BrowserRouter = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+    children: [
+      {
+        index: true,
+        element: <LoginForm />,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPasswordForm />,
+      },
+    ],
   },
   {
     path: "/register",
