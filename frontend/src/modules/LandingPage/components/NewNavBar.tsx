@@ -184,7 +184,8 @@ export default function NewNavBar() {
             item.list &&
             item.name !== "Activities" &&
             item.name !== "Historical Places/Museums" &&
-            item.name !== "Itineraries"
+            (item.name !== "Itineraries" ||
+              user.account_type === AccountType.TourGuide)
           ) {
             return (
               <NavBarDropdown
