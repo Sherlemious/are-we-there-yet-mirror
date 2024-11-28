@@ -121,6 +121,41 @@ class UserRepository {
   async buyProduct(id: string, product_id: string) {
     return await User.findByIdAndUpdate(id, { $push: { purchased_products: new ObjectId(product_id) } });
   }
+  // i want to check if the product id is in the purchased_products array of the user and if yes return true else return false
+  async checkIfProductIsPurchased(id: string, product_id: string) {
+    const user = await User.findById(id);
+    if (user) {
+      return user.purchased_products.includes(new ObjectId(product_id));
+    }
+    return false;
+  }
+
+  async productReturnWallet(id: string, product_id: string, price: number) {
+    await User.findByIdAndUpdate(id, {
+      $inc: {
+        wallet: price,
+      },
+    });
+    return await User.findByIdAndUpdate(id, { $pull: { purchased_products: new ObjectId(product_id) } });
+  }
+
+  async itineraryReturnWallet(id: string, itinerary_id: string, price: number) {
+    await User.findByIdAndUpdate(id, {
+      $inc: {
+        wallet: price,
+      },
+    });
+    return await User.findByIdAndUpdate(id, { $pull: { purchased_products: new ObjectId(itinerary_id) } });
+  }
+
+  async getHowManyUsersByMonth(month: number, year: number) {
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 1));
+
+    return await User.find({
+      createdAt: { $gte: startDate, $lt: endDate },
+    });
+  }
 }
 
 export default new UserRepository();
