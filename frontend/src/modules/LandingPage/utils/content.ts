@@ -36,6 +36,19 @@ export const TouristLinks = [
     name: "My Complaints",
     url: "/home/my-complaints",
   },
+  {
+    name: "Orders",
+    list: [
+      {
+        name: "Current Orders",
+        url: "/home/orders/current-orders",
+      },
+      {
+        name: "Past Orders",
+        url: "/home/orders/past-orders",
+      },
+    ],
+  },
 ];
 
 export const AdvertiserLinks = [
