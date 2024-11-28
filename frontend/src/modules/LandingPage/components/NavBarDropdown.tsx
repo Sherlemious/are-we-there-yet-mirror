@@ -15,10 +15,13 @@ export default function NavBarDropdown({
   const [isHoveringOnDiv, setIsHoveringOnDiv] = useState(false);
   const [, setIsVisible] = useState(false);
   const { user } = useContext(UserContext);
-
   const { pathname } = useLocation();
 
-  console.log(list);
+  // Check if any dropdown item's URL matches the current path
+  const isDropdownItemActive = list.some(
+    (item) =>
+      pathname === item.url || pathname.includes(item.url.toLowerCase()),
+  );
 
   function handleDropdownStyles(props: { isActive: boolean }) {
     return cn(
@@ -41,13 +44,15 @@ export default function NavBarDropdown({
     }
   }, [showDropdown]);
 
-  console.log(pathname);
-  console.log(
-    user?.account_type === AccountType.TourismGovernor &&
-      pathname.includes("activity-categories"),
-  );
-  console.log(user.account_type, AccountType.Admin);
-  console.log(pathname.includes(linkName.toLowerCase()));
+  // Determine if this dropdown should be active
+  const isActive =
+    pathname.includes(linkName.toLowerCase()) ||
+    (pathname.includes("museums") &&
+      user?.account_type === AccountType.TourismGovernor) ||
+    (pathname.includes("/home/admin-dashboard/activity-categories") &&
+      user?.account_type === AccountType.Admin &&
+      linkName === "Activities") ||
+    (linkName === "Others" && isDropdownItemActive);
 
   return (
     <div
@@ -63,20 +68,17 @@ export default function NavBarDropdown({
     >
       <div className="flex h-[83px] items-center">
         <NavLink
-          to={list[0].url}
+          to={linkName !== "Others" ? list[0].url : pathname}
           className={
-            pathname.includes(linkName.toLowerCase()) ||
-            (pathname.includes("museums") &&
-              user?.account_type === AccountType.TourismGovernor) ||
-            (pathname.includes("/home/admin-dashboard/activity-categories") &&
-              user?.account_type === AccountType.Admin &&
-              linkName === "Activities")
+            isActive
               ? "hover:drop-shadow-glow drop-shadow-glow py-2 font-medium text-accent-gold transition-all"
               : "font-medium text-black"
           }
         >
           <span
-            className={`${isHoveringOnDiv ? "text-accent-gold" : ""} text-sub-headings transition-colors duration-200`}
+            className={`${
+              isHoveringOnDiv || isActive ? "text-accent-gold" : ""
+            } text-sub-headings transition-colors duration-200`}
           >
             {linkName}
           </span>
