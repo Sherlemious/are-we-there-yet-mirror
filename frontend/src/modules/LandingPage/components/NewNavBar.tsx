@@ -20,7 +20,7 @@ const styles = {
   },
   links: {
     list: "flex w-full list-none justify-evenly text-center items-center",
-    item: "flex items-center text-sub-headings ",
+    item: "flex items-center text-sub-headings",
     link: {
       base: "px-3 py-2 font-medium transition-all duration-200 hover:text-accent-gold hover:drop-shadow-glow",
       active: "text-accent-gold drop-shadow-glow",
@@ -69,6 +69,19 @@ export default function NewNavBar() {
     );
   }
 
+  // Separate non-dropdown items for the Other dropdown
+  const getOtherItems = () => {
+    const otherItems = navBarItems?.links?.filter(
+      (item) =>
+        !item.list && // Not already a dropdown
+        item.name !== "Home" && // Not one of the main items
+        item.name !== "Activities" &&
+        item.name !== "Historical Places/Museums" &&
+        item.name !== "Itineraries",
+    );
+    return otherItems || [];
+  };
+
   return (
     <nav className={styles.nav}>
       <NavLink
@@ -82,6 +95,7 @@ export default function NewNavBar() {
         />
       </NavLink>
       <ul className={styles.links.list}>
+        {/* Home Link */}
         <NavLink
           to={user.account_type === AccountType.None ? "/" : "/home"}
           className={(props) => handleStyles(props)}
@@ -90,6 +104,7 @@ export default function NewNavBar() {
           <span className="text-sub-headings">Home</span>
         </NavLink>
 
+        {/* Activities Section */}
         {user.account_type !== AccountType.Advertiser &&
           user.account_type !== AccountType.Admin && (
             <NavLink
@@ -120,6 +135,7 @@ export default function NewNavBar() {
           />
         )}
 
+        {/* Historical Places/Museums Section */}
         {user.account_type !== AccountType.TourismGovernor && (
           <NavLink
             to={
@@ -141,6 +157,7 @@ export default function NewNavBar() {
           />
         )}
 
+        {/* Itineraries Section */}
         {user.account_type !== AccountType.TourGuide &&
           user.account_type !== AccountType.Admin && (
             <NavLink
@@ -163,38 +180,37 @@ export default function NewNavBar() {
           />
         )}
 
+        {/* All NavBar Dropdown Items */}
         {navBarItems?.links?.map((item) => {
-          if (!item.list) {
-            return (
-              <li key={item.name} className={styles.links.item}>
-                <NavLink
-                  to={item.url!}
-                  className={(props: { isActive: boolean }) =>
-                    handleStyles(props)
-                  }
-                >
-                  {item.name}
-                </NavLink>
-              </li>
-            );
-          }
           if (
-            (user.account_type !== AccountType.Advertiser &&
-              user.account_type !== AccountType.Admin &&
-              user.account_type !== AccountType.TourismGovernor) ||
-            (item.name !== "Activities" &&
-              item.name !== "Itineraries" &&
-              item.name !== "Historical Places/Museums")
+            item.list &&
+            item.name !== "Activities" &&
+            item.name !== "Historical Places/Museums" &&
+            (item.name !== "Itineraries" ||
+              user.account_type === AccountType.TourGuide)
           ) {
             return (
               <NavBarDropdown
                 key={item.name}
-                list={item.list}
                 linkName={item.name}
+                list={item.list}
               />
             );
           }
+          return null;
         })}
+
+        {/* Other Items Dropdown */}
+        {getOtherItems().length > 0 && (
+          <NavBarDropdown
+            linkName="Others"
+            list={getOtherItems()!.map((item) => ({
+              name: item.name,
+              url: item.url as string,
+            }))}
+            key="Others"
+          />
+        )}
       </ul>
 
       <div className={styles.actions.wrapper}>
