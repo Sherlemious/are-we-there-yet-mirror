@@ -21,22 +21,11 @@ const Header = ({
     historical_period: string,
   ) => {
     try {
-      // const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/tags', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ name, type, historical_period }),
-      // });
       const response = await axiosInstance.post("/tags", {
         name,
         type,
         historical_period,
       });
-
-      // if (!response.ok) {
-      //   throw new Error('Failed to add tag');
-      // }
 
       // const newTag = await response.json();
       const newTag = response.data; // Adjust according to your response structure
@@ -44,7 +33,6 @@ const Header = ({
       // Optionally, you can trigger a state update or callback to refresh the user list
       const tagId = newTag.data.tagId;
       const tag = await getTag(tagId);
-      // console.log('Tag:', tag); // Log the added user
       setTags((prevTags) => [
         ...prevTags,
         {
@@ -59,11 +47,6 @@ const Header = ({
       console.error("Error adding tag:", error);
     }
   };
-  // async function getTag(id: string) {
-  //   return fetch(`https://are-we-there-yet-mirror.onrender.com/api/tags/${id}`)
-  //     .then((response) => response.json())
-  //     .then((data) => data.data.tag[0]);
-  // }
   async function getTag(id: string) {
     try {
       // Send the GET request to the backend
@@ -89,9 +72,9 @@ const Header = ({
   const { user } = useContext(UserContext);
 
   return (
-    <header className="flex items-center justify-between bg-gray-100 p-4">
-      <div className="flex flex-col justify-end p-14 text-text-primary">
-        <div className="w-full max-w-[50vw] divide-y-2 divide-borders-bottomBorder">
+    <header className="flex items-center justify-between p-4">
+      <div className="flex flex-col justify-end p-14 text-primary-blue">
+        <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
           <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
           <h3 className="py-4 text-2xl font-bold">Tags</h3>
         </div>
