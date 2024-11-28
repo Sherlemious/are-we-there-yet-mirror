@@ -64,6 +64,26 @@ const BrowserRouter = createBrowserRouter([
         element: <LandingPage />,
       },
       {
+        path: "register",
+        element: <Register />,
+        action: registerAction,
+        loader: registerLoader,
+      },
+      {
+        path: "login",
+        element: <LoginPage />,
+        children: [
+          {
+            index: true,
+            element: <LoginForm />,
+          },
+          {
+            path: "forgot-password",
+            element: <ForgotPasswordForm />,
+          },
+        ],
+      },
+      {
         path: "all-activities/*",
         element: <AllActivities />,
       },
@@ -78,26 +98,6 @@ const BrowserRouter = createBrowserRouter([
     ],
   },
   {
-    path: "/login",
-    element: <LoginPage />,
-    children: [
-      {
-        index: true,
-        element: <LoginForm />,
-      },
-      {
-        path: "forgot-password",
-        element: <ForgotPasswordForm />,
-      },
-    ],
-  },
-  {
-    path: "/register",
-    element: <Register />,
-    action: registerAction,
-    loader: registerLoader,
-  },
-  {
     path: "/home",
     id: "root",
     element: <RootLayout />,
@@ -108,6 +108,7 @@ const BrowserRouter = createBrowserRouter([
         index: true,
         element: <LandingPage />,
       },
+
       {
         path: "all-activities/*",
         element: <AllActivities />,

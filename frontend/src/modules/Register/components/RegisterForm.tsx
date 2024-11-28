@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { imgLinks } from "@/modules/shared/utils/constants";
 import {
   useActionData,
   useLoaderData,
@@ -33,8 +32,6 @@ import AdvertiserOrSellerDocUpload from "./AdvertiserOrSellerDocUpload";
 import SubmitButton from "./SubmitButton";
 import { apiGetTermsAndConditions } from "../services/apiGetTermsAndConditions";
 
-const imgs = Object.values(imgLinks.landing_page);
-
 type NewData = {
   userRole: string;
   username: string;
@@ -51,7 +48,6 @@ type NewData = {
 const RegistrationForm = () => {
   const [userType, setUserType] = useState("");
   const [nationality, setNationality] = useState("");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [oneOfFieldsIsEmpty, setOneOfFieldsIsEmpty] = useState(true);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
@@ -122,14 +118,6 @@ const RegistrationForm = () => {
   }, [res]);
 
   const isSubmitting = navigation.state === "submitting";
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imgs.length);
-    }, 4000);
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
@@ -252,25 +240,6 @@ const RegistrationForm = () => {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        {imgs.map((image, index) => (
-          <div
-            key={image}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              currentImageIndex === index ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              backgroundImage: `url(${image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "blur(8px)",
-              transform: "scale(1.1)",
-            }}
-          />
-        ))}
-        <div className="absolute inset-0 bg-black opacity-50" />
-      </div>
-
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

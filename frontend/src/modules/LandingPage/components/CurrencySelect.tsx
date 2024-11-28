@@ -5,8 +5,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLocation } from "react-router";
 
 const CurrencySelect = () => {
+  const { pathname } = useLocation();
+
   return (
     <Select
       defaultValue={localStorage.getItem("currency") || "EGP"}
@@ -15,7 +18,9 @@ const CurrencySelect = () => {
         window.location.reload();
       }}
     >
-      <SelectTrigger className="min-w-[100px] rounded-xl border-2 border-accent-gold bg-accent-gold px-3 py-1 text-[20px] font-medium text-black transition-all duration-150 hover:border-accent-gold/70">
+      <SelectTrigger
+        className={`${pathname === "/register" || pathname.includes("/login") ? "max-w-[200px]" : "min-w-[100px]"} rounded-xl border-2 border-accent-gold bg-accent-gold px-3 py-1 text-[20px] font-medium text-black transition-all duration-150 hover:border-accent-gold/70`}
+      >
         <SelectValue placeholder="Select currency" />
       </SelectTrigger>
       <SelectContent className="border-accent-gold bg-white">

@@ -14,6 +14,7 @@ const ForgotPasswordForm = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
+    console.log(data);
 
     // call the API to verify email,and send the OTP
 
