@@ -14,8 +14,6 @@ export default function ProfilePicAndName({
   fileInputRef: React.RefObject<HTMLInputElement>;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
-  console.log(user.account_type);
-  console.log(AccountType.TourismGovernor);
   return (
     <div className="flex flex-col items-center lg:items-center">
       <div className="relative">

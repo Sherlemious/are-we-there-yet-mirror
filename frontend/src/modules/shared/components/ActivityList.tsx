@@ -107,10 +107,8 @@ async function getMyActivities() {
   }
 }
 
-async function getAllCategories(user: any) {
+async function getAllCategories() {
   try {
-    // check if there is a user
-    if (user?.account_type === "None") return [];
     // get the data via axios
     const resPromise = await axiosInstance.get("/categories");
 
@@ -302,7 +300,7 @@ export function ActivityList() {
         setLoading(false);
       });
 
-    getAllCategories(user).then((data) => setCategories(data));
+    getAllCategories().then((data) => setCategories(data));
   }, []);
 
   // handle the sorting

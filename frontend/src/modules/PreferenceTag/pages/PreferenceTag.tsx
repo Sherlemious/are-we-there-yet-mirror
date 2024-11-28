@@ -1,23 +1,22 @@
 import { useEffect, useState } from "react";
 import TagTable from "../component/TagTable";
-import { prefrenceTag } from "../types/PrefrenceTag";
+import { preferenceTag } from "../types/PreferenceTag";
 import Header from "../component/Header";
 import axiosInstance from "../../shared/services/axiosInstance";
 
 const Dashboard = () => {
-  const [Tags, setTags] = useState<prefrenceTag[]>([]);
+  const [Tags, setTags] = useState<preferenceTag[]>([]);
   const [isTagPopupOpen, setIsTagPopupOpen] = useState(false);
   const [refresh, setRefresh] = useState(0);
 
   // Fetch profiles (GET request)
   const fetchTags = async () => {
     try {
-      // const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/tags');
       const response = await axiosInstance.get("/tags");
-      // const data = await response.json();
-      // console.log(data);
-      // setTags(data.data.tags);
-      setTags(response.data.data.tags);
+      const tags = response.data.data.tags.filter(
+        (t: preferenceTag) => t.type === "Preference",
+      );
+      setTags(tags);
     } catch (error) {
       console.error("Error fetching tags:", error);
     }
@@ -26,17 +25,9 @@ const Dashboard = () => {
   // Delete profile by _id (DELETE request)
   const handleDeleteTag = async (id: string) => {
     try {
-      // const response = await fetch(
-      //   `https://are-we-there-yet-mirror.onrender.com/api/tags/${id}`,
-      //   {
-      //     method: "DELETE",
-      //   },
-      // );
       const response = await axiosInstance.delete(`/tags/${id}`);
 
-      // if (response.ok) {
       if (response.status === 200) {
-        // setTags(Tags.filter((Tag) => Tag._id !== id));
         setTags((prevTags) => prevTags.filter((tag) => tag._id !== id));
         setRefresh(refresh + 1);
       } else {

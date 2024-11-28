@@ -10,6 +10,7 @@ import { UserCog } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import NavBarDropdown from "./NavBarDropdown";
+import CurrencySelect from "./CurrencySelect";
 
 const styles = {
   nav: "relative z-10 flex h-[10vh] items-center bg-black/10 backdrop-blur-md",
@@ -27,11 +28,16 @@ const styles = {
     },
   },
   actions: {
-    wrapper: "mr-5 flex w-[12%] items-center gap-5",
+    wrapper: "mr-5 flex flex-col items-end gap-2",
+    row: "flex items-center gap-5",
     userIcon:
-      "hover:shadow-glow rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:opacity-70",
+      "hover:shadow-glow rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:bg-accent-dark-blue hover:text-accent-gold",
     button:
-      "hover:shadow-glow min-w-fit rounded-2xl bg-accent-gold text-[20px] text-black transition-all duration-150 hover:bg-accent-gold/70 disabled:cursor-not-allowed disabled:opacity-50",
+      "min-w-[180px] rounded-xl bg-accent-gold text-[20px] text-black font-semibold py-4 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50",
+    buttonAnimated:
+      "min-w-[180px] rounded-xl bg-accent-gold text-[20px] text-black font-semibold py-4 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50 motion-safe:animate-bounce",
+    select:
+      "border border-gray-300 bg-white font-normal text-[16px] px-2 py-1 text-gray-700 hover:border-gray-400 transition-all duration-150 w-full",
   },
 };
 
@@ -42,8 +48,6 @@ export default function NewNavBar() {
   const navBarItems: NavBarContent = returnNavBarContentBasedOnUser(
     user?.account_type,
   );
-
-  console.log(navBarItems);
 
   function handleClearUser() {
     setUser({
@@ -80,18 +84,16 @@ export default function NewNavBar() {
 
   return (
     <nav className={styles.nav}>
-      {
-        <NavLink
-          to={user.account_type === AccountType.None ? "/" : "/home"}
-          className={styles.logo.wrapper}
-        >
-          <img
-            src={Logo}
-            alt="Are We There Yet Logo"
-            className={styles.logo.image}
-          />
-        </NavLink>
-      }
+      <NavLink
+        to={user.account_type === AccountType.None ? "/" : "/home"}
+        className={styles.logo.wrapper}
+      >
+        <img
+          src={Logo}
+          alt="Are We There Yet Logo"
+          className={styles.logo.image}
+        />
+      </NavLink>
       <ul className={styles.links.list}>
         {/* Home Link */}
         <NavLink
@@ -212,41 +214,48 @@ export default function NewNavBar() {
       </ul>
 
       <div className={styles.actions.wrapper}>
-        {user.account_type !== AccountType.None && (
-          <UserCog
-            onClick={() => {
-              if (user.account_type === AccountType.TourGuide) {
-                return navigate(`/home/tour-guide-profile/${user._id}`);
-              }
-              if (user.account_type === AccountType.TourismGovernor) {
-                return navigate(`/home/tourism-governor-profile/${user._id}`);
-              }
-              if (user.account_type === AccountType.Admin) {
-                return navigate("/home/admin-dashboard");
-              }
-              return navigate(
-                `/home/${user.account_type.toLowerCase()}-profile/${user._id}`,
-              );
-            }}
-            size={40}
-            className={styles.actions.userIcon}
-          />
-        )}
+        <div className={styles.actions.row}>
+          {user.account_type !== AccountType.None && (
+            <UserCog
+              onClick={() => {
+                if (user.account_type === AccountType.TourGuide) {
+                  return navigate(`/home/tour-guide-profile/${user._id}`);
+                }
+                if (user.account_type === AccountType.TourismGovernor) {
+                  return navigate(`/home/tourism-governor-profile/${user._id}`);
+                }
+                if (user.account_type === AccountType.Admin) {
+                  return navigate("/home/admin-dashboard");
+                }
+                return navigate(
+                  `/home/${user.account_type.toLowerCase()}-profile/${user._id}`,
+                );
+              }}
+              size={40}
+              className={styles.actions.userIcon}
+            />
+          )}
 
-        <Button
-          variant="default"
-          onClick={() => {
-            if (user.account_type !== AccountType.None) {
-              handleClearUser();
-              localStorage.removeItem("token");
-              toast.success("Logged out successfully");
-              navigate("/");
-            } else navigate("/register");
-          }}
-          className={styles.actions.button}
-        >
-          {user.account_type === AccountType.None ? "Register Now" : "Logout"}
-        </Button>
+          <Button
+            variant="default"
+            onClick={() => {
+              if (user.account_type !== AccountType.None) {
+                handleClearUser();
+                localStorage.removeItem("token");
+                toast.success("Logged out successfully");
+                navigate("/");
+              } else navigate("/register");
+            }}
+            className={
+              user.account_type === AccountType.None
+                ? styles.actions.buttonAnimated
+                : styles.actions.button
+            }
+          >
+            {user.account_type === AccountType.None ? "Get Started" : "Logout"}
+          </Button>
+        </div>
+        <CurrencySelect />
       </div>
     </nav>
   );
