@@ -63,13 +63,13 @@ const RegistrationForm = () => {
   const [hasPassword, setHasPassword] = useState(false);
 
   const { countries, terms } = useLoaderData() as {
-    countries: { name: { common: string } }[];
+    countries: { country: string }[];
     terms: string;
   };
+  const countryNames = countries?.map((country) => country.country);
 
   const navigate = useNavigate();
-  const countryNames = countries?.map((country) => country.name.common);
-  countryNames.sort();
+
   const res = useActionData() as {
     status: number;
     data: {
@@ -508,13 +508,13 @@ export async function action({ request }: { request: Request }) {
 }
 
 export async function loader() {
-  const response = await fetch(`https://restcountries.com/v3.1/all`);
+  const response = await fetch(`https://countriesnow.space/api/v0.1/countries`);
   const data = await response.json();
 
   const terms = await apiGetTermsAndConditions();
 
   return {
-    countries: data,
+    countries: data.data,
     terms,
   };
 }
