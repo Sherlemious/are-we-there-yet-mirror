@@ -47,6 +47,10 @@ class ItineraryRepo {
   async getItineraryStartDate(id: string) {
     return await Itinerary.findById(id).select('timeline');
   }
+
+  async deactivateItinerariesByCreator(creator: string) {
+    return await Itinerary.updateMany({ created_by: creator }, { active: false });
+  }
 }
 
 export default new ItineraryRepo();

@@ -53,7 +53,7 @@ class AuthController {
         return;
       }
 
-      const token = AuthService.generateAccessToken({ userId: user?._id, accountType: user?.accountType });
+      const token = AuthService.generateAccessToken({ userId: user._id, accountType: user.account_type });
       res.status(ResponseStatusCodes.OK).send({ message: 'User logged in', data: { user: user, jwt: token } });
     } catch (error: any) {
       logger.error(`Error Logging in: ${error}`);

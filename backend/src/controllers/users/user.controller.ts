@@ -6,6 +6,7 @@ import bookingRepo from '../../database/repositories/booking.repo';
 import activityRepo from '../../database/repositories/activity.repo';
 import itineraryRepo from '../../database/repositories/itinerary.repo';
 import bcrypt from 'bcrypt';
+import { accountType } from '../../types/User.types';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -101,6 +102,8 @@ const requestAccountDeletion = async (req: Request, res: Response) => {
   try {
     const userId: string = req.user.userId;
 
+    // Check if user has unattended bookings
+
     const userItineraryBookings = await userRepo.getItinerary(userId);
     const unattendedItineraryBookings =
       userItineraryBookings?.itinerary_bookings.filter((booking: any) =>
@@ -116,6 +119,15 @@ const requestAccountDeletion = async (req: Request, res: Response) => {
     if (unattendedItineraryBookings.length > 0 || unattendedActivityBookings.length > 0) {
       res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'You have unattended bookings' });
       return;
+    }
+
+    // Deactivate itineraries and activities created by the user
+    if (req.user.accountType === accountType.TourGuide) {
+      await itineraryRepo.deactivateItinerariesByCreator(userId);
+    }
+
+    if (req.user.accountType === accountType.Advertiser) {
+      await activityRepo.deactivateActivitiesByCreator(userId);
     }
 
     await userRepo.requestAccountDeletion(userId);
