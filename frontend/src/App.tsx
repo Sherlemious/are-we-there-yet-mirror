@@ -51,6 +51,12 @@ import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBoo
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
 import { LoginPage } from "./modules/Login/App";
+import {
+  currentOrdersLoader,
+  CurrentOrdersPage,
+  pastOrdersLoader,
+  PastOrdersPage,
+} from "./modules/Orders/App";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -95,6 +101,21 @@ const BrowserRouter = createBrowserRouter([
       {
         index: true,
         element: <LandingPage />,
+      },
+      {
+        path: "orders",
+        children: [
+          {
+            path: "current-orders",
+            element: <CurrentOrdersPage />,
+            loader: currentOrdersLoader,
+          },
+          {
+            path: "past-orders",
+            element: <PastOrdersPage />,
+            loader: pastOrdersLoader,
+          },
+        ],
       },
       {
         path: "all-activities/*",
