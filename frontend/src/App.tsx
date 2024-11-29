@@ -50,8 +50,13 @@ import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBooki
 import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
-import { LoginPage } from "./modules/Login/App";
-import ForgotPasswordForm from "./modules/Login/components/ForgetPasswordForm";
+import {
+  ForgetPasswordPage,
+  LoginPage,
+  ResetPasswordForm,
+  SendOTPForm,
+  VerifyOTPForm,
+} from "./modules/Login/App";
 import LoginForm from "./modules/Login/components/LoginForm";
 import {
   currentOrdersLoader,
@@ -85,7 +90,21 @@ const BrowserRouter = createBrowserRouter([
           },
           {
             path: "forgot-password",
-            element: <ForgotPasswordForm />,
+            element: <ForgetPasswordPage />,
+            children: [
+              {
+                index: true,
+                element: <SendOTPForm />,
+              },
+              {
+                path: "verify-otp",
+                element: <VerifyOTPForm />,
+              },
+              {
+                path: "reset-password",
+                element: <ResetPasswordForm />,
+              },
+            ],
           },
         ],
       },

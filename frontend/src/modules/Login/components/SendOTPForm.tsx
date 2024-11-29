@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { LoginOrRegisterInput } from "@/modules/shared/components/LoginOrRegisterInput";
-import { useNavigation } from "react-router";
+import { useNavigate, useNavigation } from "react-router";
 import { Form, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-const ForgotPasswordForm = () => {
+const SendOTPForm = () => {
   const [email, setEmail] = useState("");
   const navigation = useNavigation();
+  const navigate = useNavigate();
   const isSubmitting = navigation.state === "loading";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -17,6 +18,10 @@ const ForgotPasswordForm = () => {
     console.log(data);
 
     // call the API to verify email,and send the OTP
+    //1. call the API to send the OTP to the email
+
+    //2. if the email is found, navigate to the verify OTP page
+    navigate("verify-otp");
 
     // verify OTP
 
@@ -87,4 +92,4 @@ const ForgotPasswordForm = () => {
   );
 };
 
-export default ForgotPasswordForm;
+export default SendOTPForm;
