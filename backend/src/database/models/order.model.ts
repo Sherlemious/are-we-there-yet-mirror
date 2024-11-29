@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose';
+import { OrderStatusType } from '../../types/Order.types';
 
 const orderSchema = new Schema(
   {
@@ -21,7 +22,7 @@ const orderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'completed', 'cancelled'],
+      enum: Object.values(OrderStatusType),
       default: 'pending',
     },
     created_by: {
