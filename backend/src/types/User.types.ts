@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { OrderItemType } from './Order.types';
+import { NotificationType } from './Notification.types';
 
 export enum accountType {
   Admin = 'Admin',
@@ -42,6 +43,8 @@ export interface UserType {
   nationality?: string | null;
   rejected: boolean;
   termsAndConditions: boolean;
+  notifications: [NotificationType];
+  OTP: string;
   attachments: Types.ObjectId[];
   // Tour guide
   years_of_experience?: number | null;
