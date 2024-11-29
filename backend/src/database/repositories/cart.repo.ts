@@ -3,7 +3,7 @@ import { User } from '../models/user.model';
 import { ObjectId } from 'mongodb';
 
 class CartRepo {
-  async getUserCart(id: string): Promise<UserType | null> {
+  async getUserCart(id: string) {
     return await User.findById(id).populate('cart.product');
   }
 

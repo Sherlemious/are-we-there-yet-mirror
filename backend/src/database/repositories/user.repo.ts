@@ -37,6 +37,10 @@ class UserRepository {
     return await User.updateOne({ _id: new ObjectId(id) }, user);
   }
 
+  async updateUserObjectId(id: any, user: UserType) {
+    return await User.updateOne({ _id: id }, user);
+  }
+
   async updateUserLoyaltyPoints(id: string, points: number) {
     const user = await this.findUserById(id);
     const oldPoints = user?.loyalty_points ?? 0;
