@@ -26,15 +26,22 @@ class CartController {
       }
 
       const user = await userRepo.findUserById(req.user.userId);
-      const productInCart = user?.cart?.find((item: any) => item.product.toString() === productId);
       const stock = product.available_quantity ?? 0;
+      const productInCart = user?.cart?.find((item: any) => item.product.toString() === productId);
 
-      if (productInCart) {
-        throw new Error('Product already in cart');
+      if (stock < quantity || quantity <= 0) {
+        throw new Error('Product not available in the requested quantity');
       }
 
-      if (stock < quantity) {
-        throw new Error('Product not available in the requested quantity');
+      if (productInCart) {
+        const updatedUser = await CartRepo.updateProductQuantity(req.user.userId, productId, quantity);
+
+        res.status(ResponseStatusCodes.CREATED).json({
+          message: 'Product quantity updated successfully',
+          cart: updatedUser?.cart,
+        });
+
+        return;
       }
 
       const updatedUser = await CartRepo.addProductToCart(req.user.userId, productId, quantity);
