@@ -53,6 +53,12 @@ import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
 import { LoginPage } from "./modules/Login/App";
 import ForgotPasswordForm from "./modules/Login/components/ForgetPasswordForm";
 import LoginForm from "./modules/Login/components/LoginForm";
+import {
+  currentOrdersLoader,
+  CurrentOrdersPage,
+  pastOrdersLoader,
+  PastOrdersPage,
+} from "./modules/Orders/App";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -109,6 +115,21 @@ const BrowserRouter = createBrowserRouter([
         element: <LandingPage />,
       },
 
+      {
+        path: "orders",
+        children: [
+          {
+            path: "current-orders",
+            element: <CurrentOrdersPage />,
+            loader: currentOrdersLoader,
+          },
+          {
+            path: "past-orders",
+            element: <PastOrdersPage />,
+            loader: pastOrdersLoader,
+          },
+        ],
+      },
       {
         path: "all-activities/*",
         element: <AllActivities />,
