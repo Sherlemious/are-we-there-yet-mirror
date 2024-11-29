@@ -2,10 +2,9 @@ import { Request, Response } from 'express';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import orderRepo from '../database/repositories/order.repo';
-import userRepo from '../database/repositories/user.repo';
 import cartRepo from '../database/repositories/cart.repo';
-import { OrderItemType } from '../types/Order.types';
 import { ProductType } from '../types/Product.types';
+import productRepo from '../database/repositories/product.repo';
 
 class OrderController {
   async getAllOrders(req: Request, res: Response) {
@@ -28,10 +27,11 @@ class OrderController {
       }
 
       let totalOrderPrice = 0;
-      cart.forEach((cartItem) => {
+      cart.forEach(async (cartItem) => {
         const product = cartItem.product as ProductType;
 
         totalOrderPrice += product.price * cartItem.quantity;
+        await productRepo.buyProduct(product._id, cartItem.quantity);
       });
 
       const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, cart);

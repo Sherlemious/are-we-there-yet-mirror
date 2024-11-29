@@ -1,6 +1,6 @@
 import { ReviewType } from './Review.types';
 export interface ProductType {
-  _id?: string;
+  _id: string;
   name: string;
   description?: string;
   price: number;
