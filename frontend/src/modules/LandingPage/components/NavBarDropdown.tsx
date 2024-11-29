@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { UserContext } from "@/modules/shared/store/user-context";
 import { AccountType } from "@/modules/shared/types/User.types";
+import { ChevronDown } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -75,13 +76,23 @@ export default function NavBarDropdown({
               : "font-medium text-black"
           }
         >
-          <span
-            className={`${
-              isHoveringOnDiv || isActive ? "text-accent-gold" : ""
-            } text-sub-headings transition-colors duration-200`}
+          <div
+            className={`${linkName === "Others" ? "flex items-center gap-2" : ""}`}
           >
-            {linkName}
-          </span>
+            <span
+              className={`${
+                isHoveringOnDiv || isActive ? "text-accent-gold" : ""
+              } text-sub-headings transition-colors duration-200`}
+            >
+              {linkName}
+            </span>
+            {linkName === "Others" && (
+              <ChevronDown
+                size={25}
+                className={`${isHoveringOnDiv ? "rotate-180 stroke-accent-gold transition-all duration-200" : "rotate-0 transition-all duration-200"}`}
+              />
+            )}
+          </div>
         </NavLink>
       </div>
       <ul

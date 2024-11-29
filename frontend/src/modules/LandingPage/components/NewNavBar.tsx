@@ -6,7 +6,7 @@ import { UserContext } from "@/modules/shared/store/user-context";
 import { NavBarContent } from "../utils/content";
 import { AccountType } from "@/modules/shared/types/User.types";
 import { Button } from "@/components/ui/button";
-import { UserCog } from "lucide-react";
+import { ArrowDown, ChevronDown, UserCog } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import NavBarDropdown from "./NavBarDropdown";
@@ -269,7 +269,7 @@ export default function NewNavBar() {
         </div>
         {pathname !== "/login" && pathname !== "/register" && (
           <CurrencySelect />
-        )}{" "}
+        )}
       </div>
     </nav>
   );
