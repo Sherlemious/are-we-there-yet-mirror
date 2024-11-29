@@ -9,6 +9,7 @@ import productRepo from '../database/repositories/product.repo';
 import currencyConverterService from '../services/currencyConverter.service';
 import userRepo from '../database/repositories/user.repo';
 import { accountType } from '../types/User.types';
+import { User } from '../database/models/user.model';
 
 const findProductById = async (req: Request, res: Response) => {
   try {
@@ -257,14 +258,17 @@ async function getAvailableQuantityAndSales(req: Request, res: Response) {
 async function buyProduct(req: Request, res: Response) {
   try {
     const productId = req.params.id;
-    const quantity = parseInt(req.body.quantity);
+    const quantity = 1;
     const product = await productRepo.getProductById(productId);
 
     if (!product) {
       res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
       return;
     }
-
+    if (await userRepo.checkIfProductIsPurchased(req.user.userId, productId)) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Product already bought', data: [] });
+      return;
+    }
     if (product.available_quantity && product.available_quantity < quantity) {
       res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Insufficient quantity', data: [] });
       return;
@@ -273,7 +277,7 @@ async function buyProduct(req: Request, res: Response) {
     await productRepo.buyProduct(productId, quantity);
     await userRepo.buyProduct(req.user.userId, productId);
 
-    res.status(ResponseStatusCodes.OK).json({ message: 'Product bought successfully', data: { productId, quantity } });
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product bought successfully', data: { productId } });
   } catch (error: any) {
     logger.error(`Error buying product: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
@@ -302,6 +306,31 @@ async function unarchiveProduct(req: Request, res: Response) {
   }
 }
 
+async function cancelProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const quantity = 1
+    const product = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+    const total = product.price? product.price * quantity : 0;
+    
+    if (!await userRepo.checkIfProductIsPurchased(req.user.userId, productId)) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Product not bought', data: [] });
+      return;
+    }
+    await productRepo.cancelProduct(productId, quantity);
+    await userRepo.productReturnWallet(req.user.userId, productId, total);
+
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product cancelled successfully', data: { productId } });
+  } catch (error: any) {
+    logger.error(`Error cancelling product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
 export {
   findProductById,
   createProduct,
@@ -317,4 +346,5 @@ export {
   unarchiveProduct,
   buyProduct,
   archiveProduct,
+  cancelProduct,
 };

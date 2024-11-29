@@ -323,6 +323,34 @@ const getPurchasedProducts = async (req: Request, res: Response) => {
   }
 };
 
+const getHowManyUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await userRepo.getUsers();
+    res.status(ResponseStatusCodes.OK).json({ message: 'Users fetched successfully', data: users.length });
+  } catch (error: any) {
+    logger.error(`Error fetching users: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const getHowManyUsersByMonth = async (req: Request, res: Response) => {
+  try {
+    const month = req.body.month;
+    const year = req.body.year;
+    if (month < 1 || month > 12 || !Number.isInteger(year)) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({
+        message: 'Invalid month or year',
+      });
+      return;
+    }
+    const users = await userRepo.getHowManyUsersByMonth(month, year);
+    res.status(ResponseStatusCodes.OK).json({ message: 'Users fetched successfully', data: users.length });
+  } catch (error: any) {
+    logger.error(`Error fetching users: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
 export {
   getUsers,
   deleteUser,
@@ -339,4 +367,6 @@ export {
   cancelActivityBooking,
   cancelItineraryBooking,
   getPurchasedProducts,
+  getHowManyUsers,
+  getHowManyUsersByMonth,
 };

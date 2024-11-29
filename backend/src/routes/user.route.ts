@@ -21,6 +21,8 @@ import {
   cancelActivityBooking,
   cancelItineraryBooking,
   getPurchasedProducts,
+  getHowManyUsers,
+  getHowManyUsersByMonth,
 } from '../controllers/users/user.controller';
 
 const router = Router();
@@ -36,6 +38,8 @@ router.use('/tourists', touristRouter);
 router.get('/', getUsers);
 router.post('/', createUser);
 router.patch('/requestDeletion', requestAccountDeletion);
+router.get('/howManyUsers', getHowManyUsers);
+router.get('/howManyUsersByMonth', getHowManyUsersByMonth);
 
 router.get('/purchasedProducts', getPurchasedProducts);
 

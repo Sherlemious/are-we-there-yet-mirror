@@ -90,5 +90,21 @@ class ProductRepo {
   async unarchiveProduct(productId: string) {
     return await Product.updateOne({ _id: new ObjectId(productId) }, { archive: false });
   }
+
+  async cancelProduct(productId: string, quantity: number) {
+    return await Product.updateOne(
+      { _id: new ObjectId(productId) },
+      {
+        $inc: {
+          available_quantity: quantity, // Increase available quantity
+          sales: -quantity, // Decrease sales by quantity sold
+        },
+      }
+    );
+  }
+
+  async getProductPrice(productId: string) {
+    return await Product.findById({ _id: new ObjectId(productId) });
+  }
 }
 export default new ProductRepo();
