@@ -218,7 +218,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     }
 
     user.OTP = Math.floor(100000 + Math.random() * 900000).toString();
-    await userRepo.updateUser(user._id, user);
+    await userRepo.updateUserObjectId(user._id, user);
 
     console.log(user);
 

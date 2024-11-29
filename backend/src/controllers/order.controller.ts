@@ -29,7 +29,7 @@ class OrderController {
 
       let totalOrderPrice = 0;
       cart.forEach(async (cartItem) => {
-        const product = cartItem.product as ProductType;
+        const product = cartItem.product as unknown as ProductType;
 
         totalOrderPrice += product.price * cartItem.quantity;
         await productRepo.buyProduct(product._id, cartItem.quantity);
