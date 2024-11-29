@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { NotificationType } from './Notification.types';
 
 export enum accountType {
   Admin = 'Admin',
@@ -42,6 +43,8 @@ export interface UserType {
   rejected: boolean;
   termsAndConditions: boolean;
   attachment: [Types.ObjectId];
+  notifications: [NotificationType];
+  OTP: string;
   // Tour guide
   years_of_experience?: number;
   previous_work?: [previousWorkType];

@@ -23,9 +23,15 @@ import {
   getPurchasedProducts,
   getHowManyUsers,
   getHowManyUsersByMonth,
+  forgotPassword,
+  verifyOTP,
 } from '../controllers/users/user.controller';
 
 const router = Router();
+
+// Open routes
+router.post('/forgotPassword', forgotPassword);
+router.post('/verifyOTP', verifyOTP);
 
 // User-specific routes
 router.use('/advertisers', advertiserRouter);

@@ -6,7 +6,9 @@ import bookingRepo from '../../database/repositories/booking.repo';
 import activityRepo from '../../database/repositories/activity.repo';
 import itineraryRepo from '../../database/repositories/itinerary.repo';
 import bcrypt from 'bcrypt';
+import emailService from '../../services/email/email.service';
 import { accountType } from '../../types/User.types';
+import authService from '../../services/auth.service';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -206,6 +208,51 @@ const rejectUser = async (req: Request, res: Response) => {
   }
 };
 
+const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const email = req.body.email;
+    const user = await userRepo.findUserByEmail(email);
+    if (!user) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'User not found' });
+      return;
+    }
+
+    user.OTP = Math.floor(100000 + Math.random() * 900000).toString();
+    await userRepo.updateUser(user._id, user);
+
+    console.log(user);
+
+    await emailService.sendForgotPasswordEmail(email, user.OTP);
+
+    res.status(ResponseStatusCodes.OK).json({ message: 'OTP sent to email' });
+  } catch (error: any) {
+    logger.error(`Error sending OTP: ${error.message}`);
+    res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+};
+
+const verifyOTP = async (req: Request, res: Response) => {
+  try {
+    const email = req.body.email;
+    const OTP = req.body.OTP;
+    const user = await userRepo.findUserByEmail(email);
+    if (!user) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'User not found' });
+      return;
+    }
+
+    if (user.OTP === OTP) {
+      const token = authService.generateAccessToken({ userId: user._id, accountType: user.account_type });
+      res.status(ResponseStatusCodes.OK).json({ message: 'OTP verified', data: { token: token } });
+    } else {
+      res.status(ResponseStatusCodes.UNAUTHORIZED).json({ message: 'Invalid OTP' });
+    }
+  } catch (error: any) {
+    logger.error(`Error verifying OTP: ${error.message}`);
+    res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+};
+
 const getItinerary = async (req: Request, res: Response) => {
   try {
     const itineraries = await userRepo.getItinerary(req.user.userId);
@@ -362,6 +409,8 @@ export {
   ChangeUserPassword,
   acceptTerms,
   rejectUser,
+  forgotPassword,
+  verifyOTP,
   getItinerary,
   getActivity,
   cancelActivityBooking,

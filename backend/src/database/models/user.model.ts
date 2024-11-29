@@ -53,6 +53,29 @@ const companyProfileSchema = new mongoose.Schema({
   },
 });
 
+const notificationSchema = new mongoose.Schema({
+  title: {
+    type: String,
+  },
+  message: {
+    type: String,
+  },
+  notificationType: {
+    type: String,
+    enum: ['error', 'warning', 'information', 'success'],
+    default: 'information',
+    required: true,
+  },
+  read: {
+    type: Boolean,
+    default: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     account_type: {
@@ -152,6 +175,12 @@ const userSchema = new mongoose.Schema(
     },
     purchased_products: {
       type: [{ type: Schema.Types.ObjectId, ref: 'product' }],
+    },
+    notifications: {
+      type: [notificationSchema],
+    },
+    OTP: {
+      type: String,
     },
     modified_by: {
       type: Schema.Types.ObjectId,
