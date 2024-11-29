@@ -6,11 +6,13 @@ import {
   createMuseum,
   updateMuseum,
   deleteMuseum,
+  getMuseumsCreatedByUser,
 } from '../controllers/museum.controller';
 
 const museumRouter = Router();
 
 museumRouter.get('/getall', getAllMuseums);
+museumRouter.get('/mine', getMuseumsCreatedByUser);
 museumRouter.get('/:id', findMuseumById);
 museumRouter.get('/', findMuseumsByTags);
 museumRouter.post('/', createMuseum);

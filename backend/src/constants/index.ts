@@ -1,0 +1,1 @@
+export const LOYALTY_POINT_GAIN = 600000;

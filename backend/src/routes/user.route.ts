@@ -3,22 +3,68 @@ import advertiserRouter from './advertiser.route';
 import sellerRouter from './seller.route';
 import adminRouter from './admin.route';
 import tourGuideRouter from './tourGuide.route';
-import { createUser, deleteUser, acceptUser, findUserById, updateUser } from '../controllers/users/user.controller';
+import touristRouter from './tourist.route';
+
+import {
+  getUsers,
+  createUser,
+  deleteUser,
+  acceptUser,
+  findUserById,
+  updateUser,
+  requestAccountDeletion,
+  ChangeUserPassword,
+  acceptTerms,
+  rejectUser,
+  getItinerary,
+  getActivity,
+  cancelActivityBooking,
+  cancelItineraryBooking,
+  getPurchasedProducts,
+  getHowManyUsers,
+  getHowManyUsersByMonth,
+  forgotPassword,
+  verifyOTP,
+} from '../controllers/users/user.controller';
+import cartController from '../controllers/cart.controller';
 
 const router = Router();
+
+// Open routes
+router.post('/forgotPassword', forgotPassword);
+router.post('/verifyOTP', verifyOTP);
 
 // User-specific routes
 router.use('/advertisers', advertiserRouter);
 router.use('/tourGuides', tourGuideRouter);
 router.use('/sellers', sellerRouter);
 router.use('/admins', adminRouter);
+router.use('/tourists', touristRouter);
 
 // User routes
-router.patch('/:id/accept-user', acceptUser);
+router.get('/', getUsers);
+router.post('/', createUser);
+router.patch('/requestDeletion', requestAccountDeletion);
+router.get('/howManyUsers', getHowManyUsers);
+router.get('/howManyUsersByMonth', getHowManyUsersByMonth);
+
+router.get('/cart', cartController.getCart);
+router.post('/cart', cartController.addProduct);
+router.delete('/cart/:productId', cartController.removeProduct);
+router.get('/purchasedProducts', getPurchasedProducts);
+
+router.get('/getItineraries', getItinerary);
+router.get('/getActivities', getActivity);
+router.patch('/cancelActivityBooking', cancelActivityBooking);
+router.patch('/cancelItineraryBooking', cancelItineraryBooking);
+
+router.patch('/changePassword', ChangeUserPassword);
+router.patch('/accept-user/:id', acceptUser);
+router.patch('/acceptTerms', acceptTerms);
+router.patch('/rejectUser/:id', rejectUser);
+
 router.delete('/:id', deleteUser);
-router.patch('/:id', updateUser);
 router.get('/:id', findUserById);
 router.patch('/:id', updateUser);
-router.post('/', createUser);
 
 export default router;

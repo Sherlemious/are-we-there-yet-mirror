@@ -3,10 +3,53 @@ import MuseumRepo from '../database/repositories/museum.repo';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import mongoose from 'mongoose';
+import currencyConverterService from '../services/currencyConverter.service';
 
 const getAllMuseums = async (req: Request, res: Response) => {
   try {
-    const museums = await MuseumRepo.getAllMuseums();
+    let museums = await MuseumRepo.getAllMuseums();
+
+    const currency: string = await req.currency.currency;
+    museums = await Promise.all(
+      museums.map(async (museum) => {
+        if (museum.ticket_prices?.foreigner) {
+          museum.ticket_prices.foreigner = await currencyConverterService.convertPrice(
+            museum.ticket_prices?.foreigner,
+            currency
+          );
+        }
+        if (museum.ticket_prices?.native) {
+          museum.ticket_prices.native = await currencyConverterService.convertPrice(
+            museum.ticket_prices?.native,
+            currency
+          );
+        }
+        if (museum.ticket_prices?.student) {
+          museum.ticket_prices.student = await currencyConverterService.convertPrice(
+            museum.ticket_prices?.student,
+            currency
+          );
+        }
+        return museum;
+      })
+    );
+
+    const response = {
+      message: 'Museums fetched successfully',
+      data: { museums: museums },
+      currency: currency,
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching museums: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+};
+
+const getMuseumsCreatedByUser = async (req: Request, res: Response) => {
+  try {
+    const museums = await MuseumRepo.getMuseumsByCreator(req.user.userId);
     const response = {
       message: 'Museums fetched successfully',
       data: { museums: museums },
@@ -59,6 +102,7 @@ const findMuseumsByTags = async (req: Request, res: Response) => {
 
 const createMuseum = async (req: Request, res: Response) => {
   const museum = req.body;
+  museum.created_by = req.user.userId;
 
   try {
     const newMuseum = await MuseumRepo.createMuseum(museum);
@@ -104,4 +148,12 @@ const deleteMuseum = async (req: Request, res: Response) => {
   }
 };
 
-export { getAllMuseums, findMuseumById, findMuseumsByTags, createMuseum, updateMuseum, deleteMuseum };
+export {
+  getAllMuseums,
+  findMuseumById,
+  findMuseumsByTags,
+  createMuseum,
+  updateMuseum,
+  deleteMuseum,
+  getMuseumsCreatedByUser,
+};

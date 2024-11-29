@@ -1,14 +1,21 @@
 import { Request, Response } from 'express';
+var mongoose = require('mongoose');
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import { range } from '../utils/Rangify.utils';
 import { generateRanges } from '../utils/Rangify.utils';
 
 import productRepo from '../database/repositories/product.repo';
+import currencyConverterService from '../services/currencyConverter.service';
+import userRepo from '../database/repositories/user.repo';
+import { accountType } from '../types/User.types';
 
 const findProductById = async (req: Request, res: Response) => {
   try {
     const product = await productRepo.findProductById(req.params.id);
+    if (!product) {
+      throw new Error('Product not found');
+    }
     const response = {
       message: 'Product fetched successfully',
       data: { product: product },
@@ -38,10 +45,27 @@ const deleteProduct = async (req: Request, res: Response) => {
 
 const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await productRepo.getProducts();
+    let products = await productRepo.getProducts();
+
+    if (req.user.accountType != accountType.Admin) {
+      products = products.filter((product) => !product.archive);
+    }
+
+    const currency: string = req.currency.currency;
+    products = await Promise.all(
+      products.map(async (product) => {
+        if (!product.price) {
+          product.price = 0;
+        }
+        product.price = await currencyConverterService.convertPrice(product.price, currency);
+        return product;
+      })
+    );
+
     const response = {
       message: 'Products fetched successfully',
       data: { products },
+      currency: currency,
     };
 
     res.status(ResponseStatusCodes.OK).json(response);
@@ -53,6 +77,7 @@ const getProducts = async (req: Request, res: Response) => {
 
 const createProduct = async (req: Request, res: Response) => {
   const product = req.body;
+  product.created_by = req.user.userId;
 
   try {
     const newProduct = await productRepo.createProduct(product);
@@ -124,11 +149,10 @@ async function filterProductsBySeller(req: Request, res: Response) {
 }
 
 async function updateProduct(req: Request, res: Response) {
-  const productId = req.params.id;
-  const product = req.body;
-
   try {
-    await productRepo.updateProduct(productId, product.details, product.price);
+    const productId = req.params.id;
+    const product = req.body;
+    await productRepo.updateProduct(productId, product);
     const response = {
       message: 'Product updated successfully',
       data: { productId },
@@ -137,6 +161,171 @@ async function updateProduct(req: Request, res: Response) {
     res.status(ResponseStatusCodes.OK).json(response);
   } catch (error: any) {
     logger.error(`Error updating product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function addProductReview(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const review = req.body;
+
+    const product = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+
+    const reviews = product.reviews || [];
+    const previousRating = product.average_rating || 0;
+    const newRating: number = (previousRating * reviews.length + review.rating) / (reviews.length + 1);
+    await productRepo.addReview(productId, review);
+    await productRepo.updateProduct(productId, { average_rating: newRating });
+    const response = {
+      message: 'Review added successfully',
+      data: { productId },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error adding review: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function deleteProductReview(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const reviewId = new mongoose.Types.ObjectId(req.params.review_id);
+
+    const product = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+
+    const reviews = product.reviews || [];
+    const reviewIndex = reviews.findIndex((review) => review._id.toString() === reviewId.toString());
+    if (reviewIndex === -1) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Review not found', data: [] });
+      return;
+    }
+    if (!reviews.length) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'No reviews found', data: [] });
+      return;
+    }
+
+    const previousRating = product.average_rating || 0;
+    const newRating: number =
+      (previousRating * reviews.length - (reviews[reviewIndex].rating ? reviews[reviewIndex].rating : 0)) /
+      (reviews.length - 1);
+    await productRepo.deleteReview(productId, reviewId);
+    await productRepo.updateProduct(productId, { average_rating: newRating });
+    const response = {
+      message: 'Review deleted successfully',
+      data: { productId },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error deleting review: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function getAvailableQuantityAndSales(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const product = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+    const sales = product.sales ?? 0;
+    const price = product.price ?? 0;
+    const totalSalesValue = sales * price;
+    res.status(ResponseStatusCodes.OK).json({
+      message: 'Product fetched successfully',
+      data: { available_quantity: product.available_quantity, sales: totalSalesValue },
+    });
+  } catch (error: any) {
+    logger.error(`Error fetching product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function buyProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const quantity = 1;
+    const product = await productRepo.getProductById(productId);
+
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+    if (await userRepo.checkIfProductIsPurchased(req.user.userId, productId)) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Product already bought', data: [] });
+      return;
+    }
+    if (product.available_quantity && product.available_quantity < quantity) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Insufficient quantity', data: [] });
+      return;
+    }
+
+    await productRepo.buyProduct(productId, quantity);
+    await userRepo.buyProduct(req.user.userId, productId);
+
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product bought successfully', data: { productId } });
+  } catch (error: any) {
+    logger.error(`Error buying product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function archiveProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    await productRepo.archiveProduct(productId);
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product archived successfully', data: { productId } });
+  } catch (error: any) {
+    logger.error(`Error archiving product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function unarchiveProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    await productRepo.unarchiveProduct(productId);
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product unarchived successfully', data: { productId } });
+  } catch (error: any) {
+    logger.error(`Error unarchiving product: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
+async function cancelProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const quantity = 1;
+    const product = await productRepo.getProductById(productId);
+    if (!product) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+      return;
+    }
+    const total = product.price ? product.price * quantity : 0;
+
+    if (!(await userRepo.checkIfProductIsPurchased(req.user.userId, productId))) {
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: 'Product not bought', data: [] });
+      return;
+    }
+    await productRepo.cancelProduct(productId, quantity);
+    await userRepo.productReturnWallet(req.user.userId, productId, total);
+
+    res.status(ResponseStatusCodes.OK).json({ message: 'Product cancelled successfully', data: { productId } });
+  } catch (error: any) {
+    logger.error(`Error cancelling product: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
 }
@@ -150,4 +339,11 @@ export {
   updateProduct,
   getProducts,
   deleteProduct,
+  addProductReview,
+  deleteProductReview,
+  getAvailableQuantityAndSales,
+  unarchiveProduct,
+  buyProduct,
+  archiveProduct,
+  cancelProduct,
 };
