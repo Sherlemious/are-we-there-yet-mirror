@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Users, TrendingUp, Calendar } from "lucide-react";
 import _ from "lodash";
+import axiosInstance from "@/modules/shared/services/axiosInstance";
 
 const MONTHS = [
   "January",
@@ -25,25 +26,46 @@ const UsersStats = () => {
   const [newUsers, setNewUsers] = useState<number>();
   const [error, setError] = useState<string>();
 
-  const fetchNewUsers = (month: number, year: number) => {
+  const fetchNewUsersByMonth = (month: number, year: number) => {
+    axiosInstance
+      .get(`/users/howManyUsersByMonth?month=${month}&year=${year}`)
+      .then(
+        (response) => {
+          setNewUsers(response.data.data);
+        },
+        (error) => {
+          setError(error.response.data.message);
+        },
+      );
     setNewUsers(Math.floor(Math.random() * month * year));
+  };
+
+  const fetchTotalUsers = () => {
+    axiosInstance
+      .get("/users/howManyUsers")
+      .then((response) => {
+        setTotalUsers(response.data.data);
+      })
+      .catch((error) => {
+        setError(error.response.data.message);
+      });
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const month = parseInt(e.target.value);
     setSelectedMonth(month);
-    fetchNewUsers(month, selectedYear);
+    fetchNewUsersByMonth(month, selectedYear);
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const year = parseInt(e.target.value);
     setSelectedYear(year);
-    fetchNewUsers(selectedMonth, year);
+    fetchNewUsersByMonth(selectedMonth, year);
   };
 
   useEffect(() => {
-    fetchNewUsers(selectedMonth, selectedYear);
-    setTotalUsers(Math.floor(Math.random() * 10000));
+    fetchNewUsersByMonth(selectedMonth, selectedYear);
+    fetchTotalUsers();
   }, []);
 
   if (error) {
@@ -54,7 +76,8 @@ const UsersStats = () => {
           <button
             onClick={() => {
               setError("");
-              fetchNewUsers(selectedMonth, selectedYear);
+              fetchNewUsersByMonth(selectedMonth, selectedYear);
+              fetchTotalUsers();
             }}
             className="mt-4 rounded bg-primary-blue px-4 py-2 text-white"
           >
@@ -68,7 +91,7 @@ const UsersStats = () => {
   if (!totalUsers || !newUsers) {
     return (
       <div className="mx-4 rounded-lg bg-secondary-light_grey p-6">
-        <div className="mx-auto max-w-4xl animate-pulse">Loading...</div>
+        <div className="max-w-4xl animate-pulse">Loading...</div>
       </div>
     );
   }
