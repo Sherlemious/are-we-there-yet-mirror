@@ -5,6 +5,7 @@ import orderRepo from '../database/repositories/order.repo';
 import cartRepo from '../database/repositories/cart.repo';
 import { ProductType } from '../types/Product.types';
 import productRepo from '../database/repositories/product.repo';
+import userRepo from '../database/repositories/user.repo';
 
 class OrderController {
   async getAllOrders(req: Request, res: Response) {
@@ -41,6 +42,29 @@ class OrderController {
         .json({ message: 'Order checked out successfully', data: { order: order } });
     } catch (error: any) {
       logger.error(`Error checking out order: ${error.message}`);
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+    }
+  }
+
+  async cancelOrder(req: Request, res: Response) {
+    try {
+      const order = await orderRepo.cancelOrder(req.params.orderId, req.user.userId);
+
+      order.products.forEach(async (product) => {
+        const productId = product.product._id;
+        const productDetails = await productRepo.getProductById(productId.toString());
+        if (!productDetails) {
+          res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Product not found', data: [] });
+          return;
+        }
+        const total = productDetails.price * product.quantity;
+        await productRepo.cancelProduct(productId.toString(), product.quantity);
+        await userRepo.productReturnWallet(req.user.userId, productId.toString(), total);
+      });
+
+      res.status(ResponseStatusCodes.OK).json({ message: 'Order cancelled successfully', data: { order: order } });
+    } catch (error: any) {
+      logger.error(`Error cancelling order: ${error.message}`);
       res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
     }
   }

@@ -19,5 +19,21 @@ class OrderRepo {
   async checkoutOrder(userId: string, totalPrice: Number, cart?: OrderItemType[]) {
     return await Order.create({ products: cart, totalPrice, created_by: userId });
   }
+
+  async cancelOrder(orderId: string, userId: string) {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new Error('Order not found');
+    }
+
+    if (order.status !== OrderStatusType.PENDING) {
+      throw new Error('Order cannot be cancelled');
+    }
+
+    order.status = OrderStatusType.CANCELLED;
+    await order.save();
+    return order;
+  }
 }
 export default new OrderRepo();
