@@ -332,17 +332,18 @@ const getHowManyUsers = async (req: Request, res: Response) => {
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
 };
-
 const getHowManyUsersByMonth = async (req: Request, res: Response) => {
   try {
-    const month = req.body.month;
-    const year = req.body.year;
-    if (month < 1 || month > 12 || !Number.isInteger(year)) {
+    const month = parseInt(req.query.month as string, 10);
+    const year = parseInt(req.query.year as string, 10);
+
+    if (!month || !year || month < 1 || month > 12 || !Number.isInteger(year)) {
       res.status(ResponseStatusCodes.BAD_REQUEST).json({
         message: 'Invalid month or year',
       });
       return;
     }
+
     const users = await userRepo.getHowManyUsersByMonth(month, year);
     res.status(ResponseStatusCodes.OK).json({ message: 'Users fetched successfully', data: users.length });
   } catch (error: any) {
