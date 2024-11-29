@@ -1,15 +1,15 @@
+import { useEffect, useState } from "react";
+import { Product } from "../utils/types";
+import axiosInstance from "@/modules/shared/services/axiosInstance";
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Product } from "../utils/types";
-import { useEffect, useState } from "react";
-import axiosInstance from "@/modules/shared/services/axiosInstance";
 import { Loader2 } from "lucide-react";
+import { AlertDialogHeader } from "@/components/ui/alert-dialog";
 
 export const ProductModal = ({
   isOpen,
@@ -69,7 +69,7 @@ export const ProductModal = ({
 
           {/* Content Section */}
           <div className="w-full p-6 md:w-1/2">
-            <DialogHeader className="mb-4">
+            <AlertDialogHeader className="mb-4">
               <DialogTitle className="text-2xl font-semibold text-gray-900">
                 {product.name}
               </DialogTitle>
@@ -77,7 +77,7 @@ export const ProductModal = ({
                 {product.description}
               </DialogDescription>
               <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100"></DialogClose>
-            </DialogHeader>
+            </AlertDialogHeader>
 
             <div className="space-y-6">
               {/* Price and Quantity Info */}
