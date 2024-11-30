@@ -4,6 +4,24 @@ import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import bookmarkRepo from '../database/repositories/bookmark.repo';
 
 class BookmarkController {
+  async getBookmarks(req: Request, res: Response) {
+    try {
+      const wishlist: boolean = req.query.wishlist === 'true';
+
+      const bookmarks = await bookmarkRepo.getBookmarks(req.user.userId, wishlist);
+
+      if (wishlist) {
+        res.status(ResponseStatusCodes.OK).json({ message: 'Wishlist fetched', data: { wishlist: bookmarks } });
+        return;
+      }
+
+      res.status(ResponseStatusCodes.OK).json({ message: 'Bookmarks fetched', data: { bookmarks } });
+    } catch (error: any) {
+      logger.error(error.message);
+      res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message, data: [] });
+    }
+  }
+
   async addBookmark(req: Request, res: Response) {
     try {
       const { modelType, modelId } = req.body;

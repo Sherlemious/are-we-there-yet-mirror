@@ -4,6 +4,16 @@ import { Activity } from '../models/activity.model';
 import { Product } from '../models/product.model';
 
 class BookmarkRepo {
+  async getBookmarks(userId: string, wishlist: boolean) {
+    const user = await User.findById(userId);
+
+    if (wishlist) {
+      return user?.bookmarks.filter((bookmark) => bookmark.product !== undefined);
+    }
+
+    return user?.bookmarks.filter((bookmark) => bookmark.itinerary !== undefined || bookmark.activity !== undefined);
+  }
+
   async saveBookmark(userId: string, modelType: string, modelId: string) {
     const user = await User.findById(userId);
 
