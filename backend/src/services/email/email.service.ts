@@ -8,16 +8,10 @@ class EmailService {
   password = process.env.PASSWORD;
 
   transporter = nodemailer.createTransport({
-    host: 'smtp.office365.com',
-    port: 587,
-    secure: false,
+    service: 'gmail',
     auth: {
       user: this.email,
       pass: this.password,
-    },
-    tls: {
-      ciphers: 'SSLv3',
-      rejectUnauthorized: false,
     },
   });
 
