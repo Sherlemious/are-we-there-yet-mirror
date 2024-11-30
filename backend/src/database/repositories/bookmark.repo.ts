@@ -1,0 +1,36 @@
+import { User } from '../models/user.model';
+import { Itinerary } from '../models/itinerary.model';
+import { Activity } from '../models/activity.model';
+import { Product } from '../models/product.model';
+
+class BookmarkRepo {
+  async saveBookmark(userId: string, modelType: string, modelId: string) {
+    const user = await User.findById(userId);
+
+    user?.bookmarks.push({ [modelType]: modelId });
+    await user?.save();
+
+    return user?.bookmarks[user.bookmarks.length - 1]._id;
+  }
+
+  async validItem(modelType: string, modelId: string): Promise<boolean> {
+    switch (modelType) {
+      case 'itinerary':
+        return (await Itinerary.findById(modelId)) !== null;
+      case 'activity':
+        return (await Activity.findById(modelId)) !== null;
+      case 'product':
+        return (await Product.findById(modelId)) !== null;
+      default:
+        return false;
+    }
+  }
+
+  async isBookmarked(userId: string, modelType: 'product' | 'itinerary' | 'activity', modelId: string) {
+    const user = await User.findById(userId);
+
+    return user?.bookmarks.some((bookmark) => bookmark[modelType]?.toString() === modelId);
+  }
+}
+
+export default new BookmarkRepo();

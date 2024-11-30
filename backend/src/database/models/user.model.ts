@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { accountType } from '../../types/User.types';
 import { reviewSchema } from './review.model';
 import { cartItemSchema } from './cart.model';
+import { bookmarkSchema } from './bookmark.model';
 
 const previousWorkSchema = new mongoose.Schema({
   title: {
@@ -186,6 +187,9 @@ const userSchema = new mongoose.Schema(
     cart: {
       type: [cartItemSchema],
       default: [],
+    },
+    bookmarks: {
+      type: [bookmarkSchema],
     },
     modified_by: {
       type: Schema.Types.ObjectId,
