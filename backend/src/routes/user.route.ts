@@ -4,6 +4,7 @@ import sellerRouter from './seller.route';
 import adminRouter from './admin.route';
 import tourGuideRouter from './tourGuide.route';
 import touristRouter from './tourist.route';
+import bookmarkRouter from './bookmark.route';
 
 import {
   getUsers,
@@ -40,6 +41,8 @@ router.use('/tourGuides', tourGuideRouter);
 router.use('/sellers', sellerRouter);
 router.use('/admins', adminRouter);
 router.use('/tourists', touristRouter);
+
+router.use('/bookmarks', bookmarkRouter);
 
 // User routes
 router.get('/', getUsers);

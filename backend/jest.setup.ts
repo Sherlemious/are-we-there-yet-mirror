@@ -4,7 +4,7 @@ import app from './src/app';
 
 beforeAll(async () => {
   const mongoConnectionString = process.env.MONGO_URI || '';
-  const random = Math.floor(Math.random() * 1000);
+  const random = Math.random();
 
   await mongoose.connect(mongoConnectionString);
 
