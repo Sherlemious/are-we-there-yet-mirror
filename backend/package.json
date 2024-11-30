@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start-nodemon": "nodemon",
-    "build": "npm i && tsc",
+    "build": "npm i && tsc && npm run copy-html",
+    "copy-html": "copyfiles -u 1 src/**/*.html dist",
     "start": "tsx ./dist/server.js",
     "test": "tsc --project tsconfig.test.json && jest",
     "lint": "prettier --check . --config ../.prettierrc",
@@ -43,6 +44,7 @@
     "@types/node": "^22.7.2",
     "@types/nodemailer": "^6.4.17",
     "@types/supertest": "^6.0.2",
+    "copyfiles": "^2.4.1",
     "jest": "^29.7.0",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
