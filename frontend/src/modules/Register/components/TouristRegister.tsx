@@ -100,7 +100,11 @@ export default function TouristRegister({
           </SelectTrigger>
           <SelectContent>
             {countryNames.map((country) => (
-              <SelectItem key={country} value={country}>
+              <SelectItem
+                key={country}
+                value={country}
+                className="text-lg text-black"
+              >
                 {country}
               </SelectItem>
             ))}
