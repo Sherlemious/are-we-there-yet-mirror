@@ -6,6 +6,8 @@ import ItineraryRepo from '../database/repositories/itinerary.repo';
 import BookingRepo from '../database/repositories/booking.repo';
 import currencyConverterService from '../services/currencyConverter.service';
 import Validator from '../utils/Validator.utils';
+import emailService from '../services/email/email.service';
+import userRepo from '../database/repositories/user.repo';
 
 const getItineraries = async (req: Request, res: Response) => {
   try {
@@ -193,11 +195,17 @@ const toggleItineraryActive = async (req: Request, res: Response, active: boolea
 };
 
 const flagItinerary = async (req: Request, res: Response) => {
+  const user = await userRepo.findUserById(req.user.userId);
+  const email = user?.email;
   try {
     Validator.validateId(req.params.id, 'Invalid itinerary ID');
 
     const itinerary = await ItineraryRepo.findItineraryById(req.params.id);
     await ItineraryRepo.toggleFlagItinerary(req.params.id, !itinerary?.flagged);
+
+    if (email) {
+      await emailService.sendFlaggedEmail(email);
+    }
 
     const response = {
       message: 'Itinerary flagged successfully',

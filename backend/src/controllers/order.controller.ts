@@ -6,6 +6,7 @@ import cartRepo from '../database/repositories/cart.repo';
 import { ProductType } from '../types/Product.types';
 import productRepo from '../database/repositories/product.repo';
 import userRepo from '../database/repositories/user.repo';
+import emailService from '../services/email/email.service';
 
 class OrderController {
   async getAllOrders(req: Request, res: Response) {
@@ -20,6 +21,7 @@ class OrderController {
 
   async checkoutOrder(req: Request, res: Response) {
     const user = await cartRepo.getUserCart(req.user.userId);
+    const email = user?.email;
     try {
       const cart = user?.cart || [];
 
@@ -36,6 +38,9 @@ class OrderController {
       });
 
       const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, cart);
+      if (email) {
+        await emailService.sendReceiptEmail(email, order);
+      }
 
       res
         .status(ResponseStatusCodes.CREATED)

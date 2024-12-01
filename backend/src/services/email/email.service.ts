@@ -71,6 +71,54 @@ class EmailService {
       console.log('Error sending forgot password email:', error);
     }
   }
+
+  async sendFlaggedEmail(email: string) {
+    try {
+      const filePath = path.join(__dirname, './email-templates/flagged.html');
+      let htmlContent = fs.readFileSync(filePath, 'utf-8');
+      const mailOptions = {
+        from: this.email,
+        to: email,
+        subject: 'Flagged Content',
+        html: htmlContent,
+      };
+      this.transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    } catch (error) {
+      console.log('Error sending flagged email:', error);
+    }
+  }
+
+  async sendReceiptEmail(email: string, receipt: any) {
+    try {
+      const filePath = path.join(__dirname, './email-templates/paymentReceipt.html');
+      let htmlContent = fs.readFileSync(filePath, 'utf-8');
+
+      htmlContent = htmlContent.replace('{{total}}', receipt.totalPrice);
+
+      const mailOptions = {
+        from: this.email,
+        to: email,
+        subject: 'Receipt',
+        html: htmlContent,
+      };
+
+      this.transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    } catch (error) {
+      console.log('Error sending receipt email:', error);
+    }
+  }
 }
 
 export default new EmailService();
