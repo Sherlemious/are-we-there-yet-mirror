@@ -41,7 +41,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
       {isOpen && (
         <div className="absolute right-0 w-64 mt-2 bg-white border rounded-lg shadow-lg">
           <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-699">Notifications</h3>
+            <h3 className="text-sm font-medium text-gray-700">Notifications</h3>
             <ul className="mt-2 space-y-2">
               {notifications.length > 0 ? (
                 notifications.map((notification) => (
