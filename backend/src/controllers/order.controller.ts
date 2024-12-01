@@ -10,7 +10,7 @@ import userRepo from '../database/repositories/user.repo';
 class OrderController {
   async getAllOrders(req: Request, res: Response) {
     try {
-      const orders = await orderRepo.getOrders(req.query.past as string);
+      const orders = await orderRepo.getOrders(req.query.past as string, req.user.userId);
       res.status(ResponseStatusCodes.OK).json({ message: 'Orders fetched successfully', data: { orders: orders } });
     } catch (error: any) {
       logger.error(`Error fetching orders: ${error.message}`);

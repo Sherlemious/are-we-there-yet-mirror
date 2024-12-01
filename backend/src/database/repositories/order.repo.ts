@@ -2,14 +2,16 @@ import { OrderItemType, OrderStatusType } from '../../types/Order.types';
 import { Order } from '../models/order.model';
 
 class OrderRepo {
-  async getOrders(past: string) {
+  async getOrders(past: string, userId: string) {
     let query = {
       status: { $in: [OrderStatusType.PENDING] },
+      created_by: userId,
     };
 
     if (past === 'true') {
       query = {
         status: { $in: [OrderStatusType.DELIVERED, OrderStatusType.CANCELLED] },
+        created_by: userId,
       };
     }
 
@@ -25,6 +27,10 @@ class OrderRepo {
 
     if (!order) {
       throw new Error('Order not found');
+    }
+
+    if (order.created_by.toString() !== userId) {
+      throw new Error('Unauthorized');
     }
 
     if (order.status !== OrderStatusType.PENDING) {
