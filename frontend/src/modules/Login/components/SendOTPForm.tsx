@@ -1,28 +1,40 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { LoginOrRegisterInput } from "@/modules/shared/components/LoginOrRegisterInput";
-import { useNavigation } from "react-router";
+import { useNavigate, useNavigation } from "react-router";
 import { Form, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import axiosInstance from "@/modules/shared/services/axiosInstance";
+import toast from "react-hot-toast";
 
-const ForgotPasswordForm = () => {
+const SendOTPForm = () => {
   const [email, setEmail] = useState("");
   const navigation = useNavigation();
+  const navigate = useNavigate();
   const isSubmitting = navigation.state === "loading";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-    console.log(data);
+    console.log(email);
 
     // call the API to verify email,and send the OTP
+    //1. call the API to send the OTP to the email
+    const resPromise = axiosInstance.post(`users/forgotPassword`, {
+      email,
+    });
 
-    // verify OTP
+    toast.promise(resPromise, {
+      loading: "Sending OTP...",
+      success: "OTP sent successfully",
+      error: "Failed to send OTP",
+    });
 
-    // redirect to reset password page
-
-    // call the API to reset password and update the user password, then redirect to login page
+    const res = await resPromise;
+    console.log(res);
+    //2. if the email is found, navigate to the verify OTP page
+    if (res.status === 200) {
+      navigate("/login/forgot-password/verify-otp", { state: { email } });
+    }
   };
 
   return (
@@ -87,4 +99,4 @@ const ForgotPasswordForm = () => {
   );
 };
 
-export default ForgotPasswordForm;
+export default SendOTPForm;

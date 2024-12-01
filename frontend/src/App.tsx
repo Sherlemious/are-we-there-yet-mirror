@@ -50,8 +50,13 @@ import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBooki
 import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
-import { LoginPage } from "./modules/Login/App";
-import ForgotPasswordForm from "./modules/Login/components/ForgetPasswordForm";
+import {
+  ForgetPasswordPage,
+  LoginPage,
+  ResetPasswordForm,
+  SendOTPForm,
+  VerifyOTPForm,
+} from "./modules/Login/App";
 import LoginForm from "./modules/Login/components/LoginForm";
 import {
   currentOrdersLoader,
@@ -85,7 +90,21 @@ const BrowserRouter = createBrowserRouter([
           },
           {
             path: "forgot-password",
-            element: <ForgotPasswordForm />,
+            element: <ForgetPasswordPage />,
+            children: [
+              {
+                index: true,
+                element: <SendOTPForm />,
+              },
+              {
+                path: "verify-otp",
+                element: <VerifyOTPForm />,
+              },
+              {
+                path: "reset-password",
+                element: <ResetPasswordForm />,
+              },
+            ],
           },
         ],
       },
@@ -292,16 +311,41 @@ function App() {
         position="top-center"
         containerStyle={{ margin: "8px" }}
         toastOptions={{
-          success: { duration: 3000 },
+          success: {
+            duration: 3000,
+            style: {
+              fontSize: "16px",
+              lineHeight: "1.5",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              margin: "5px",
+              display: "absolute",
+              background: "#333",
+              color: "#fff",
+            },
+          },
           error: { duration: 4000 },
           style: {
             fontSize: "16px",
             lineHeight: "1.5",
             maxWidth: "500px",
             padding: "16px 24px",
-            background: "white",
             margin: "5px",
             display: "absolute",
+            background: "#333",
+            color: "#fff",
+          },
+          loading: {
+            style: {
+              fontSize: "16px",
+              lineHeight: "1.5",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              margin: "5px",
+              display: "absolute",
+              background: "#333",
+              color: "#fff",
+            },
           },
         }}
       />

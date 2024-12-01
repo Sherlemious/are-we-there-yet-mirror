@@ -6,7 +6,7 @@ import { UserContext } from "@/modules/shared/store/user-context";
 import { NavBarContent } from "../utils/content";
 import { AccountType } from "@/modules/shared/types/User.types";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ChevronDown, UserCog } from "lucide-react";
+import { UserCog } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import NavBarDropdown from "./NavBarDropdown";
@@ -216,7 +216,7 @@ export default function NewNavBar() {
             />
           )}
         </ul>
-        {(pathname === "/login" || pathname === "/register") && (
+        {(pathname.includes("/login") || pathname === "/register") && (
           <CurrencySelect />
         )}
       </div>
@@ -244,7 +244,7 @@ export default function NewNavBar() {
             />
           )}
 
-          {pathname !== "/login" && pathname !== "/register" && (
+          {!pathname.includes("/login") && pathname !== "/register" && (
             <Button
               variant="default"
               onClick={() => {
@@ -267,7 +267,7 @@ export default function NewNavBar() {
             </Button>
           )}
         </div>
-        {pathname !== "/login" && pathname !== "/register" && (
+        {!pathname.includes("/login") && pathname !== "/register" && (
           <CurrencySelect />
         )}
       </div>

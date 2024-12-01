@@ -94,19 +94,11 @@ const OrderCard = ({
     try {
       const resPromise = axiosInstance.delete(`/orders/cancel/${order._id}`);
 
-      toast.promise(
-        resPromise,
-        {
-          loading: "Cancelling order...",
-          success: "Order cancelled successfully",
-          error: "Error cancelling order",
-        },
-        {
-          style: {
-            minWidth: "250px",
-          },
-        },
-      );
+      toast.promise(resPromise, {
+        loading: "Cancelling order...",
+        success: "Order cancelled successfully",
+        error: "Error cancelling order",
+      });
       const res = await resPromise;
 
       if (res.status === 200) {
