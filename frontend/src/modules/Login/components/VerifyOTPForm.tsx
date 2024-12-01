@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigation } from "react-router";
+import { useLocation, useNavigate, useNavigation } from "react-router";
 import { Form } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
@@ -9,10 +9,15 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import axiosInstance from "@/modules/shared/services/axiosInstance";
+import toast from "react-hot-toast";
 
 const VerifyOTPForm = () => {
   const navigation = useNavigation();
-  //   const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  console.log(state);
+
   const isSubmitting = navigation.state === "loading";
   const [otp, setOtp] = useState("");
 
@@ -21,7 +26,23 @@ const VerifyOTPForm = () => {
     console.log(otp);
 
     // Verify OTP logic here
-    // navigate("/reset-password");
+    const resPromise = axiosInstance.post(`/users/verifyOTP`, {
+      email: state.email,
+      OTP: otp,
+    });
+
+    toast.promise(resPromise, {
+      loading: "Verifying OTP...",
+      success: "OTP verified successfully",
+      error: "Failed to verify OTP",
+    });
+
+    const res = await resPromise;
+    console.log(res);
+    if (res.status === 200) {
+      localStorage.setItem("token", res.data.data.token);
+      navigate("/login/forgot-password/reset-password");
+    }
   };
 
   return (

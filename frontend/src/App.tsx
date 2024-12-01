@@ -311,16 +311,41 @@ function App() {
         position="top-center"
         containerStyle={{ margin: "8px" }}
         toastOptions={{
-          success: { duration: 3000 },
+          success: {
+            duration: 3000,
+            style: {
+              fontSize: "16px",
+              lineHeight: "1.5",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              margin: "5px",
+              display: "absolute",
+              background: "#333",
+              color: "#fff",
+            },
+          },
           error: { duration: 4000 },
           style: {
             fontSize: "16px",
             lineHeight: "1.5",
             maxWidth: "500px",
             padding: "16px 24px",
-            background: "white",
             margin: "5px",
             display: "absolute",
+            background: "#333",
+            color: "#fff",
+          },
+          loading: {
+            style: {
+              fontSize: "16px",
+              lineHeight: "1.5",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              margin: "5px",
+              display: "absolute",
+              background: "#333",
+              color: "#fff",
+            },
           },
         }}
       />

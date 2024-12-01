@@ -97,21 +97,11 @@ export async function updateUser(
       APIReqObj,
     ) as Promise<unknown>;
 
-    toast.promise(
-      resPromise,
-      {
-        loading: "Updating Profile...",
-        success: "Profile Updated Successfully",
-        error: "Failed to update user",
-      },
-      {
-        style: {
-          minWidth: "250px",
-          display: "absolute",
-          backgroundColor: "white",
-        },
-      },
-    );
+    toast.promise(resPromise, {
+      loading: "Updating Profile...",
+      success: "Profile Updated Successfully",
+      error: "Failed to update user",
+    });
 
     return await resPromise;
   } catch (error) {

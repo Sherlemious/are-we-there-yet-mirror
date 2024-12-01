@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import axiosInstance from "./axiosInstance";
 
-export async function updatePassword(password: string) {
+export async function updatePassword(password: FormDataEntryValue) {
   const promise = axiosInstance.patch("/users/changePassword", {
     password,
   });

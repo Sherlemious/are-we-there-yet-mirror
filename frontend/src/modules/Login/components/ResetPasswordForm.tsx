@@ -1,14 +1,17 @@
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate, useNavigation } from "react-router";
+import { useLocation, useNavigate, useNavigation } from "react-router";
 import { Form } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LoginOrRegisterInput } from "@/modules/shared/components/LoginOrRegisterInput";
 import { Eye, EyeOff } from "lucide-react";
+import { updatePassword } from "@/modules/shared/services/apiUpdatePassword";
+import toast from "react-hot-toast";
 
 const ResetPasswordForm = () => {
   const navigation = useNavigation();
   const navigate = useNavigate();
+
   const isSubmitting = navigation.state === "loading";
 
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -64,8 +67,17 @@ const ResetPasswordForm = () => {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
     console.log(data);
+    if (data.password !== data.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     // Reset password logic here
-    navigate("/login");
+    const res = await updatePassword(data.password);
+    console.log(res);
+    if (res.status === 200) {
+      navigate("/login");
+    }
   };
 
   const togglePasswordVisibility = (field: "password" | "confirmPassword") => {
