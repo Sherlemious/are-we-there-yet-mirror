@@ -71,6 +71,35 @@ class EmailService {
       console.log('Error sending forgot password email:', error);
     }
   }
+
+  async sendBirthdayEmail(email: string, name: string, promoCode: string) {
+    try {
+      // Read the HTML file
+      const filePath = path.join(__dirname, './email-templates/birthdayPromoCode.html');
+      let htmlContent = fs.readFileSync(filePath, 'utf-8');
+
+      // Replace the placeholders with the actual data
+      htmlContent = htmlContent.replace('{{name}}', name);
+      htmlContent = htmlContent.replace('{{promoCode}}', promoCode);
+
+      const mailOptions = {
+        from: this.email,
+        to: email,
+        subject: 'Happy Birthday! from Are We There Yet',
+        html: htmlContent,
+      };
+
+      this.transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    } catch (error) {
+      console.log('Error sending forgot password email:', error);
+    }
+  }
 }
 
 export default new EmailService();
