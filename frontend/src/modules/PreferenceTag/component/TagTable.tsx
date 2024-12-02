@@ -1,13 +1,12 @@
-import { Pencil, X } from "lucide-react";
-import { prefrenceTag } from "../types/PrefrenceTag";
+import { preferenceTag } from "../types/PreferenceTag";
 import UpdatePopup from "./update-popup";
 import { useRef, useState } from "react";
 import Table, { type TableColumn } from "../../shared/components/Table";
 
 interface TagTableProps {
-  Tags: prefrenceTag[];
+  Tags: preferenceTag[];
   onDeleteTag: (id: string) => void;
-  setTags: React.Dispatch<React.SetStateAction<prefrenceTag[]>>;
+  setTags: React.Dispatch<React.SetStateAction<preferenceTag[]>>;
 }
 
 function TagTable({ Tags, onDeleteTag, setTags }: TagTableProps) {
@@ -18,10 +17,6 @@ function TagTable({ Tags, onDeleteTag, setTags }: TagTableProps) {
       header: "Name",
       accessor: "name",
     },
-    {
-      header: "Historical Period",
-      accessor: "historical_period",
-    },
   ];
 
   const handleEdit = (id: string) => {
@@ -31,7 +26,7 @@ function TagTable({ Tags, onDeleteTag, setTags }: TagTableProps) {
 
   return (
     <>
-      <div className="container mx-auto">
+      <div className="w-96 container mx-auto">
         <Table
           data={Tags}
           columns={tableColumns}

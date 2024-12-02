@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { imgLinks } from "@/modules/shared/utils/constants";
 import {
   useActionData,
   useLoaderData,
@@ -33,8 +32,6 @@ import AdvertiserOrSellerDocUpload from "./AdvertiserOrSellerDocUpload";
 import SubmitButton from "./SubmitButton";
 import { apiGetTermsAndConditions } from "../services/apiGetTermsAndConditions";
 
-const imgs = Object.values(imgLinks.landing_page);
-
 type NewData = {
   userRole: string;
   username: string;
@@ -51,7 +48,6 @@ type NewData = {
 const RegistrationForm = () => {
   const [userType, setUserType] = useState("");
   const [nationality, setNationality] = useState("");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [oneOfFieldsIsEmpty, setOneOfFieldsIsEmpty] = useState(true);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
@@ -59,15 +55,17 @@ const RegistrationForm = () => {
   const navigation = useNavigation();
   const submit = useSubmit();
   const { setUser } = useContext(UserContext);
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasPassword, setHasPassword] = useState(false);
 
   const { countries, terms } = useLoaderData() as {
-    countries: { name: { common: string } }[];
+    countries: { country: string }[];
     terms: string;
   };
+  const countryNames = countries?.map((country) => country.country);
 
   const navigate = useNavigate();
-  const countryNames = countries?.map((country) => country.name.common);
-  countryNames.sort();
+
   const res = useActionData() as {
     status: number;
     data: {
@@ -120,28 +118,6 @@ const RegistrationForm = () => {
   }, [res]);
 
   const isSubmitting = navigation.state === "submitting";
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imgs.length);
-    }, 4000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
-  //   const formData = new FormData(e.currentTarget);
-  //   const data = Object.fromEntries(formData);
-
-  //   for (const key in data) {
-  //     if (data[key] === "" && key !== "acceptedTerms") {
-  //       setOneOfFieldsIsEmpty(true);
-  //       return;
-  //     }
-  //   }
-
-  //   setOneOfFieldsIsEmpty(false);
-  // };
 
   const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
@@ -250,29 +226,20 @@ const RegistrationForm = () => {
       certificates: [],
       taxDocument: null,
     });
+    setShowPassword(false);
+    setHasPassword(false);
   }, [userType]);
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isEmpty = e.target.value.length === 0;
+    setHasPassword(!isEmpty);
+    if (isEmpty) {
+      setShowPassword(false);
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        {imgs.map((image, index) => (
-          <div
-            key={image}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              currentImageIndex === index ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              backgroundImage: `url(${image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "blur(8px)",
-              transform: "scale(1.1)",
-            }}
-          />
-        ))}
-        <div className="absolute inset-0 bg-black opacity-50" />
-      </div>
-
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -311,12 +278,23 @@ const RegistrationForm = () => {
                     userType === userRoles.tourist
                       ? "grid-cols-2"
                       : "grid-cols-1"
-                  } gap-4`}
+                  } gap-4 px-3`}
                 >
-                  {userType !== userRoles.tourist && <GeneralRegister />}
+                  {userType !== userRoles.tourist && (
+                    <GeneralRegister
+                      handlePasswordChange={handlePasswordChange}
+                      showPassword={showPassword}
+                      hasPassword={hasPassword}
+                      setShowPassword={setShowPassword}
+                    />
+                  )}
 
                   {userType === userRoles.tourist && (
                     <TouristRegister
+                      handlePasswordChange={handlePasswordChange}
+                      showPassword={showPassword}
+                      hasPassword={hasPassword}
+                      setShowPassword={setShowPassword}
                       countryNames={countryNames}
                       setNationality={setNationality}
                       nationality={nationality}
@@ -345,14 +323,14 @@ const RegistrationForm = () => {
                   name="acceptedTerms"
                   value={acceptedTerms.toString()}
                 />
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 px-3">
                   <Checkbox
                     id="terms"
                     checked={acceptedTerms}
                     onCheckedChange={(checked) =>
                       setAcceptedTerms(checked as boolean)
                     }
-                    className="border-white"
+                    className="border-2 border-accent-gold focus:outline-none focus:ring-2 focus:ring-accent-gold"
                   />
                   <label htmlFor="terms" className="text-sm text-white">
                     I accept the{" "}
@@ -369,6 +347,7 @@ const RegistrationForm = () => {
                 <SubmitButton
                   isSubmitting={isSubmitting}
                   oneOfFieldsIsEmpty={oneOfFieldsIsEmpty || !acceptedTerms}
+                  logIn={false}
                 />
               </Form>
             </motion.div>
@@ -395,7 +374,7 @@ const RegistrationForm = () => {
           className="mt-4 text-center text-white"
         >
           Already have an account?{" "}
-          <a href="/login" className="ml-2 text-yellow-400 hover:underline">
+          <a href="/login" className="text-yellow-400 hover:underline">
             Sign in
           </a>
         </motion.p>
@@ -498,13 +477,13 @@ export async function action({ request }: { request: Request }) {
 }
 
 export async function loader() {
-  const response = await fetch(`https://restcountries.com/v3.1/all`);
+  const response = await fetch(`https://countriesnow.space/api/v0.1/countries`);
   const data = await response.json();
 
   const terms = await apiGetTermsAndConditions();
 
   return {
-    countries: data,
+    countries: data.data,
     terms,
   };
 }

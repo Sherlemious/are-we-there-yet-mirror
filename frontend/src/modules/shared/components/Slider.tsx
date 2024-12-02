@@ -102,21 +102,11 @@ const Slider = ({
 
       const resPromise = axiosInstance.patch(`/users/${id}`, updateData);
 
-      toast.promise(
-        resPromise,
-        {
-          loading: "Removing item...",
-          success: "Item removed",
-          error: "Failed to remove item",
-        },
-        {
-          style: {
-            minWidth: "250px",
-            display: "absolute",
-            backgroundColor: "white",
-          },
-        },
-      );
+      toast.promise(resPromise, {
+        loading: "Removing item...",
+        success: "Item removed",
+        error: "Failed to remove item",
+      });
 
       const res = await resPromise;
 
@@ -172,21 +162,11 @@ const Slider = ({
 
       const resPromise = axiosInstance.patch(`users/${id}`, updateData);
 
-      toast.promise(
-        resPromise,
-        {
-          loading: "Adding item...",
-          success: "Item added",
-          error: "Failed to add item",
-        },
-        {
-          style: {
-            minWidth: "250px",
-            display: "absolute",
-            backgroundColor: "white",
-          },
-        },
-      );
+      toast.promise(resPromise, {
+        loading: "Adding item...",
+        success: "Item added",
+        error: "Failed to add item",
+      });
 
       const res = await resPromise;
 

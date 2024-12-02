@@ -184,41 +184,41 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
             {(user.account_type === AccountType.Tourist ||
               user.account_type === AccountType.Admin ||
               user.account_type === AccountType.Seller) && (
-                <NavigationMenuItem className="relative">
-                  <NavigationMenuTrigger
-                    className={cn(
-                      handleStyles({ isActive: false }),
-                      "bg-transparent hover:bg-transparent",
-                      "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
-                    )}
-                  >
-                    Products
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      <ListItem title="All Products" to="/home/all-products">
-                        View all products
+              <NavigationMenuItem className="relative">
+                <NavigationMenuTrigger
+                  className={cn(
+                    handleStyles({ isActive: false }),
+                    "bg-transparent hover:bg-transparent",
+                    "data-[state=open]:drop-shadow-glow text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                  )}
+                >
+                  Products
+                </NavigationMenuTrigger>
+                <NavigationMenuContent className="bg-black/90 backdrop-blur-md">
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    <ListItem title="All Products" to="/home/all-products">
+                      View all products
+                    </ListItem>
+                    {user.account_type === AccountType.Seller && (
+                      <ListItem
+                        title="My Products"
+                        to="/home/my-products-seller"
+                      >
+                        View your products
                       </ListItem>
-                      {user.account_type === AccountType.Seller && (
-                        <ListItem
-                          title="My Products"
-                          to="/home/my-products-seller"
-                        >
-                          View your products
-                        </ListItem>
-                      )}
-                      {user.account_type === AccountType.Admin && (
-                        <ListItem
-                          title="Admin"
-                          to="/home/admin-dashboard/my-products-admin"
-                        >
-                          Manage products
-                        </ListItem>
-                      )}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              )}
+                    )}
+                    {user.account_type === AccountType.Admin && (
+                      <ListItem
+                        title="Admin"
+                        to="/home/admin-dashboard/my-products-admin"
+                      >
+                        Manage products
+                      </ListItem>
+                    )}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
 
             {user.account_type === AccountType.Tourist && (
               <NavigationMenuItem>
@@ -263,35 +263,35 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
 
             {(user.account_type === AccountType.Tourist ||
               user.account_type === AccountType.Admin) && (
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger
-                    className={cn(
-                      handleStyles({ isActive: false }),
-                      "bg-transparent hover:bg-transparent",
-                      "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+              <NavigationMenuItem>
+                <NavigationMenuTrigger
+                  className={cn(
+                    handleStyles({ isActive: false }),
+                    "bg-transparent hover:bg-transparent",
+                    "text-sub-headings data-[state=open]:bg-transparent data-[state=open]:text-accent-gold",
+                  )}
+                >
+                  Complaints
+                </NavigationMenuTrigger>
+                <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {user.account_type === AccountType.Tourist && (
+                      <ListItem title="My Complaints" to="/home/my-complaints">
+                        My complaints
+                      </ListItem>
                     )}
-                  >
-                    Complaints
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-black/80 backdrop-blur-sm">
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      {user.account_type === AccountType.Tourist && (
-                        <ListItem title="My Complaints" to="/home/my-complaints">
-                          My complaints
-                        </ListItem>
-                      )}
-                      {user.account_type === AccountType.Admin && (
-                        <ListItem
-                          title="Manage Complaints"
-                          to="/home/admin-dashboard/admin-complaints"
-                        >
-                          Manage complaints
-                        </ListItem>
-                      )}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              )}
+                    {user.account_type === AccountType.Admin && (
+                      <ListItem
+                        title="Manage Complaints"
+                        to="/home/admin-dashboard/admin-complaints"
+                      >
+                        Manage complaints
+                      </ListItem>
+                    )}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
       </div>

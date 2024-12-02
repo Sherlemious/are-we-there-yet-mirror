@@ -45,7 +45,7 @@ export default function FormHeader({
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="mb-6 flex transform flex-col gap-2"
+        className="mb-6 flex transform flex-col gap-2 px-3"
       >
         <Label className="text-white">Who are you?</Label>
         <Select value={userType} onValueChange={handleUserTypeChange}>
@@ -54,7 +54,11 @@ export default function FormHeader({
           </SelectTrigger>
           <SelectContent>
             {userTypes.map((type) => (
-              <SelectItem key={type.id} value={type.id}>
+              <SelectItem
+                key={type.id}
+                value={type.id}
+                className="text-lg text-black"
+              >
                 {type.label}
               </SelectItem>
             ))}
