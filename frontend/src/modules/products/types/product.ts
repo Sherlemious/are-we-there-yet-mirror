@@ -9,6 +9,7 @@ export interface Product {
   sales: number;
   archive: boolean;
   seller: string;
+  Quantity: number;
 }
 
 export type review = {

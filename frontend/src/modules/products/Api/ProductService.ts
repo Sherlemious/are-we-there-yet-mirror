@@ -52,6 +52,16 @@ export const getProducts = async (): Promise<Product[]> => {
     throw new Error(error.response?.data?.message || "Error fetching products");
   }
 };
+export const getWishList = async (): Promise<any> => {
+  try {
+    const response = await axiosInstance.get<{ data: { products: Product[] } }>(
+      `/users/bookmarks?wishlist=true`,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error fetching products");
+  }
+};
 
 export const getProductBySeller = async (
   sellerId: string,

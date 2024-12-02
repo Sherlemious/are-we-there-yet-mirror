@@ -10,7 +10,7 @@ import {
   RootLayout,
   rootLayoutLoader,
 } from "./modules/Layout/App";
-import { AdminPage as AdminProducts } from "./modules/products/App";
+import { AdminPage as AdminProducts, WishList } from "./modules/products/App";
 import { AllProducts } from "./modules/products/App";
 import { SellerPage as SellerProducts } from "./modules/products/App";
 import { Dashboard as AdminDashboard } from "./modules/Admin/App";
@@ -157,6 +157,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "all-products",
         element: <AllProducts />,
+      },
+      {
+        path: "wishList",
+        element: <WishList />,
       },
       {
         path: "tourism-governor-profile/:id",
