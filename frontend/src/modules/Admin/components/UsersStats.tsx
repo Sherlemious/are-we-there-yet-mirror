@@ -23,21 +23,21 @@ const UsersStats = () => {
   const [totalUsers, setTotalUsers] = useState<number>();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [newUsers, setNewUsers] = useState<number>();
+  const [newUsersByMonth, setNewUsersByMonth] = useState<number>();
   const [error, setError] = useState<string>();
 
   const fetchNewUsersByMonth = (month: number, year: number) => {
+    setNewUsersByMonth(undefined);
     axiosInstance
       .get(`/users/howManyUsersByMonth?month=${month}&year=${year}`)
       .then(
         (response) => {
-          setNewUsers(response.data.data);
+          setNewUsersByMonth(response.data.data);
         },
         (error) => {
           setError(error.response.data.message);
         },
       );
-    setNewUsers(Math.floor(Math.random() * month * year));
   };
 
   const fetchTotalUsers = () => {
@@ -88,7 +88,7 @@ const UsersStats = () => {
     );
   }
 
-  if (!totalUsers || !newUsers) {
+  if (totalUsers === undefined || newUsersByMonth === undefined) {
     return (
       <div className="mx-4 rounded-lg bg-secondary-light_grey p-6">
         <div className="max-w-4xl animate-pulse">Loading...</div>
@@ -127,7 +127,7 @@ const UsersStats = () => {
             </div>
             <div>
               <div className="text-4xl font-bold text-primary-blue">
-                {newUsers.toLocaleString()}
+                {newUsersByMonth.toLocaleString()}
               </div>
               <div className="mt-2 flex items-center text-sm text-gray-600">
                 <Calendar size={16} className="mr-2" />
