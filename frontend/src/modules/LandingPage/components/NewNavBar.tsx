@@ -85,10 +85,7 @@ export default function NewNavBar() {
 
   return (
     <nav className={styles.nav}>
-      <NavLink
-        to={user.account_type === AccountType.None ? "/" : "/home"}
-        className={styles.logo.wrapper}
-      >
+      <NavLink to={"/home"} className={styles.logo.wrapper}>
         <img
           src={Logo}
           alt="Are We There Yet Logo"

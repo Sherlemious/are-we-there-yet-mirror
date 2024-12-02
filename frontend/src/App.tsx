@@ -64,6 +64,9 @@ import {
   pastOrdersLoader,
   PastOrdersPage,
 } from "./modules/Orders/App";
+import AdminPromoCode, {
+  loader as adminPromoCodeLoader,
+} from "./modules/Admin/pages/PromoCode";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -233,6 +236,11 @@ const BrowserRouter = createBrowserRouter([
           {
             path: "admin-complaints",
             element: <AdminAllComplaints />,
+          },
+          {
+            path: "promo-codes",
+            element: <AdminPromoCode />,
+            loader: adminPromoCodeLoader,
           },
         ],
       },
