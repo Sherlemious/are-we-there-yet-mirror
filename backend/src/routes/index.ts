@@ -13,6 +13,7 @@ import categoryRouter from './category.route';
 import complaintRouter from './complaint.route';
 import reviewRouter from './review.route';
 import termsRouter from './terms.route';
+import promoCodeRouter from './promoCode.route';
 
 const routes = Router();
 
@@ -26,6 +27,7 @@ routes.use('/users', userRouter);
 routes.use('/activities', activityRouter);
 routes.use('/products', productRouter);
 routes.use('/categories', categoryRouter);
+routes.use('/promoCodes', promoCodeRouter);
 
 routes.use('/orders', orderRouter);
 routes.use('/search', searchRouter);
