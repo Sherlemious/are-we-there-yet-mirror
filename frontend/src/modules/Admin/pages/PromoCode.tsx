@@ -25,7 +25,7 @@ export default function AdminPromoCode() {
       accessor: "discountPercentage",
       header: "Discount",
       render: (discount: number) => (
-        <span className={`rounded-full bg-primary-green p-1`}>
+        <span className={`rounded-full bg-primary-green p-2`}>
           {discount}%{" "}
           {discount <= 10
             ? "👌"

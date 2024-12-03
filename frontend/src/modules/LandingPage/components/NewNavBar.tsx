@@ -1,4 +1,9 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
 import Logo from "../../../../../assets/logo/Are We There Yet Logo-02.png";
 import { returnNavBarContentBasedOnUser } from "../utils/returnNavBarContent";
 import { useContext } from "react";
@@ -15,7 +20,7 @@ import CurrencySelect from "./CurrencySelect";
 const styles = {
   nav: "relative z-10 flex h-[10vh] items-center bg-black/10 backdrop-blur-md",
   logo: {
-    wrapper: "ml-24",
+    wrapper: "flex justify-center ml-24",
     image: "h-32 w-40",
   },
   links: {
@@ -45,6 +50,7 @@ export default function NewNavBar() {
   const { user, setUser } = useContext(UserContext);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const navigation = useNavigation();
 
   const navBarItems: NavBarContent = returnNavBarContentBasedOnUser(
     user?.account_type,
@@ -85,24 +91,19 @@ export default function NewNavBar() {
 
   return (
     <nav className={styles.nav}>
-      <NavLink to={"/home"} className={styles.logo.wrapper}>
-        <img
-          src={Logo}
-          alt="Are We There Yet Logo"
-          className={styles.logo.image}
-        />
+      <NavLink to="/home" className={styles.logo.wrapper}>
+        {navigation.state === "loading" ? (
+          <span className="h-8 w-8 animate-spin rounded-full border-2 border-accent-gold border-t-transparent"></span>
+        ) : (
+          <img
+            src={Logo}
+            alt="Are We There Yet Logo"
+            className={styles.logo.image}
+          />
+        )}
       </NavLink>
       <div className="flex w-full items-center">
         <ul className={styles.links.list}>
-          {/* Home Link */}
-          <NavLink
-            to={user.account_type === AccountType.None ? "/" : "/home"}
-            className={(props) => handleStyles(props)}
-            end
-          >
-            <span className="text-sub-headings">Home</span>
-          </NavLink>
-
           {/* Activities Section */}
           {user.account_type !== AccountType.Advertiser &&
             user.account_type !== AccountType.Admin && (
