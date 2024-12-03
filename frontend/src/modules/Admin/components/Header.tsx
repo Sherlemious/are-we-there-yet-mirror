@@ -84,7 +84,7 @@ const Header = ({
     email: string,
   ) => {
     addUser(username, password, email, "Admin");
-    setIsAdminPopupOpen(false); // Close the popup after adding
+    setIsAdminPopupOpen(false);
   };
   const { user } = useContext(UserContext);
 
@@ -109,6 +109,13 @@ const Header = ({
           className="rounded bg-accent-dark-blue px-4 py-2 text-white hover:bg-accent-dark-blue/80 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
         >
           Preference Tags
+        </Link>
+
+        <Link
+          to="promo-codes"
+          className="rounded bg-accent-dark-blue px-4 py-2 text-white hover:bg-accent-dark-blue/80 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+        >
+          Promo Codes
         </Link>
 
         <AddUserPopup
