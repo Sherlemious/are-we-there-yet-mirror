@@ -7,6 +7,7 @@ import { ProductType } from '../types/Product.types';
 import productRepo from '../database/repositories/product.repo';
 import userRepo from '../database/repositories/user.repo';
 import emailService from '../services/email/email.service';
+import { accountType } from '../types/User.types';
 
 class OrderController {
   async getAllOrders(req: Request, res: Response) {
@@ -35,6 +36,19 @@ class OrderController {
 
         totalOrderPrice += product.price * cartItem.quantity;
         await productRepo.buyProduct(product._id, cartItem.quantity);
+        if (product.available_quantity !== undefined && product.available_quantity - cartItem.quantity === 0) {
+          if (product.seller) {
+            await userRepo.outOfStockNotification(product.seller);
+            const tempUser = await userRepo.findUserById(product.seller);
+            if (tempUser?.email) {
+              await emailService.outOfStockEmail(tempUser.email);
+            }
+          }
+          const admins = await userRepo.getUsersByType(accountType.Admin);
+          admins.forEach(async (admin) => {
+            await userRepo.outOfStockNotificationAdmin(admin._id.toString());
+          });
+        }
       });
 
       const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, cart);

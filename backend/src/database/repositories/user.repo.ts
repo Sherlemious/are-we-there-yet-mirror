@@ -173,5 +173,28 @@ class UserRepository {
       },
     });
   }
+  async outOfStockNotification(id: string) {
+    return await User.findByIdAndUpdate(id, {
+      $push: {
+        notifications: {
+          title: 'Out of Stock',
+          message: 'One of your products is out of stock. Please restock.',
+          type: 'error',
+        },
+      },
+    });
+  }
+
+  async outOfStockNotificationAdmin(id: string) {
+    return await User.findByIdAndUpdate(id, {
+      $push: {
+        notifications: {
+          title: 'Out of Stock',
+          message: 'One of the products is out of stock. Please contact the seller for restock.',
+          type: 'error',
+        },
+      },
+    });
+  }
 }
 export default new UserRepository();
