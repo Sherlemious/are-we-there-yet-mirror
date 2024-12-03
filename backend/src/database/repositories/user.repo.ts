@@ -160,6 +160,18 @@ class UserRepository {
       createdAt: { $gte: startDate, $lt: endDate },
     });
   }
-}
 
+  async flagItineraryNotification(id: string) {
+    return await User.findByIdAndUpdate(id, {
+      $push: {
+        notifications: {
+          title: 'Flagged Itinerary',
+          message:
+            'We regret to inform you that your itinerary has been flagged by an admin as inappropriate. Please review the guidelines and make necessary changes.',
+          type: 'error',
+        },
+      },
+    });
+  }
+}
 export default new UserRepository();

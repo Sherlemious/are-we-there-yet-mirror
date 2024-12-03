@@ -13,6 +13,7 @@ import categoryRouter from './category.route';
 import complaintRouter from './complaint.route';
 import reviewRouter from './review.route';
 import termsRouter from './terms.route';
+import notificationRouter from './notification.route';
 
 const routes = Router();
 
@@ -32,5 +33,6 @@ routes.use('/search', searchRouter);
 routes.use('/complaints', complaintRouter);
 routes.use('/reviews', reviewRouter);
 routes.use('/termsAndConditions', termsRouter);
+routes.use('/notifications', notificationRouter);
 
 export { routes };

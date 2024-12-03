@@ -206,6 +206,7 @@ const flagItinerary = async (req: Request, res: Response) => {
     if (email) {
       await emailService.sendFlaggedEmail(email);
     }
+    await userRepo.flagItineraryNotification(req.user.userId);
 
     const response = {
       message: 'Itinerary flagged successfully',
