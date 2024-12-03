@@ -12,12 +12,9 @@ import {
 import Modal, { ModalRef } from "./modal";
 import ProductForm, { ProductFormDataSubmit } from "./ProductForm";
 import defaultPhoto from "../assets/defaultPhoto.png";
-// import mintBluePhoto from "../assets/mintBlue.jpg";
-// import Xbox5 from "../assets/Xbox5.jpg";
 import GenericCard from "../../shared/GenericCard/GenericCard";
 import axiosInstance from "../../shared/services/axiosInstance";
 import { getWishList } from "../Api/ProductService";
-import { set } from "lodash";
 
 interface ProductListProps {
   products: Product[]; // All products
@@ -129,7 +126,7 @@ const ProductList: React.FC<ProductListProps> = ({
       try {
         await axiosInstance.post(`/users/cart`, {
           productId: selectedProduct._id,
-          quantity: selectedProduct.Quantity,
+          quantity: selectedProduct.Quantity || 1,
         });
         alert("Product added to cart");
         EditmodalRef.current?.close();
@@ -369,6 +366,7 @@ const ProductList: React.FC<ProductListProps> = ({
                           required
                           className="w-full rounded-lg border border-gray-300 px-4 py-2"
                           value={selectedProduct.Quantity}
+                          defaultValue={1}
                           onChange={(e) =>
                             setSelectedProduct({
                               ...selectedProduct,
