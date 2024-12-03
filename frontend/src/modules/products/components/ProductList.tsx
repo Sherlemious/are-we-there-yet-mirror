@@ -1,6 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Product } from "../types/product";
-import { DollarSign, Package, Plus, ShoppingCart, Star } from "lucide-react";
+import {
+  DollarSign,
+  ListPlus,
+  ListX,
+  Package,
+  Plus,
+  ShoppingCart,
+  Star,
+} from "lucide-react";
 import Modal, { ModalRef } from "./modal";
 import ProductForm, { ProductFormDataSubmit } from "./ProductForm";
 import defaultPhoto from "../assets/defaultPhoto.png";
@@ -8,10 +16,12 @@ import defaultPhoto from "../assets/defaultPhoto.png";
 // import Xbox5 from "../assets/Xbox5.jpg";
 import GenericCard from "../../shared/GenericCard/GenericCard";
 import axiosInstance from "../../shared/services/axiosInstance";
+import { getWishList } from "../Api/ProductService";
+import { set } from "lodash";
 
 interface ProductListProps {
   products: Product[]; // All products
-  role: "admin" | "seller" | "tourist"; // Define user roles
+  role: "admin" | "seller" | "tourist" | "wishlist"; // Define user roles
   onEdit?: (product: Product) => void; // Admin/Seller functionality
   onDelete?: (productId: string) => void; // Admin/Seller functionality
   onCreate?: (productData: ProductFormDataSubmit) => void; // Admin/Seller functionality
@@ -68,6 +78,70 @@ const ProductList: React.FC<ProductListProps> = ({
     fetchImages();
   }, [products]);
 
+  const handleAddWishList = async () => {
+    if (selectedProduct) {
+      try {
+        const payload = {
+          modelType: "product",
+          modelId: selectedProduct._id,
+        };
+        await axiosInstance.post(`/users/bookmarks`, payload);
+        alert("Product added to wishlist");
+      } catch (error) {
+        console.error("Error adding product to wishlist:", error);
+        alert(
+          (error as any).response?.data?.message ||
+            "Failed to add product to wishlist",
+        );
+      }
+    } else {
+      alert("No product selected to add to wishlist");
+    }
+  };
+
+  const handleRemoveWishlist = async () => {
+    if (selectedProduct) {
+      try {
+        const bookmarks = (await getWishList()).wishlist;
+        const bookmark = bookmarks.find(
+          (bookmark: any) => bookmark.product._id === selectedProduct._id,
+        );
+        const bookmarkId = bookmark?._id;
+        console.log(bookmarkId);
+        await axiosInstance.delete(`/users/bookmarks/${bookmarkId}`);
+        alert("Product removed from wishlist");
+        window.location.reload();
+      } catch (error) {
+        console.error("Error removing product from wishlist:", error);
+        alert(
+          (error as any).response?.data?.message ||
+            "Failed to remove product from wishlist",
+        );
+      }
+    } else {
+      alert("No product selected to remove from wishlist");
+    }
+  };
+
+  // Function to add a product to the cart
+  const handleAddCart = async () => {
+    if (selectedProduct) {
+      try {
+        await axiosInstance.post(`/users/cart`, {
+          productId: selectedProduct._id,
+          quantity: selectedProduct.Quantity,
+        });
+        alert("Product added to cart");
+        EditmodalRef.current?.close();
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+        alert(
+          `Failed to add product to cart ${(error as any).response.data.message}`,
+        );
+      }
+    }
+  };
+
   // Function to toggle between sorting orders
   const toggleSortByRating = () => {
     if (sortByRating === "none") {
@@ -118,44 +192,46 @@ const ProductList: React.FC<ProductListProps> = ({
   return (
     <div className={customStyles.container}>
       {/* Search and Filter Controls */}
-      <div className={customStyles.filterContainer}>
-        <input
-          type="text"
-          placeholder="Search by name"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={customStyles.searchBar}
-        />
-        <div className={customStyles.priceFilters}>
+      {role !== "wishlist" && (
+        <div className={customStyles.filterContainer}>
           <input
-            type="number"
-            placeholder="Min Price"
-            value={minPrice}
-            onChange={(e) => setMinPrice(Number(e.target.value) || "")}
-            className={customStyles.priceInput}
+            type="text"
+            placeholder="Search by name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={customStyles.searchBar}
           />
-          <input
-            type="number"
-            placeholder="Max Price"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(Number(e.target.value) || "")}
-            className={customStyles.priceInput}
-          />
+          <div className={customStyles.priceFilters}>
+            <input
+              type="number"
+              placeholder="Min Price"
+              value={minPrice}
+              onChange={(e) => setMinPrice(Number(e.target.value) || "")}
+              className={customStyles.priceInput}
+            />
+            <input
+              type="number"
+              placeholder="Max Price"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(Number(e.target.value) || "")}
+              className={customStyles.priceInput}
+            />
+          </div>
+          {/* Button to toggle sort by rating */}
+          <button
+            onClick={toggleSortByRating}
+            className={customStyles.sortButton}
+          >
+            Sort by Rating (
+            {sortByRating === "none"
+              ? "None"
+              : sortByRating === "asc"
+                ? "Asc"
+                : "Desc"}
+            )
+          </button>
         </div>
-        {/* Button to toggle sort by rating */}
-        <button
-          onClick={toggleSortByRating}
-          className={customStyles.sortButton}
-        >
-          Sort by Rating (
-          {sortByRating === "none"
-            ? "None"
-            : sortByRating === "asc"
-              ? "Asc"
-              : "Desc"}
-          )
-        </button>
-      </div>
+      )}
 
       {/* Product List */}
       <div className={customStyles.sliderContainer}>
@@ -169,6 +245,11 @@ const ProductList: React.FC<ProductListProps> = ({
                 >
                   <Plus className={customStyles.addSlideIcon} />
                 </div>
+              </div>
+            )}
+            {filteredProducts.length === 0 && (
+              <div className="text-center text-xl font-bold text-accent-dark-blue">
+                No products found
               </div>
             )}
             {filteredProducts.map((product, index) => (
@@ -256,7 +337,7 @@ const ProductList: React.FC<ProductListProps> = ({
       >
         {selectedProduct && (
           <div className="p-6">
-            {role === "tourist" && (
+            {(role === "tourist" || role === "wishlist") && (
               <div className="space-y-6">
                 {/* Description */}
                 <div className="rounded-lg bg-secondary-light_grey p-4">
@@ -270,7 +351,7 @@ const ProductList: React.FC<ProductListProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded-lg bg-secondary-light_grey p-4">
                     <h3 className="mb-2 font-sub_headings text-accent-dark-blue">
-                      Price
+                      Unit price
                     </h3>
                     <p className="text-2xl font-bold text-primary-green">
                       ${selectedProduct.price}
@@ -278,11 +359,32 @@ const ProductList: React.FC<ProductListProps> = ({
                   </div>
                   <div className="rounded-lg bg-secondary-light_grey p-4">
                     <h3 className="mb-2 font-sub_headings text-accent-dark-blue">
-                      Available
+                      Choose quantity
                     </h3>
-                    <p className="text-2xl font-bold text-primary-blue">
-                      {selectedProduct.available_quantity} units
-                    </p>
+                    {selectedProduct.available_quantity > 0 ? (
+                      <>
+                        <input
+                          type="number"
+                          placeholder="Quantity"
+                          required
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2"
+                          value={selectedProduct.Quantity}
+                          onChange={(e) =>
+                            setSelectedProduct({
+                              ...selectedProduct,
+                              Quantity: Math.max(1, Number(e.target.value)),
+                            })
+                          }
+                        />
+                        <p className="text-2xl font-bold text-primary-blue">
+                          {selectedProduct.available_quantity} units left
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-2xl font-bold text-primary-blue">
+                        Out of stock
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -334,10 +436,41 @@ const ProductList: React.FC<ProductListProps> = ({
             {/* Footer */}
             <div className="mt-6 flex justify-end">
               {role === "tourist" && (
-                <button className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80">
-                  <ShoppingCart size={20} />
-                  Add to Cart
-                </button>
+                <>
+                  <button
+                    onClick={handleAddWishList}
+                    className="mr-2 flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                  >
+                    <ListPlus size={20} />
+                    Add to wishlist
+                  </button>
+                  <button
+                    onClick={handleAddCart}
+                    type="submit"
+                    className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                  >
+                    <ShoppingCart size={20} />
+                    Add to Cart
+                  </button>
+                </>
+              )}
+              {role === "wishlist" && (
+                <>
+                  <button
+                    onClick={handleRemoveWishlist}
+                    className="mr-2 flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                  >
+                    <ListX size={20} />
+                    Remove from wishlist
+                  </button>
+                  <button
+                    onClick={handleAddCart}
+                    className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                  >
+                    <ShoppingCart size={20} />
+                    Add to Cart
+                  </button>
+                </>
               )}
               {(role === "admin" || role === "seller") && (
                 <ProductForm
@@ -357,7 +490,6 @@ const ProductList: React.FC<ProductListProps> = ({
           </div>
         )}
       </Modal>
-
       {/* Modal for adding a new product */}
       <Modal ref={AddmodalRef} title="Add Product">
         <div>
