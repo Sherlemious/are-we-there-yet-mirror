@@ -196,5 +196,13 @@ class UserRepository {
       },
     });
   }
+
+  async markNotificationAsRead(id: string, notificationId: string) {
+    return await User.updateOne(
+      { _id: new ObjectId(id), 'notifications._id': new ObjectId(notificationId) },
+      { $set: { 'notifications.$.read': true } }
+    );
+  }
+  
 }
 export default new UserRepository();
