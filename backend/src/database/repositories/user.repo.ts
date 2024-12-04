@@ -209,6 +209,18 @@ class UserRepository {
     });
   }
 
+  async ticketsNotification(id: string, tickets: number ) {
+    return await User.findByIdAndUpdate(id, {
+      $push: {
+        notifications: {
+          title: 'Tickets update',
+          message: 'We want to inform you that the tickets booked till now is:' + tickets,
+          type: 'info',
+        },
+      },
+    });
+  } 
+
   async markNotificationAsRead(id: string, notificationId: string) {
     return await User.updateOne(
       { _id: new ObjectId(id), 'notifications._id': new ObjectId(notificationId) },

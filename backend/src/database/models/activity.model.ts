@@ -54,6 +54,10 @@ const activitySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'user',
     },
+    tickets: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

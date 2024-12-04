@@ -44,6 +44,10 @@ class ActivityRepo {
   async openBooking(id: string) {
     return await Activity.updateOne({ _id: new ObjectId(id) }, { bookingOpen: true });
   }
+
+  async addTicket(activity_id: string) {
+    return await Activity.findByIdAndUpdate(activity_id, { $inc: { tickets: 1 } });
+  }
 }
 
 export default new ActivityRepo();

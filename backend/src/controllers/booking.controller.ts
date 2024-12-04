@@ -6,6 +6,8 @@ import bookingRepo from '../database/repositories/booking.repo';
 import { checkUserLegalAge } from '../utils/AgeVerification.utils';
 import userRepo from '../database/repositories/user.repo';
 import { LOYALTY_POINT_GAIN } from '../constants';
+import activityRepo from '../database/repositories/activity.repo';
+import emailService from '../services/email/email.service';
 
 class BookingController {
   async bookItinerary(req: Request, res: Response) {
@@ -44,7 +46,15 @@ class BookingController {
 
       const booking = await bookingRepo.bookActivity(req.user.userId, req.body.activity_id);
       await userRepo.updateUserLoyaltyPoints(req.user.userId, LOYALTY_POINT_GAIN);
-
+      await activityRepo.addTicket(req.body.activity_id);
+      const activity = await activityRepo.getActivityById(req.body.activity_id);
+      if (activity?.tickets !== undefined) {
+        const Users = await userRepo.getUsersByBookmarkedActivity(req.body.activity_id);
+        Users.forEach(async (user: any) => {
+          await userRepo.ticketsNotification(user._id, activity.tickets);
+          await emailService.ticketsUpdateEmail(user.email, activity.tickets);
+        });
+      }
       const response = {
         message: 'Booking successful',
         data: { booking: booking },
