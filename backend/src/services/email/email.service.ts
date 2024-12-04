@@ -170,6 +170,28 @@ class EmailService {
       console.log('Error sending out of stock email:', error);
     }
   }
+
+  async bookingOpenEmail(email: string) {
+    try {
+      const filePath = path.join(__dirname, './email-templates/bookingOpen.html');
+      let htmlContent = fs.readFileSync(filePath, 'utf-8');
+      const mailOptions = {
+        from: this.email,
+        to: email,
+        subject: 'Booking Open',
+        html: htmlContent,
+      };
+      this.transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    } catch (error) {
+      console.log('Error sending booking open email:', error);
+    }
+  }
 }
 
 export default new EmailService();

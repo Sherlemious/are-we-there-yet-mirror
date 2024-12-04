@@ -197,11 +197,27 @@ class UserRepository {
     });
   }
 
+  async bookingIsOpenNotification(id: string) {
+    return await User.findByIdAndUpdate(id, {
+      $push: {
+        notifications: {
+          title: 'Booking Open',
+          message: 'One of the activities that you saved is now open for booking.',
+          type: 'info',
+        },
+      },
+    });
+  }
+
   async markNotificationAsRead(id: string, notificationId: string) {
     return await User.updateOne(
       { _id: new ObjectId(id), 'notifications._id': new ObjectId(notificationId) },
       { $set: { 'notifications.$.read': true } }
     );
+  }
+// get all users that have this activity id in their bookmarks(the bookmark itself have id and the activity have another id i want to search for the activity id)
+  async getUsersByBookmarkedActivity(activity_id: string) {
+    return await User.find({ 'bookmarks.activity': new ObjectId(activity_id) });
   }
   
 }

@@ -40,6 +40,7 @@ const activitySchema = new Schema(
     bookingOpen: {
       type: Boolean,
       required: true,
+      default: false,
     },
     active: {
       type: Boolean,

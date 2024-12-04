@@ -40,6 +40,10 @@ class ActivityRepo {
   async deactivateActivitiesByCreator(creator: string) {
     return await Activity.updateMany({ created_by: creator }, { active: false });
   }
+
+  async openBooking(id: string) {
+    return await Activity.updateOne({ _id: new ObjectId(id) }, { bookingOpen: true });
+  }
 }
 
 export default new ActivityRepo();
