@@ -5,7 +5,7 @@ import {
   RootLayout,
   rootLayoutLoader,
 } from "./modules/Layout/App";
-import { AdminPage as AdminProducts } from "./modules/products/App";
+import { AdminPage as AdminProducts, WishList } from "./modules/products/App";
 import { AllProducts } from "./modules/products/App";
 import { SellerPage as SellerProducts } from "./modules/products/App";
 import { Dashboard as AdminDashboard } from "./modules/Admin/App";
@@ -50,7 +50,23 @@ import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBooki
 import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
-import { LoginPage } from "./modules/Login/App";
+import {
+  ForgetPasswordPage,
+  LoginPage,
+  ResetPasswordForm,
+  SendOTPForm,
+  VerifyOTPForm,
+} from "./modules/Login/App";
+import LoginForm from "./modules/Login/components/LoginForm";
+import {
+  currentOrdersLoader,
+  CurrentOrdersPage,
+  pastOrdersLoader,
+  PastOrdersPage,
+} from "./modules/Orders/App";
+import AdminPromoCode, {
+  loader as adminPromoCodeLoader,
+} from "./modules/Admin/pages/PromoCode";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -60,6 +76,40 @@ const BrowserRouter = createBrowserRouter([
       {
         index: true,
         element: <LandingPage />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+        action: registerAction,
+        loader: registerLoader,
+      },
+      {
+        path: "login",
+        element: <LoginPage />,
+        children: [
+          {
+            index: true,
+            element: <LoginForm />,
+          },
+          {
+            path: "forgot-password",
+            element: <ForgetPasswordPage />,
+            children: [
+              {
+                index: true,
+                element: <SendOTPForm />,
+              },
+              {
+                path: "verify-otp",
+                element: <VerifyOTPForm />,
+              },
+              {
+                path: "reset-password",
+                element: <ResetPasswordForm />,
+              },
+            ],
+          },
+        ],
       },
       {
         path: "all-activities/*",
@@ -76,16 +126,6 @@ const BrowserRouter = createBrowserRouter([
     ],
   },
   {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <Register />,
-    action: registerAction,
-    loader: registerLoader,
-  },
-  {
     path: "/home",
     id: "root",
     element: <RootLayout />,
@@ -95,6 +135,22 @@ const BrowserRouter = createBrowserRouter([
       {
         index: true,
         element: <LandingPage />,
+      },
+
+      {
+        path: "orders",
+        children: [
+          {
+            path: "current-orders",
+            element: <CurrentOrdersPage />,
+            loader: currentOrdersLoader,
+          },
+          {
+            path: "past-orders",
+            element: <PastOrdersPage />,
+            loader: pastOrdersLoader,
+          },
+        ],
       },
       {
         path: "all-activities/*",
@@ -111,6 +167,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "all-products",
         element: <AllProducts />,
+      },
+      {
+        path: "wishList",
+        element: <WishList />,
       },
       {
         path: "tourism-governor-profile/:id",
@@ -180,6 +240,11 @@ const BrowserRouter = createBrowserRouter([
           {
             path: "admin-complaints",
             element: <AdminAllComplaints />,
+          },
+          {
+            path: "promo-codes",
+            element: <AdminPromoCode />,
+            loader: adminPromoCodeLoader,
           },
         ],
       },
@@ -258,16 +323,41 @@ function App() {
         position="top-center"
         containerStyle={{ margin: "8px" }}
         toastOptions={{
-          success: { duration: 3000 },
+          success: {
+            duration: 3000,
+            style: {
+              fontSize: "16px",
+              lineHeight: "1.5",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              margin: "5px",
+              display: "absolute",
+              background: "#333",
+              color: "#fff",
+            },
+          },
           error: { duration: 4000 },
           style: {
             fontSize: "16px",
             lineHeight: "1.5",
             maxWidth: "500px",
             padding: "16px 24px",
-            background: "white",
             margin: "5px",
             display: "absolute",
+            background: "#333",
+            color: "#fff",
+          },
+          loading: {
+            style: {
+              fontSize: "16px",
+              lineHeight: "1.5",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              margin: "5px",
+              display: "absolute",
+              background: "#333",
+              color: "#fff",
+            },
           },
         }}
       />

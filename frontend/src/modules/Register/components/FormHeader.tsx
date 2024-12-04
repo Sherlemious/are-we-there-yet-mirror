@@ -54,7 +54,11 @@ export default function FormHeader({
           </SelectTrigger>
           <SelectContent>
             {userTypes.map((type) => (
-              <SelectItem key={type.id} value={type.id}>
+              <SelectItem
+                key={type.id}
+                value={type.id}
+                className="text-lg text-black"
+              >
                 {type.label}
               </SelectItem>
             ))}

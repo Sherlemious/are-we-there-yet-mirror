@@ -19,7 +19,7 @@ export default function SubmitButton({
       <Button
         type="submit"
         disabled={isSubmitting || oneOfFieldsIsEmpty}
-        className="w-full bg-yellow-500 font-bold text-black transition-all duration-200 hover:bg-yellow-600 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full bg-yellow-500 py-3 font-bold text-black transition-all duration-200 hover:bg-yellow-600"
       >
         {isSubmitting
           ? logIn

@@ -1,5 +1,9 @@
-import LoginForm from "../components/LoginForm";
+import { Outlet } from "react-router";
 
 export default function Login() {
-  return <LoginForm />;
+  return (
+    <main>
+      <Outlet />
+    </main>
+  );
 }

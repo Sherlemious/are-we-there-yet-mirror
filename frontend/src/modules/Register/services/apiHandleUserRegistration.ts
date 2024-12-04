@@ -41,9 +41,6 @@ export async function handleUserRegistration({
         },
       },
       {
-        style: {
-          display: "absolute",
-        },
         success: {
           duration: 2000,
         },

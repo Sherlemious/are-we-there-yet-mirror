@@ -1,34 +1,22 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
-import { imgLinks } from "@/modules/shared/utils/constants";
 import SubmitButton from "@/modules/Register/components/SubmitButton";
 import { useNavigate, useNavigation } from "react-router";
 import { LoginOrRegisterInput } from "@/modules/shared/components/LoginOrRegisterInput";
 import toast from "react-hot-toast";
 import { handleUserLogin } from "../services/apiLogin";
 import { UserContext } from "@/modules/shared/store/user-context";
-import { Form } from "react-router-dom";
-
-const imgs = Object.values(imgLinks.landing_page);
+import { Form, Link } from "react-router-dom";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [oneOfFieldsIsEmpty, setOneOfFieldsIsEmpty] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
   const { setUser } = useContext(UserContext);
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "loading";
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imgs.length);
-    }, 4000);
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   function handleFormChange(e: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(e.currentTarget);
@@ -74,26 +62,6 @@ const LoginForm = () => {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      {/* Background Images */}
-      <div className="absolute inset-0 z-0">
-        {imgs.map((image, index) => (
-          <div
-            key={image}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              currentImageIndex === index ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              backgroundImage: `url(${image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "blur(8px)",
-              transform: "scale(1.1)",
-            }}
-          />
-        ))}
-        <div className="absolute inset-0 bg-black opacity-50" />
-      </div>
-
       {/* Form Container */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -155,6 +123,14 @@ const LoginForm = () => {
                   )}
                 </button>
               )}
+            </div>
+            <div className="mt-2 text-right">
+              <Link
+                to="/login/forgot-password"
+                className="text-sm text-yellow-400 hover:underline"
+              >
+                Forgot Password?
+              </Link>
             </div>
           </div>
 
