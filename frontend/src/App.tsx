@@ -67,6 +67,7 @@ import {
 import AdminPromoCode, {
   loader as adminPromoCodeLoader,
 } from "./modules/Admin/pages/PromoCode";
+import Cart from "./modules/products/pages/Cart";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -171,6 +172,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "wishList",
         element: <WishList />,
+      },
+      {
+        path: "cart",
+        element: <Cart />,
       },
       {
         path: "tourism-governor-profile/:id",
