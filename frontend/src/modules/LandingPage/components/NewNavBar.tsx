@@ -4,7 +4,7 @@ import { returnNavBarContentBasedOnUser } from "../utils/returnNavBarContent";
 import { useContext, useState } from "react";
 import { UserContext } from "@/modules/shared/store/user-context";
 import { NavBarContent } from "../utils/content";
-import { AccountType } from "@/modules/shared/types/User.types";
+import { AccountType} from "@/modules/shared/types/User.types";
 import { Button } from "@/components/ui/button";
 import { UserCog } from "lucide-react";
 import toast from "react-hot-toast";
@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 import NavBarDropdown from "./NavBarDropdown";
 import CurrencySelect from "./CurrencySelect";
 import NotificationBell from "./NotificationBell";
-
 const styles = {
   nav: "relative z-10 flex h-[10vh] items-center bg-black/10 backdrop-blur-md",
   logo: {
@@ -45,11 +44,8 @@ const styles = {
 export default function NewNavBar() {
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([
-    { id: "1", message: "New activity available!" },
-    { id: "2", message: "Your booking has been confirmed." },
-  ]);
-  const navBarItems: NavBarContent = returnNavBarContentBasedOnUser(
+  const [notifications, setNotifications] = useState(user.notifications);;
+    const navBarItems: NavBarContent = returnNavBarContentBasedOnUser(
     user?.account_type,
   );
 
@@ -207,6 +203,14 @@ export default function NewNavBar() {
         <NotificationBell
             notifications={notifications}
             onClearNotifications={() => setNotifications([])}
+            onMarkAsRead= {(id: string | undefined) => {
+                setNotifications((prev) =>
+                  prev.map((notif) =>
+                    notif._id === id ? { ...notif, read: true } : notif
+                  )
+                );
+              }
+          }
           />
         )}
           {user.account_type !== AccountType.None && user.account_type !== AccountType.TourismGovernor&& (

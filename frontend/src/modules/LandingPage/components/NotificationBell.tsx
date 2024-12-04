@@ -1,24 +1,52 @@
 import React, { useState } from "react";
 import { Bell } from "lucide-react";
+import { NotificationTypeEnum } from "@/modules/shared/types/User.types";
 
 interface Notification {
-  id: string;
-  message: string;
+  _id?: string;
+  title?: string;
+  message?: string;
+  notificationType: NotificationTypeEnum;
+  read: boolean;
+  createdAt: Date;
 }
 
 interface NotificationBellProps {
   notifications: Notification[];
   onClearNotifications: () => void; // Callback to clear notifications
+  onMarkAsRead: (id: string | undefined) => void; // Callback to mark as read
 }
 
 const NotificationBell: React.FC<NotificationBellProps> = ({
   notifications,
   onClearNotifications,
+  onMarkAsRead,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleNotifications = () => {
     setIsOpen((prev) => !prev);
+  };
+
+  const handleMarkAsRead = (id: string | undefined) => {
+    if (id) {
+      onMarkAsRead(id);
+    }
+  };
+
+  const getNotificationStyle = (notificationType: NotificationTypeEnum) => {
+    switch (notificationType) {
+      case NotificationTypeEnum.SUCCESS:
+        return "bg-green-100 text-green-800";
+      case NotificationTypeEnum.ERROR:
+        return "bg-red-100 text-red-800";
+      case NotificationTypeEnum.INFORMATION:
+        return "bg-blue-100 text-blue-800";
+      case NotificationTypeEnum.WARNING:
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
   };
 
   return (
@@ -30,9 +58,9 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
       >
         <Bell className="w-6 h-6" />
         {/* Notification Badge */}
-        {notifications.length > 0 && (
+        {notifications.filter((notif) => !notif.read).length > 0 && (
           <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-600 rounded-full">
-            {notifications.length}
+            {notifications.filter((notif) => !notif.read).length}
           </span>
         )}
       </button>
@@ -46,14 +74,25 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
               {notifications.length > 0 ? (
                 notifications.map((notification) => (
                   <li
-                    key={notification.id}
-                    className="p-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
+                    key={notification._id}
+                    className={`p-2 text-sm rounded-lg cursor-pointer hover:bg-gray-200 ${
+                      notification.read ? "text-gray-500" : "font-semibold"
+                    } ${getNotificationStyle(notification.notificationType)}`}
+                    onClick={() => handleMarkAsRead(notification._id)}
                   >
-                    {notification.message}
+                    <div className="flex justify-between">
+                      <span>{notification.title}</span>
+                      {!notification.read && (
+                        <span className="text-xs text-gray-500">(New)</span>
+                      )}
+                    </div>
+                    <p className="text-xs">{notification.message}</p>
                   </li>
                 ))
               ) : (
-                <li className="p-2 text-sm text-gray-600">No new notifications</li>
+                <li className="p-2 text-sm text-gray-600">
+                  No new notifications
+                </li>
               )}
             </ul>
           </div>
