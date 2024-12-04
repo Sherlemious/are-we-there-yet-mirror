@@ -44,8 +44,10 @@ const styles = {
 export default function NewNavBar() {
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState(user.notifications);;
-    const navBarItems: NavBarContent = returnNavBarContentBasedOnUser(
+  const [notifications, setNotifications] = useState(user.notifications);
+  console.log(notifications);
+  console.log(user.notifications);
+  const navBarItems: NavBarContent = returnNavBarContentBasedOnUser(
     user?.account_type,
   );
 
@@ -68,7 +70,6 @@ export default function NewNavBar() {
       props.isActive ? styles.links.link.active : styles.links.link.inactive,
     );
   }
-
   return (
     <nav className={styles.nav}>
       <NavLink

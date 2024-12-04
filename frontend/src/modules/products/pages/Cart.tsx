@@ -104,11 +104,7 @@ const Cart = () => {
 
   return (
     <div>
-      <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-2 text-text-primary">
-        <h1 className="py-2 text-3xl font-bold">Cart</h1>
-        <h3 className="py-2 text-xl font-bold">
-          Total Items: {cart.reduce((total, item) => total + item.quantity, 0)}
-        </h3>
+      <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-10 text-text-primary">
       </div>
       <div className={customStyles.container}>
 
@@ -154,7 +150,7 @@ const Cart = () => {
                               onClick={() =>
                                 changeQuantity(item.product._id, item.quantity - 1)
                               }
-                              className="px-1 py-1 text-white bg-red-500 rounded-full hover:bg-red-600"
+                              className="p-1 text-gray-400 hover:text-gray-800"
                               disabled={item.quantity <= 1} // Disable button if quantity is already 1
                             >
                               <Minus size={20}/>
@@ -166,7 +162,7 @@ const Cart = () => {
                               onClick={() =>
                                 changeQuantity(item.product._id, item.quantity + 1)
                               }
-                              className="px-1 py-1 text-white bg-green-500 rounded-full hover:bg-green-600"
+                              className="p-1 text-gray-400 hover:text-gray-800"
                             >
                               <Plus size={20} />
                             </button>
@@ -174,7 +170,7 @@ const Cart = () => {
                     </div>
 
                     {/* Rating */}
-                    <div className="rounded-lg bg-secondary-light_grey p-1">
+                    <div className="rounded-lg bg-secondary-light_grey p-3">
                       <div className="flex items-center gap-2">
                         <Star
                           size={18}
@@ -205,9 +201,11 @@ const Cart = () => {
           </div>
         </div>
       </div>
-  <button className="mt-5 gap-3 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80">
+      <div className= "relative mt-20">
+        <button className="absolute bottom-0 right-0 mt-20 gap-3 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 ">
         Checkout
-    </button>
+        </button>
+    </div>
     </div>
     <div>
     </div>

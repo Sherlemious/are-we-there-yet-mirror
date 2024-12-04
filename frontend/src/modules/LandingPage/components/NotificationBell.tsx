@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Bell } from "lucide-react";
 import { NotificationTypeEnum } from "@/modules/shared/types/User.types";
+import axiosInstance from "@/modules/shared/services/axiosInstance";
+import toast from "react-hot-toast";
 
 interface Notification {
   _id?: string;
@@ -13,13 +15,11 @@ interface Notification {
 
 interface NotificationBellProps {
   notifications: Notification[];
-  onClearNotifications: () => void; // Callback to clear notifications
   onMarkAsRead: (id: string | undefined) => void; // Callback to mark as read
 }
 
 const NotificationBell: React.FC<NotificationBellProps> = ({
   notifications,
-  onClearNotifications,
   onMarkAsRead,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,9 +28,16 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
     setIsOpen((prev) => !prev);
   };
 
-  const handleMarkAsRead = (id: string | undefined) => {
+  const handleMarkAsRead = async (id: string | undefined) => {
     if (id) {
       onMarkAsRead(id);
+    }
+    try{
+      await axiosInstance.put(`/notifications/read/${id}`);
+      toast.success("Notification Marked as Read");
+    }
+    catch(e){
+      toast.error("Failed to Mark as Read", e);
     }
   };
 
@@ -67,10 +74,10 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
 
       {/* Notification Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 w-64 mt-2 bg-white border rounded-lg shadow-lg">
+        <div className="absolute right-0 w-64 bg-white border rounded-lg shadow-lg">
           <div className="p-4">
             <h3 className="text-sm font-medium text-gray-700">Notifications</h3>
-            <ul className="mt-2 space-y-2">
+            <ul className="mt-2 space-y-2 max-h-64 overflow-y-auto pr-3">
               {notifications.length > 0 ? (
                 notifications.map((notification) => (
                   <li
@@ -96,14 +103,6 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
               )}
             </ul>
           </div>
-          {notifications.length > 0 && (
-            <button
-              onClick={onClearNotifications}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-b-lg"
-            >
-              Clear All
-            </button>
-          )}
         </div>
       )}
     </div>
