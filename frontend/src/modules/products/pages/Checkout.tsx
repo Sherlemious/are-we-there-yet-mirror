@@ -16,10 +16,10 @@ export async function confirmPayment({ params }: LoaderFunctionArgs) {
       session_id: params.sessionId,
       payment_method: "card",
     });
-    redirect("../succes");
+    return redirect("../succes");
   } catch (e) {
     if (!isAxiosError(e)) throw e;
-    redirect("../cancel");
+    return redirect("../cancel");
   }
 }
 
@@ -101,10 +101,11 @@ export const PaymentFailurePage = () => {
           <button
             onClick={handleRetryPayment}
             disabled={isRetrying}
-            className={`flex w-full items-center justify-center rounded-lg py-3 transition-colors ${isRetrying
+            className={`flex w-full items-center justify-center rounded-lg py-3 transition-colors ${
+              isRetrying
                 ? "cursor-not-allowed bg-gray-300"
                 : "bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
-              }`}
+            }`}
           >
             {isRetrying ? (
               <>
@@ -135,7 +136,7 @@ export function TestCheckout() {
     const domainName = window.location.origin;
 
     const sessionResponse = await axiosInstance.post("/orders/payment/card", {
-      success_url: `${domainName}/home/checkout/confirm?sessionId={CHECKOUT_SESSION_ID}`,
+      success_url: `${domainName}/home/checkout/confirm/{CHECKOUT_SESSION_ID}`,
       cancel_url: `${domainName}/home/checkout/cancel`,
       address_id: "675027641bfecc90cd4ba8b5",
     });

@@ -149,7 +149,7 @@ const BrowserRouter = createBrowserRouter([
             element: <TestCheckout />,
           },
           {
-            path: "confirm?sessionId=:sessionId",
+            path: "confirm/:sessionId",
             loader: confirmPayment,
           },
           {
