@@ -6,7 +6,7 @@ import { useLoaderData } from "react-router";
 
 export default function PastOrders() {
   const data = useLoaderData() as Order[];
-  const [orders] = useState<Order[]>(data);
+  const [orders, setOrders] = useState<Order[]>(data);
 
   if (orders.length === 0) {
     return (
@@ -41,8 +41,10 @@ export default function PastOrders() {
   }
 
   return (
-    <div className="grid max-h-screen grid-cols-3 gap-4 overflow-x-auto overflow-y-auto p-28">
-      {orders?.map((order) => <OrderCard key={order._id} order={order} />)}
+    <div className="flex max-h-screen flex-col gap-4 overflow-x-auto overflow-y-auto p-28">
+      {orders?.map((order) => (
+        <OrderCard key={order._id} order={order} setOrders={setOrders} />
+      ))}
     </div>
   );
 }

@@ -41,7 +41,7 @@ export default function PastOrders() {
   }
 
   return (
-    <div className="grid max-h-screen grid-cols-3 gap-4 overflow-x-auto overflow-y-auto p-28">
+    <div className="grid max-h-screen gap-4 overflow-x-auto overflow-y-auto p-28">
       {orders?.map((order) => <OrderCard key={order._id} order={order} />)}
     </div>
   );

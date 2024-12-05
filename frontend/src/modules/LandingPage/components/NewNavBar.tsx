@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import Logo from "../../../../../assets/logo/Are We There Yet Logo-02.png";
 import { returnNavBarContentBasedOnUser } from "../utils/returnNavBarContent";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "@/modules/shared/store/user-context";
 import { NavBarContent } from "../utils/content";
 import { AccountType } from "@/modules/shared/types/User.types";
@@ -16,9 +16,15 @@ import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import NavBarDropdown from "./NavBarDropdown";
 import CurrencySelect from "./CurrencySelect";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const styles = {
-  nav: "relative z-10 flex h-[10vh] items-center bg-black/10 backdrop-blur-md",
+  nav: "relative z-10 flex h-[13vh] items-center bg-black/10 backdrop-blur-md",
   logo: {
     wrapper: "flex justify-center ml-24",
     image: "h-32 w-40",
@@ -33,16 +39,16 @@ const styles = {
     },
   },
   actions: {
-    wrapper: "mr-5 flex flex-col items-end gap-2",
-    row: "flex items-center gap-5",
+    wrapper: "mr-5 flex items-center gap-4",
     userIcon:
-      "hover:shadow-glow rounded-full bg-accent-gold p-2 transition-all duration-150 hover:cursor-pointer hover:bg-accent-dark-blue hover:text-accent-gold",
+      "hover:shadow-glow rounded-full  p-2 transition-all duration-150 hover:cursor-pointer",
     button:
       "min-w-[180px] rounded-xl bg-accent-gold text-[20px] text-black font-semibold py-4 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50",
     buttonAnimated:
-      "min-w-[180px] rounded-xl bg-accent-gold text-[20px] text-black font-semibold py-4 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50 motion-safe:animate-bounce",
-    select:
-      "border border-gray-300 bg-white font-normal text-[16px] px-2 py-1 text-gray-700 hover:border-gray-400 transition-all duration-150 w-full",
+      "min-w-[180px] rounded-xl bg-accent-gold text-2xl text-black py-6 transition-all duration-200 hover:bg-accent-gold hover:bg-accent-dark-blue hover:text-accent-gold disabled:cursor-not-allowed disabled:opacity-50 motion-safe:animate-bounce",
+    dropdownContent: "border-accent-gold bg-white min-w-[180px]",
+    dropdownItem:
+      "text-lg font-medium hover:bg-accent-gold hover:text-black focus:bg-accent-gold focus:text-black",
   },
 };
 
@@ -51,6 +57,10 @@ export default function NewNavBar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const navigation = useNavigation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleMouseEnter = () => setIsOpen(true);
+  const handleMouseLeave = () => setIsOpen(false);
 
   const navBarItems: NavBarContent = returnNavBarContentBasedOnUser(
     user?.account_type,
@@ -76,14 +86,37 @@ export default function NewNavBar() {
     );
   }
 
-  // Separate non-dropdown items for the Other dropdown
+  function handleProfileNavigation() {
+    setIsOpen(false);
+    if (user.account_type === AccountType.TourGuide) {
+      return navigate(`/home/tour-guide-profile/${user._id}`);
+    }
+    if (user.account_type === AccountType.TourismGovernor) {
+      return navigate(`/home/tourism-governor-profile/${user._id}`);
+    }
+    if (user.account_type === AccountType.Admin) {
+      return navigate("/home/admin-dashboard");
+    }
+    return navigate(
+      `/home/${user.account_type.toLowerCase()}-profile/${user._id}`,
+    );
+  }
+
+  function handleLogout() {
+    handleClearUser();
+    setIsOpen(false);
+    localStorage.removeItem("token");
+    toast.success("Logged out successfully");
+    navigate("/");
+  }
+
   const getOtherItems = () => {
     const otherItems = navBarItems?.links?.filter(
       (item) =>
-        !item.list && // Not already a dropdown
-        item.name !== "Home" && // Not one of the main items
+        !item.list &&
+        item.name !== "Home" &&
         item.name !== "Activities" &&
-        item.name !== "Historical Places/Museums" &&
+        item.name !== "Historical Places" &&
         item.name !== "Itineraries",
     );
     return otherItems || [];
@@ -145,17 +178,15 @@ export default function NewNavBar() {
               }
               className={(props) => handleStyles(props)}
             >
-              <span className="text-sub-headings">
-                Historical Places/Museums
-              </span>
+              <span className="text-sub-headings">Historical Places</span>
             </NavLink>
           )}
 
           {user.account_type === AccountType.TourismGovernor && (
             <NavBarDropdown
-              linkName="Historical Places/Museums"
+              linkName="Historical Places"
               list={navBarItems.links[0].list!}
-              key={"Historical Places/Museums"}
+              key={"Historical Places"}
             />
           )}
 
@@ -187,7 +218,7 @@ export default function NewNavBar() {
             if (
               item.list &&
               item.name !== "Activities" &&
-              item.name !== "Historical Places/Museums" &&
+              item.name !== "Historical Places" &&
               (item.name !== "Itineraries" ||
                 user.account_type === AccountType.TourGuide)
             ) {
@@ -202,72 +233,85 @@ export default function NewNavBar() {
             return null;
           })}
 
-          {/* Other Items Dropdown */}
-          {getOtherItems().length > 0 && (
-            <NavBarDropdown
-              linkName="Others"
-              list={getOtherItems()!.map((item) => ({
-                name: item.name,
-                url: item.url as string,
-              }))}
-              key="Others"
-            />
-          )}
+          {/* Other Items as Individual NavLinks */}
+          {getOtherItems().map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.url!}
+              className={(props) => handleStyles(props)}
+            >
+              <span className="text-sub-headings">{item.name}</span>
+            </NavLink>
+          ))}
         </ul>
-        {(pathname.includes("/login") || pathname === "/register") && (
-          <CurrencySelect />
-        )}
       </div>
 
       <div className={styles.actions.wrapper}>
-        <div className={styles.actions.row}>
-          {user.account_type !== AccountType.None && (
-            <UserCog
-              onClick={() => {
-                if (user.account_type === AccountType.TourGuide) {
-                  return navigate(`/home/tour-guide-profile/${user._id}`);
-                }
-                if (user.account_type === AccountType.TourismGovernor) {
-                  return navigate(`/home/tourism-governor-profile/${user._id}`);
-                }
-                if (user.account_type === AccountType.Admin) {
-                  return navigate("/home/admin-dashboard");
-                }
-                return navigate(
-                  `/home/${user.account_type.toLowerCase()}-profile/${user._id}`,
-                );
-              }}
-              size={40}
-              className={styles.actions.userIcon}
-            />
-          )}
-
-          {!pathname.includes("/login") && pathname !== "/register" && (
-            <Button
-              variant="default"
-              onClick={() => {
-                if (user.account_type !== AccountType.None) {
-                  handleClearUser();
-                  localStorage.removeItem("token");
-                  toast.success("Logged out successfully");
-                  navigate("/");
-                } else navigate("/login");
-              }}
-              className={
-                user.account_type === AccountType.None
-                  ? styles.actions.buttonAnimated
-                  : styles.actions.button
-              }
-            >
-              {user.account_type === AccountType.None
-                ? "Get Started"
-                : "Logout"}
-            </Button>
-          )}
-        </div>
         {!pathname.includes("/login") && pathname !== "/register" && (
           <CurrencySelect />
         )}
+        {user.account_type !== AccountType.None && (
+          <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <DropdownMenu open={isOpen}>
+              <DropdownMenuTrigger className="focus:outline-none">
+                <UserCog
+                  size={50}
+                  className={`${styles.actions.userIcon} ${isOpen ? "bg-accent-dark-blue text-accent-gold" : "bg-accent-gold"}`}
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className={styles.actions.dropdownContent}
+              >
+                <DropdownMenuItem
+                  onClick={handleProfileNavigation}
+                  className={styles.actions.dropdownItem}
+                >
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className={styles.actions.dropdownItem}
+                >
+                  Logout
+                </DropdownMenuItem>
+                {user.account_type === AccountType.Admin && (
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/home/admin-dashboard/admin-complaints");
+                    }}
+                    className={styles.actions.dropdownItem}
+                  >
+                    My Complaints
+                  </DropdownMenuItem>
+                )}
+                {user.account_type === AccountType.Tourist && (
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate("/home/my-complaints");
+                    }}
+                    className={styles.actions.dropdownItem}
+                  >
+                    My Complaints
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
+        {pathname !== "/register" &&
+          !pathname.includes("/login") &&
+          user.account_type === AccountType.None && (
+            <Button
+              variant="default"
+              onClick={() => navigate("/login")}
+              className={styles.actions.buttonAnimated}
+            >
+              Get Started
+            </Button>
+          )}
       </div>
     </nav>
   );
