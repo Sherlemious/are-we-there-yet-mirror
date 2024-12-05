@@ -178,7 +178,7 @@ function ItineraryModal({
   const [shareLink, setShareLink] = useState<string>("");
   const handleShare = (itinerary: Itinerary) => {
     // get the link
-    const baseLink: string = import.meta.env.VITE_FRONT_BASE_URL as string;
+    const baseLink = window.location.origin;
     const link: string = `${baseLink}/all-itineraries/${itinerary.id}`;
 
     // set the link
