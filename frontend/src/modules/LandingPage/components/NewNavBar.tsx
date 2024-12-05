@@ -249,12 +249,8 @@ export default function NewNavBar() {
       </div>
 
       <div className={styles.actions.wrapper}>
-        {!pathname.includes("/login") && pathname !== "/register" && (
-          <CurrencySelect />
-        )}
-        {user.account_type !== AccountType.None && (
-          <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <NotificationBell
+      {user.account_type !== AccountType.None && user.account_type !== AccountType.TourismGovernor &&(
+      <NotificationBell 
             notifications={notifications}
             onMarkAsRead= {(id: string | undefined) => {
                 setNotifications((prev) =>
@@ -265,6 +261,12 @@ export default function NewNavBar() {
               }
           }
           />
+      )}
+        {!pathname.includes("/login") && pathname !== "/register" && (
+          <CurrencySelect />
+        )}
+        {user.account_type !== AccountType.None && (
+          <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <DropdownMenu open={isOpen}>
               <DropdownMenuTrigger className="focus:outline-none">
                 <UserCog

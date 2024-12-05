@@ -63,10 +63,10 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
         onClick={toggleNotifications}
         className="relative p-2 text-gray-700 hover:text-gray-900 focus:outline-none"
       >
-        <Bell className="w-6 h-6" />
+        <Bell className="w-8 h-8" />
         {/* Notification Badge */}
         {notifications.filter((notif) => !notif.read).length > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-600 rounded-full">
+          <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
             {notifications.filter((notif) => !notif.read).length}
           </span>
         )}
