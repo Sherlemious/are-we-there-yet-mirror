@@ -329,7 +329,7 @@ function App() {
         containerStyle={{ margin: "8px" }}
         toastOptions={{
           success: {
-            duration: 3000,
+            duration: 1500,
             style: {
               fontSize: "16px",
               lineHeight: "1.5",

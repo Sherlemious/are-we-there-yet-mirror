@@ -8,33 +8,29 @@ export type NavBarContent = {
 
 export const TouristLinks = [
   {
-    name: "Products",
+    name: "All Products",
     url: "/home/all-products",
   },
   {
     name: "Bookings",
     list: [
       {
-        name: "Activities",
+        name: "My Activities",
         url: "/home/activity-bookings",
       },
       {
-        name: "Itineraries",
+        name: "My Itineraries",
         url: "/home/itinerary-bookings",
       },
       {
-        name: "Transportation",
+        name: "My Transportation",
         url: "/home/transportation-bookings",
       },
     ],
   },
   {
-    name: "History",
+    name: "My History",
     url: "/home/history",
-  },
-  {
-    name: "My Complaints",
-    url: "/home/my-complaints",
   },
   {
     name: "Orders",
@@ -108,7 +104,7 @@ export const AdminLinks = [
         url: "/home/all-activities",
       },
       {
-        name: "Manage activities category",
+        name: "Manage Activities Categories",
         url: "/home/admin-dashboard/activity-categories",
       },
     ],
@@ -139,21 +135,17 @@ export const AdminLinks = [
       },
     ],
   },
-  {
-    name: "Manage Complaints",
-    url: "/home/admin-dashboard/admin-complaints",
-  },
 ];
 
 export const TourismGovernorLinks = [
   {
-    name: "Historical Places/Museums",
+    name: "Historical Places",
     list: [
       {
-        name: "All Historical Places/Museums",
+        name: "All Historical Places",
         url: "/home/all-museums",
       },
-      { name: "My Historical Places/Museums", url: "/home/my-museums" },
+      { name: "My Historical Places", url: "/home/my-museums" },
       { name: "My Tags", url: "/home/my-tags" },
     ],
   },
