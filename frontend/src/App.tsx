@@ -69,6 +69,7 @@ import AdminPromoCode, {
 } from "./modules/Admin/pages/PromoCode";
 import {
   confirmPayment,
+  PaymentFailurePage,
   PaymentSuccessPage,
   TestCheckout,
 } from "./modules/products/pages/Checkout";
@@ -150,6 +151,7 @@ const BrowserRouter = createBrowserRouter([
           },
           {
             path: "confirm/:sessionId",
+            element: <Outlet />,
             loader: confirmPayment,
           },
           {
@@ -158,7 +160,7 @@ const BrowserRouter = createBrowserRouter([
           },
           {
             path: "cancel",
-            element: <p>sad..</p>,
+            element: <PaymentFailurePage />,
           },
         ],
       },

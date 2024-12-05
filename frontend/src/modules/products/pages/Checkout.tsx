@@ -3,8 +3,9 @@ import { loadStripe } from "@stripe/stripe-js";
 import { isAxiosError } from "axios";
 import { redirect, type LoaderFunctionArgs } from "react-router";
 import { CheckCircle, Gift, Sparkles } from "lucide-react";
-import { AlertTriangle, RefreshCw, CreditCard } from "lucide-react";
-import { useState } from "react";
+import { AlertTriangle, CreditCard } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 
 export async function confirmPayment({ params }: LoaderFunctionArgs) {
   if (!params.sessionId) {
@@ -16,16 +17,16 @@ export async function confirmPayment({ params }: LoaderFunctionArgs) {
       session_id: params.sessionId,
       payment_method: "card",
     });
-    return redirect("../succes");
+    return redirect("../success");
   } catch (e) {
     if (!isAxiosError(e)) throw e;
-    return redirect("../cancel");
+    return redirect(`../cancel?error=${e.response?.data?.message}`);
   }
 }
 
 export const PaymentSuccessPage = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-100 to-teal-200 p-4">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md transform rounded-2xl bg-white p-8 text-center shadow-2xl transition-all duration-300 hover:scale-105">
         <div className="relative">
           <CheckCircle
@@ -57,14 +58,16 @@ export const PaymentSuccessPage = () => {
 };
 
 export const PaymentFailurePage = () => {
-  const [isRetrying, setIsRetrying] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const error = useRef<string>();
 
-  const handleRetryPayment = () => {
-    setIsRetrying(false);
-  };
+  useEffect(() => {
+    error.current = searchParams.get("error") || "Payment method declined";
+    setSearchParams({});
+  }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-100 to-orange-200 p-4">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <div className="hover:scale-102 w-full max-w-md transform rounded-2xl bg-white p-8 text-center shadow-2xl transition-all duration-300">
         <div className="relative">
           <AlertTriangle
@@ -94,69 +97,56 @@ export const PaymentFailurePage = () => {
             </div>
             <div className="text-left">
               <h3 className="font-semibold text-red-800">Error Details</h3>
-              <p className="text-red-600">Payment method declined</p>
+              <p className="text-red-600">{error.current}</p>
             </div>
           </div>
 
-          <button
-            onClick={handleRetryPayment}
-            disabled={isRetrying}
-            className={`flex w-full items-center justify-center rounded-lg py-3 transition-colors ${
-              isRetrying
-                ? "cursor-not-allowed bg-gray-300"
-                : "bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
-            }`}
+          <Link
+            to=""
+            className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-red-500 py-3 text-white transition-colors hover:from-orange-600 hover:to-red-600"
           >
-            {isRetrying ? (
-              <>
-                <RefreshCw className="mr-2 animate-spin" size={20} />
-                Retrying...
-              </>
-            ) : (
-              "Retry Payment"
-            )}
-          </button>
+            Go to Cart
+          </Link>
         </div>
       </div>
     </div>
   );
 };
 
-export function TestCheckout() {
+async function handlePaymentOnline(address_id: string) {
   const pk = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+  const stripe = await loadStripe(pk);
 
-  const handlePaymentOnline = async () => {
-    const stripe = await loadStripe(pk);
+  if (!stripe) {
+    throw new Error("Failed to load stripe");
+  }
 
-    if (!stripe) {
-      console.error("Failed to load stripe");
-      return;
-    }
+  const domainName = window.location.origin;
 
-    const domainName = window.location.origin;
+  const sessionResponse = await axiosInstance.post("/orders/payment/card", {
+    success_url: `${domainName} /home/checkout/confirm/{CHECKOUT_SESSION_ID}`,
+    cancel_url: `${domainName}/home/checkout/cancel`,
+    address_id,
+  });
 
-    const sessionResponse = await axiosInstance.post("/orders/payment/card", {
-      success_url: `${domainName}/home/checkout/confirm/{CHECKOUT_SESSION_ID}`,
-      cancel_url: `${domainName}/home/checkout/cancel`,
-      address_id: "675027641bfecc90cd4ba8b5",
-    });
+  const sessionId = sessionResponse.data.data.session.id;
 
-    const sessionId = sessionResponse.data.data.session.id;
+  const result = await stripe.redirectToCheckout({
+    sessionId,
+  });
 
-    const result = await stripe.redirectToCheckout({
-      sessionId,
-    });
+  if (result.error) {
+    throw new Error(result.error.message);
+  }
+}
 
-    if (result.error) {
-      console.error(result.error.message);
-    }
-  };
-
+export function TestCheckout() {
   return (
     <div className="mt-4 flex flex-col items-center justify-center gap-4">
       <h1>Payment</h1>
-      <button>Pay with Wallet</button>
-      <button onClick={handlePaymentOnline}>Pay Online</button>
+      <button onClick={() => handlePaymentOnline("675027641bfecc90cd4ba8b5")}>
+        Pay Online
+      </button>
     </div>
   );
 }
