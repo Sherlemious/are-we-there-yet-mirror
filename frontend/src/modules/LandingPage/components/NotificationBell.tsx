@@ -75,7 +75,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
       {/* Notification Dropdown */}
       {isOpen && (
         <div className="absolute right-0 w-64 bg-white border rounded-lg shadow-lg">
-          <div className="p-4">
+          <div className="p-3">
             <h3 className="text-sm font-medium text-gray-700">Notifications</h3>
             <ul className="mt-2 space-y-2 max-h-64 overflow-y-auto pr-3">
               {notifications.length > 0 ? (
