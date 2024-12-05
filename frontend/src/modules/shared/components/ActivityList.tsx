@@ -180,7 +180,7 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
   const [shareLink, setShareLink] = useState<string>("");
   const handleShare = (activity: Activity) => {
     // get the base link
-    const baseLink: string = import.meta.env.VITE_FRONT_BASE_URL as string;
+    const baseLink = window.location.origin;
 
     // get the activity link
     const activityLink: string = "/all-activities";
