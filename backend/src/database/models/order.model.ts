@@ -12,7 +12,11 @@ const orderSchema = new Schema(
     status: {
       type: String,
       enum: Object.values(OrderStatusType),
-      default: 'pending',
+      default: 'paid',
+    },
+    delivery_address: {
+      type: Schema.Types.ObjectId,
+      ref: 'address',
     },
     created_by: {
       type: Schema.Types.ObjectId,

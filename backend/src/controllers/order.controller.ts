@@ -8,6 +8,7 @@ import productRepo from '../database/repositories/product.repo';
 import userRepo from '../database/repositories/user.repo';
 import emailService from '../services/email/email.service';
 import { accountType } from '../types/User.types';
+import StripeService from '../services/stripe.service';
 
 class OrderController {
   async getAllOrders(req: Request, res: Response) {
@@ -21,13 +22,19 @@ class OrderController {
   }
 
   async checkoutOrder(req: Request, res: Response) {
-    const user = await cartRepo.getUserCart(req.user.userId);
-    const email = user?.email;
     try {
+      let { payment_method, address_id, session_id } = req.body;
+      const user = await cartRepo.getUserCart(req.user.userId);
+      const email = user?.email;
       const cart = user?.cart || [];
 
       if (cart.length === 0) {
         throw new Error('Cart is empty');
+      }
+
+      if (payment_method === 'card') {
+        const metadata = await StripeService.getMetadata(session_id);
+        address_id = metadata?.address_id;
       }
 
       let totalOrderPrice = 0;
@@ -51,7 +58,7 @@ class OrderController {
         }
       });
 
-      const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, cart);
+      const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, address_id, cart);
       if (email) {
         await emailService.sendReceiptEmail(email, order);
       }
@@ -84,6 +91,31 @@ class OrderController {
       res.status(ResponseStatusCodes.OK).json({ message: 'Order cancelled successfully', data: { order: order } });
     } catch (error: any) {
       logger.error(`Error cancelling order: ${error.message}`);
+      res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+    }
+  }
+
+  async cardPayment(req: Request, res: Response) {
+    try {
+      const { address_id, success_url, cancel_url } = req.body;
+      const currency = req.currency.currency;
+
+      const user = await cartRepo.getUserCart(req.user.userId);
+      const products = user?.cart;
+
+      const session = await StripeService.createCheckoutSession(
+        currency,
+        address_id,
+        products,
+        success_url,
+        cancel_url
+      );
+
+      res
+        .status(ResponseStatusCodes.OK)
+        .json({ message: 'Stripe payment session created successfully', data: { session: session } });
+    } catch (error: any) {
+      logger.error(`Error processing stripe payment: ${error.message}`);
       res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
     }
   }

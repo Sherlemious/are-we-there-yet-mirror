@@ -4,7 +4,7 @@ import { Order } from '../models/order.model';
 class OrderRepo {
   async getOrders(past: string, userId: string) {
     let query = {
-      status: { $in: [OrderStatusType.PENDING] },
+      status: { $in: [OrderStatusType.PAID] },
       created_by: userId,
     };
 
@@ -18,8 +18,12 @@ class OrderRepo {
     return await Order.find(query).populate('products.product');
   }
 
-  async checkoutOrder(userId: string, totalPrice: Number, cart?: OrderItemType[]) {
-    return await Order.create({ products: cart, totalPrice, created_by: userId });
+  async getOrderById(orderId: string) {
+    return await Order.findById(orderId).populate('products.product');
+  }
+
+  async checkoutOrder(userId: string, totalPrice: Number, addressId: string, cart?: OrderItemType[]) {
+    return await Order.create({ products: cart, totalPrice, delivery_address: addressId, created_by: userId });
   }
 
   async cancelOrder(orderId: string, userId: string) {
@@ -33,7 +37,7 @@ class OrderRepo {
       throw new Error('Unauthorized');
     }
 
-    if (order.status !== OrderStatusType.PENDING) {
+    if (order.status === OrderStatusType.DELIVERED) {
       throw new Error('Order cannot be cancelled');
     }
 

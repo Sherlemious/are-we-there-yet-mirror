@@ -17,7 +17,7 @@ export interface OrderItemType {
 }
 
 export enum OrderStatusType {
-  PENDING = 'pending',
-  DELIVERED = 'delivered',
+  PAID = 'paid',
   CANCELLED = 'cancelled',
+  DELIVERED = 'delivered',
 }
