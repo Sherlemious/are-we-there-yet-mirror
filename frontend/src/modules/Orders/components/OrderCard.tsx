@@ -25,10 +25,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const OrderCard = ({
   order,
-  setOrders,
+  onCancel,
 }: {
   order: Order;
-  setOrders?: React.Dispatch<React.SetStateAction<Order[]>>;
+  onCancel: (cancelledOrder: Order) => void;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [productImages, setProductImages] = useState<Record<string, string>>(
@@ -109,9 +109,10 @@ const OrderCard = ({
       });
       const res = await resPromise;
       if (res.status === 200) {
-        setOrders?.((prevOrders) =>
-          prevOrders.filter((o) => o._id !== order._id),
-        );
+        const cancelledOrder = res.data.data.order;
+
+        onCancel(cancelledOrder);
+
         setShowCancelDialog(false);
       }
     } catch (error) {

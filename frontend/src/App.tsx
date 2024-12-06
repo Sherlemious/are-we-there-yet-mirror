@@ -58,12 +58,7 @@ import {
   VerifyOTPForm,
 } from "./modules/Login/App";
 import LoginForm from "./modules/Login/components/LoginForm";
-import {
-  currentOrdersLoader,
-  CurrentOrdersPage,
-  pastOrdersLoader,
-  PastOrdersPage,
-} from "./modules/Orders/App";
+import { AllOrdersLoader, AllOrdersPage } from "./modules/Orders/App";
 import AdminPromoCode, {
   loader as adminPromoCodeLoader,
 } from "./modules/Admin/pages/PromoCode";
@@ -139,18 +134,20 @@ const BrowserRouter = createBrowserRouter([
 
       {
         path: "orders",
-        children: [
-          {
-            path: "current-orders",
-            element: <CurrentOrdersPage />,
-            loader: currentOrdersLoader,
-          },
-          {
-            path: "past-orders",
-            element: <PastOrdersPage />,
-            loader: pastOrdersLoader,
-          },
-        ],
+        element: <AllOrdersPage />,
+        loader: AllOrdersLoader,
+        // children: [
+        //   {
+        //     path: "current-orders",
+        //     element: <CurrentOrdersPage />,
+        //     loader: currentOrdersLoader,
+        //   },
+        //   {
+        //     path: "past-orders",
+        //     element: <PastOrdersPage />,
+        //     loader: pastOrdersLoader,
+        //   },
+        // ],
       },
       {
         path: "all-activities/*",

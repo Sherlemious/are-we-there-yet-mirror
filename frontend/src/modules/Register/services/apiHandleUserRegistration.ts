@@ -7,11 +7,9 @@ import { AxiosResponse } from "axios";
 export async function handleUserRegistration({
   endpoint,
   requestData,
-  // successRedirect,
 }: {
   endpoint: string;
   requestData: object;
-  successRedirect: string;
 }) {
   try {
     const resPromise = axiosInstance.post(
@@ -48,11 +46,11 @@ export async function handleUserRegistration({
     );
 
     const res = await resPromise;
+    console.log("Response:", res);
 
     // Check if the response is successful and perform the redirect
     if (res.status === 200) {
       localStorage.setItem("token", res.data.data.jwt); // Store the user ID in local storage
-      // return redirect(`${successRedirect}/${res.data.data.user._id}`); // Redirect to the specified route
       return res;
     }
   } catch (error) {

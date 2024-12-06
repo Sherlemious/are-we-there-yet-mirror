@@ -1,4 +1,10 @@
-import { Outlet, redirect, useLoaderData, useNavigate } from "react-router-dom";
+import {
+  Outlet,
+  redirect,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { UserType } from "../../shared/types/User.types";
 import axiosInstance, {
   setupInterceptors,
@@ -12,6 +18,9 @@ import NewNavBar from "@/modules/LandingPage/components/NewNavBar";
 // import NavigationBar from "@/modules/LandingPage/components/NavigationBar";
 
 export default function RootLayout() {
+  const { state } = useLocation();
+  const isNewUser = state?.from === "/register";
+
   const userData = useLoaderData() as UserType;
   const { setUser } = useContext(UserContext);
 
@@ -65,7 +74,7 @@ export default function RootLayout() {
       </div>
 
       {/* <NavigationBar fontColor={"text-black"} /> */}
-      <NewNavBar />
+      <NewNavBar isNewUser={isNewUser} />
 
       <main>
         <Outlet />
