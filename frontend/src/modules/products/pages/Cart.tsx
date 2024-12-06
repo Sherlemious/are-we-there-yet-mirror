@@ -5,7 +5,15 @@ import { DollarSign, Minus, Package, Plus, Star} from "lucide-react";
 import GenericCard from "@/modules/shared/GenericCard/GenericCard";
 import defaultPhoto from "../assets/defaultPhoto.png";
 import toast from "react-hot-toast";
-
+import { Wallet2, CreditCard, House } from "lucide-react";
+interface AddressType {
+  id?: string;
+  street: string;
+  city: string;
+  state?: string;
+  zip: number;
+  country: string;
+}
 interface CartItem {
     product: Product; // The product object
     quantity: number; // Quantity of the product
@@ -13,6 +21,73 @@ interface CartItem {
 const defaultImage = defaultPhoto;
 
 const Cart = () => {
+  const [addresses, setAddresses] = useState<AddressType[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<AddressType | null>(
+    null,
+  );
+  const [newAddress, setNewAddress] = useState<AddressType>({
+    street: "",
+    city: "",
+    state: "",
+    zip: 0,
+    country: "",
+  });
+
+  const fetchAddresses = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/users/tourists/addresses`,
+      );
+      console.log(response.data.data.addresses);
+      const addresses: AddressType[] =
+      response.data.data.addresses.map((item) => ({
+        state: item.state,
+        city: item.city,
+        country: item.country,
+        zip: item.zip,
+        street: item.street,
+        id: item._id,
+      }));
+      console.log(addresses);
+      setAddresses(addresses);
+    } catch (error) {
+      console.error("Error fetching addresses:", error);
+    }
+  };
+
+  const handleNewAddressSubmit = async () => {
+    try {
+      const requestBody = {
+        address: {
+          street: newAddress.street,
+          city: newAddress.city,
+          country: newAddress.country,
+          zip: newAddress.zip,
+          state: newAddress.state,
+        },
+      };
+      await axiosInstance.post(
+        `/users/tourists/addresses`, requestBody
+      ); 
+      setAddresses((prev) => [...prev, newAddress]);
+      toast.success("Address added successfully");
+      setNewAddress({
+        street: "",
+        city: "",
+        state: "",
+        zip: 0,
+        country: "",
+      });
+    } catch (error) {
+      console.error("Error adding new address:", error);
+      toast.error("Failed to add new address");
+    }
+  };
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
     const [products, setProducts] = useState<Product[]>([]);
     const [cart, setCart] = useState<CartItem[]>([]);
     const [imageUrls, setImageUrls] = useState<{ [key: string]: string[] }>({});
@@ -105,6 +180,93 @@ const Cart = () => {
   return (
     <div>
       <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-10 text-text-primary">
+      <div className="p-4 bg-secondary-light_grey rounded-lg mb-6 h-auto max-w-[85vh] rounded-lg pr-14 pt-4 pl-20 pb-10 mx-auto">
+          <h3 className="text-lg font-bold">Delivery Address</h3>
+          <div className="mt-4">
+            {/* Select Existing Address */}
+            {addresses.length>0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Choose an Address:
+              </label>
+              <select
+                className="p-2 mt-2 border rounded"
+                value={selectedAddress?.id || ""}
+                onChange={(e) =>
+                  setSelectedAddress(
+                    addresses.find((addr) => addr.id === e.target.value) || null,
+                  )
+                }
+              >
+                <option value="">Select an address</option>
+                {addresses.map((address) => (
+                  <option key={address.id} value={address.id}>
+                    {`${address.street}, ${address.city}, ${address.state ? address.state + ', ' : ''}${address.zip}, ${address.country}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+            )};
+            {/* Add New Address */}
+              <h4 className="text-md font-bold">Add a New Address</h4>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <input
+                  type="text"
+                  placeholder="Street"
+                  value={newAddress.street}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, street: e.target.value })
+                  }
+                  className="p-2 border rounded"
+                />
+                <input
+                  type="text"
+                  placeholder="City"
+                  value={newAddress.city}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, city: e.target.value })
+                  }
+                  className="p-2 border rounded w-fit"
+                />
+                <input
+                  type="text"
+                  placeholder="State"
+                  value={newAddress.state}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, state: e.target.value })
+                  }
+                  className="p-2 border rounded w-fit"
+                />
+                <input
+                  type="number"
+                  placeholder="ZIP Code"
+                  value={newAddress.zip}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, zip: +e.target.value })
+                  }
+                  className="p-2 border rounded w-fit"
+                />
+                <input
+                  type="text"
+                  placeholder="Country"
+                  value={newAddress.country}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, country: e.target.value })
+                  }
+                  className="p-2 border rounded w-fit"
+                />
+              <div className= "relative">
+              <button
+                onClick={handleNewAddressSubmit}
+                className="flex items-center absolute right-0 mt-2 gap-3 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 "
+              >
+                <House size={20}/>
+                Add Address
+              </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div className={customStyles.container}>
 
@@ -201,9 +363,15 @@ const Cart = () => {
           </div>
         </div>
       </div>
-      <div className= "relative mt-20">
-        <button className="absolute bottom-0 right-0 mt-20 gap-3 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 ">
-        Checkout
+      <div className="col-span-2 flex justify-end">
+        <button className="flex items-center gap-2 w-fit mr-4 gap-3 mt-10 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 ">
+        <Wallet2 size={20} />
+        Pay By Wallet
+        </button>
+        <button 
+        className="flex items-center gap-2  ml-4 gap-3 mt-10 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 ">
+        <CreditCard size={20} />
+        Pay By Visa
         </button>
     </div>
     </div>
