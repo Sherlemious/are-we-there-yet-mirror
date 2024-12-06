@@ -5,7 +5,6 @@ import axiosInstance from "@/modules/shared/services/axiosInstance";
 import ComplaintsTable from "../components/ComplaintsTable";
 import toast from "react-hot-toast";
 import ComplaintsForm from "../components/ComplaintsForm";
-import Greeting from "@/modules/shared/components/Greeting";
 
 interface Complaint {
   _id: string;
@@ -18,7 +17,6 @@ interface Complaint {
 }
 
 const AllComplaints: React.FC = () => {
-  const { user } = useContext(UserContext);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const modalRef = useRef<ModalRef>(null);
   const [editingComplaint, setEditingComplaint] = useState<Complaint | null>(null);
@@ -84,9 +82,6 @@ const AllComplaints: React.FC = () => {
 
   return (
     <div className="p-9 text-text-primary">
-      <div className="flex flex-col divide-y-2 divide-borders-bottomBorder">
-        <Greeting name = {user.username} title="Complaints" signedIn />
-      </div>
       <div className="flex justify-end mt-2">
         <button 
           className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
