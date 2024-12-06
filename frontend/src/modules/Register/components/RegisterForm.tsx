@@ -113,7 +113,7 @@ const RegistrationForm = () => {
       setUser({
         ...res.data.data.user,
       });
-      navigate("/home");
+      navigate("/home", { state: { from: "/register" } });
     }
   }, [res]);
 
@@ -425,7 +425,6 @@ export async function action({ request }: { request: Request }) {
         mobile_number: newData.mobile_number,
         termsAndConditions: newData.acceptedTerms,
       },
-      successRedirect: "/tourist-profile",
     });
 
     return res;
@@ -440,7 +439,6 @@ export async function action({ request }: { request: Request }) {
         attachments: documentIds,
         termsAndConditions: newData.acceptedTerms,
       },
-      successRedirect: "/tour-guide-profile",
     });
 
     return res;
@@ -455,7 +453,6 @@ export async function action({ request }: { request: Request }) {
         attachments: newData.documentIds,
         termsAndConditions: newData.acceptedTerms,
       },
-      successRedirect: "/advertiser-profile",
     });
 
     return res;
@@ -470,7 +467,6 @@ export async function action({ request }: { request: Request }) {
         attachments: newData.documentIds,
         termsAndConditions: newData.acceptedTerms,
       },
-      successRedirect: "/seller-profile",
     });
     return res;
   }

@@ -58,15 +58,16 @@ import {
   VerifyOTPForm,
 } from "./modules/Login/App";
 import LoginForm from "./modules/Login/components/LoginForm";
-import {
-  currentOrdersLoader,
-  CurrentOrdersPage,
-  pastOrdersLoader,
-  PastOrdersPage,
-} from "./modules/Orders/App";
+import { AllOrdersLoader, AllOrdersPage } from "./modules/Orders/App";
 import AdminPromoCode, {
   loader as adminPromoCodeLoader,
 } from "./modules/Admin/pages/PromoCode";
+import {
+  confirmPayment,
+  PaymentFailurePage,
+  PaymentSuccessPage,
+  TestCheckout,
+} from "./modules/products/pages/Checkout";
 import Cart from "./modules/products/pages/Cart";
 
 const BrowserRouter = createBrowserRouter([
@@ -137,21 +138,44 @@ const BrowserRouter = createBrowserRouter([
         index: true,
         element: <LandingPage />,
       },
-
       {
-        path: "orders",
+        path: "checkout",
         children: [
           {
-            path: "current-orders",
-            element: <CurrentOrdersPage />,
-            loader: currentOrdersLoader,
+            path: "test",
+            element: <TestCheckout />,
           },
           {
-            path: "past-orders",
-            element: <PastOrdersPage />,
-            loader: pastOrdersLoader,
+            path: "confirm/:sessionId",
+            element: <Outlet />,
+            loader: confirmPayment,
+          },
+          {
+            path: "success",
+            element: <PaymentSuccessPage />,
+          },
+          {
+            path: "cancel",
+            element: <PaymentFailurePage />,
           },
         ],
+      },
+      {
+        path: "orders",
+        element: <AllOrdersPage />,
+        loader: AllOrdersLoader,
+        // children: [
+        //   {
+        //     path: "current-orders",
+        //     element: <CurrentOrdersPage />,
+        //     loader: currentOrdersLoader,
+        //   },
+        //   {
+        //     path: "past-orders",
+        //     element: <PastOrdersPage />,
+        //     loader: pastOrdersLoader,
+        //   },
+        // ],
       },
       {
         path: "all-activities/*",
