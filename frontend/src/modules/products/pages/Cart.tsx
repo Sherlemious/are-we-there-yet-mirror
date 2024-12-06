@@ -1,7 +1,7 @@
 import axiosInstance from "@/modules/shared/services/axiosInstance";
 import { Product } from "../types/product";
 import { useState, useEffect } from "react";
-import { DollarSign, Minus, Package, Plus, Star} from "lucide-react";
+import { DollarSign, Minus, Package, Plus} from "lucide-react";
 import GenericCard from "@/modules/shared/GenericCard/GenericCard";
 import defaultPhoto from "../assets/defaultPhoto.png";
 import toast from "react-hot-toast";
@@ -11,7 +11,7 @@ interface AddressType {
   street: string;
   city: string;
   state?: string;
-  zip: number;
+  zip: string;
   country: string;
 }
 interface CartItem {
@@ -29,7 +29,7 @@ const Cart = () => {
     street: "",
     city: "",
     state: "",
-    zip: 0,
+    zip: "",
     country: "",
   });
 
@@ -75,7 +75,7 @@ const Cart = () => {
         street: "",
         city: "",
         state: "",
-        zip: 0,
+        zip: "",
         country: "",
       });
     } catch (error) {
@@ -238,11 +238,11 @@ const Cart = () => {
                   className="p-2 border rounded w-fit"
                 />
                 <input
-                  type="number"
+                  type="string"
                   placeholder="ZIP Code"
                   value={newAddress.zip}
                   onChange={(e) =>
-                    setNewAddress({ ...newAddress, zip: +e.target.value })
+                    setNewAddress({ ...newAddress, zip: e.target.value })
                   }
                   className="p-2 border rounded w-fit"
                 />
