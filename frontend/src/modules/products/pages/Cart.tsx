@@ -57,12 +57,17 @@ const Cart = () => {
 
   const handleNewAddressSubmit = async () => {
     try {
+      const zip = parseInt(newAddress.zip);
+      if(isNaN(zip)){
+        toast.error("Please enter a valid ZIP code");
+        return;
+      }
       const requestBody = {
         address: {
           street: newAddress.street,
           city: newAddress.city,
           country: newAddress.country,
-          zip: newAddress.zip,
+          zip: zip,
           state: newAddress.state,
         },
       };
