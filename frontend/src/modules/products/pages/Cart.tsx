@@ -89,7 +89,7 @@ const Cart = () => {
       });
     } catch (error) {
       console.error("Error adding new address:", error);
-      toast.error("Failed to add new address", { id: loadingToastId });
+      toast.error("Please fill all required fields correctly", { id: loadingToastId });
     }
   };
 
