@@ -185,17 +185,17 @@ const Cart = () => {
   return (
     <div>
       <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-10 text-text-primary">
-      <div className="p-4 bg-secondary-light_grey rounded-lg mb-6 h-auto max-w-[85vh] rounded-lg pr-14 pt-4 pl-20 pb-10 mx-auto">
+      <div className="p-4 bg-secondary-white rounded-lg mb-6 h-auto max-w-[85vh] rounded-lg pr-14 pt-4 pl-20 pb-10 mx-auto">
           <h3 className="text-lg font-bold">Delivery Address</h3>
           <div className="mt-4">
             {/* Select Existing Address */}
             {addresses.length>0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <h4 className="text-md font-bold">
                 Choose an Address:
-              </label>
+              </h4>
               <select
-                className="p-2 mt-2 border rounded"
+                className="p-2 mt-2 border rounded bg-secondary-light_grey"
                 value={selectedAddress?.id || ""}
                 onChange={(e) =>
                   setSelectedAddress(
@@ -218,21 +218,23 @@ const Cart = () => {
                 <input
                   type="text"
                   placeholder="Street"
+                  required
                   value={newAddress.street}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, street: e.target.value })
                   }
-                  className="p-2 border rounded"
+                  className=" w-fit rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                 />
                 <input
                   type="text"
                   placeholder="City"
+                  required
                   value={newAddress.city}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, city: e.target.value })
                   }
-                  className="p-2 border rounded w-fit"
-                />
+                  className=" w-fit rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+                  />
                 <input
                   type="text"
                   placeholder="State"
@@ -240,25 +242,27 @@ const Cart = () => {
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, state: e.target.value })
                   }
-                  className="p-2 border rounded w-fit"
+                  className=" w-fit rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                 />
                 <input
-                  type="string"
+                  type="text"
                   placeholder="ZIP Code"
+                  required
                   value={newAddress.zip}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, zip: e.target.value })
                   }
-                  className="p-2 border rounded w-fit"
+                  className=" w-fit rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                 />
                 <input
                   type="text"
                   placeholder="Country"
+                  required
                   value={newAddress.country}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, country: e.target.value })
                   }
-                  className="p-2 border rounded w-fit"
+                  className=" w-fit rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                 />
               <div className= "relative">
               <button
