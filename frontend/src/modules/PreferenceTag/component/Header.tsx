@@ -1,7 +1,5 @@
 import axiosInstance from "../../shared/services/axiosInstance";
 import { AddTagPopup, OpenPopupButton } from "./popup";
-import { UserContext } from "../../shared/store/user-context";
-import { useContext } from "react";
 
 const Header = ({
   isTagPopupOpen,
@@ -52,38 +50,33 @@ const Header = ({
       console.log(response.data.data); // Log the response data for debugging
       return response.data.data.tag[0]; // Adjust according to your response structure
     } catch (error) {
-      console.error('Error fetching tag:', error);
+      console.error("Error fetching tag:", error);
       throw error; // Optionally rethrow the error for further handling
     }
   }
-  
 
   const handleAddTag = (name: string, historical_period: string) => {
     addTag(name, "preference", historical_period);
     setIsTagPopupOpen(false); // Close the popup after adding
   };
-  const { user } = useContext(UserContext);
 
   return (
     <header className="flex items-center justify-between p-4">
       <div className="flex flex-col justify-end py-14 text-primary-blue">
-        <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
-          <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
-          <h3 className="py-4 text-2xl font-bold">Preference Tags</h3>
-        </div>
+        <h3 className="py-4 text-2xl font-bold">Preference Tags</h3>
       </div>
       <div className="flex space-x-4">
-          <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>
-            Add Preference Tag
-          </OpenPopupButton>
-          <AddTagPopup
-            isOpen={isTagPopupOpen}
-            onClose={() => setIsTagPopupOpen(false)}
-            onAdd={handleAddTag}
-            title="Add a Preference Tag"
-            isHeader={true}
-          />
-        </div>
+        <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>
+          Add Preference Tag
+        </OpenPopupButton>
+        <AddTagPopup
+          isOpen={isTagPopupOpen}
+          onClose={() => setIsTagPopupOpen(false)}
+          onAdd={handleAddTag}
+          title="Add a Preference Tag"
+          isHeader={true}
+        />
+      </div>
     </header>
   );
 };

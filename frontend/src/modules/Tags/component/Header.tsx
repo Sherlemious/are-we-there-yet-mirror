@@ -1,7 +1,5 @@
 import axiosInstance from "../../shared/services/axiosInstance";
 import { AddTagPopup, OpenPopupButton } from "./popup";
-import { UserContext } from "../../shared/store/user-context";
-import { useContext } from "react";
 
 const Header = ({
   isTagPopupOpen,
@@ -69,17 +67,13 @@ const Header = ({
     addTag(name, type, historical_period);
     setIsTagPopupOpen(false); // Close the popup after adding
   };
-  const { user } = useContext(UserContext);
 
   return (
-    <header className="flex items-center justify-between p-4">
+    <header className="flex items-center justify-between p-4 lg:mx-96">
       <div className="flex flex-col justify-end p-14 text-primary-blue">
-        <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
-          <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
-          <h3 className="py-4 text-2xl font-bold">Tags</h3>
-        </div>
+        <h3 className="py-4 text-2xl font-bold">Tags</h3>
       </div>
-      <div className="flex space-x-4 pr-80 pt-40">
+      <div className="flex space-x-4">
         <OpenPopupButton onClick={() => setIsTagPopupOpen(true)}>
           Add Tag
         </OpenPopupButton>

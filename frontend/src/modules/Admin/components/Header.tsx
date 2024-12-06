@@ -1,7 +1,5 @@
 import { AddUserPopup, OpenPopupButton } from "./popup";
 import axiosInstance from "../../shared/services/axiosInstance";
-import { UserContext } from "../../shared/store/user-context";
-import { useContext } from "react";
 import { Link } from "react-router-dom";
 
 const Header = ({
@@ -86,13 +84,11 @@ const Header = ({
     addUser(username, password, email, "Admin");
     setIsAdminPopupOpen(false);
   };
-  const { user } = useContext(UserContext);
 
   return (
     <header className="flex items-center justify-between p-4">
       <div className="flex flex-col justify-end py-14 text-primary-blue">
         <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
-          <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
           <h3 className="py-4 text-2xl font-bold">Users</h3>
         </div>
       </div>

@@ -6,7 +6,7 @@ import {
   redirect,
   type FormMethod,
   useLoaderData,
-  LoaderFunctionArgs,
+  type LoaderFunctionArgs,
 } from "react-router-dom";
 
 import Map from "../../shared/components/Map";
@@ -19,6 +19,16 @@ import { ApiResponse } from "../../shared/types/Response.types";
 import SearchMultiSelect, {
   type MultiSelectOption,
 } from "@/modules/shared/components/SearchMultiSelect";
+import {
+  MapPin,
+  Calendar,
+  DollarSign,
+  Tags,
+  ListChecks,
+  Layers,
+  CircleCheck,
+  XCircle,
+} from "lucide-react";
 
 function ActivityForm({ method }: { method: FormMethod }) {
   const data = useActionData() as { message?: string };
@@ -52,211 +62,263 @@ function ActivityForm({ method }: { method: FormMethod }) {
   }
 
   return (
-    <Form method={method} className="h-full w-full rounded-lg p-6 shadow-md">
-      <div className="mb-4">
-        <label
-          htmlFor="name"
-          className="mb-2 block font-semibold text-primary-blue"
-        >
-          Name
-        </label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          defaultValue={activity?.name || ""}
-          required
-          className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        />
-      </div>
-      <div className="mb-4">
-        <label
-          htmlFor="datetime"
-          className="mb-2 block font-semibold text-primary-blue"
-        >
-          Date
-        </label>
-        <input
-          type="datetime-local"
-          id="datetime"
-          name="datetime"
-          defaultValue={toDateTimeLocal(activity?.datetime)}
-          required
-          className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        />
-      </div>
+    <div className="w-full px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-gray-200 shadow-2xl">
+        <div className="p-6 sm:p-10">
+          <div className="mb-8 text-center">
+            <h2 className="flex items-center justify-center text-3xl font-extrabold text-primary-blue">
+              <Layers className="mr-3 h-8 w-8 text-primary-blue/80" />
+              {method === "post" ? "Create New Activity" : "Edit Activity"}
+            </h2>
+            <p className="mt-2 text-sm text-gray-500">
+              Fill in the details for your activity
+            </p>
+          </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="price"
-          className="mb-2 block font-semibold text-primary-blue"
-        >
-          Price
-        </label>
-        <input
-          type="number"
-          id="price"
-          name="price"
-          min="0"
-          defaultValue={activity?.price}
-          required
-          className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        />
-      </div>
+          <Form method={method} className="space-y-6">
+            <div className="flex flex-col gap-6 md:flex-row">
+              <div className="flex-1">
+                <div className="mb-4">
+                  <label
+                    htmlFor="name"
+                    className="mb-2 flex items-center text-sm font-medium text-primary-blue"
+                  >
+                    <MapPin className="mr-2 h-5 w-5 text-primary-blue/70" />
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    defaultValue={activity?.name || ""}
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                  />
+                </div>
 
-      <div className="mb-4 h-full w-full">
-        <span className="mb-2 block font-semibold text-primary-blue">
-          Location
-        </span>
-        <div className="mb-2 flex gap-2">
-          <input
-            className="w-1/3 rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-            type="text"
-            id="locationLat"
-            name="locationLat"
-            value={location.latitude}
-            onChange={() => { }}
-            required
-            placeholder="Latitude"
-          />
-          <input
-            className="w-1/3 rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-            type="text"
-            id="locationLng"
-            name="locationLng"
-            value={location.longitude}
-            onChange={() => { }}
-            required
-            placeholder="Longitude"
-          />
-          <input
-            className="w-1/3 rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-            type="text"
-            id="locationName"
-            name="locationName"
-            value={location.name}
-            onChange={() => { }}
-            required
-            placeholder="Location Name"
-          />
+                <div className="mb-4">
+                  <label
+                    htmlFor="datetime"
+                    className="mb-2 flex items-center text-sm font-medium text-primary-blue"
+                  >
+                    <Calendar className="mr-2 h-5 w-5 text-primary-blue/70" />
+                    Date
+                  </label>
+                  <input
+                    type="datetime-local"
+                    id="datetime"
+                    name="datetime"
+                    defaultValue={toDateTimeLocal(activity?.datetime)}
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="price"
+                    className="mb-2 flex items-center text-sm font-medium text-primary-blue"
+                  >
+                    <DollarSign className="mr-2 h-5 w-5 text-primary-blue/70" />
+                    Price
+                  </label>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    min="0"
+                    defaultValue={activity?.price}
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <div className="mb-4">
+                  <label
+                    htmlFor="category"
+                    className="mb-2 flex items-center text-sm font-medium text-primary-blue"
+                  >
+                    <ListChecks className="mr-2 h-5 w-5 text-primary-blue/70" />
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    id="category"
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                  >
+                    {categories.map((category) => (
+                      <option key={category._id} value={category._id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="specialDiscounts"
+                    className="mb-2 flex items-center text-sm font-medium text-primary-blue"
+                  >
+                    <Tags className="mr-2 h-5 w-5 text-primary-blue/70" />
+                    Special Discount
+                  </label>
+                  <input
+                    type="number"
+                    id="specialDiscounts"
+                    name="specialDiscounts"
+                    min="0"
+                    defaultValue={activity?.specialDiscounts || 0}
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                  />
+                </div>
+
+                <div className="flex justify-center pt-8">
+                  <label
+                    htmlFor="isBooked"
+                    className="flex cursor-pointer items-center space-x-3"
+                  >
+                    <input
+                      type="checkbox"
+                      id="isBooked"
+                      name="isBooked"
+                      defaultChecked={activity && !activity.bookingOpen}
+                      className="h-5 w-5 rounded"
+                    />
+                    <span className="text-sm font-semibold text-primary-blue">
+                      Is Booked
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-4 w-full">
+              <span className="mb-2 flex items-center text-sm font-medium text-primary-blue">
+                <MapPin className="mr-2 h-5 w-5 text-primary-blue/70" />
+                Location
+              </span>
+              <div className="mb-2 flex flex-wrap gap-2">
+                <input
+                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2"
+                  type="text"
+                  id="locationLat"
+                  name="locationLat"
+                  value={location.latitude}
+                  onChange={() => { }}
+                  required
+                  placeholder="Latitude"
+                />
+                <input
+                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2"
+                  type="text"
+                  id="locationLng"
+                  name="locationLng"
+                  value={location.longitude}
+                  onChange={() => { }}
+                  required
+                  placeholder="Longitude"
+                />
+                <input
+                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2"
+                  type="text"
+                  id="locationName"
+                  name="locationName"
+                  value={location.name}
+                  onChange={() => { }}
+                  required
+                  placeholder="Location Name"
+                />
+              </div>
+              <Map
+                defaultMark={
+                  activity && {
+                    lat: activity.location.latitude,
+                    lng: activity.location.longitude,
+                    name: activity.location.name,
+                  }
+                }
+                onChange={(location) => {
+                  setLocation({
+                    latitude: location.lat,
+                    longitude: location.lng,
+                    name: location.name,
+                  });
+                }}
+                className="h-96 w-full overflow-hidden rounded-lg border border-gray-300 shadow-lg"
+              />
+            </div>
+
+            <div className="mb-4 w-full">
+              <span className="mb-2 flex items-center text-sm font-medium text-primary-blue">
+                <Tags className="mr-2 h-5 w-5 text-primary-blue/70" />
+                Tags
+              </span>
+              <SearchMultiSelect
+                options={tags.map((tag) => ({
+                  value: tag._id,
+                  label: tag.name,
+                  payload: tag,
+                }))}
+                selectedItems={selectedTags}
+                onSelect={(tag) => {
+                  setSelectedTags((prev) => [...prev, tag]);
+                }}
+                onRemove={(tag) => {
+                  setSelectedTags((prev) =>
+                    prev.filter((t) => t.value !== tag.value),
+                  );
+                }}
+              />
+              <input
+                type="hidden"
+                name="tags"
+                value={selectedTags.map((t) => t.value)}
+              />
+            </div>
+
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={cancelHandler}
+                disabled={isSubmitting}
+                className="flex items-center rounded-lg bg-blue-100 px-6 py-3 text-sm font-medium text-primary-blue hover:bg-blue-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <XCircle className="mr-2 h-5 w-5" />
+                Cancel
+              </button>
+              <button
+                disabled={isSubmitting}
+                className="flex items-center rounded-lg bg-primary-blue px-6 py-3 text-sm font-medium text-white hover:bg-primary-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <CircleCheck className="mr-2 h-5 w-5" />
+                {isSubmitting ? "Submitting..." : "Save"}
+              </button>
+            </div>
+
+            {data && data.message && (
+              <div className="mt-4 flex items-center rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+                <svg
+                  className="mr-3 h-6 w-6 text-red-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {data.message}
+              </div>
+            )}
+          </Form>
         </div>
-        <Map
-          defaultMark={
-            activity && {
-              lat: activity.location.latitude,
-              lng: activity.location.longitude,
-              name: activity.location.name,
-            }
-          }
-          onChange={(location) => {
-            setLocation({
-              latitude: location.lat,
-              longitude: location.lng,
-              name: location.name,
-            });
-          }}
-          className="h-96 w-full overflow-hidden rounded-lg border bg-gray-300"
-        />
       </div>
-      <div className="mb-4">
-        <label
-          htmlFor="category"
-          className="mb-2 block font-semibold text-primary-blue"
-        >
-          Category
-        </label>
-        <select
-          name="category"
-          id="category"
-          required
-          className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        >
-          {categories.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4 w-full">
-        <span className="mb-2 block w-full font-semibold text-primary-blue">
-          Tags
-        </span>
-        <SearchMultiSelect
-          options={tags.map((tag) => ({
-            value: tag._id,
-            label: tag.name,
-            payload: tag,
-          }))}
-          selectedItems={selectedTags}
-          onSelect={(tag) => {
-            setSelectedTags((prev) => [...prev, tag]);
-          }}
-          onRemove={(tag) => {
-            setSelectedTags((prev) =>
-              prev.filter((t) => t.value !== tag.value),
-            );
-          }}
-        />
-        <input
-          type="hidden"
-          name="tags"
-          value={selectedTags.map((t) => t.value)}
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="specialDiscounts"
-          className="mb-2 block font-semibold text-primary-blue"
-        >
-          Special Discount
-        </label>
-        <input
-          type="number"
-          id="specialDiscounts"
-          name="specialDiscounts"
-          min="0"
-          defaultValue={activity?.specialDiscounts || 0}
-          required
-          className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        />
-      </div>
-
-      <div className="mb-6">
-        <label htmlFor="isBooked" className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="isBooked"
-            name="isBooked"
-            defaultChecked={activity && !activity.bookingOpen}
-            className="form-checkbox h-5 w-5 text-gray-600"
-          />
-          <span className="font-semibold text-primary-blue">Is Booked</span>
-        </label>
-      </div>
-
-      <div className="flex gap-2">
-        <button
-          disabled={isSubmitting}
-          className="rounded-md bg-accent-dark-blue px-4 py-2 text-white hover:bg-accent-dark-blue/80 focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-opacity-50 disabled:opacity-50"
-        >
-          {isSubmitting ? "Submitting..." : "Save"}
-        </button>
-        <button
-          type="button"
-          onClick={cancelHandler}
-          disabled={isSubmitting}
-          className="rounded-md bg-secondary-light_grey px-4 py-2 text-primary-blue hover:bg-secondary-light_grey/80 focus:outline-none focus:ring-2 focus:ring-secondary-light_grey focus:ring-opacity-50 disabled:opacity-50"
-        >
-          Cancel
-        </button>
-      </div>
-      {data && data.message && (
-        <p className="mb-4 text-red-500">{data.message}</p>
-      )}
-    </Form>
+    </div>
   );
 }
 

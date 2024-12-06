@@ -16,7 +16,6 @@ const Dashboard = () => {
   // Fetch profiles (GET request)
   const fetchProfiles = async () => {
     try {
-      // const response = await fetch('https://are-we-there-yet-mirror.onrender.com/api/users');
       const response = await axiosInstance.get("/users");
       setProfiles(response.data.data);
     } catch (error) {
@@ -28,7 +27,6 @@ const Dashboard = () => {
     try {
       const response = await axiosInstance.delete(`/users/${id}`);
 
-      // if (response.ok) {
       if (response.status === 200) {
         setProfiles((prevProfiles) =>
           prevProfiles.filter((profile) => profile._id !== id),

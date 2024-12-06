@@ -3,14 +3,12 @@ import Modal from "@/modules/shared/components/Modal";
 import type { TableColumn } from "@/modules/shared/components/Table";
 import Table from "@/modules/shared/components/Table";
 import axiosInstance from "@/modules/shared/services/axiosInstance";
-import { UserContext } from "@/modules/shared/store/user-context";
 import type { PromoCodeType } from "@/modules/shared/types/PromoCode.types";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useLoaderData } from "react-router";
 
 export default function AdminPromoCode() {
-  const { user } = useContext(UserContext);
   const ref = useRef<ModalRef>(null);
   const [promocodes, setPromocodes] = useState(
     useLoaderData() as PromoCodeType[],
@@ -98,7 +96,6 @@ export default function AdminPromoCode() {
       <header className="flex items-center justify-between">
         <div className="flex flex-col py-14 text-primary-blue">
           <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
-            <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
             <h3 className="py-4 text-2xl font-bold text-primary-blue">
               Promo Codes
             </h3>

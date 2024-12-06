@@ -59,8 +59,6 @@ export default function NewNavBar({
 }: {
   isNewUser: boolean;
 }) {
-  console.log("NewNavBar isNewUser", isNewUser);
-
   const { user, setUser } = useContext(UserContext);
   const { pathname } = useLocation();
   const navigate = useNavigate();

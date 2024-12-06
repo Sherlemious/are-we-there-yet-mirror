@@ -2,15 +2,13 @@ import Modal, { type ModalRef } from "@/modules/shared/components/Modal";
 import type { TableColumn } from "@/modules/shared/components/Table";
 import Table from "@/modules/shared/components/Table";
 import axiosInstance from "@/modules/shared/services/axiosInstance";
-import { UserContext } from "@/modules/shared/store/user-context";
 import type { ItineraryType } from "@/modules/shared/types/Itinerary.types";
 import { X } from "lucide-react";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useLoaderData } from "react-router";
 
 export default function FlagItineraries() {
-  const { user } = useContext(UserContext);
   const ref = useRef<ModalRef>(null);
   const [itineraries, setItineraries] = useState(
     useLoaderData() as ItineraryType[],
@@ -84,9 +82,6 @@ export default function FlagItineraries() {
         <header className="flex items-center justify-between">
           <div className="flex flex-col py-14 text-primary-blue">
             <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
-              <h1 className="py-4 text-4xl font-bold">
-                Welcome {user.username}
-              </h1>
               <h3 className="py-4 text-2xl font-bold text-primary-blue">
                 Flag/Unflag Itineraries
               </h3>
