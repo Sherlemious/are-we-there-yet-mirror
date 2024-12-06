@@ -62,6 +62,12 @@ import { AllOrdersLoader, AllOrdersPage } from "./modules/Orders/App";
 import AdminPromoCode, {
   loader as adminPromoCodeLoader,
 } from "./modules/Admin/pages/PromoCode";
+import {
+  confirmPayment,
+  PaymentFailurePage,
+  PaymentSuccessPage,
+  TestCheckout,
+} from "./modules/products/pages/Checkout";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -131,7 +137,28 @@ const BrowserRouter = createBrowserRouter([
         index: true,
         element: <LandingPage />,
       },
-
+      {
+        path: "checkout",
+        children: [
+          {
+            path: "test",
+            element: <TestCheckout />,
+          },
+          {
+            path: "confirm/:sessionId",
+            element: <Outlet />,
+            loader: confirmPayment,
+          },
+          {
+            path: "success",
+            element: <PaymentSuccessPage />,
+          },
+          {
+            path: "cancel",
+            element: <PaymentFailurePage />,
+          },
+        ],
+      },
       {
         path: "orders",
         element: <AllOrdersPage />,
