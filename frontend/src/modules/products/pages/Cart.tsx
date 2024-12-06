@@ -187,6 +187,76 @@ const Cart = () => {
   }, []);
 
   return (
+    <div className= "col-span-2 flex justify-end mr-10 mt-10">
+      <div className={customStyles.container}>
+          <div className={customStyles.sliderContainer}>
+        <div className={customStyles.sliderContent}>
+          <div className={customStyles.sliderWrapper}>
+            {cart.length === 0 && (
+              <div className="text-center text-xl font-bold text-accent-dark-blue">
+                No products found
+              </div>
+            )}
+            {cart.map((item, index) => (
+              <div key={index} /*className={customStyles.slide}}*/>
+                <GenericCard
+                  item={item.product}
+                  images={imageUrls[item.product._id] || [defaultImage]}
+                  onRemove={() => {
+                    setSelectedProduct(item.product); 
+                    handleRemoveCart();
+                  }}                >
+                  <div className="p-4">
+                    {/* Price and Quantity Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="rounded-lg bg-secondary-light_grey">
+                        <div className="flex items-center gap-2 text-accent-dark-blue">
+                          <DollarSign size={16} className="text-primary-blue" />
+                          <span className="text-sm font-sub_headings">
+                            Price :
+                          </span>
+                        </div>
+                        <p className="mt-1 text-lg font-semibold text-primary-green">
+                          ${item.product.price}
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-secondary-light_grey">
+                        <div className="flex items-center gap-2 text-accent-dark-blue">
+                          <Package size={16} className="text-primary-blue" />
+                          <span className="text-sm font-sub_headings">
+                            Purchased :
+                          </span>
+                        </div>
+                        <button
+                              onClick={() =>
+                                changeQuantity(item.product._id, item.quantity - 1)
+                              }
+                              className="p-1 text-gray-400 hover:text-gray-800"
+                              disabled={item.quantity <= 1} // Disable button if quantity is already 1
+                            >
+                              <Minus size={20}/>
+                            </button>
+                            <span className="px-3">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() =>
+                                changeQuantity(item.product._id, item.quantity + 1)
+                              }
+                              className="p-1 text-gray-400 hover:text-gray-800"
+                            >
+                              <Plus size={20} />
+                            </button>
+                      </div>
+                    </div>
+                  </div>
+                </GenericCard>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
     <div>
       <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-10 text-text-primary">
       <div className="p-4 bg-secondary-white rounded-lg mb-6 h-auto max-w-[85vh] rounded-lg pr-14 pt-4 pl-20 pb-10 mx-auto">
@@ -278,90 +348,23 @@ const Cart = () => {
                   }
                   className=" w-fit rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                 />
-              <div className= "relative">
-              <button
+            </div>
+            </div>
+            )}
+          </div>
+          {showAddAddress && (
+
+          <div className="col-span-1 flex justify-end">
+          <button
                 onClick={handleNewAddressSubmit}
-                className="flex items-center absolute right-0 mt-2 gap-3 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 "
-              >
+                className="flex items-center gap-2  ml-4 gap-3 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 "
+                >
                 <House size={20}/>
                 Add Address
               </button>
-              </div>
             </div>
-            </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className={customStyles.container}>
-
-          <div className={customStyles.sliderContainer}>
-        <div className={customStyles.sliderContent}>
-          <div className={customStyles.sliderWrapper}>
-            {cart.length === 0 && (
-              <div className="text-center text-xl font-bold text-accent-dark-blue">
-                No products found
-              </div>
-            )}
-            {cart.map((item, index) => (
-              <div key={index} /*className={customStyles.slide}}*/>
-                <GenericCard
-                  item={item.product}
-                  images={imageUrls[item.product._id] || [defaultImage]}
-                  onRemove={() => {
-                    setSelectedProduct(item.product); 
-                    handleRemoveCart();
-                  }}                >
-                  <div className="p-4">
-                    {/* Price and Quantity Grid */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded-lg bg-secondary-light_grey">
-                        <div className="flex items-center gap-2 text-accent-dark-blue">
-                          <DollarSign size={16} className="text-primary-blue" />
-                          <span className="text-sm font-sub_headings">
-                            Price :
-                          </span>
-                        </div>
-                        <p className="mt-1 text-lg font-semibold text-primary-green">
-                          ${item.product.price}
-                        </p>
-                      </div>
-                      <div className="rounded-lg bg-secondary-light_grey">
-                        <div className="flex items-center gap-2 text-accent-dark-blue">
-                          <Package size={16} className="text-primary-blue" />
-                          <span className="text-sm font-sub_headings">
-                            Purchased :
-                          </span>
-                        </div>
-                        <button
-                              onClick={() =>
-                                changeQuantity(item.product._id, item.quantity - 1)
-                              }
-                              className="p-1 text-gray-400 hover:text-gray-800"
-                              disabled={item.quantity <= 1} // Disable button if quantity is already 1
-                            >
-                              <Minus size={20}/>
-                            </button>
-                            <span className="px-3">
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() =>
-                                changeQuantity(item.product._id, item.quantity + 1)
-                              }
-                              className="p-1 text-gray-400 hover:text-gray-800"
-                            >
-                              <Plus size={20} />
-                            </button>
-                      </div>
-                    </div>
-                  </div>
-                </GenericCard>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+                  )}
+      {selectedAddress && (
       <div className="col-span-2 flex justify-end">
         <button className="flex items-center gap-2 w-fit mr-4 gap-3 mt-10 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 ">
         <Wallet2 size={20} />
@@ -373,8 +376,9 @@ const Cart = () => {
         Pay By Visa
         </button>
     </div>
-    </div>
-    <div>
+      )}
+        </div>
+      </div>
     </div>
     </div>
   );
