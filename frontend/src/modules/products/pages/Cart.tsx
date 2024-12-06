@@ -330,32 +330,6 @@ const Cart = () => {
                             </button>
                       </div>
                     </div>
-
-                    {/* Rating */}
-                    <div className="rounded-lg bg-secondary-light_grey p-3">
-                      <div className="flex items-center gap-2">
-                        <Star
-                          size={18}
-                          className="text-accent-gold"
-                          fill="currentColor"
-                        />
-                        <span className="font-bold text-accent-dark-blue">
-                          {item.product.reviews.length > 0
-                            ? (
-                                item.product.reviews.reduce(
-                                  (sum, review) => sum + review.rating,
-                                  0,
-                                ) / item.product.reviews.length
-                              ).toFixed(1)
-                            : "0"}
-                          <span className="font-normal text-gray-500">/5</span>
-                        </span>
-
-                        <span className="ml-16 text-sm text-gray-500">
-                          {item.product.reviews.length} reviews
-                        </span>
-                      </div>
-                    </div>
                   </div>
                 </GenericCard>
               </div>
