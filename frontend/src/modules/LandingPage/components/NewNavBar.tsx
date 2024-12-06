@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import NavBarTutorial from "./NavBarTut";
+import NotificationBell from "./NotificationBell";
 
 const styles = {
   nav: "relative z-10 flex h-[13vh] items-center bg-black/10 backdrop-blur-md",
@@ -64,6 +65,7 @@ export default function NewNavBar({
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const navigation = useNavigation();
+  const [notifications,setNotifications] = useState(user.notifications);
   const [isOpen, setIsOpen] = useState(false);
 
   const [showTutorial, setShowTutorial] = useState(false);
@@ -272,6 +274,19 @@ export default function NewNavBar({
         </div>
 
         <div className={styles.actions.wrapper}>
+        {user.account_type !== AccountType.None && user.account_type !== AccountType.TourismGovernor &&(
+      <NotificationBell 
+            notifications={notifications}
+            onMarkAsRead= {(id: string | undefined) => {
+                setNotifications((prev) =>
+                  prev.map((notif) =>
+                    notif._id === id ? { ...notif, read: true } : notif
+                  )
+                );
+              }
+          }
+          />
+      )}
           {!pathname.includes("/login") && pathname !== "/register" && (
             <CurrencySelect />
           )}

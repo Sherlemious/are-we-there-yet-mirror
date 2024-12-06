@@ -68,6 +68,7 @@ import {
   PaymentSuccessPage,
   TestCheckout,
 } from "./modules/products/pages/Checkout";
+import Cart from "./modules/products/pages/Cart";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -195,6 +196,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "wishList",
         element: <WishList />,
+      },
+      {
+        path: "cart",
+        element: <Cart />,
       },
       {
         path: "tourism-governor-profile/:id",

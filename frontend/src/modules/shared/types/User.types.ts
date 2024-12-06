@@ -1,3 +1,4 @@
+import { NotificationType } from "./Notification.types";
 import { TagType } from "./Tag.types";
 
 export enum AccountType {
@@ -9,7 +10,12 @@ export enum AccountType {
   Seller = "Seller",
   TourismGovernor = "TourismGovernor",
 }
-
+export enum NotificationTypeEnum {
+  ERROR = 'error',
+  WARNING = 'warning',
+  INFORMATION = 'information',
+  SUCCESS = 'success',
+}
 export interface UserType {
   _id: string;
   password: string;
@@ -25,6 +31,15 @@ export interface UserType {
   rejected: boolean;
   deletionRequested: boolean;
   termsAndConditions: boolean;
+  notifications?: {
+    _id?: string;
+    title?: string;
+    message?: string;
+    notificationType: NotificationTypeEnum;
+    read: boolean;
+    createdAt: Date;
+  }
+  ;
   attachments?: {
     _id: string;
     original_name: string;

@@ -15,6 +15,7 @@ import defaultPhoto from "../assets/defaultPhoto.png";
 import GenericCard from "../../shared/GenericCard/GenericCard";
 import axiosInstance from "../../shared/services/axiosInstance";
 import { getWishList } from "../Api/ProductService";
+import toast from "react-hot-toast";
 
 interface ProductListProps {
   products: Product[]; // All products
@@ -83,16 +84,16 @@ const ProductList: React.FC<ProductListProps> = ({
           modelId: selectedProduct._id,
         };
         await axiosInstance.post(`/users/bookmarks`, payload);
-        alert("Product added to wishlist");
+        toast.success("Product added to wishlist");
       } catch (error) {
         console.error("Error adding product to wishlist:", error);
-        alert(
+        toast.error(
           (error as any).response?.data?.message ||
             "Failed to add product to wishlist",
         );
       }
     } else {
-      alert("No product selected to add to wishlist");
+      toast.error("No product selected to add to wishlist");
     }
   };
 
@@ -106,17 +107,17 @@ const ProductList: React.FC<ProductListProps> = ({
         const bookmarkId = bookmark?._id;
         console.log(bookmarkId);
         await axiosInstance.delete(`/users/bookmarks/${bookmarkId}`);
-        alert("Product removed from wishlist");
+        toast.success("Product removed from wishlist");
         window.location.reload();
       } catch (error) {
         console.error("Error removing product from wishlist:", error);
-        alert(
+        toast.error(
           (error as any).response?.data?.message ||
             "Failed to remove product from wishlist",
         );
       }
     } else {
-      alert("No product selected to remove from wishlist");
+      toast.error("No product selected to remove from wishlist");
     }
   };
 
@@ -128,11 +129,11 @@ const ProductList: React.FC<ProductListProps> = ({
           productId: selectedProduct._id,
           quantity: selectedProduct.Quantity || 1,
         });
-        alert("Product added to cart");
+        toast.success("Product added to cart");
         EditmodalRef.current?.close();
       } catch (error) {
         console.error("Error adding product to cart:", error);
-        alert(
+        toast.error(
           `Failed to add product to cart ${(error as any).response.data.message}`,
         );
       }
