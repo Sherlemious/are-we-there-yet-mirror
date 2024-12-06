@@ -1,6 +1,5 @@
 import MuseumList from "../components/MuseumList";
-import { useState, useEffect, useContext } from "react";
-import { UserContext } from "../../shared/store/user-context";
+import { useState, useEffect} from "react";
 import {
   createMuseum,
   deleteMuseum,
@@ -9,11 +8,9 @@ import {
 } from "../Api/MuseumService";
 import { MuseumFormData } from "../components/MuseumForm";
 import { Museum } from "../types/museum";
-import Greeting from "@/modules/shared/components/Greeting";
 
 const AllMuseums = () => {
   const [museums, setMuseums] = useState<Museum[]>([]);
-  const { user } = useContext(UserContext);
   useEffect(() => {
     const fetchMuseums = async () => {
       const data = await getMuseums();
@@ -70,9 +67,6 @@ const AllMuseums = () => {
 
   return (
     <div>
-      <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-9 text-text-primary">
-      <Greeting name = {user.username} title="Museums" signedIn />
-      </div>
       <MuseumList
         museums={museums}
         role="TourismGovernor"

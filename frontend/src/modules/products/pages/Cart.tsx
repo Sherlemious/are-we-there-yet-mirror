@@ -373,7 +373,7 @@ const Cart = () => {
         <button 
         className="flex items-center gap-2  ml-4 gap-3 mt-10 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 ">
         <CreditCard size={20} />
-        Pay By Visa
+        Pay Online 
         </button>
     </div>
       )}

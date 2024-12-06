@@ -24,8 +24,6 @@ const WishList = () => {
   return (
     <div>
       <div className="flex flex-col justify-end divide-y-2 divide-borders-bottomBorder p-2 text-text-primary">
-        <h1 className="py-2 text-3xl font-bold">WishList</h1>
-        <h3 className="py-2 text-xl font-bold"></h3>
       </div>
       <ProductList products={products} role="wishlist" />
     </div>

@@ -39,23 +39,6 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
     { header: "Name", accessor: "name", render: (name) => (name !== undefined ? name : "N/A"),    },
     { header: "Date", accessor: "datetime", render: (datetime: Date) => new Date(datetime).toLocaleDateString() },
     { header: "Time", accessor: "datetime", render: (datetime: Date) => new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
-    { header: "Location", accessor: "location.name", render: (name) => (name !== undefined ? name : "N/A"), },
-    { header: "Category", accessor: "category.name", render: (name) => (name !== undefined ? name : "N/A"), },
-    { header: "Price", accessor: "price"},
-    { header: "Tags", accessor: "tags", render: (tags: { name: string }[]) => (
-        <div className="flex flex-wrap gap-2">
-          {tags.map((tag, index) => (
-            <span
-              key={index}
-              className="bg-gray-400 text-black rounded-full px-3 py-1 text-sm"
-            >
-              {tag.name}
-            </span>
-          ))}
-        </div>
-      ),
-    },
-    { header: "Special Discounts", accessor: "specialDiscounts", render: (discounts: number) => `${discounts}%` },
     {
         header: "Ratings",
         accessor: "average_rating",

@@ -347,8 +347,7 @@ export default function AdminAllComplaints() {
       <div className="grid grid-cols-[70%_30%] items-center justify-between gap-4">
         {/* header stuff */}
         <div className="flex flex-col divide-y-2 divide-borders-bottomBorder rounded-lg bg-gray-100 px-8 py-16">
-          <h1 className="py-2 text-4xl font-bold">Welcome, {user.username}</h1>
-          <h3 className="py-2 text-2xl font-bold">Complaints</h3>
+          <h1 className="py-2 text-4xl font-bold">Complaints</h1>
         </div>
 
         {/* tool box */}

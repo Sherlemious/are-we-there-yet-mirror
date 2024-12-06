@@ -1,7 +1,5 @@
 import axiosInstance from "../../shared/services/axiosInstance";
 import { AddCategoryPopup, OpenPopupButton } from "./popup";
-import { UserContext } from "../../shared/store/user-context";
-import { useContext } from "react";
 
 const Header = ({
   isCategoryPopupOpen,
@@ -77,14 +75,12 @@ const Header = ({
     addCategory(name);
     setIsCategoryPopupOpen(false); // Close the popup after adding
   };
-  const { user } = useContext(UserContext);
 
   return (
     <header className="flex items-center justify-between p-4">
       <div className="flex flex-col justify-end py-14 text-primary-blue">
         <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
-          <h1 className="py-4 text-4xl font-bold">Welcome {user.username}</h1>
-          <h3 className="py-4 text-2xl font-bold">Categories</h3>
+          <h1 className="py-4 text-4xl font-bold">Categories</h1>
         </div>
       </div>
       <div className="flex space-x-4">

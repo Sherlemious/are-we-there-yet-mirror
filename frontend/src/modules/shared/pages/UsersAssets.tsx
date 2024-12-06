@@ -1,12 +1,10 @@
 import { useState } from "react";
-import Greeting from "../../shared/components/Greeting";
 import { ActivityList } from "../components/ActivityList";
 import { ItineraryList } from "../components/ItineraryList";
 import { MuseumList } from "../components/MuseumList";
 
 export function UsersAssets() {
   // define some stuff
-  const sectionName: string = "Assets";
   const [currentTab, setCurrentTab] = useState("activities");
 
   // handle tab change
@@ -17,9 +15,6 @@ export function UsersAssets() {
   return (
     <div className="container mx-auto max-w-7xl space-y-8 px-4 py-8">
       {/* Header Section */}
-      <div className="space-y-2">
-        <Greeting name="John Doe" title={sectionName} signedIn />
-      </div>
 
       {/* Navigation Tabs */}
       <div className="rounded-lg bg-secondary-light_grey p-1">
