@@ -21,6 +21,7 @@ interface CartItem {
 const defaultImage = defaultPhoto;
 
 const Cart = () => {
+  const [showAddAddress, setShowAddAddress] = useState(false); // Track visibility of Add Address section
   const [addresses, setAddresses] = useState<AddressType[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<AddressType | null>(
     null,
@@ -55,11 +56,13 @@ const Cart = () => {
     }
   };
 
-  const handleNewAddressSubmit = async () => {
+  const handleNewAddressSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const loadingToastId = toast.loading("Processing..."); // Show loading toast
     try {
       const zip = parseInt(newAddress.zip);
       if(isNaN(zip)){
-        toast.error("Please enter a valid ZIP code");
+        toast.error("Please enter a valid ZIP code", { id: loadingToastId });
         return;
       }
       const requestBody = {
@@ -75,7 +78,8 @@ const Cart = () => {
         `/users/tourists/addresses`, requestBody
       ); 
       setAddresses((prev) => [...prev, newAddress]);
-      toast.success("Address added successfully");
+      toast.success("Address added successfully", { id: loadingToastId });
+      setShowAddAddress(false);
       setNewAddress({
         street: "",
         city: "",
@@ -85,7 +89,7 @@ const Cart = () => {
       });
     } catch (error) {
       console.error("Error adding new address:", error);
-      toast.error("Failed to add new address");
+      toast.error("Failed to add new address", { id: loadingToastId });
     }
   };
 
@@ -211,9 +215,19 @@ const Cart = () => {
                 ))}
               </select>
             </div>
-            )};
+            )}
+            <div className="mt-4">
+            <button
+            type="button"
+            onClick={() => setShowAddAddress(!showAddAddress)}
+            className="btn btn-link text-md font-bold dropdown-toggle hover:underline"
+            >
+            Add a New Address
+            </button>
+          </div>  
             {/* Add New Address */}
-              <h4 className="text-md font-bold">Add a New Address</h4>
+            {showAddAddress && (
+              <div className="mt-4">
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <input
                   type="text"
@@ -274,6 +288,8 @@ const Cart = () => {
               </button>
               </div>
             </div>
+            </div>
+            )}
           </div>
         </div>
       </div>
