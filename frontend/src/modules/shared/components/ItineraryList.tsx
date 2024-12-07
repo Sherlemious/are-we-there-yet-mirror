@@ -241,7 +241,7 @@ function ItineraryModal({
                     className="cursor-pointer transition-all duration-150 hover:scale-110"
                   />
                   <h2 className="text-headline font-headline text-accent-dark-blue">
-                    {itinerary.name}
+                    {itinerary.name} {renderStars(itinerary.rating)}
                   </h2>
                 </div>
                 <div className="mt-2 h-1 w-full rounded-full bg-primary-blue"></div>
@@ -252,7 +252,6 @@ function ItineraryModal({
                 {/* Basic Info */}
                 <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
                   {[
-                    { label: "Rating", value: renderStars(itinerary.rating) },
                     { label: "Language", value: itinerary.language },
                     { label: "Price", value: itinerary.price },
                     { label: "Category", value: itinerary.category.name },
