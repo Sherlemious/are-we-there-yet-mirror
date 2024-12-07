@@ -1,4 +1,4 @@
-import { OrderItemType, OrderStatusType } from '../../types/Order.types';
+import { OrderItemType, OrderStatusType, PaymentMethodType } from '../../types/Order.types';
 import { Order } from '../models/order.model';
 
 class OrderRepo {
@@ -22,8 +22,20 @@ class OrderRepo {
     return await Order.findById(orderId).populate('products.product');
   }
 
-  async checkoutOrder(userId: string, totalPrice: Number, addressId: string, cart?: OrderItemType[]) {
-    return await Order.create({ products: cart, totalPrice, delivery_address: addressId, created_by: userId });
+  async checkoutOrder(
+    userId: string,
+    totalPrice: Number,
+    addressId: string,
+    payment_method: PaymentMethodType,
+    cart?: OrderItemType[]
+  ) {
+    return await Order.create({
+      products: cart,
+      totalPrice,
+      delivery_address: addressId,
+      payment_method,
+      created_by: userId,
+    });
   }
 
   async cancelOrder(orderId: string, userId: string) {

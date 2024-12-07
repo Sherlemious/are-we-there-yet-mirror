@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { OrderStatusType } from '../../types/Order.types';
+import { OrderStatusType, PaymentMethodType } from '../../types/Order.types';
 import { cartItemSchema } from './cart.model';
 
 const orderSchema = new Schema(
@@ -17,6 +17,12 @@ const orderSchema = new Schema(
     delivery_address: {
       type: Schema.Types.ObjectId,
       ref: 'address',
+      required: true,
+    },
+    payment_method: {
+      type: String,
+      enum: Object.values(PaymentMethodType),
+      required: true,
     },
     created_by: {
       type: Schema.Types.ObjectId,

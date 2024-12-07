@@ -7,10 +7,15 @@ import { ProductType } from '../types/Product.types';
 import productRepo from '../database/repositories/product.repo';
 import userRepo from '../database/repositories/user.repo';
 import emailService from '../services/email/email.service';
-import { accountType } from '../types/User.types';
 import StripeService from '../services/stripe.service';
+import { OrderItemType, PaymentMethodType } from '../types/Order.types';
 
 class OrderController {
+  constructor() {
+    this.checkoutOrder = this.checkoutOrder.bind(this);
+    this.calculateTotalOrderPrice = this.calculateTotalOrderPrice.bind(this);
+  }
+
   async getAllOrders(req: Request, res: Response) {
     try {
       const orders = await orderRepo.getOrders(req.query.past as string, req.user.userId);
@@ -25,42 +30,34 @@ class OrderController {
     try {
       let { payment_method, address_id, session_id } = req.body;
       const user = await cartRepo.getUserCart(req.user.userId);
-      const email = user?.email;
-      const cart = user?.cart || [];
+      const customerEmail = user?.email;
+      const cart = user?.cart ?? [];
 
       if (cart.length === 0) {
         throw new Error('Cart is empty');
       }
 
-      if (payment_method === 'card') {
-        const metadata = await StripeService.getMetadata(session_id);
-        address_id = metadata?.address_id;
+      if (!Object.values(PaymentMethodType).includes(payment_method)) {
+        throw new Error('Invalid payment method');
       }
 
-      let totalOrderPrice = 0;
-      cart.forEach(async (cartItem) => {
-        const product = cartItem.product as unknown as ProductType;
+      const totalOrderPrice = await this.calculateTotalOrderPrice(cart);
 
-        totalOrderPrice += product.price * cartItem.quantity;
-        await productRepo.buyProduct(product._id, cartItem.quantity);
-        if (product.available_quantity !== undefined && product.available_quantity - cartItem.quantity === 0) {
-          if (product.seller) {
-            await userRepo.outOfStockNotification(product.seller);
-            const tempUser = await userRepo.findUserById(product.seller);
-            if (tempUser?.email) {
-              await emailService.outOfStockEmail(tempUser.email);
-            }
-          }
-          const admins = await userRepo.getUsersByType(accountType.Admin);
-          admins.forEach(async (admin) => {
-            await userRepo.outOfStockNotificationAdmin(admin._id.toString());
-          });
-        }
-      });
+      switch (payment_method) {
+        case PaymentMethodType.CARD:
+          const metadata = await StripeService.getMetadata(session_id);
+          address_id = metadata?.address_id;
+          break;
+        case PaymentMethodType.WALLET:
+          await userRepo.updateWallet(req.user.userId, -totalOrderPrice);
+          break;
+        case PaymentMethodType.CASH:
+          break;
+      }
 
-      const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, address_id, cart);
-      if (email) {
-        await emailService.sendReceiptEmail(email, order);
+      const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, address_id, payment_method, cart);
+      if (customerEmail) {
+        await emailService.sendReceiptEmail(customerEmail, order);
       }
 
       res
@@ -70,6 +67,32 @@ class OrderController {
       logger.error(`Error checking out order: ${error.message}`);
       res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
     }
+  }
+
+  private async calculateTotalOrderPrice(cart: OrderItemType[]): Promise<number> {
+    let totalOrderPrice = 0;
+
+    for (const cartItem of cart) {
+      const product = cartItem.product as ProductType;
+
+      if (product.available_quantity < cartItem.quantity) {
+        throw new Error(`Product ${product.name} is out of stock`);
+      }
+
+      totalOrderPrice += product.price * cartItem.quantity;
+      await productRepo.buyProduct(product._id, cartItem.quantity);
+
+      if (product.available_quantity === cartItem.quantity) {
+        await userRepo.outOfStockNotification(product.seller);
+        const tempUser = await userRepo.findUserById(product.seller);
+
+        if (tempUser?.email) {
+          await emailService.outOfStockEmail(tempUser.email);
+        }
+      }
+    }
+
+    return totalOrderPrice;
   }
 
   async cancelOrder(req: Request, res: Response) {

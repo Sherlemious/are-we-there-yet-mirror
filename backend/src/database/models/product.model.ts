@@ -17,6 +17,7 @@ const productSchema = new Schema(
     },
     available_quantity: {
       type: Number,
+      default: 0,
     },
     attachments: {
       type: [{ type: Schema.Types.ObjectId, ref: 'attachment' }],
@@ -31,6 +32,7 @@ const productSchema = new Schema(
     seller: {
       type: Schema.Types.ObjectId,
       ref: 'user',
+      required: true,
     },
     tags: {
       type: [{ type: Schema.Types.ObjectId, ref: 'tag' }],
