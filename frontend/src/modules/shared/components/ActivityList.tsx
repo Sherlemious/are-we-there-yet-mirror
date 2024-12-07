@@ -215,11 +215,11 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
         <thead>
           <tr>
             <th className={headerClassName + " rounded-tl-lg"}>Name</th>
+            <th className={headerClassName}>Ratings</th>
             <th className={headerClassName}>Date</th>
             <th className={headerClassName}>Time</th>
             <th className={headerClassName}>Location</th>
             <th className={headerClassName}>Price</th>
-            <th className={headerClassName}>Ratings</th>
             <th className={headerClassName}>Category</th>
             <th className={headerClassName}>Tags</th>
             <th className={headerClassName}>Special Discounts</th>
@@ -232,11 +232,11 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
           {activities.map((activity, index) => (
             <tr key={index}>
               <td className={rowClassName}>{activity.name}</td>
+              <td className={rowClassName}>{renderStars(activity.ratings)}</td>
               <td className={rowClassName}>{activity.date}</td>
               <td className={rowClassName}>{activity.time}</td>
               <td className={rowClassName}>{activity.location.name}</td>
               <td className={rowClassName}>{activity.price}</td>
-              <td className={rowClassName}>renderStars(activity.ratings)</td>
               <td className={rowClassName}>{activity.category}</td>
               <td className={rowClassName}>
                 {activity.tags.map(formatText).join(", ") || "N/A"}

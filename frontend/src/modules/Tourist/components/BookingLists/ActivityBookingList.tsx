@@ -27,7 +27,18 @@ const formatText = (text: string) => {
   const maxLength = 5 * 3;
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 };
-
+const renderStars = (rating: number) => {
+  const filledStars = "★".repeat(Math.floor(rating));
+  const halfStar = rating % 1 >= 0.5; 
+  const emptyStars = "☆".repeat(5 - Math.floor(rating) - ((halfStar)?1:0));
+  return (
+    <span className="text-yellow-500 text-2xl">
+      {filledStars}
+      {halfStar && "⯨"}
+      {emptyStars}
+    </span>
+  );
+};
 async function getMyActivities() {
   try {
     // Get the data via axios
@@ -158,12 +169,12 @@ function ActivityCard({ activity }: { activity: Activity }) {
       <div className={classes}>{activity.time}</div>
       <div className={classes}>{activity.location.name}</div>
       <div className={classes}>{activity.price}</div>
-      <div className={classes}>{activity.ratings}/5</div>
-      <div className={classes}>{activity.category.name}</div>
+      <div className={classes}>{renderStars(activity.ratings)}</div>
+      <div className={classes}>{activity.category}</div>
       <div className={classes}>
         {activity.tags.map(formatText).join(", ") || "N/A"}
       </div>
-      <div className="text-left text-base">{activity.specialDiscounts}</div>
+      <div className="text-left text-base">{activity.specialDiscounts}%</div>
       <div className="text-left text-base">
         {activity.bookingOpen ? "Open" : "Closed"}
       </div>
