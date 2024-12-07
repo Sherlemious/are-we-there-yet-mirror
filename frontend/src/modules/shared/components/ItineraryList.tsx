@@ -150,7 +150,18 @@ function ItineraryModal({
     transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
     opacity: isVisible && !isClosing ? 1 : 0,
   };
-
+  const renderStars = (rating: number) => {
+    const filledStars = "★".repeat(Math.floor(rating));
+    const halfStar = rating % 1 >= 0.5; 
+    const emptyStars = "☆".repeat(5 - Math.floor(rating) - ((halfStar)?1:0));
+    return (
+      <span className="text-yellow-500 text-2xl">
+        {filledStars}
+        {halfStar && "⯨"}
+        {emptyStars}
+      </span>
+    );
+  };
   // function to handle booking
   const handleBooking = async () => {
     try {
@@ -253,7 +264,7 @@ function ItineraryModal({
                     },
                     { label: "Category", value: itinerary.category.name },
                     { label: "Tags", value: itinerary.tags.join(", ") },
-                    { label: "Rating", value: `${itinerary.rating}/5` },
+                    { label: "Rating", value: renderStars(itinerary.rating) },
                     {
                       label: "Accessibilities",
                       value: itinerary.accessibilities ? "Yes" : "No",
