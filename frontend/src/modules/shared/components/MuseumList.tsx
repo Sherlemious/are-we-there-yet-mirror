@@ -156,7 +156,15 @@ function MuseumModal({
       onClose();
     }, 300); // Match timeout to the animation duration
   };
-
+  const handleLocation = (Museum: Museum) => {
+    const value = {
+      lat: Museum.location.latitude,
+      lng: Museum.location.longitude,
+      name: Museum.location.name,
+    };
+    console.log(value);
+    return value;
+  }
   // Animation styles
   const modalOverlayStyle = {
     transition: "opacity 0.3s ease-in-out",
@@ -232,8 +240,9 @@ function MuseumModal({
               {/* Museum details */}
               <div className="mx-8 mb-8 grid grid-cols-[70%_30%] gap-8 px-8">
                 {/* Museum info */}
-                  <Map className="h-full w-full" defaultMark={{name: Museum.location.name, lat: Museum.location.latitude, lng: Museum.location.longitude}} />          
-              </div>
+                <div className="col-span-2 h-96">
+                    <Map className="w-full h-full" defaultCenter = {handleLocation(Museum)} value = {handleLocation(Museum)}/>
+                    </div>              </div>
             </div>
           </div>
         </div>
@@ -284,6 +293,7 @@ export function MuseumList() {
   const [imageURLs, setImageURLs] = useState<{ [key: string]: string[] }>({});
   const shareRef = useRef<ModalRef>(null);
   const [shareLink, setShareLink] = useState<string>("");
+
   const handleShare = (Museum: Museum) => {
     // get the link
     const baseLink = window.location.origin;
@@ -381,6 +391,7 @@ export function MuseumList() {
       }
     }
   }, [data]);
+
 
   return (
     <>
