@@ -287,19 +287,12 @@ function ItineraryModal({
                   </h3>
                   {itinerary.availableDateTimes.length !== 0 ? (
                     <div className="overflow-hidden rounded-lg">
-                     
-                          {itinerary.availableDateTimes.map(
-                            (dateTime) => (
-                              <div>
-                                <div className="text-body text-text-primary">
-                                  {formatDate(dateTime.date)} {formatTime(dateTime.time)}
-
-                                </div>
-                                </div>
-                            ),
-                          )}
-
-                    </div>
+                      <div>
+                        <div className="text-body text-text-primary">
+                          {formatDate(itinerary.availableDateTimes[0].date)},{formatTime(itinerary.availableDateTimes[0].time)}
+                        </div>
+                   </div>
+                  </div>
                   ) : (
                     <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
                       No available dates and times
@@ -314,11 +307,9 @@ function ItineraryModal({
                   </h3>
                   {itinerary.activities.length !== 0 ? (
                     <div className="overflow-hidden rounded-lg">
-                          {itinerary.activities.map((activity) => (
                             <div className="text-body text-text-primary">
-                              {activity.name}
+                              {itinerary.activities[0].name}
                             </div>
-                          ))}
                     </div>
                   ) : (
                     <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
