@@ -1,10 +1,11 @@
 import { BookOpenCheck, BookX, Tag, Share } from "lucide-react";
 import { useEffect, useState, useContext, useRef } from "react";
-import { ModalRef } from "@/modules/shared/components/Modal";
+import Modal, { ModalRef } from "@/modules/shared/components/Modal";
 import { UserContext } from "../../shared/store/user-context";
 import axiosInstance from "../services/axiosInstance";
 import ShareLink from "./ShareLink";
 import toast from "react-hot-toast";
+import Map from "./Map";
 
 interface Activity {
   name: string;
@@ -16,8 +17,8 @@ interface Activity {
     longitude: number;
   };
   price: number;
-  category: string;
   ratings: number;
+  category: {name: string};
   tags: {
     name: string;
     type: string;
@@ -26,7 +27,27 @@ interface Activity {
   specialDiscounts: number;
   bookingOpen: boolean;
 }
-
+const renderStars = (rating: number) => {
+  const filledStars = "★".repeat(Math.floor(rating));
+  const halfStar = rating % 1 >= 0.5; 
+  const emptyStars = "☆".repeat(5 - Math.floor(rating) - ((halfStar)?1:0));
+  return (
+    <span className="text-yellow-500 text-2xl">
+      {filledStars}
+      {halfStar && "⯨"}
+      {emptyStars}
+    </span>
+  );
+};
+const handleLocation = (activity: Activity) => {
+  const value = {
+    lat: activity.location.latitude,
+    lng: activity.location.longitude,
+    name: activity.location.name,
+  };
+  console.log(value);
+  return value;
+}
 const formatText = (text: string) => {
   const maxLength = 5 * 3;
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
@@ -49,10 +70,8 @@ async function getMyActivities() {
           latitude: number;
           longitude: number;
         };
+        category: {name: string};
         price: number;
-        category: {
-          name: string;
-        };
         tags: {
           name: string;
           type: string;
@@ -74,9 +93,9 @@ async function getMyActivities() {
           longitude: item.location.longitude ?? 0,
         };
         const price = item.price ?? -1;
-        const category = item.category.name ?? "N/A";
 
         const tags = item.tags.map((tag) => tag.name ?? "N/A") ?? [];
+        const category = item.category === null ? "N/A" : item.category;
 
         const specialDiscounts = item.specialDiscounts ?? 0;
         const bookingOpen = item.bookingOpen ?? false;
@@ -89,8 +108,8 @@ async function getMyActivities() {
           time,
           location,
           ratings,
-          price,
           category,
+          price,
           tags,
           specialDiscounts,
           bookingOpen,
@@ -99,14 +118,13 @@ async function getMyActivities() {
     );
 
     data.sort((a, b) => a.price - b.price);
-
+    console.log(data);
     return data;
   } catch (error) {
     toast.error("Error fetching activities");
     throw error;
   }
 }
-
 async function getAllCategories() {
   try {
     // get the data via axios
@@ -140,24 +158,80 @@ function availablePill({ text }: { text: string }) {
     </div>
   );
 }
+function ActivityCard({
+  activity,
+  onCardClick,
+}: {
+  activity: Activity;
+  onCardClick: () => void;
+}) {
+  return (
+    <div
+      className="h-full w-full cursor-pointer rounded-lg border border-gray-200 bg-white shadow-lg transition-transform duration-200 hover:scale-105 hover:shadow-xl"
+      onClick={onCardClick}
+    >
+      {/* Activity Name */}
+      <div className="grid gap-3 px-6 pb-4 pt-2">
+      <div className="p-4 text-center text-lg font-semibold text-accent-dark-blue">
+        {activity.name}  {renderStars(activity.ratings)}
+      </div>
+      <div className="text-center text-gray-600">
+        {activity.date} {activity.time}
+      </div>
+      </div>
+      </div>
+  );
+}
+function ActivityModal({
+  activity,
+  onClose,
+}: {
+  activity: Activity;
+  onClose: () => void;
+}) {
+  // states for the animation
+  const [isVisible, setIsVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
-function ActivityTable({ activities }: { activities: Activity[] }) {
-  // get the user context
   const { user } = useContext(UserContext);
   const isUserTourist = user?.account_type === "Tourist" || false;
 
-  // set the class names
-  const headerClassName = "bg-accent-dark-blue text-white px-4 py-4";
-  const rowClassName =
-    "text-text-primary px-4 py-4 text-center max-w-[200px] truncate";
+  // handle the close button
+  useEffect(() => {
+    // Trigger opening animation when component mounts
+    setIsVisible(true);
+  }, []);
+
+  const handleModalClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      onClose();
+    }, 300); // Match timeout to the animation duration
+  };
+
+  // Animation styles
+  const modalOverlayStyle = {
+    transition: "opacity 0.3s ease-in-out",
+    opacity: isVisible && !isClosing ? 1 : 0,
+  };
+
+  const modalContentStyle = {
+    transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+    transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
+    opacity: isVisible && !isClosing ? 1 : 0,
+  };
+
   // function to handle booking
-  const handleBooking = async (activity: Activity) => {
+  const handleBooking = async () => {
     try {
       // make sure that booking is open
       if (!activity.bookingOpen) {
+        console.log("Booking is open");
         toast.error("Booking is closed for this activity");
         return;
       }
+      console.log(activity);
       // init body
       const body = {
         activity_id: activity.id,
@@ -170,20 +244,8 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
       // show success message
       toast.success(res.message);
     } catch (error) {
-      toast.error(`Error booking itinerary: ${error.message}`);
+      toast.error(`Error booking activity: ${error.message}`);
     }
-  };
-  const renderStars = (rating: number) => {
-    const filledStars = "★".repeat(Math.floor(rating));
-    const halfStar = rating % 1 >= 0.5; 
-    const emptyStars = "☆".repeat(5 - Math.floor(rating) - ((halfStar)?1:0));
-    return (
-      <span className="text-yellow-500 text-2xl">
-        {filledStars}
-        {halfStar && "⯨"}
-        {emptyStars}
-      </span>
-    );
   };
   // functions to handle the sharing modal
   const shareRef = useRef<ModalRef>(null);
@@ -196,7 +258,7 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
     const activityLink: string = "/all-activities";
 
     // get the activity id
-    const activityId: string = activity.id;
+    const activityId: string = activity._id;
 
     // format the actual link
     const link: string = `${baseLink}${activityLink}/${activityId}`;
@@ -207,67 +269,104 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
     // open the modal
     shareRef.current?.open();
   };
-
-  // return the table
   return (
     <>
-      <table className="w-full rounded-lg bg-white p-4 shadow-lg">
-        <thead>
-          <tr>
-            <th className={headerClassName + " rounded-tl-lg"}>Name</th>
-            <th className={headerClassName}>Ratings</th>
-            <th className={headerClassName}>Date</th>
-            <th className={headerClassName}>Time</th>
-            <th className={headerClassName}>Location</th>
-            <th className={headerClassName}>Price</th>
-            <th className={headerClassName}>Category</th>
-            <th className={headerClassName}>Tags</th>
-            <th className={headerClassName}>Special Discounts</th>
-            <th className={headerClassName}>Booking Status</th>
-            {isUserTourist && <th className={headerClassName}>Actions</th>}
-            <th className={headerClassName + " rounded-tr-lg"}></th>
-          </tr>
-        </thead>
-        <tbody>
-          {activities.map((activity, index) => (
-            <tr key={index}>
-              <td className={rowClassName}>{activity.name}</td>
-              <td className={rowClassName}>{renderStars(activity.ratings)}</td>
-              <td className={rowClassName}>{activity.date}</td>
-              <td className={rowClassName}>{activity.time}</td>
-              <td className={rowClassName}>{activity.location.name}</td>
-              <td className={rowClassName}>{activity.price}</td>
-              <td className={rowClassName}>{activity.category}</td>
-              <td className={rowClassName}>
-                {activity.tags.map(formatText).join(", ") || "N/A"}
-              </td>
-              <td className={rowClassName}>{activity.specialDiscounts}</td>
-              <td className={rowClassName}>
-                {availablePill({
-                  text: activity.bookingOpen ? "Open" : "Closed",
-                })}
-              </td>
-              {/* booking option only for tourist */}
-              {isUserTourist && (
-                <td className={rowClassName}>
-                  <button
-                    onClick={() => handleBooking(activity)}
-                    className="cursor-pointer rounded-lg bg-accent-dark-blue p-4 text-white transition-all duration-150 hover:scale-105"
-                  >
-                    <Tag />
-                  </button>
-                </td>
-              )}
-              <td
-                className={rowClassName}
-                onClick={() => handleShare(activity)}
+      <Modal open>
+        <div
+          className="flex items-center justify-center backdrop-blur-sm"
+          style={modalOverlayStyle}
+        >
+          <div
+            className="relative h-auto w-full max-w-[85vw] rounded-lg border border-borders-primary bg-secondary-white p-8 shadow-lg transition-transform duration-300"
+            style={modalContentStyle}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleModalClose}
+              className="absolute right-4 top-4 rounded-full p-2 text-accent-dark-blue transition-colors hover:bg-secondary-light_grey"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <Share className="cursor-pointer transition-all duration-150 hover:scale-110" />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <div className="space-y-8">
+              {/* activity name */}
+              <div className="inline-block">
+                <div className="flex flex-row items-center justify-between gap-4">
+                  <Share
+                    onClick={() => {
+                      handleShare(activity);
+                    }}
+                    className="cursor-pointer transition-all duration-150 hover:scale-110"
+                  />
+                  <h2 className="text-headline font-headline text-accent-dark-blue">
+                    {activity.name} {renderStars(activity.ratings)}
+                  </h2>
+                </div>
+                <div className="mt-2 h-1 w-full rounded-full bg-primary-blue"></div>
+              </div>
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:grid-rows-1 relative">
+              <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
+              {[
+                    { label: "Price", value: activity.price },
+                    { label: "Category", value: activity.category.name || "N/A" },
+                    { label: "Tags", value: activity.tags.join(", ") || "N/A"},
+                    { label: "Special Discounts", value: activity.specialDiscounts },
+                  ].map((item, index) => (
+                    <div key={index} className="space-y-1">
+                      <div className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                        {item.label}
+                      </div>
+                      <div className="text-body text-text-primary">
+                        {item.value}
+                      </div>
+                    </div>
+                  ))}
+                    </div>
+                    <div className="space-y-4">
+                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                  Location
+                  </h3>
+                  <div className="col-span-2 h-96">
+                    <Map className="w-full h-full" defaultCenter = {handleLocation(activity)} value = {handleLocation(activity)}/>
+                    </div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                    Available Dates & Times
+                  </h3>
+                  <div className="text-body text-text-primary">
+                          {activity.date}, {activity.time}
+                        </div>
+                    </div>
+                  </div>
+              <div className="col-span-2 mt-5 flex justify-end">
+                  {isUserTourist && (
+                    <button
+                      onClick={handleBooking}
+                      className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-10 py-3 font-bold text-white text-text-primary transition-all duration-150 hover:opacity-80"
+                      >                    
+                      <h4 className="text-sub-headings font-sub_headings text-white">
+                        Book Now
+                      </h4>
+                    </button>
+                  )}
+                  </div>
+                  </div>
+                  </div>
+          </div>
+      </Modal>
       <ShareLink ref={shareRef} link={shareLink} />
     </>
   );
@@ -327,14 +426,21 @@ export function ActivityList() {
 
   // handle the search and filter
   const [searchQuery, setSearchQuery] = useState<string>("");
-
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
+    null,
+  );
   // the rest of the tool bar
   const [budget, setBudget] = useState<number | null>(null);
   const [date, setDate] = useState<string>("");
   const [ratings, setRatings] = useState<number | null>(null);
 
   const [filteredData, setFilteredData] = useState<Activity[]>([]);
-
+  const handleCardClick = (activity: Activity) => {
+    setSelectedActivity(activity);
+  };
+  const handleCloseModal = () => {
+    setSelectedActivity(null);
+  };
   // update the filtered data
   useEffect(() => {
     if (!data) return;
@@ -366,7 +472,7 @@ export function ActivityList() {
     if (!data) return;
     // get the activity name given the id
     for (const activity of data) {
-      if (activity.id === activityId) {
+      if (activity._id === activityId) {
         setSearchQuery(activity.name);
         break;
       }
@@ -418,7 +524,7 @@ export function ActivityList() {
               setFilteredData(
                 data?.filter(
                   (item) =>
-                    item.category === e.target.value || e.target.value === "",
+                    item.category.name === e.target.value || e.target.value === "",
                 ) ?? [],
               );
             }}
@@ -467,12 +573,30 @@ export function ActivityList() {
             {error}
           </div>
         )}
-        {filteredData ? (
-          <ActivityTable activities={filteredData} />
-        ) : (
-          <div className="text-center text-xl font-semibold">No data found</div>
-        )}
+        {filteredData.length === 0 ? (
+              <div className="flex h-64 items-center justify-center rounded-lg bg-secondary-light_grey">
+                <p className="text-body text-muted-foreground">
+                  No activities found matching your criteria
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {filteredData.map((activity, index) => (
+                  <ActivityCard
+                    key={index}
+                    activity={activity}
+                    onCardClick={() => handleCardClick(activity)}
+                  />
+                ))}
+              </div>
+            )}
       </div>
+      {selectedActivity && (
+            <ActivityModal
+              activity={selectedActivity}
+              onClose={handleCloseModal}
+            />
+          )}
     </div>
   );
 }
