@@ -325,7 +325,7 @@ function ItineraryModal({
                     <div className="overflow-hidden rounded-lg">
                       <div>
                         <div className="text-body text-text-primary">
-                          {formatDate(itinerary.availableDateTimes[0].date)}, {formatTime(itinerary.availableDateTimes[0].time)}
+                          {formatDate(itinerary.availableDateTimes[0].date)} {formatTime(itinerary.availableDateTimes[0].time)}
                         </div>
                    </div>
                   </div>
@@ -357,8 +357,6 @@ function ItineraryModal({
                  
               </div>
             </div>
-          </div>
-        </div>
         <div className="col-span-2 mt-5 flex justify-end">
                   {isUserTourist && (
                     <button
@@ -371,6 +369,8 @@ function ItineraryModal({
                     </button>
                   )}
                   </div>
+          </div>
+        </div>
       </Modal>
       <ShareLink ref={shareRef} link={shareLink} />
     </>
