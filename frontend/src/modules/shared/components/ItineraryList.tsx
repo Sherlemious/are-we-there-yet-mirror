@@ -360,7 +360,7 @@ function ItineraryModal({
           </div>
         </div>
         <div className="col-span-2 mt-5 flex justify-end">
-                  {isUserTourist ? (
+                  {isUserTourist && (
                     <button
                       onClick={handleBooking}
                       className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-10 py-3 font-bold text-white text-text-primary transition-all duration-150 hover:opacity-80"
@@ -369,10 +369,6 @@ function ItineraryModal({
                         Book Now
                       </h4>
                     </button>
-                  ) : (
-                    <div className="text-body text-text-primary">
-                      You need to be a tourist to book this itinerary
-                    </div>
                   )}
                   </div>
       </Modal>
