@@ -6,6 +6,7 @@ import Modal from "@/modules/shared/components/Modal";
 import { Share } from "lucide-react";
 import toast from "react-hot-toast";
 import ShareLink from "./ShareLink";
+import Map from "./Map";
 
 async function getMyItineraries() {
   try {
@@ -14,16 +15,19 @@ async function getMyItineraries() {
 
     // format the data
     const res = await resPromise.data;
+    console.log(res.data.itineraries);
     const tempData: Itinerary[] = await res.data.itineraries.map(
       (item: any) => {
         const id = item._id;
         const name = item.name === null ? "N/A" : item.name;
         const category = item.category === null ? "N/A" : item.category;
         const tags = item.tags === null ? [] : item.tags.map((tag) => tag.name);
+        console.log(item.activities[0].activity.name);
         let activities = [];
         activities = item.activities.map((activity) => {
           if (activity.activity === null) {
             return {
+              name: "N/A",
               date: "N/A",
               time: "N/A",
               location: "N/A",
@@ -31,6 +35,7 @@ async function getMyItineraries() {
             };
           }
           return {
+            name: activity.activity.name,
             date: activity.activity.datetime,
             time: activity.activity.datetime,
             location: activity.activity.location.name,
@@ -46,10 +51,11 @@ async function getMyItineraries() {
           }),
         );
         const accessibilities = item.accessibility;
-        const pickupLocation = item.pick_up_location.name;
-        const dropoffLocation = item.drop_off_location.name;
+        const pickupLocation = item.pick_up_location;
+        const dropoffLocation = item.drop_off_location;
         const rating = item.average_rating;
-
+        console.log(item.activities[0].activity.name);
+        console.log(item);
         return {
           id,
           name,
@@ -76,6 +82,28 @@ async function getMyItineraries() {
     throw error;
   }
 }
+const handleLocation = (itinerary: Itinerary, isDrop: boolean) => {
+  if(isDrop){
+  const value = {
+    lat: itinerary.dropoffLocation.latitude,
+    lng: itinerary.dropoffLocation.longitude,
+    name: itinerary.dropoffLocation.name,
+  };
+  console.log(value);
+  return value;
+}
+else{
+  const value = {
+    lat: itinerary.pickupLocation.latitude,
+    lng: itinerary.pickupLocation.longitude,
+    name: itinerary.pickupLocation.name,
+  };
+  console.log(value);
+  return value;
+}
+}
+
+
 const renderStars = (rating: number) => {
   const filledStars = "★".repeat(Math.floor(rating));
   const halfStar = rating % 1 >= 0.5; 
@@ -108,7 +136,7 @@ const formatLocation = (location: string) => {
   return location;
 };
 const formatActivity = (activity: Activity) => {
-  return `${formatDateTime(activity.date, activity.time)} - ${formatLocation(activity.location)}`;
+  return `${activity.name} - ${formatDateTime(activity.date, activity.time)}`;
 };
 
 const formatDate = (date: string) => {
@@ -248,7 +276,7 @@ function ItineraryModal({
               </div>
 
               {/* Itinerary details */}
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:grid-rows-2">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:grid-rows-1 relative">
                 {/* Basic Info */}
                 <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
                   {[
@@ -259,14 +287,6 @@ function ItineraryModal({
                     {
                       label: "Accessibilities",
                       value: itinerary.accessibilities ? "Yes" : "No",
-                    },
-                    {
-                      label: "Dropoff Location",
-                      value: itinerary.dropoffLocation,
-                    },
-                    {
-                      label: "Pickup Location",
-                      value: itinerary.pickupLocation,
                     },
                   ].map((item, index) => (
                     <div key={index} className="space-y-1">
@@ -280,6 +300,22 @@ function ItineraryModal({
                   ))}
                 </div>
                 
+                <div className="space-y-4">
+                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                    Drop Off Location
+                  </h3>
+                  <div className="col-span-2 h-96">
+                    <Map className="w-full h-full" defaultCenter = {handleLocation(itinerary, true)} value = {handleLocation(itinerary, true)}/>
+                    </div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                    Pick Up Location
+                  </h3>
+                  <div className="col-span-2 h-96">
+                    <Map className="w-full h-full" defaultCenter = {handleLocation(itinerary, false)} value = {handleLocation(itinerary, false)}/>
+                    </div>
+                </div>
                 {/* Date and Time */}
                 <div className="space-y-4">
                   <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
@@ -289,7 +325,7 @@ function ItineraryModal({
                     <div className="overflow-hidden rounded-lg">
                       <div>
                         <div className="text-body text-text-primary">
-                          {formatDate(itinerary.availableDateTimes[0].date)},{formatTime(itinerary.availableDateTimes[0].time)}
+                          {formatDate(itinerary.availableDateTimes[0].date)}, {formatTime(itinerary.availableDateTimes[0].time)}
                         </div>
                    </div>
                   </div>
@@ -317,34 +353,28 @@ function ItineraryModal({
                     </div>
                   )}
                 </div>
-
                  {/* booking */}
-                 <div className="space-y-6">
-                  <div className="space-y-1">
-                    <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
-                      Book Now
-                    </h3>
-                    <div className="text-body text-text-primary">
-                      Book this itinerary now to secure your spot
-                    </div>
-                  </div>
+                 
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="col-span-2 mt-5 flex justify-end">
                   {isUserTourist ? (
                     <button
                       onClick={handleBooking}
-                      className="hover:bg-primary-dark-blue focus:ring-primary-dark-blue h-12 w-full rounded-lg bg-primary-blue font-semibold text-secondary-white transition-colors focus:outline-none focus:ring-2"
-                    >
-                      Book Now
+                      className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-10 py-3 font-bold text-white text-text-primary transition-all duration-150 hover:opacity-80"
+                      >                    
+                      <h4 className="text-sub-headings font-sub_headings text-white">
+                        Book Now
+                      </h4>
                     </button>
                   ) : (
                     <div className="text-body text-text-primary">
                       You need to be a tourist to book this itinerary
                     </div>
                   )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  </div>
       </Modal>
       <ShareLink ref={shareRef} link={shareLink} />
     </>
