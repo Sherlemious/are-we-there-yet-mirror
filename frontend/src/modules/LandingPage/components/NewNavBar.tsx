@@ -310,12 +310,6 @@ export default function NewNavBar({
                   >
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className={styles.actions.dropdownItem}
-                  >
-                    Logout
-                  </DropdownMenuItem>
                   {user.account_type === AccountType.Admin && (
                     <DropdownMenuItem
                       onClick={() => {
@@ -338,6 +332,12 @@ export default function NewNavBar({
                       My Complaints
                     </DropdownMenuItem>
                   )}
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className={styles.actions.dropdownItem}
+                  >
+                    Logout
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
