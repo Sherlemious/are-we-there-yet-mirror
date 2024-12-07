@@ -55,6 +55,12 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
         return "bg-gray-100 text-gray-800";
     }
   };
+  const sortedNotifications = [...notifications].sort((a, b) => {
+    if (a.read === b.read) {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // If both are read or unread, sort by date
+    }
+    return a.read ? 1 : -1; // Put unread notifications first
+  });
 
   return (
     <div className="relative inline-block rounded-full bg-accent-gold">
@@ -79,7 +85,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
             <h3 className="text-sm font-medium text-gray-700">Notifications</h3>
             <ul className="mt-2 space-y-2 max-h-64 overflow-y-auto no-scrollbar">
               {notifications.length > 0 ? (
-                notifications.map((notification) => (
+                sortedNotifications.map((notification) => (
                   <li
                     key={notification._id}
                     className={`p-2 text-sm rounded-lg cursor-pointer hover:bg-gray-200 ${
