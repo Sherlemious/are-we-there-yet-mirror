@@ -524,7 +524,7 @@ export function ActivityList() {
               setFilteredData(
                 data?.filter(
                   (item) =>
-                    item.category === e.target.value || e.target.value === "",
+                    item.category.name === e.target.value || e.target.value === "",
                 ) ?? [],
               );
             }}
