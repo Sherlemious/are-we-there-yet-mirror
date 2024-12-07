@@ -1,11 +1,13 @@
 import axiosInstance from "../services/axiosInstance";
 import { useState, useEffect, useRef } from "react";
-import { Share } from "lucide-react";
+import { Clock, CreditCard, MapPin, Share } from "lucide-react";
 import ShareLink from "./ShareLink";
 import { ModalRef } from "./Modal";
 import Modal from "./Modal";
+import defaultPhoto from "../../Museums/assets/defaultPhoto.png";
 import toast from "react-hot-toast";
-
+import GenericCard from "../GenericCard/GenericCard";
+import Map from "./Map";
 // data
 interface Museum {
   id: string;
@@ -33,6 +35,8 @@ interface Tag {
   type: string;
   historical_period: string;
 }
+
+const defaultImage = defaultPhoto; // Default image if no valid pictures
 
 async function getMuseums() {
   try {
@@ -118,20 +122,14 @@ async function getTags() {
 }
 
 // helper functions
-const formatLocation = (location: string) => {
-  const maxLength = 5 * 4;
-  if (location.length > maxLength) {
-    return `${location.substring(0, maxLength)}...`;
-  }
-  return location;
-};
-const formatDescription = (description: string) => {
-  const maxLength = 5 * 15 * 4;
-  if (description.length > maxLength) {
-    return `${description.substring(0, maxLength)}...`;
-  }
-  return description;
-};
+
+// const formatDescription = (description: string) => {
+//   const maxLength = 5 * 15 * 4;
+//   if (description.length > maxLength) {
+//     return `${description.substring(0, maxLength)}...`;
+//   }
+//   return description;
+// };
 
 // main components
 function MuseumModal({
@@ -158,7 +156,15 @@ function MuseumModal({
       onClose();
     }, 300); // Match timeout to the animation duration
   };
-
+  const handleLocation = (Museum: Museum) => {
+    const value = {
+      lat: Museum.location.latitude,
+      lng: Museum.location.longitude,
+      name: Museum.location.name,
+    };
+    console.log(value);
+    return value;
+  }
   // Animation styles
   const modalOverlayStyle = {
     transition: "opacity 0.3s ease-in-out",
@@ -234,72 +240,9 @@ function MuseumModal({
               {/* Museum details */}
               <div className="mx-8 mb-8 grid grid-cols-[70%_30%] gap-8 px-8">
                 {/* Museum info */}
-                <div className="grid-rows-auto col-start-1 col-end-1 grid grid-cols-2 gap-4">
-                  {/* tags */}
-                  <div>
-                    <div className="text-left font-bold">Tags</div>
-                    <div className="">
-                      {Museum.tags.length === 0
-                        ? "N/A"
-                        : Museum.tags.join(", ")}
-                    </div>
-                  </div>
-
-                  {/* description */}
-                  <div>
-                    <div className="text-left font-bold">Description</div>
-                    <div className="">
-                      {formatDescription(Museum.description)}
-                    </div>
-                  </div>
-
-                  {/* category */}
-                  <div>
-                    <div className="text-left font-bold">Category</div>
-                    <div className="">{Museum.category}</div>
-                  </div>
-
-                  {/* location */}
-                  <div>
-                    <div className="text-left font-bold">Location</div>
-                    <div className="">
-                      {formatLocation(Museum.location.name)}
-                    </div>
-                  </div>
-
-                  {/* opening hours */}
-                  <div>
-                    <div className="text-left font-bold">Opening Hours</div>
-                    <div className="">{Museum.opening_hours}</div>
-                  </div>
-
-                  {/* ticket prices */}
-                  <div>
-                    <div className="text-left font-bold">Ticket Prices</div>
-                    <table className="border-collapse border border-black">
-                      <thead>
-                        <tr className="border border-b-2">
-                          <th className="p-2">Foreigner</th>
-                          <th className="p-2">Native</th>
-                          <th className="p-2">Student</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="border border-b-2">
-                          <td>{Museum.ticket_prices.foreigner}</td>
-                          <td>{Museum.ticket_prices.native}</td>
-                          <td>{Museum.ticket_prices.student}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                {/* Museum picture */}
-                <img
-                  src={Museum.pictures[0]}
-                  className="col-start-2 col-end-2 h-auto w-full"
-                />
-              </div>
+                <div className="col-span-2 h-96">
+                    <Map className="w-full h-full" defaultCenter = {handleLocation(Museum)} value = {handleLocation(Museum)}/>
+                    </div>              </div>
             </div>
           </div>
         </div>
@@ -308,35 +251,35 @@ function MuseumModal({
   );
 }
 
-function MuseumCard({
-  Museum,
-  onCardClick,
-}: {
-  Museum: Museum;
-  onCardClick: () => void;
-}) {
-  return (
-    <div
-      className="grid-rows-[ 48px_auto_auto ] grid h-full w-full cursor-pointer rounded-lg border border-gray-200 bg-white shadow-lg transition-transform duration-200 hover:scale-105 hover:shadow-xl"
-      onClick={onCardClick}
-    >
-      {/* Museum picture */}
-      <img
-        src={Museum.pictures[0]}
-        alt={Museum.name}
-        className="mx-auto h-full min-h-48 w-full rounded-t-lg border-0 object-cover"
-      />
+// function MuseumCard({
+//   Museum,
+//   onCardClick,
+// }: {
+//   Museum: Museum;
+//   onCardClick: () => void;
+// }) {
+//   return (
+//     <div
+//       className="grid-rows-[ 48px_auto_auto ] grid h-full w-full cursor-pointer rounded-lg border border-gray-200 bg-white shadow-lg transition-transform duration-200 hover:scale-105 hover:shadow-xl"
+//       onClick={onCardClick}
+//     >
+//       {/* Museum picture */}
+//       <img
+//         src={Museum.pictures[0]}
+//         alt={Museum.name}
+//         className="mx-auto h-full min-h-48 w-full rounded-t-lg border-0 object-cover"
+//       />
 
-      {/* Museum name */}
-      <div className="px-4 py-2 text-left text-lg font-bold">{Museum.name}</div>
+//       {/* Museum name */}
+//       <div className="px-4 py-2 text-left text-lg font-bold">{Museum.name}</div>
 
-      {/* Museum description */}
-      <div className="max-h-48 truncate px-4 py-2 text-sm text-gray-700">
-        {formatDescription(Museum.description)}
-      </div>
-    </div>
-  );
-}
+//       {/* Museum description */}
+//       <div className="max-h-48 truncate px-4 py-2 text-sm text-gray-700">
+//         {formatDescription(Museum.description)}
+//       </div>
+//     </div>
+//   );
+// }
 
 export function MuseumList() {
   const [selectedMuseum, setSelectedMuseum] = useState<Museum | null>(null);
@@ -347,6 +290,21 @@ export function MuseumList() {
   const [allTags, setAllTags] = useState<string[]>([]);
   const [tag, setTag] = useState<string>("");
   const [filteredData, setFilteredData] = useState<Museum[]>([]);
+  const [imageURLs, setImageURLs] = useState<{ [key: string]: string[] }>({});
+  const shareRef = useRef<ModalRef>(null);
+  const [shareLink, setShareLink] = useState<string>("");
+
+  const handleShare = (Museum: Museum) => {
+    // get the link
+    const baseLink = window.location.origin;
+    const link: string = `${baseLink}/all-museums/${Museum.id}`;
+
+    // set the link
+    setShareLink(link);
+
+    // open the modal
+    shareRef.current?.open();
+  };
 
   useEffect(() => {
     getMuseums()
@@ -383,7 +341,38 @@ export function MuseumList() {
       }),
     );
   }, [searchQuery, tag, data]);
-
+  const fetchPicture = async (pictureId: string): Promise<string | undefined> => {
+    try {
+      const response = await axiosInstance.get(`/attachments/${pictureId}`); // Fetch binary data
+      return response.data.url;
+    } catch (error) {
+      console.error('Error fetching picture:', error);
+      return undefined;
+    }
+  };
+  useEffect(() => {
+    const fetchImages = async () => {
+      const newImageURLs: { [key: string]: string[] } = {}; // Prepare to store an array of URLs
+      for (const museum of data) {
+        newImageURLs[museum.id] = []; // Initialize an empty array for each museum
+        if (museum.pictures.length > 0) {
+          for (const pictureId of museum.pictures) {
+            const imageUrl = await fetchPicture(pictureId);
+            if (imageUrl) {
+              newImageURLs[museum.id].push(imageUrl); // Store the image URL
+            }
+          }
+        }
+        // If no valid images were fetched, add the default image
+        if (newImageURLs[museum.id].length === 0) {
+          newImageURLs[museum.id].push(defaultPhoto); // Default image if no valid pictures
+        }
+      }
+      setImageURLs(newImageURLs); // Update state with new URLs
+    };
+  
+    fetchImages();
+  }, [data]);
   const handleCardClick = (Museum: Museum) => setSelectedMuseum(Museum);
   const handleCloseModal = () => setSelectedMuseum(null);
 
@@ -402,6 +391,7 @@ export function MuseumList() {
       }
     }
   }, [data]);
+
 
   return (
     <>
@@ -457,28 +447,83 @@ export function MuseumList() {
           {/* Museum Cards */}
           <div className="space-y-4 rounded-lg bg-secondary-white p-8 shadow-lg">
             <h2 className="text-sub-headings font-sub_headings text-accent-dark-blue">
-              Available Itineraries
+              Available Historical Places
             </h2>
             <div className="grid grid-cols-3 gap-6 p-4">
               {filteredData.length > 0 ? (
-                filteredData.map((Museum, index) => (
-                  <MuseumCard
-                    Museum={Museum}
-                    key={index}
-                    onCardClick={() => handleCardClick(Museum)}
-                  />
+                filteredData.map((museum, index) => (
+                  <div key={index}>
+                  <ShareLink ref={shareRef} link={shareLink} />
+                  <GenericCard
+                  item={museum}
+                  images={imageURLs[museum.id] ? imageURLs[museum.id] : [defaultImage]} // Pass the fetched image URL or default image
+                  onClick={() => handleCardClick(museum)} // Opens the modal on click
+                >
+                  <p className="line-clamp-2 text-body text-gray-700">{museum.description}</p>
+                   <div className={customStyles.infoRow}>
+                    <Clock size={20} className={customStyles.icon} />
+                    <p className={customStyles.slideText}>{museum.opening_hours}</p>
+                  </div>                
+                  
+                  <div className={customStyles.ticketPrices}>
+                  <p className={`${customStyles.slideText} font-bold text-accent-dark-blue text-center flex items-center justify-center`}>
+                  <CreditCard size ={20} className={customStyles.icon} /> Ticket Prices:
+                  </p>
+                   <div className={customStyles.ticketRow}>
+                    <div className={customStyles.ticketColumn}>
+                      <p className={customStyles.slideText}>Foreigner</p>
+                      <p className={customStyles.slideText2}>${museum.ticket_prices.foreigner}</p>
+                      </div>
+                      <div className={customStyles.ticketColumn}>
+                        <p className={customStyles.slideText}>Native</p>
+                        <p className={customStyles.slideText2}>${museum.ticket_prices.native}</p>
+                        </div>
+                        <div className={customStyles.ticketColumn}>
+                          <p className={customStyles.slideText}>Student</p>
+                          <p className={customStyles.slideText2}>${museum.ticket_prices.student}</p>
+                          </div>
+                        </div>
+                  <div className={`items-center justify-center mt-2`}>
+                  <p className={`${customStyles.slideText} font-bold text-accent-dark-blue text-center flex items-center justify-center`}>
+                  <MapPin size ={30} className={customStyles.icon} /> Location:
+                  </p>
+                    <p className={customStyles.slideText}>{museum.location.name}</p>
+                  </div>
+                  <div className={`${customStyles.infoRow} mt-2`}>
+                    {museum.tags.length > 0 && (
+                      museum.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="mt-3 inline-flex items-center rounded-full bg-primary-green px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-primary-blue focus:ring-offset-2 bg-primary-green text-gray-900 hover:bg-primary-blue text-xs"      >
+                        {tag}
+                      </span>
+                      ))
+                    )}
+                  </div>
+                  <div className={`${customStyles.infoRow} mt-2`}>
+                  <Share
+                onClick={() => {
+                  handleShare(museum);
+                }}
+                className="cursor-pointer transition-all duration-150 hover:scale-110 "
+              />
+                </div>
+                </div>
+                </GenericCard>
+   
+                </div>
                 ))
               ) : (
                 <div className="flex h-64 items-center justify-center rounded-lg bg-secondary-light_grey">
                   <p className="text-body text-muted-foreground">
-                    No itineraries found matching your criteria
+                    No historical places found matching your criteria
                   </p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Museum Modal */}
+          Museum Modal
           {selectedMuseum && (
             <MuseumModal Museum={selectedMuseum} onClose={handleCloseModal} />
           )}
@@ -487,3 +532,19 @@ export function MuseumList() {
     </>
   );
 }
+const customStyles = {
+  container: "h-auto max-h-[100vh] bg-secondary-white max-w-fit border-2 border-gray-300 pr-2 pt-4 pl-10 pb-10 mx-auto",
+  sliderContainer: "relative",
+  sliderContent: "overflow-hidden",
+  sliderWrapper: "grid grid-cols-3 gap-12 max-h-[70vh] overflow-y-auto pr-6 pt-2", // Set a max height and make it scrollable
+  slideText: "text-sm mt-1",
+  slide: "w-[50%] h-[100%] flex-shrink-0 px-2 transition-all duration-600 m-6",
+  addSlideDiv: "flex items-center justify-center h-[50vh] w-[35vh] border-2 border-dashed border-gray-300 bg-white cursor-pointer hover:bg-gray-50",
+  addSlideIcon: "text-gray-400 w-16 h-16",
+  infoRow: "flex items-center justify-center mb-2", // Center align info rows
+  ticketPrices: "text-center mt-2",
+  ticketRow: "flex justify-between", // Flex container for the ticket row
+  ticketColumn: "flex flex-col items-center", // Flex column for each ticket type
+  slideText2: "text-sm text-gray-700", // Adjusted text styles as needed // Margin for icons
+  icon: " text-blue-600 mr-2"
+};
