@@ -52,7 +52,7 @@ interface Itinerary {
 
 
 export function History() {
-  const [currentTab, setCurrentTab] = useState("tour guides");
+  const [currentTab, setCurrentTab] = useState("activities");
   const [tourGuides, setTourGuides] = useState<TourGuide[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
