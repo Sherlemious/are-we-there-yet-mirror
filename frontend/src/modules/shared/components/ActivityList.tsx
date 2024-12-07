@@ -16,8 +16,8 @@ interface Activity {
     longitude: number;
   };
   price: number;
-  category: string;
   ratings: number;
+  category: {name: string};
   tags: {
     name: string;
     type: string;
@@ -49,10 +49,8 @@ async function getMyActivities() {
           latitude: number;
           longitude: number;
         };
+        category: {name: string};
         price: number;
-        category: {
-          name: string;
-        };
         tags: {
           name: string;
           type: string;
@@ -74,9 +72,9 @@ async function getMyActivities() {
           longitude: item.location.longitude ?? 0,
         };
         const price = item.price ?? -1;
-        const category = item.category.name ?? "N/A";
 
         const tags = item.tags.map((tag) => tag.name ?? "N/A") ?? [];
+        const category = item.category === null ? "N/A" : item.category;
 
         const specialDiscounts = item.specialDiscounts ?? 0;
         const bookingOpen = item.bookingOpen ?? false;
@@ -89,8 +87,8 @@ async function getMyActivities() {
           time,
           location,
           ratings,
-          price,
           category,
+          price,
           tags,
           specialDiscounts,
           bookingOpen,
@@ -99,7 +97,7 @@ async function getMyActivities() {
     );
 
     data.sort((a, b) => a.price - b.price);
-
+    console.log(data);
     return data;
   } catch (error) {
     toast.error("Error fetching activities");
@@ -237,7 +235,7 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
               <td className={rowClassName}>{activity.time}</td>
               <td className={rowClassName}>{activity.location.name}</td>
               <td className={rowClassName}>{activity.price}</td>
-              <td className={rowClassName}>{activity.category}</td>
+              <td className={rowClassName}>{activity.category.name}</td>
               <td className={rowClassName}>
                 {activity.tags.map(formatText).join(", ") || "N/A"}
               </td>
