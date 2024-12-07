@@ -35,7 +35,7 @@ interface Itinerary {
   language: string;
   price: number;
   available_datetimes: Date[];
-  created_by: { username: string };
+  created_by: { _id: string, username: string };
   accessibility: {
     wheelchairAccessible: boolean;
     assistiveHearingDevices: boolean;

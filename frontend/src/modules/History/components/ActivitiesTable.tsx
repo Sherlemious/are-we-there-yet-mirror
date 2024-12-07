@@ -24,10 +24,12 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
   const { user } = useContext(UserContext);  
   const renderStars = (rating: number) => {
     const filledStars = "★".repeat(Math.floor(rating));
-    const emptyStars = "☆".repeat(5 - Math.floor(rating));
+    const halfStar = rating % 1 >= 0.5; 
+    const emptyStars = "☆".repeat(5 - Math.floor(rating) - ((halfStar)?1:0));
     return (
       <span className="text-yellow-500 text-2xl">
         {filledStars}
+        {halfStar && "⯨"}
         {emptyStars}
       </span>
     );
@@ -42,7 +44,7 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
     {
         header: "Ratings",
         accessor: "average_rating",
-        render: (rating) => (rating !== undefined ? rating.toFixed(1) + "/5" : "N/A"),
+        render: (rating) => (rating !== undefined ? renderStars(rating) : "N/A"),
       },
       {
         header: "Your Reviews",
@@ -56,18 +58,20 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
               </div>
             )),
       },
-  ];
-
-  const actions: ActionProps = {
-    onEdit: (id: string) => {
-      const activity = activities.find((a) => a._id === id);  // Make sure to match by _id or another unique field
-      if (activity) {
-        onEditRating({ _id: id, type: "activities" }); 
+      {
+        header: "Actions",
+        accessor: "_id",
+        render: (id: string) => (
+          <button
+            onClick={() => onEditRating({ _id: id, type: "activities" })}
+            className="px-4 py-2 text-sm text-white bg-accent-dark-blue font-bold transition-all duration-150 hover:opacity-80"
+          >
+            Add Review
+          </button>
+        ),
       }
-    },
-  };
-
-  return <Table data={activities} columns={columns} actions={actions} />;
+  ];
+  return <Table data={activities} columns={columns} actions={null} />;
 };
 
 export default ActivitiesTable;
