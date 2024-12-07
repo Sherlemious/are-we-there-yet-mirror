@@ -170,10 +170,6 @@ function ActivityCard({ activity }: { activity: Activity }) {
       <div className={classes}>{activity.location.name}</div>
       <div className={classes}>{activity.price}</div>
       <div className={classes}>{renderStars(activity.ratings)}</div>
-      <div className={classes}>{activity.category}</div>
-      <div className={classes}>
-        {activity.tags.map(formatText).join(", ") || "N/A"}
-      </div>
       <div className="text-left text-base">{activity.specialDiscounts}%</div>
       <div className="text-left text-base">
         {activity.bookingOpen ? "Open" : "Closed"}
@@ -332,10 +328,8 @@ export function ActivityBookingList() {
         <div className="text-left text-lg font-semibold">Location</div>
         <div className="text-left text-lg font-semibold">Price</div>
         <div className="text-left text-lg font-semibold">Ratings</div>
-        <div className="text-left text-lg font-semibold">Category</div>
-        <div className="text-left text-lg font-semibold">Tags</div>
         <div className="text-left text-lg font-semibold">Discount</div>
-        <div className="text-left text-lg font-semibold">Booking</div>
+        <div className="text-left text-lg font-semibold">Booking Status</div>
       </div>
 
       {/* body */}

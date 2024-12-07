@@ -286,32 +286,19 @@ function ItineraryModal({
                     Available Dates & Times
                   </h3>
                   {itinerary.availableDateTimes.length !== 0 ? (
-                    <div className="overflow-hidden rounded-lg border border-borders-primary">
-                      <table className="w-full">
-                      <thead className="bg-primary-blue text-secondary-white">
-                      <tr>
-                            <th className="p-4 text-left">Date</th>
-                            <th className="p-4 text-left">Time</th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                    <div className="overflow-hidden rounded-lg">
+                     
                           {itinerary.availableDateTimes.map(
-                            (dateTime, index) => (
-                              <tr
-                                key={index}
-                                className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
-                              >
-                                <td className="p-4">
-                                  {formatDate(dateTime.date)}
-                                </td>
-                                <td className="p-4">
-                                  {formatTime(dateTime.time)}
-                                </td>
-                              </tr>
+                            (dateTime) => (
+                              <div>
+                                <div className="text-body text-text-primary">
+                                  {formatDate(dateTime.date)} {formatTime(dateTime.time)}
+
+                                </div>
+                                </div>
                             ),
                           )}
-                        </tbody>
-                      </table>
+
                     </div>
                   ) : (
                     <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
@@ -326,32 +313,12 @@ function ItineraryModal({
                     Activities
                   </h3>
                   {itinerary.activities.length !== 0 ? (
-                    <div className="overflow-hidden rounded-lg border border-borders-primary">
-                      <table className="w-full">
-                        <thead className="bg-primary-blue text-secondary-white">
-                          <tr>
-                            <th className="p-4 text-left">DateTime</th>
-                            <th className="p-4 text-left">Location</th>
-                            <th className="p-4 text-left">Price</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {itinerary.activities.map((activity, index) => (
-                            <tr
-                              key={index}
-                              className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
-                            >
-                              <td className="p-4">
-                                {formatDateTime(activity.date, activity.time)}
-                              </td>
-                              <td className="p-4">
-                                {formatLocation(activity.location)}
-                              </td>
-                              <td className="p-4">{activity.price}</td>
-                            </tr>
+                    <div className="overflow-hidden rounded-lg">
+                          {itinerary.activities.map((activity) => (
+                            <div className="text-body text-text-primary">
+                              {activity.name}
+                            </div>
                           ))}
-                        </tbody>
-                      </table>
                     </div>
                   ) : (
                     <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
