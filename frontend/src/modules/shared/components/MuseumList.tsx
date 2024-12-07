@@ -3,10 +3,11 @@ import { useState, useEffect, useRef } from "react";
 import { Clock, CreditCard, MapPin, Share } from "lucide-react";
 import ShareLink from "./ShareLink";
 import { ModalRef } from "./Modal";
-// import Modal from "./Modal";
+import Modal from "./Modal";
 import defaultPhoto from "../../Museums/assets/defaultPhoto.png";
 import toast from "react-hot-toast";
 import GenericCard from "../GenericCard/GenericCard";
+import Map from "./Map";
 // data
 interface Museum {
   id: string;
@@ -121,13 +122,7 @@ async function getTags() {
 }
 
 // helper functions
-// const formatLocation = (location: string) => {
-//   const maxLength = 5 * 4;
-//   if (location.length > maxLength) {
-//     return `${location.substring(0, maxLength)}...`;
-//   }
-//   return location;
-// };
+
 // const formatDescription = (description: string) => {
 //   const maxLength = 5 * 15 * 4;
 //   if (description.length > maxLength) {
@@ -137,179 +132,115 @@ async function getTags() {
 // };
 
 // main components
-// function MuseumModal({
-//   Museum,
-//   onClose,
-// }: {
-//   Museum: Museum;
-//   onClose: () => void;
-// }) {
-//   // states for the animation
-//   const [isVisible, setIsVisible] = useState(false);
-//   const [isClosing, setIsClosing] = useState(false);
+function MuseumModal({
+  Museum,
+  onClose,
+}: {
+  Museum: Museum;
+  onClose: () => void;
+}) {
+  // states for the animation
+  const [isVisible, setIsVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
-//   // handle the close button
-//   useEffect(() => {
-//     // Trigger opening animation when component mounts
-//     setIsVisible(true);
-//   }, []);
+  // handle the close button
+  useEffect(() => {
+    // Trigger opening animation when component mounts
+    setIsVisible(true);
+  }, []);
 
-//   const handleModalClose = () => {
-//     setIsClosing(true);
-//     setTimeout(() => {
-//       setIsVisible(false);
-//       onClose();
-//     }, 300); // Match timeout to the animation duration
-//   };
+  const handleModalClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      onClose();
+    }, 300); // Match timeout to the animation duration
+  };
 
-//   // Animation styles
-//   const modalOverlayStyle = {
-//     transition: "opacity 0.3s ease-in-out",
-//     opacity: isVisible && !isClosing ? 1 : 0,
-//   };
+  // Animation styles
+  const modalOverlayStyle = {
+    transition: "opacity 0.3s ease-in-out",
+    opacity: isVisible && !isClosing ? 1 : 0,
+  };
 
-//   const modalContentStyle = {
-//     transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-//     transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
-//     opacity: isVisible && !isClosing ? 1 : 0,
-//   };
+  const modalContentStyle = {
+    transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+    transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
+    opacity: isVisible && !isClosing ? 1 : 0,
+  };
 
-//   // functions to handle the sharing modal
-//   const shareRef = useRef<ModalRef>(null);
-//   const [shareLink, setShareLink] = useState<string>("");
-//   const handleShare = (Museum: Museum) => {
-//     // get the link
-//     const baseLink = window.location.origin;
-//     const link: string = `${baseLink}/all-museums/${Museum.id}`;
+  // functions to handle the sharing modal
+  const shareRef = useRef<ModalRef>(null);
+  const [shareLink, setShareLink] = useState<string>("");
+  const handleShare = (Museum: Museum) => {
+    // get the link
+    const baseLink = window.location.origin;
+    const link: string = `${baseLink}/all-museums/${Museum.id}`;
 
-//     // set the link
-//     setShareLink(link);
+    // set the link
+    setShareLink(link);
 
-//     // open the modal
-//     shareRef.current?.open();
-//   };
+    // open the modal
+    shareRef.current?.open();
+  };
 
-//   return (
-//     <>
-//       <ShareLink ref={shareRef} link={shareLink} />
-//       <Modal open>
-//         <div
-//           className="flex items-center justify-center"
-//           style={modalOverlayStyle}
-//         >
-//           <div
-//             className="relative h-auto w-full max-w-[80vw] transform rounded-lg border-2 border-black bg-white p-4 transition-all duration-300 ease-in-out"
-//             style={modalContentStyle}
-//           >
-//             {/* Close button */}
-//             <div className="absolute right-2 top-2 m-4 flex flex-row items-center gap-4">
-//               <Share
-//                 onClick={() => {
-//                   handleShare(Museum);
-//                 }}
-//                 className="cursor-pointer transition-all duration-150 hover:scale-110"
-//               />
-//               <button onClick={handleModalClose} className="text-xl font-bold">
-//                 <svg
-//                   xmlns="http://www.w3.org/2000/svg"
-//                   className="h-6 w-6"
-//                   fill="none"
-//                   viewBox="0 0 24 24"
-//                   stroke="black"
-//                 >
-//                   <path
-//                     strokeLinecap="round"
-//                     strokeLinejoin="round"
-//                     strokeWidth={2}
-//                     d="M6 18L18 6M6 6l12 12"
-//                   />
-//                 </svg>
-//               </button>
-//             </div>
+  return (
+    <>
+      <ShareLink ref={shareRef} link={shareLink} />
+      <Modal open>
+        <div
+          className="flex items-center justify-center"
+          style={modalOverlayStyle}
+        >
+          <div
+            className="relative h-auto w-full max-w-[80vw] transform rounded-lg border-2 border-black bg-white p-4 transition-all duration-300 ease-in-out"
+            style={modalContentStyle}
+          >
+            {/* Close button */}
+            <div className="absolute right-2 top-2 m-4 flex flex-row items-center gap-4">
+              <Share
+                onClick={() => {
+                  handleShare(Museum);
+                }}
+                className="cursor-pointer transition-all duration-150 hover:scale-110"
+              />
+              <button onClick={handleModalClose} className="text-xl font-bold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="black"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
 
-//             <div>
-//               {/* Museum name */}
-//               <div className="mx-4 my-8 w-fit text-left text-xl font-bold">
-//                 {Museum.name}
-//                 {/* add an underline */}
-//                 <div className="border-b-2 border-black"></div>
-//               </div>
-//               {/* Museum details */}
-//               <div className="mx-8 mb-8 grid grid-cols-[70%_30%] gap-8 px-8">
-//                 {/* Museum info */}
-//                 <div className="grid-rows-auto col-start-1 col-end-1 grid grid-cols-2 gap-4">
-//                   {/* tags */}
-//                   <div>
-//                     <div className="text-left font-bold">Tags</div>
-//                     <div className="">
-//                       {Museum.tags.length === 0
-//                         ? "N/A"
-//                         : Museum.tags.join(", ")}
-//                     </div>
-//                   </div>
-
-//                   {/* description */}
-//                   <div>
-//                     <div className="text-left font-bold">Description</div>
-//                     <div className="">
-//                       {formatDescription(Museum.description)}
-//                     </div>
-//                   </div>
-
-//                   {/* category */}
-//                   <div>
-//                     <div className="text-left font-bold">Category</div>
-//                     <div className="">{Museum.category}</div>
-//                   </div>
-
-//                   {/* location */}
-//                   <div>
-//                     <div className="text-left font-bold">Location</div>
-//                     <div className="">
-//                       {formatLocation(Museum.location.name)}
-//                     </div>
-//                   </div>
-
-//                   {/* opening hours */}
-//                   <div>
-//                     <div className="text-left font-bold">Opening Hours</div>
-//                     <div className="">{Museum.opening_hours}</div>
-//                   </div>
-
-//                   {/* ticket prices */}
-//                   <div>
-//                     <div className="text-left font-bold">Ticket Prices</div>
-//                     <table className="border-collapse border border-black">
-//                       <thead>
-//                         <tr className="border border-b-2">
-//                           <th className="p-2">Foreigner</th>
-//                           <th className="p-2">Native</th>
-//                           <th className="p-2">Student</th>
-//                         </tr>
-//                       </thead>
-//                       <tbody>
-//                         <tr className="border border-b-2">
-//                           <td>{Museum.ticket_prices.foreigner}</td>
-//                           <td>{Museum.ticket_prices.native}</td>
-//                           <td>{Museum.ticket_prices.student}</td>
-//                         </tr>
-//                       </tbody>
-//                     </table>
-//                   </div>
-//                 </div>
-//                 {/* Museum picture */}
-//                 <img
-//                   src={Museum.pictures[0]}
-//                   className="col-start-2 col-end-2 h-auto w-full image-contain"
-//                 />
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </Modal>
-//     </>
-//   );
-// }
+            <div>
+              {/* Museum name */}
+              <div className="mx-4 my-8 w-fit text-left text-xl font-bold">
+                {Museum.name}
+                {/* add an underline */}
+                <div className="border-b-2 border-black"></div>
+              </div>
+              {/* Museum details */}
+              <div className="mx-8 mb-8 grid grid-cols-[70%_30%] gap-8 px-8">
+                {/* Museum info */}
+                  <Map className="h-full w-full" defaultMark={{name: Museum.location.name, lat: Museum.location.latitude, lng: Museum.location.longitude}} />          
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+}
 
 // function MuseumCard({
 //   Museum,
@@ -342,7 +273,7 @@ async function getTags() {
 // }
 
 export function MuseumList() {
-  // const [selectedMuseum, setSelectedMuseum] = useState<Museum | null>(null);
+  const [selectedMuseum, setSelectedMuseum] = useState<Museum | null>(null);
   const [data, setData] = useState<Museum[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -432,8 +363,8 @@ export function MuseumList() {
   
     fetchImages();
   }, [data]);
-  // const handleCardClick = (Museum: Museum) => setSelectedMuseum(Museum);
-  // const handleCloseModal = () => setSelectedMuseum(null);
+  const handleCardClick = (Museum: Museum) => setSelectedMuseum(Museum);
+  const handleCloseModal = () => setSelectedMuseum(null);
 
   // get the url
   const url = window.location.href;
@@ -515,6 +446,7 @@ export function MuseumList() {
                   <GenericCard
                   item={museum}
                   images={imageURLs[museum.id] ? imageURLs[museum.id] : [defaultImage]} // Pass the fetched image URL or default image
+                  onClick={() => handleCardClick(museum)} // Opens the modal on click
                 >
                   <p className="line-clamp-2 text-body text-gray-700">{museum.description}</p>
                    <div className={customStyles.infoRow}>
@@ -580,10 +512,10 @@ export function MuseumList() {
             </div>
           </div>
 
-          {/* Museum Modal
+          Museum Modal
           {selectedMuseum && (
             <MuseumModal Museum={selectedMuseum} onClose={handleCloseModal} />
-          )} */}
+          )}
         </>
       )}
     </>
