@@ -150,7 +150,6 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
   const headerClassName = "bg-accent-dark-blue text-white px-4 py-4";
   const rowClassName =
     "text-text-primary px-4 py-4 text-center max-w-[200px] truncate";
-
   // function to handle booking
   const handleBooking = async (activity: Activity) => {
     try {
@@ -174,7 +173,18 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
       toast.error(`Error booking itinerary: ${error.message}`);
     }
   };
-
+  const renderStars = (rating: number) => {
+    const filledStars = "★".repeat(Math.floor(rating));
+    const halfStar = rating % 1 >= 0.5; 
+    const emptyStars = "☆".repeat(5 - Math.floor(rating) - ((halfStar)?1:0));
+    return (
+      <span className="text-yellow-500 text-2xl">
+        {filledStars}
+        {halfStar && "⯨"}
+        {emptyStars}
+      </span>
+    );
+  };
   // functions to handle the sharing modal
   const shareRef = useRef<ModalRef>(null);
   const [shareLink, setShareLink] = useState<string>("");
@@ -205,11 +215,11 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
         <thead>
           <tr>
             <th className={headerClassName + " rounded-tl-lg"}>Name</th>
+            <th className={headerClassName}>Ratings</th>
             <th className={headerClassName}>Date</th>
             <th className={headerClassName}>Time</th>
             <th className={headerClassName}>Location</th>
             <th className={headerClassName}>Price</th>
-            <th className={headerClassName}>Ratings</th>
             <th className={headerClassName}>Category</th>
             <th className={headerClassName}>Tags</th>
             <th className={headerClassName}>Special Discounts</th>
@@ -222,11 +232,11 @@ function ActivityTable({ activities }: { activities: Activity[] }) {
           {activities.map((activity, index) => (
             <tr key={index}>
               <td className={rowClassName}>{activity.name}</td>
+              <td className={rowClassName}>{renderStars(activity.ratings)}</td>
               <td className={rowClassName}>{activity.date}</td>
               <td className={rowClassName}>{activity.time}</td>
               <td className={rowClassName}>{activity.location.name}</td>
               <td className={rowClassName}>{activity.price}</td>
-              <td className={rowClassName}>{activity.ratings}/5</td>
               <td className={rowClassName}>{activity.category}</td>
               <td className={rowClassName}>
                 {activity.tags.map(formatText).join(", ") || "N/A"}

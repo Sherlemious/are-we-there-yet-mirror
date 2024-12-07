@@ -76,7 +76,18 @@ async function getMyItineraries() {
     throw error;
   }
 }
-
+const renderStars = (rating: number) => {
+  const filledStars = "★".repeat(Math.floor(rating));
+  const halfStar = rating % 1 >= 0.5; 
+  const emptyStars = "☆".repeat(5 - Math.floor(rating) - ((halfStar)?1:0));
+  return (
+    <span className="text-yellow-500 text-2xl">
+      {filledStars}
+      {halfStar && "⯨"}
+      {emptyStars}
+    </span>
+  );
+};
 // helper functions
 const formatDateTime = (date: string, time: string) => {
   if (date === "N/A" || time === "N/A") {
@@ -230,7 +241,7 @@ function ItineraryModal({
                     className="cursor-pointer transition-all duration-150 hover:scale-110"
                   />
                   <h2 className="text-headline font-headline text-accent-dark-blue">
-                    {itinerary.name}
+                    {itinerary.name} {renderStars(itinerary.rating)}
                   </h2>
                 </div>
                 <div className="mt-2 h-1 w-full rounded-full bg-primary-blue"></div>
@@ -243,6 +254,12 @@ function ItineraryModal({
                   {[
                     { label: "Language", value: itinerary.language },
                     { label: "Price", value: itinerary.price },
+                    { label: "Category", value: itinerary.category.name },
+                    { label: "Tags", value: itinerary.tags.join(", ") },
+                    {
+                      label: "Accessibilities",
+                      value: itinerary.accessibilities ? "Yes" : "No",
+                    },
                     {
                       label: "Dropoff Location",
                       value: itinerary.dropoffLocation,
@@ -250,13 +267,6 @@ function ItineraryModal({
                     {
                       label: "Pickup Location",
                       value: itinerary.pickupLocation,
-                    },
-                    { label: "Category", value: itinerary.category.name },
-                    { label: "Tags", value: itinerary.tags.join(", ") },
-                    { label: "Rating", value: `${itinerary.rating}/5` },
-                    {
-                      label: "Accessibilities",
-                      value: itinerary.accessibilities ? "Yes" : "No",
                     },
                   ].map((item, index) => (
                     <div key={index} className="space-y-1">
@@ -269,9 +279,47 @@ function ItineraryModal({
                     </div>
                   ))}
                 </div>
+                
+                {/* Date and Time */}
+                <div className="space-y-4">
+                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                    Available Dates & Times
+                  </h3>
+                  {itinerary.availableDateTimes.length !== 0 ? (
+                    <div className="overflow-hidden rounded-lg">
+                      <div>
+                        <div className="text-body text-text-primary">
+                          {formatDate(itinerary.availableDateTimes[0].date)},{formatTime(itinerary.availableDateTimes[0].time)}
+                        </div>
+                   </div>
+                  </div>
+                  ) : (
+                    <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
+                      No available dates and times
+                    </div>
+                  )}
+                </div>
 
-                {/* booking */}
-                <div className="space-y-6">
+                {/* Activities */}
+                <div className="space-y-4">
+                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
+                    Activities
+                  </h3>
+                  {itinerary.activities.length !== 0 ? (
+                    <div className="overflow-hidden rounded-lg">
+                            <div className="text-body text-text-primary">
+                              {itinerary.activities[0].name}
+                            </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
+                      No activities available
+                    </div>
+                  )}
+                </div>
+
+                 {/* booking */}
+                 <div className="space-y-6">
                   <div className="space-y-1">
                     <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
                       Book Now
@@ -290,86 +338,6 @@ function ItineraryModal({
                   ) : (
                     <div className="text-body text-text-primary">
                       You need to be a tourist to book this itinerary
-                    </div>
-                  )}
-                </div>
-
-                {/* Activities */}
-                <div className="space-y-4">
-                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
-                    Activities
-                  </h3>
-                  {itinerary.activities.length !== 0 ? (
-                    <div className="overflow-hidden rounded-lg border border-borders-primary">
-                      <table className="w-full">
-                        <thead className="bg-primary-blue text-secondary-white">
-                          <tr>
-                            <th className="p-4 text-left">DateTime</th>
-                            <th className="p-4 text-left">Location</th>
-                            <th className="p-4 text-left">Price</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {itinerary.activities.map((activity, index) => (
-                            <tr
-                              key={index}
-                              className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
-                            >
-                              <td className="p-4">
-                                {formatDateTime(activity.date, activity.time)}
-                              </td>
-                              <td className="p-4">
-                                {formatLocation(activity.location)}
-                              </td>
-                              <td className="p-4">{activity.price}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
-                      No activities available
-                    </div>
-                  )}
-                </div>
-
-                {/* Date and Time */}
-                <div className="space-y-4">
-                  <h3 className="text-sub-headings font-sub_headings text-accent-dark-blue">
-                    Available Dates & Times
-                  </h3>
-                  {itinerary.availableDateTimes.length !== 0 ? (
-                    <div className="overflow-hidden rounded-lg border border-borders-primary">
-                      <table className="w-full">
-                        <thead className="bg-primary-green text-secondary-white">
-                          <tr>
-                            <th className="p-4 text-left">Date</th>
-                            <th className="p-4 text-left">Time</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {itinerary.availableDateTimes.map(
-                            (dateTime, index) => (
-                              <tr
-                                key={index}
-                                className="border-t border-borders-primary transition-colors hover:bg-secondary-light_grey"
-                              >
-                                <td className="p-4">
-                                  {formatDate(dateTime.date)}
-                                </td>
-                                <td className="p-4">
-                                  {formatTime(dateTime.time)}
-                                </td>
-                              </tr>
-                            ),
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
-                      No available dates and times
                     </div>
                   )}
                 </div>
@@ -397,7 +365,7 @@ function ItineraryCard({
     >
       {/* Itinerary Name */}
       <div className="p-4 text-center text-lg font-semibold text-accent-dark-blue">
-        {itinerary.name}
+        {itinerary.name}  {renderStars(itinerary.rating)}
       </div>
 
       {/* Activity List */}
