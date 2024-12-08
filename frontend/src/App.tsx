@@ -49,6 +49,7 @@ import FlagItineraries, {
 import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBookings";
 import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
 import Booking from "./modules/Booking/pages/Booking";
+import Bookmarks from "./modules/shared/components/Bookmarks";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
 import {
   ForgetPasswordPage,
@@ -196,6 +197,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "wishList",
         element: <WishList />,
+      },
+      {
+        path: "bookmarks",
+        element: <Bookmarks />,
       },
       {
         path: "cart",
