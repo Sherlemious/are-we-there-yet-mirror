@@ -82,20 +82,20 @@ const OrderCard = ({
 
   const getStatusColor = (status: OrderStatus) => {
     const colors = {
-      pending: "bg-yellow-400",
+      paid: "bg-yellow-400",
       cancelled: "bg-red-400",
       delivered: "bg-green-400",
     };
-    return colors[status] || colors.pending;
+    return colors[status] || colors.paid;
   };
 
   const getBadgeColor = (status: OrderStatus) => {
     const colors = {
-      pending: "bg-yellow-100 text-yellow-800 border-yellow-100",
+      paid: "bg-yellow-100 text-yellow-800 border-yellow-100",
       cancelled: "bg-red-100 text-red-800 border-red-100",
       delivered: "bg-green-100 text-green-800 border-green-100",
     };
-    return colors[status] || colors.pending;
+    return colors[status] || colors.paid;
   };
 
   const handleCancelOrder = async () => {
@@ -191,7 +191,7 @@ const OrderCard = ({
                   ${order.totalPrice.toFixed(2)}
                 </span>
               </div>
-              {order.status === "pending" && (
+              {order.status === "paid" && (
                 <Button
                   variant="outline"
                   size="sm"
