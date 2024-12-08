@@ -332,7 +332,7 @@ function ItineraryCard({
       onClick={onCardClick}
     >
       {/* Itinerary name */}
-      <div className="grid gap-3 px-6 pb-4 pt-2">
+      <div className="grid gap-3 px-6 pt-2">
       <div className="p-4 text-center text-lg font-semibold text-accent-dark-blue">
       {itinerary.name}
       </div>
@@ -364,12 +364,12 @@ function ItineraryCard({
         )}
         <div className="col-span-9 justify-self-end">
           <button
-        className="col-span-9 justify-self-end rounded bg-red-600 px-3 py-2 text-white hover:bg-red-800"
+        className="col-span-9 justify-self-end px-3 py-3 rounded-lg border-red-200 text-lg text-red-600 hover:bg-red-50 hover:text-red-700"
         onClick={(event) => {
               event.stopPropagation(); // Prevent the card's click event
               onCancelClick(); // Call the cancel handler
             }}          >
-            Cancel
+            Cancel Booking
           </button>
         </div>
       </div>
