@@ -309,7 +309,7 @@ function ItineraryModal({
                   {[
                     { label: "Language", value: itinerary.language },
                     { label: "Price", value: itinerary.price.toFixed(2) },
-                    { label: "Category", value: itinerary.category.name },
+                    { label: "Category", value: itinerary.category ? itinerary.category.name : "N/A" },
                     { label: "Tags", value: itinerary.tags.join(", ") },
                     { label: "Timeline", value: formatTimeline(itinerary.timeline) },
                     {
@@ -389,9 +389,9 @@ function ItineraryModal({
                   {isUserTourist && (
                     <button
                       onClick={handleBooking}
-                      className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-10 py-3 font-bold text-white text-text-primary transition-all duration-150 hover:opacity-80"
+                      className="flex items-center gap-2 rounded-lg bg-accent-gold px-10 py-3 font-bold text-text-primary transition-all duration-150 hover:opacity-80"
                       >                    
-                      <h4 className="text-sub-headings font-sub_headings text-white">
+                      <h4 className="text-sub-headings font-sub_headings">
                         Book Now
                       </h4>
                     </button>

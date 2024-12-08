@@ -421,7 +421,7 @@ const ProductList: React.FC<ProductListProps> = ({
                   <button
                     onClick={handleAddCart}
                     type="submit"
-                    className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+                    className="flex items-center gap-2 rounded-lg bg-accent-gold px-6 py-3 font-bold transition-all duration-150 hover:opacity-80"
                   >
                     <ShoppingCart size={20} />
                     Add to Cart

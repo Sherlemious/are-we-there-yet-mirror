@@ -242,14 +242,14 @@ function ViewComplaint({ viewingComplaint, handleCloseModal, setRefresh }) {
 
       {/* Close Button */}
       <button
-        className="mt-8 rounded-lg bg-red-500 px-6 py-3 font-bold text-white transition-transform duration-150 hover:scale-105"
+        className="mt-8 rounded-lg px-6 py-3 border-red-200 text-lg text-red-600 hover:bg-red-50 hover:text-red-700"
         onClick={() => {
           setComments([]);
           setNewComment("");
           handleCloseModal();
         }}
       >
-        Close
+        Cancel
       </button>
     </div>
   );

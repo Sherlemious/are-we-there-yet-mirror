@@ -87,8 +87,8 @@ export default function UpdatePopup({ dialogRef, title, _id, setCategories }) {
                 onClick={handleButtonClick}
                 className={`rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
                   isFormValid2
-                    ? 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500'
-                    : 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500'
+                     ? 'bg-accent-dark-gold hover:bg-accent-dark-blue/80 focus:ring-gray-500'
+                : 'border-red-200 text-lg text-red-600 hover:bg-red-50 hover:text-red-700'
                 }`}
               >
                 {isFormValid2 ? 'Update' : 'Cancel'}

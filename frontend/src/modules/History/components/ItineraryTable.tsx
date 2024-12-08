@@ -53,7 +53,7 @@ const ItineraryTable: React.FC<ItineraryTableProps> = ({ itineraries, onEditRati
               onClick={() =>
                 onEditRating({ _id: created_by._id, type: "users" })
               }
-              className="mt-2 px-4 py-2 text-sm text-white bg-accent-dark-blue font-bold transition-all duration-150 hover:opacity-80"
+              className="mt-2 px-4 py-2 text-sm bg-accent-gold font-bold transition-all duration-150 hover:opacity-80"
             >
               Add Review
             </button>
@@ -84,7 +84,7 @@ const ItineraryTable: React.FC<ItineraryTableProps> = ({ itineraries, onEditRati
       render: (id: string) => (
         <button
           onClick={() => onEditRating({ _id: id, type: "itineraries" })}
-          className="px-4 py-2 text-sm text-white bg-accent-dark-blue font-bold transition-all duration-150 hover:opacity-80"
+          className="px-4 py-2 text- bg-accent-gold font-bold transition-all duration-150 hover:opacity-80"
         >
           Add Review
         </button>
