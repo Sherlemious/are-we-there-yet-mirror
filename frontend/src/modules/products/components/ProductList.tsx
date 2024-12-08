@@ -94,8 +94,6 @@ const ProductList: React.FC<ProductListProps> = ({
       toast.error("No product selected to add to wishlist");
     }
   };
-
-
   // Function to add a product to the cart
   const handleAddCart = async () => {
     if (selectedProduct) {

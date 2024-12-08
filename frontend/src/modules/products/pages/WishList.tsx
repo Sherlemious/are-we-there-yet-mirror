@@ -57,6 +57,7 @@ const WishList = () => {
     };
     fetchProducts();
   }, []);
+  
   const handleRemoveWishlist = async (selectedProduct: Product) => {
     if (selectedProduct) {
       try {

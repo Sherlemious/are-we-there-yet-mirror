@@ -12,8 +12,6 @@ async function getMyItineraries() {
   try {
     // get the data via axios
     const resPromise = await axiosInstance.get("/itineraries/get");
-    const resP = await axiosInstance.get("/users/bookmarks");
-    console.log(resP.data.data.bookmarks[0].itinerary);
     // format the data
     const res = await resPromise.data;
     const tempData: Itinerary[] = await res.data.itineraries.map(
