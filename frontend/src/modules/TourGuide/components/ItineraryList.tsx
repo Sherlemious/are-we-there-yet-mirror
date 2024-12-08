@@ -11,14 +11,17 @@ import {
 import { ItineraryCard } from "./ItineraryCard";
 import type { ItineraryType } from "@/modules/shared/types/Itinerary.types";
 import type { ItineraryPostType } from "./Types";
+import { Plus } from "lucide-react";
 
 function AddItineraryCard({ onAddClick }: { onAddClick: () => void }) {
   return (
     <div
-      className="relative flex h-full w-full items-center justify-center border-2 border-black"
-      onClick={onAddClick}
+    className="flex h-full w-full cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white shadow-lg transition-transform duration-200 hover:scale-105 hover:shadow-xl"
+    onClick={onAddClick}
     >
-      <button className="text-6xl font-bold text-black">+</button>
+      <button className="flex items-center justify-center text-6xl text-gray-400">
+        <Plus size={40}/>
+      </button>
     </div>
   );
 }
@@ -105,7 +108,7 @@ export function ItineraryList() {
 
   return (
     <>
-      <div className="grid-rows-auto grid grid-cols-3 gap-8 bg-secondary-white p-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 bg-secondary-white p-12">
         {data.map((itinerary, index) => (
           <ItineraryCard
             itinerary={itinerary}
