@@ -49,6 +49,12 @@ class OrderController {
           address_id = metadata?.address_id;
           break;
         case PaymentMethodType.WALLET:
+          if (promo) {
+            const discount = (totalOrderPrice * promo.discountPercentage) / 100;
+            totalOrderPrice -= discount;
+            await userRepo.updateWallet(req.user.userId, -totalOrderPrice);
+            break;
+          }
           await userRepo.updateWallet(req.user.userId, -totalOrderPrice);
           break;
         case PaymentMethodType.CASH:
@@ -57,9 +63,11 @@ class OrderController {
 
       const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, address_id, payment_method, cart);
       if (promo) {
-        const discount = (totalOrderPrice * promo.discountPercentage) / 100;
-        totalOrderPrice -= discount;
-        order.totalPrice = totalOrderPrice;
+        if (payment_method !== PaymentMethodType.WALLET) {
+          const discount = (totalOrderPrice * promo.discountPercentage) / 100;
+          totalOrderPrice -= discount;
+          order.totalPrice = totalOrderPrice;
+        }
         if (customerEmail) {
           await emailService.sendReceiptEmail(customerEmail, order);
         }

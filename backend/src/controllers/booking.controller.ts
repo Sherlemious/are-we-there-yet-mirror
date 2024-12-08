@@ -10,17 +10,19 @@ import { PaymentMethodType } from '../types/Order.types';
 import itineraryRepo from '../database/repositories/itinerary.repo';
 import activityRepo from '../database/repositories/activity.repo';
 import emailService from '../services/email/email.service';
+import promoCodeRepo from '../database/repositories/promoCode.repo';
 
 class BookingController {
   async bookItinerary(req: Request, res: Response) {
     try {
-      let { payment_method, session_id, itinerary_id } = req.body;
+      let { payment_method, session_id, itinerary_id, promocode } = req.body;
+      let discount;
 
       if (!(await checkUserLegalAge(req.user.userId))) {
         res.status(ResponseStatusCodes.FORBIDDEN).json({ message: 'Cannot book as user is under 18' });
         return;
       }
-
+      const promo = await promoCodeRepo.findPromoCodeByCode(promocode);
       switch (payment_method) {
         case PaymentMethodType.CARD:
           const metadata = await StripeService.getMetadata(session_id);
@@ -29,12 +31,16 @@ class BookingController {
         case PaymentMethodType.WALLET:
           const itinerary = await itineraryRepo.findItineraryById(itinerary_id);
           const itinerary_price = itinerary?.price ?? 0;
+          if (promo) {
+            let discount = (itinerary_price * promo.discountPercentage) / 100;
+            await userRepo.updateWallet(req.user.userId, -(itinerary_price - discount));
+            break;
+          }
           await userRepo.updateWallet(req.user.userId, -itinerary_price);
           break;
         case PaymentMethodType.CASH:
           break;
       }
-
       const booking = await bookingRepo.bookItinerary(req.user.userId, itinerary_id, payment_method);
       await userRepo.updateUserLoyaltyPoints(req.user.userId, LOYALTY_POINT_GAIN);
 
@@ -54,13 +60,13 @@ class BookingController {
 
   async bookActivity(req: Request, res: Response) {
     try {
-      let { payment_method, session_id, activity_id } = req.body;
+      let { payment_method, session_id, activity_id, promocode } = req.body;
 
       if (!(await checkUserLegalAge(req.user.userId))) {
         res.status(ResponseStatusCodes.FORBIDDEN).json({ message: 'Cannot book as user is under 18' });
         return;
       }
-
+      const promo = await promoCodeRepo.findPromoCodeByCode(promocode);
       switch (payment_method) {
         case PaymentMethodType.CARD:
           const metadata = await StripeService.getMetadata(session_id);
@@ -69,6 +75,11 @@ class BookingController {
         case PaymentMethodType.WALLET:
           const activity = await activityRepo.getActivityById(activity_id);
           const activity_price = activity?.price ?? 0;
+          if (promo) {
+            const discount = (activity_price * promo.discountPercentage) / 100;
+            await userRepo.updateWallet(req.user.userId, -(activity_price - discount));
+            break;
+          }
           await userRepo.updateWallet(req.user.userId, -activity_price);
           break;
         case PaymentMethodType.CASH:
