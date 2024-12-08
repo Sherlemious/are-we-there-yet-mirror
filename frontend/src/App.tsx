@@ -48,6 +48,8 @@ import FlagItineraries, {
 } from "./modules/Admin/pages/FlagItineraries";
 import { ActivityBookings } from "./modules/Tourist/pages/Bookings/ActivityBookings";
 import { ItineraryBookings } from "./modules/Tourist/pages/Bookings/ItineraryBookings";
+import { FlightBookings } from "./modules/Tourist/pages/Bookings/FlightBookings";
+// import { HotelBookings } from "./modules/Tourist/pages/Bookings/HotelBookings";
 import Booking from "./modules/Booking/pages/Booking";
 import { TourismGovernorProfile } from "./modules/TourismGovernor/App";
 import {
@@ -309,6 +311,14 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "transportation-bookings",
         element: <Booking />,
+      },
+      {
+        path: "flight-bookings",
+        element: <FlightBookings />,
+      },
+      {
+        path: "hotel-bookings",
+        //element: <HotelBookings />,
       },
       {
         path: "my-activities",
