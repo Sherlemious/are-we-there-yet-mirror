@@ -77,10 +77,10 @@ class BookingController {
 
       const booking = await bookingRepo.bookActivity(req.user.userId, activity_id, payment_method);
       await userRepo.updateUserLoyaltyPoints(req.user.userId, LOYALTY_POINT_GAIN);
-      await activityRepo.addTicket(req.body.activity_id);
-      const activity = await activityRepo.getActivityById(req.body.activity_id);
+      await activityRepo.addTicket(activity_id);
+      const activity = await activityRepo.getActivityById(activity_id);
       if (activity?.tickets !== undefined) {
-        const Users = await userRepo.getUsersByBookmarkedActivity(req.body.activity_id);
+        const Users = await userRepo.getUsersByBookmarkedActivity(activity_id);
         Users.forEach(async (user: any) => {
           await userRepo.ticketsNotification(user._id, activity.tickets);
           await emailService.ticketsUpdateEmail(user.email, activity.tickets);
