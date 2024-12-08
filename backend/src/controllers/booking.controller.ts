@@ -1,24 +1,41 @@
 import { Request, Response } from 'express';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import { logger } from '../middlewares/logger.middleware';
-import Validator from '../utils/Validator.utils';
 import bookingRepo from '../database/repositories/booking.repo';
 import { checkUserLegalAge } from '../utils/AgeVerification.utils';
 import userRepo from '../database/repositories/user.repo';
 import { LOYALTY_POINT_GAIN } from '../constants';
+import StripeService from '../services/stripe.service';
+import { PaymentMethodType } from '../types/Order.types';
+import itineraryRepo from '../database/repositories/itinerary.repo';
 import activityRepo from '../database/repositories/activity.repo';
 import emailService from '../services/email/email.service';
 
 class BookingController {
   async bookItinerary(req: Request, res: Response) {
     try {
-      Validator.validateId(req.body.itinerary_id, 'incorrect itinerary id');
+      let { payment_method, session_id, itinerary_id } = req.body;
 
       if (!(await checkUserLegalAge(req.user.userId))) {
         res.status(ResponseStatusCodes.FORBIDDEN).json({ message: 'Cannot book as user is under 18' });
         return;
       }
-      const booking = await bookingRepo.bookItinerary(req.user.userId, req.body.itinerary_id);
+
+      switch (payment_method) {
+        case PaymentMethodType.CARD:
+          const metadata = await StripeService.getMetadata(session_id);
+          itinerary_id = metadata?.itinerary_id;
+          break;
+        case PaymentMethodType.WALLET:
+          const itinerary = await itineraryRepo.findItineraryById(itinerary_id);
+          const itinerary_price = itinerary?.price ?? 0;
+          await userRepo.updateWallet(req.user.userId, -itinerary_price);
+          break;
+        case PaymentMethodType.CASH:
+          break;
+      }
+
+      const booking = await bookingRepo.bookItinerary(req.user.userId, itinerary_id, payment_method);
       await userRepo.updateUserLoyaltyPoints(req.user.userId, LOYALTY_POINT_GAIN);
 
       const response = {
@@ -37,14 +54,28 @@ class BookingController {
 
   async bookActivity(req: Request, res: Response) {
     try {
-      Validator.validateId(req.body.activity_id, 'incorrect activity id');
+      let { payment_method, session_id, activity_id } = req.body;
 
       if (!(await checkUserLegalAge(req.user.userId))) {
         res.status(ResponseStatusCodes.FORBIDDEN).json({ message: 'Cannot book as user is under 18' });
         return;
       }
 
-      const booking = await bookingRepo.bookActivity(req.user.userId, req.body.activity_id);
+      switch (payment_method) {
+        case PaymentMethodType.CARD:
+          const metadata = await StripeService.getMetadata(session_id);
+          activity_id = metadata?.activity_id;
+          break;
+        case PaymentMethodType.WALLET:
+          const activity = await activityRepo.getActivityById(activity_id);
+          const activity_price = activity?.price ?? 0;
+          await userRepo.updateWallet(req.user.userId, -activity_price);
+          break;
+        case PaymentMethodType.CASH:
+          break;
+      }
+
+      const booking = await bookingRepo.bookActivity(req.user.userId, activity_id, payment_method);
       await userRepo.updateUserLoyaltyPoints(req.user.userId, LOYALTY_POINT_GAIN);
       await activityRepo.addTicket(req.body.activity_id);
       const activity = await activityRepo.getActivityById(req.body.activity_id);

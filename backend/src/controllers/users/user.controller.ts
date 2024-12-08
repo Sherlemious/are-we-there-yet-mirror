@@ -415,8 +415,7 @@ const openBooking = async (req: Request, res: Response) => {
       if (user.email) {
         await emailService.bookingOpenEmail(user.email);
       }
-    }
-    );
+    });
     res.status(ResponseStatusCodes.OK).send({
       message: 'Booking opened successfully',
     });
@@ -426,7 +425,7 @@ const openBooking = async (req: Request, res: Response) => {
       message: `Error occurred while opening booking: ${error.message}`,
     });
   }
-}
+};
 
 export {
   getUsers,

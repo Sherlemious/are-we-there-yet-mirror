@@ -134,6 +134,19 @@ class UserRepository {
     return false;
   }
 
+  async updateWallet(id: string, amount: number) {
+    const oldWallet = (await User.findById(id))?.wallet ?? 0;
+    if (oldWallet + amount < 0) {
+      throw new Error('Insufficient funds');
+    }
+
+    return await User.findByIdAndUpdate(id, {
+      $inc: {
+        wallet: amount,
+      },
+    });
+  }
+
   async productReturnWallet(id: string, product_id: string, price: number) {
     await User.findByIdAndUpdate(id, {
       $inc: {
@@ -173,8 +186,11 @@ class UserRepository {
       },
     });
   }
-  async outOfStockNotification(id: string) {
-    return await User.findByIdAndUpdate(id, {
+
+  async outOfStockNotification(seller_id: string) {
+    await this.outOfStockNotifyAdmins();
+
+    return await User.findByIdAndUpdate(seller_id, {
       $push: {
         notifications: {
           title: 'Out of Stock',
@@ -185,15 +201,19 @@ class UserRepository {
     });
   }
 
-  async outOfStockNotificationAdmin(id: string) {
-    return await User.findByIdAndUpdate(id, {
-      $push: {
-        notifications: {
-          title: 'Out of Stock',
-          message: 'One of the products is out of stock. Please contact the seller for restock.',
-          type: 'error',
+  private async outOfStockNotifyAdmins() {
+    const admins = await this.getUsersByType(accountType.Admin);
+
+    admins.forEach(async (admin) => {
+      await User.findByIdAndUpdate(admin._id.toString(), {
+        $push: {
+          notifications: {
+            title: 'Out of Stock',
+            message: 'One of the products is out of stock. Please contact the seller for restock.',
+            type: 'error',
+          },
         },
-      },
+      });
     });
   }
 
@@ -209,7 +229,7 @@ class UserRepository {
     });
   }
 
-  async ticketsNotification(id: string, tickets: number ) {
+  async ticketsNotification(id: string, tickets: number) {
     return await User.findByIdAndUpdate(id, {
       $push: {
         notifications: {
@@ -219,7 +239,7 @@ class UserRepository {
         },
       },
     });
-  } 
+  }
 
   async markNotificationAsRead(id: string, notificationId: string) {
     return await User.updateOne(
@@ -227,10 +247,9 @@ class UserRepository {
       { $set: { 'notifications.$.read': true } }
     );
   }
-// get all users that have this activity id in their bookmarks(the bookmark itself have id and the activity have another id i want to search for the activity id)
+  // get all users that have this activity id in their bookmarks(the bookmark itself have id and the activity have another id i want to search for the activity id)
   async getUsersByBookmarkedActivity(activity_id: string) {
     return await User.find({ 'bookmarks.activity': new ObjectId(activity_id) });
   }
-  
 }
 export default new UserRepository();

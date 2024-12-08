@@ -4,11 +4,11 @@ export interface ProductType {
   name: string;
   description?: string;
   price: number;
-  available_quantity?: number;
+  available_quantity: number;
   attachments?: number[];
   reviews?: ReviewType[];
   average_rating?: number;
-  seller?: string;
+  seller: string;
   tags?: number[];
   created_by?: number;
   modified_by?: number;

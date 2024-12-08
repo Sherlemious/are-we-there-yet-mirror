@@ -37,8 +37,6 @@ const markNotificationAsRead = async (req: Request, res: Response) => {
     logger.error(`Error marking notification as read: ${error.message}`);
     res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
   }
-}
+};
 
-export { getNotifications,
-  markNotificationAsRead,
- };
+export { getNotifications, markNotificationAsRead };
