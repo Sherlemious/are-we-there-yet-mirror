@@ -521,7 +521,7 @@ export function ItineraryBookingList() {
               }
             />
             <button
-              className="h-full w-full rounded-lg bg-accent-gold font-bold text-white"
+              className="h-full w-full rounded-lg bg-accent-dark-blue font-bold text-white"
               onClick={() => setIsAscending(!isAscending)}
             >
               {isAscending ? "Sort Descending" : "Sort Ascending"}

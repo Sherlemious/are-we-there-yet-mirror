@@ -323,7 +323,7 @@ export function ActivityBookingList() {
           }
         />
         <button
-          className="col-span-1 rounded-md bg-accent-gold p-3 font-semibold text-white"
+          className="col-span-1 rounded-md bg-accent-dark-blue p-3 font-semibold text-white"
           onClick={() => {
             setSortingOption({
               isSortedByPrice: !sortingOption.isSortedByPrice,
@@ -334,7 +334,7 @@ export function ActivityBookingList() {
           Sort by {sortingOption.isSortedByPrice ? "Price" : "Ratings"}
         </button>
         <button
-          className="col-span-1 rounded-md bg-accent-gold p-3 font-semibold text-white"
+          className="col-span-1 rounded-md bg-accent-dark-blue p-3 font-semibold text-white"
           onClick={() =>
             setSortingOption({
               ...sortingOption,
