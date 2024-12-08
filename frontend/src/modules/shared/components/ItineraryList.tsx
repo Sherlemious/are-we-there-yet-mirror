@@ -462,16 +462,18 @@ function ItineraryCard({
 
       {/* Activity List */}
       <div className="grid gap-3 px-6 pb-4 pt-2">
-        {itinerary.activities.length !== 0 ? (
-          itinerary.activities.slice(0, 3).map((activity, index) => (
-            <div className="text-center text-gray-600" key={index}>
-              {formatActivity(activity)}
-            </div>
-          ))
-        ) : (
-          <div className="text-center italic text-gray-500">No activities</div>
-        )}
-      </div>
+  <span className="text-center text-gray-600">
+  {formatDate(itinerary.availableDateTimes[0].date)}{" "}
+  {formatTime(itinerary.availableDateTimes[0].time)} -{" "}
+    {itinerary.activities.length !== 0
+      ? itinerary.activities
+          .slice(0, 3)
+          .map((activity) => activity.name)
+          .join(", ")
+      : <span className="italic text-gray-500">No activities</span>}
+  </span>
+</div>
+
     </div>
   );
 }
