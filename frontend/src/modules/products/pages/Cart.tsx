@@ -113,18 +113,33 @@ const Cart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string[] }>({});
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null); // State to store the clicked product
-  const changeQuantity = (productId: string, newQuantity: number) => {
+  const changeQuantity = async (productId: string, newQuantity: number) => {
+    const loadingToastId = toast.loading("Processing..."); // Show loading toast
     if (newQuantity < 1) {
       newQuantity = 1; // Set the minimum quantity to 1
     }
+    try {
+      console.log(productId);
+      console.log(cart);
+      console.log(newQuantity);
+      await axiosInstance.post(`/users/cart/`, {
+      productId: productId,
+      quantity: newQuantity,
+    });
     setCart((prev) =>
       prev.map((item) =>
         item.product._id === productId
-          ? { ...item, quantity: Math.max(newQuantity, 1) } // Ensure quantity is at least 1
+          ? { ...item, quantity: Math.min(Math.max(newQuantity, 1), item.product.available_quantity) } // Ensure quantity is at least 1
           : item,
       ),
     );
+    toast.success("Quantity updated", { id: loadingToastId });
+  } catch (error) {
+    toast.error(
+      `Failed to update quantity ${(error as any).response.data.message}`, {id: loadingToastId}
+    );
   };
+};
   const handleRemoveCart = async () => {
     if (selectedProduct) {
       setCart((prevCart) =>
