@@ -13,7 +13,7 @@ export type Order = {
   updatedAt: Date;
 };
 
-export type OrderStatus = "pending" | "cancelled" | "delivered";
+export type OrderStatus = "paid" | "cancelled" | "delivered";
 
 export type Product = {
   archive: boolean;
