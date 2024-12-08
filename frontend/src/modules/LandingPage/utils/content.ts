@@ -8,10 +8,6 @@ export type NavBarContent = {
 
 export const TouristLinks = [
   {
-    name: "All Products",
-    url: "/home/all-products",
-  },
-  {
     name: "Bookings",
     list: [
       {
@@ -27,32 +23,19 @@ export const TouristLinks = [
         url: "/home/transportation-bookings",
       },
       {
-        name: "Flights",
+        name: "My Flights",
         url: "/home/flight-bookings",
       },
       {
-        name: "Hotels",
+        name: "My Hotels",
         url: "/home/hotel-bookings",
       },
     ],
   },
   {
-    name: "My History",
-    url: "/home/history",
+    name: "All Products",
+    url: "/home/all-products",
   },
-  // {
-  //   name: "Orders",
-  //   list: [
-  //     {
-  //       name: "Current Orders",
-  //       url: "/home/orders/current-orders",
-  //     },
-  //     {
-  //       name: "Past Orders",
-  //       url: "/home/orders/past-orders",
-  //     },
-  //   ],
-  // },
 ];
 
 export const AdvertiserLinks = [
@@ -154,7 +137,6 @@ export const TourismGovernorLinks = [
         url: "/home/all-museums",
       },
       { name: "My Historical Places", url: "/home/my-museums" },
-      { name: "My Tags", url: "/home/my-tags" },
     ],
   },
 ];

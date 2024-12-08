@@ -22,8 +22,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import NavBarTutorial from "./NavBarTut";
 import NotificationBell from "./NotificationBell";
+import NewTouristTut from "./NewTouristTut";
 
 const styles = {
   nav: "relative z-10 flex h-[13vh] items-center bg-black/10 backdrop-blur-md",
@@ -63,7 +63,7 @@ export default function NewNavBar({
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const navigation = useNavigation();
-  const [notifications,setNotifications] = useState(user.notifications);
+  const [notifications, setNotifications] = useState(user.notifications);
   const [isOpen, setIsOpen] = useState(false);
 
   const [showTutorial, setShowTutorial] = useState(false);
@@ -80,6 +80,39 @@ export default function NewNavBar({
   const navBarItems: NavBarContent = returnNavBarContentBasedOnUser(
     user?.account_type,
   );
+
+  const tutItems: NavBarContent = {
+    links: [
+      {
+        name: "Activities",
+      },
+      {
+        name: "Historical Places",
+      },
+      {
+        name: "Itineraries",
+      },
+      ...(navBarItems?.links || []),
+      {
+        name: "My Complaints",
+      },
+      {
+        name: "My Bookmarks",
+      },
+      {
+        name: "My Wishlist",
+      },
+      {
+        name: "My Cart",
+      },
+      {
+        name: "My History",
+      },
+      {
+        name: "My Orders",
+      },
+    ],
+  };
 
   function handleClearUser() {
     setUser({
@@ -249,15 +282,6 @@ export default function NewNavBar({
               return null;
             })}
 
-            {user.account_type === AccountType.Tourist && (
-              <NavLink
-                to="/home/orders"
-                className={(props) => handleStyles(props)}
-              >
-                <span className="text-sub-headings">My Orders</span>
-              </NavLink>
-            )}
-
             {/* Other Items as Individual NavLinks */}
             {getOtherItems().map((item) => (
               <NavLink
@@ -272,19 +296,19 @@ export default function NewNavBar({
         </div>
 
         <div className={styles.actions.wrapper}>
-        {user.account_type !== AccountType.None && user.account_type !== AccountType.TourismGovernor &&(
-      <NotificationBell 
-            notifications={notifications}
-            onMarkAsRead= {(id: string | undefined) => {
-                setNotifications((prev) =>
-                  prev.map((notif) =>
-                    notif._id === id ? { ...notif, read: true } : notif
-                  )
-                );
-              }
-          }
-          />
-      )}
+          {user.account_type !== AccountType.None &&
+            user.account_type !== AccountType.TourismGovernor && (
+              <NotificationBell
+                notifications={notifications}
+                onMarkAsRead={(id: string | undefined) => {
+                  setNotifications((prev) =>
+                    prev.map((notif) =>
+                      notif._id === id ? { ...notif, read: true } : notif,
+                    ),
+                  );
+                }}
+              />
+            )}
           {!pathname.includes("/login") && pathname !== "/register" && (
             <CurrencySelect />
           )}
@@ -294,7 +318,7 @@ export default function NewNavBar({
               onMouseLeave={handleMouseLeave}
             >
               <DropdownMenu open={isOpen}>
-                <DropdownMenuTrigger className="focus:outline-none">
+                <DropdownMenuTrigger className="mt-[7px] focus:outline-none">
                   <UserCog
                     size={50}
                     className={`${styles.actions.userIcon} ${isOpen ? "bg-accent-dark-blue text-accent-gold" : "bg-accent-gold"}`}
@@ -365,6 +389,39 @@ export default function NewNavBar({
                       My Cart
                     </DropdownMenuItem>
                   )}
+                  {user.account_type === AccountType.Tourist && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate("/home/history");
+                      }}
+                      className={styles.actions.dropdownItem}
+                    >
+                      My History
+                    </DropdownMenuItem>
+                  )}
+                  {user.account_type === AccountType.Tourist && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate("/home/orders");
+                      }}
+                      className={styles.actions.dropdownItem}
+                    >
+                      My Orders
+                    </DropdownMenuItem>
+                  )}
+                  {user.account_type === AccountType.TourismGovernor && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate("/home/my-tags");
+                      }}
+                      className={styles.actions.dropdownItem}
+                    >
+                      My Tags
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem
                     onClick={handleLogout}
                     className={styles.actions.dropdownItem}
@@ -388,11 +445,11 @@ export default function NewNavBar({
             )}
         </div>
       </nav>
-      <NavBarTutorial
+      <NewTouristTut
         isOpen={showTutorial}
         onClose={() => setShowTutorial(false)}
         accountType={user.account_type}
-        navLinks={navBarItems}
+        navLinks={tutItems}
       />
     </>
   );
