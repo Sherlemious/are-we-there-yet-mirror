@@ -27,6 +27,10 @@ class CartRepo {
   async removeProductFromCart(userId: string, productId: string) {
     return await User.findByIdAndUpdate(userId, { $pull: { cart: { product: productId } } }, { new: true });
   }
+
+  async clearCart(userId: string) {
+    return await User.findByIdAndUpdate(userId, { cart: [] }, { new: true });
+  }
 }
 
 export default new CartRepo();
