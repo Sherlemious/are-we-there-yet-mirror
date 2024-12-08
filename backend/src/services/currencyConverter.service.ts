@@ -23,7 +23,11 @@ export default class currencyConverterService {
   }
 
   static async convertPrice(price: number, to: string, from: string = 'EGP'): Promise<number> {
-    const conversionRate = await this.getConversionRate(to, from);
-    return price / conversionRate;
+    to = to.toUpperCase();
+    from = from.toUpperCase();
+
+    const conversionRate: number = await this.getConversionRate(to, from);
+    const roundedPrice: number = Math.round((price / conversionRate) * 20) / 20;
+    return parseFloat(roundedPrice.toFixed(2));
   }
 }

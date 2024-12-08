@@ -8,12 +8,24 @@ import currencyConverterService from '../services/currencyConverter.service';
 import Validator from '../utils/Validator.utils';
 import emailService from '../services/email/email.service';
 import userRepo from '../database/repositories/user.repo';
+import { ActivityType } from '../types/Activity.types';
 
 const getItineraries = async (req: Request, res: Response) => {
   try {
     let itineraries = await ItineraryRepo.getItineraries();
 
     itineraries = itineraries.filter((itinerary) => itinerary.active && !itinerary.flagged);
+
+    // Check if there's currency in the body
+    if (req.body.currency) {
+      // Map through the itineraries and convert the price to the currency in the body
+      itineraries = await Promise.all(
+        itineraries.map(async (itinerary) => {
+          itinerary.price = await currencyConverterService.convertPrice(itinerary.price, req.body.currency);
+          return itinerary;
+        })
+      );
+    }
 
     const response = {
       message: 'Itineraries fetched successfully',
@@ -46,6 +58,29 @@ const adminGetItineraries = async (req: Request, res: Response) => {
 const findItineraryById = async (req: Request, res: Response) => {
   try {
     const itinerary = await ItineraryRepo.findItineraryById(req.params.id);
+
+    if (!itinerary) {
+      res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Itinerary not found', data: [] });
+      return;
+    }
+
+    // Check if there's currency in the body
+    if (req.body.currency) {
+      itinerary.price = await currencyConverterService.convertPrice(itinerary.price, req.body.currency);
+
+      // Map the activities and convert the price to the currency in the body
+      await Promise.all(
+        itinerary.activities.map(async (activity) => {
+          if (!activity.activity) return activity;
+          (activity.activity as unknown as ActivityType).price = await currencyConverterService.convertPrice(
+            (activity.activity as unknown as ActivityType).price,
+            req.body.currency
+          );
+          return activity;
+        })
+      );
+    }
+
     const response = {
       message: 'Itinerary fetched successfully',
       data: { itinerary: itinerary },
