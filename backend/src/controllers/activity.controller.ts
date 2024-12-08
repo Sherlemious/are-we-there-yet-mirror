@@ -4,6 +4,7 @@ import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import { ActivityType } from '../types/Activity.types';
 import BookingRepo from '../database/repositories/booking.repo';
+import currencyConverterService from '../services/currencyConverter.service';
 
 const createActivity = async (req: Request, res: Response) => {
   try {
@@ -67,6 +68,11 @@ const getAllActivities = async (req: Request, res: Response) => {
       const sales = await BookingRepo.getNumberOfBookingsActivity(activityId);
       activity.sales = sales;
       activity.revenue = activity.price * sales;
+    }
+
+    const currency: string = req.currency.currency;
+    for (const activity of activities) {
+      activity.price = await currencyConverterService.convertPrice(activity.price, currency);
     }
 
     res.status(ResponseStatusCodes.OK).json({ message: 'Activities fetched successfully', data: activities });

@@ -18,22 +18,26 @@ const getItineraries = async (req: Request, res: Response) => {
     for (const itinerary of itineraries) {
       const itineraryId = itinerary._id.toString();
       const sales = await BookingRepo.getNumberOfBookingsItinerary(itineraryId);
-      console.log(sales);
       itinerary.sales = sales;
       itinerary.revenue = itinerary.price * sales;
     }
 
     itineraries = itineraries.filter((itinerary) => itinerary.active && !itinerary.flagged);
 
-    // Check if there's currency in the body
-    if (req.body.currency) {
-      // Map through the itineraries and convert the price to the currency in the body
-      itineraries = await Promise.all(
-        itineraries.map(async (itinerary) => {
-          itinerary.price = await currencyConverterService.convertPrice(itinerary.price, req.body.currency);
-          return itinerary;
-        })
-      );
+    const currency: string = req.currency.currency;
+    if (currency) {
+      // Map through the itineraries and convert the price to the currency selected
+      for (const itinerary of itineraries) {
+        itinerary.price = await currencyConverterService.convertPrice(itinerary.price, currency);
+        // Map the activities and convert the price to the currency selected
+        for (const activity of itinerary.activities) {
+          if (!activity.activity) continue;
+          let originalPrice = 0;
+          const activityData = activity.activity as unknown as ActivityType;
+          originalPrice = activityData.price;
+          activityData.price = await currencyConverterService.convertPrice(originalPrice, currency);
+        }
+      }
     }
 
     const response = {
@@ -51,6 +55,14 @@ const getItineraries = async (req: Request, res: Response) => {
 const adminGetItineraries = async (req: Request, res: Response) => {
   try {
     let itineraries = await ItineraryRepo.getItineraries();
+
+    // Get the number of sales per itinerary and the total revenue
+    for (const itinerary of itineraries) {
+      const itineraryId = itinerary._id.toString();
+      const sales = await BookingRepo.getNumberOfBookingsItinerary(itineraryId);
+      itinerary.sales = sales;
+      itinerary.revenue = itinerary.price * sales;
+    }
 
     const response = {
       message: 'Itineraries fetched successfully',
@@ -73,21 +85,19 @@ const findItineraryById = async (req: Request, res: Response) => {
       return;
     }
 
-    // Check if there's currency in the body
-    if (req.body.currency) {
-      itinerary.price = await currencyConverterService.convertPrice(itinerary.price, req.body.currency);
+    const currency: string = req.currency.currency;
 
-      // Map the activities and convert the price to the currency in the body
-      await Promise.all(
-        itinerary.activities.map(async (activity) => {
-          if (!activity.activity) return activity;
-          (activity.activity as unknown as ActivityType).price = await currencyConverterService.convertPrice(
-            (activity.activity as unknown as ActivityType).price,
-            req.body.currency
-          );
-          return activity;
-        })
-      );
+    if (currency) {
+      itinerary.price = await currencyConverterService.convertPrice(itinerary.price, currency);
+
+      // Map the activities and convert the price to the currency selected
+      for (const activity of itinerary.activities) {
+        if (!activity.activity) continue;
+        let originalPrice = 0;
+        const activityData = activity.activity as unknown as ActivityType;
+        originalPrice = activityData.price;
+        activityData.price = await currencyConverterService.convertPrice(originalPrice, currency);
+      }
     }
 
     const response = {

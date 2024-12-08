@@ -9,7 +9,6 @@ import productRepo from '../database/repositories/product.repo';
 import currencyConverterService from '../services/currencyConverter.service';
 import userRepo from '../database/repositories/user.repo';
 import { accountType } from '../types/User.types';
-import { ProductType } from '../types/Product.types';
 
 const findProductById = async (req: Request, res: Response) => {
   try {
