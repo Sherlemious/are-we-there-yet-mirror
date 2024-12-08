@@ -1,7 +1,9 @@
 import Stripe from 'stripe';
+import itineraryRepo from '../database/repositories/itinerary.repo';
+import activityRepo from '../database/repositories/activity.repo';
 
 export default class StripeService {
-  public static stripe: Stripe;
+  private static stripe: Stripe;
 
   static getInstance() {
     if (!this.stripe) {
@@ -38,6 +40,57 @@ export default class StripeService {
     const session = await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: line_items,
+      mode: 'payment',
+      metadata: metadata,
+      success_url: success_url,
+      cancel_url: cancel_url,
+    });
+
+    return session;
+  }
+
+  static async createBookingSession(
+    currency: string,
+    isItinerary: boolean,
+    booked_item_id: string,
+    success_url: string,
+    cancel_url: string
+  ) {
+    let booked_item, metadata_name;
+
+    if (isItinerary) {
+      booked_item = await itineraryRepo.findItineraryById(booked_item_id);
+      metadata_name = 'itinerary_id';
+    } else {
+      booked_item = await activityRepo.getActivityById(booked_item_id);
+      metadata_name = 'activity_id';
+    }
+
+    if (!booked_item) {
+      throw new Error('Invalid booking item');
+    }
+
+    const name = booked_item?.name;
+    const price = booked_item?.price ?? 0;
+
+    const line_items = {
+      price_data: {
+        currency: currency,
+        product_data: {
+          name: name,
+        },
+        unit_amount: Math.round(price * 100),
+      },
+      quantity: 1,
+    };
+
+    const metadata = {
+      [metadata_name]: booked_item_id,
+    };
+
+    const session = await this.stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [line_items],
       mode: 'payment',
       metadata: metadata,
       success_url: success_url,

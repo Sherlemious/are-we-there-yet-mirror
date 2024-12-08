@@ -1,4 +1,6 @@
 import { model, Schema } from 'mongoose';
+import { BookingStatusType } from '../../types/Booking.types';
+import { PaymentMethodType } from '../../types/Order.types';
 
 const bookingSchema = new Schema(
   {
@@ -17,8 +19,13 @@ const bookingSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'attended', 'cancelled'],
-      default: 'pending',
+      enum: Object.values(BookingStatusType),
+      default: BookingStatusType.PAID,
+    },
+    payment_method: {
+      type: String,
+      required: true,
+      enum: Object.values(PaymentMethodType),
     },
   },
   {

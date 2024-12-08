@@ -120,19 +120,20 @@ class OrderController {
 
   async cardPayment(req: Request, res: Response) {
     try {
-      const { address_id, success_url, cancel_url } = req.body;
+      const { address_id, itinerary_id, activity_id, success_url, cancel_url } = req.body;
       const currency = req.currency.currency;
+      let session;
 
-      const user = await cartRepo.getUserCart(req.user.userId);
-      const products = user?.cart;
+      if (address_id) {
+        const user = await cartRepo.getUserCart(req.user.userId);
+        const products = user?.cart;
 
-      const session = await StripeService.createCheckoutSession(
-        currency,
-        address_id,
-        products,
-        success_url,
-        cancel_url
-      );
+        session = await StripeService.createCheckoutSession(currency, address_id, products, success_url, cancel_url);
+      } else if (itinerary_id) {
+        session = await StripeService.createBookingSession(currency, true, itinerary_id, success_url, cancel_url);
+      } else {
+        session = await StripeService.createBookingSession(currency, false, activity_id, success_url, cancel_url);
+      }
 
       res
         .status(ResponseStatusCodes.OK)
