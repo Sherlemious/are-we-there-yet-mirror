@@ -68,6 +68,8 @@ import AdminPromoCode, {
   loader as adminPromoCodeLoader,
 } from "./modules/Admin/pages/PromoCode";
 
+import { Sales as AdvertisorSales } from "./modules/Advertiser/pages/Sales";
+
 const BrowserRouter = createBrowserRouter([
   {
     path: "/",
@@ -136,7 +138,6 @@ const BrowserRouter = createBrowserRouter([
         index: true,
         element: <LandingPage />,
       },
-
       {
         path: "orders",
         children: [
@@ -307,6 +308,10 @@ const BrowserRouter = createBrowserRouter([
             loader: activityEditLoader,
           },
         ],
+      },
+      {
+        path: "advertiser-sales",
+        element: <AdvertisorSales />,
       },
     ],
   },
