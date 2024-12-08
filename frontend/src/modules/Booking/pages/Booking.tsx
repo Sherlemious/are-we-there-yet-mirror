@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   Car,
   Bus,
-  PlaneTakeoff,
+  TrainFront,
   MapPin,
   CalendarCheck,
   Users,
@@ -16,9 +16,9 @@ import { Button } from "@/components/ui/button";
 export default function Booking() {
   const [activeBooking, setActiveBooking] = useState<string | null>(null);
   const [bookingDetails, setBookingDetails] = useState({
-    car: { pickup: "", dropoff: "", date: "", passengers: 1 },
-    bus: { from: "", to: "", date: "", passengers: 1 },
-    airplane: { from: "", to: "", date: "", passengers: 1 },
+    car: { pickup: "", dropoff: "", date: "", time: "", passengers: 1 },
+    bus: { from: "", to: "", date: "", time: "", passengers: 1 },
+    train: { from: "", to: "", date: "", time: "", passengers: 1 },
   });
 
   const cardStyle =
@@ -29,7 +29,7 @@ export default function Booking() {
   };
 
   const handleInputChange = (
-    type: "car" | "bus" | "airplane",
+    type: "car" | "bus" | "train",
     field: string,
     value: string | number,
   ) => {
@@ -75,7 +75,7 @@ export default function Booking() {
             }
             onChange={(e) =>
               handleInputChange(
-                type as "car" | "bus" | "airplane",
+                type as "car" | "bus" | "train",
                 type === "car" ? "pickup" : "from",
                 e.target.value,
               )
@@ -95,7 +95,7 @@ export default function Booking() {
             }
             onChange={(e) =>
               handleInputChange(
-                type as "car" | "bus" | "airplane",
+                type as "car" | "bus" | "train",
                 type === "car" ? "dropoff" : "to",
                 e.target.value,
               )
@@ -111,8 +111,24 @@ export default function Booking() {
             value={bookingDetails[type as keyof typeof bookingDetails].date}
             onChange={(e) =>
               handleInputChange(
-                type as "car" | "bus" | "airplane",
+                type as "car" | "bus" | "train",
                 "date",
+                e.target.value,
+              )
+            }
+          />
+        </div>
+        <div>
+          <Label className="flex items-center gap-2">
+            <CalendarCheck className="h-4 w-4" /> Time
+          </Label>
+          <Input
+            type="time"
+            value={bookingDetails[type as keyof typeof bookingDetails].time}
+            onChange={(e) =>
+              handleInputChange(
+                type as "car" | "bus" | "train",
+                "time",
                 e.target.value,
               )
             }
@@ -130,7 +146,7 @@ export default function Booking() {
             }
             onChange={(e) =>
               handleInputChange(
-                type as "car" | "bus" | "airplane",
+                type as "car" | "bus" | "train",
                 "passengers",
                 parseInt(e.target.value),
               )
@@ -205,19 +221,19 @@ export default function Booking() {
           </button>
         </div>
 
-        {/* Airplane Option */}
+        {/* Train Option */}
         <div className={cardStyle}>
           <div className="flex flex-col items-center gap-16">
-            <PlaneTakeoff className="h-36 w-36 transform-gpu text-gray-400 transition-all duration-300 hover:rotate-6 hover:scale-110 hover:text-blue-500" />
+            <TrainFront  className="h-36 w-36 transform-gpu text-gray-400 transition-all duration-300 hover:rotate-6 hover:scale-110 hover:text-blue-500" />
             <div className="mb-4 text-xl font-semibold text-gray-400">
-              Airplane
+              Train
             </div>
           </div>
           <div className="mb-6 text-gray-400">
             Fastest option for long-distance travel.
           </div>
           <button
-            onClick={() => handleBooking("airplane")}
+            onClick={() => handleBooking("train")}
             className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors duration-300 hover:bg-blue-400"
           >
             Book Now
