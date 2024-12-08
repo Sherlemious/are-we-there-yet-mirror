@@ -247,14 +247,15 @@ function ItineraryModal({
                 <div className="mt-7 flex space-x-4">
                   <button
                     onClick={handleActivate}
-                    className="rounded bg-green-500 p-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-lg bg-accent-gold px-6 py-3 font-bold transition-all disabled:cursor-not-allowed disabled:opacity-50"
+             //       className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                     disabled={itinerary.active}
                   >
                     Activate
                   </button>
                   <button
                     onClick={handleDeactivate}
-                    className="rounded bg-red-500 p-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-lg bg-red-500 px-6 py-3 font-bold transition-all disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={!itinerary.active}
                   >
                     Deactivate
