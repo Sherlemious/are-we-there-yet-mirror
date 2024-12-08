@@ -55,12 +55,14 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
         return "bg-gray-100 text-gray-800";
     }
   };
-  const sortedNotifications = [...notifications].sort((a, b) => {
-    if (a.read === b.read) {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // If both are read or unread, sort by date
-    }
-    return a.read ? 1 : -1; // Put unread notifications first
-  });
+  const sortedNotifications = notifications && notifications.length > 1 
+  ? [...notifications].sort((a, b) => {
+      if (a.read === b.read) {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // If both are read or unread, sort by date
+      }
+      return a.read ? 1 : -1; // Put unread notifications first
+    })
+  : notifications || [];
 
   return (
     <div className="relative inline-block rounded-full bg-accent-gold">
@@ -71,11 +73,12 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
       >
         <Bell className="w-8 h-8" />
         {/* Notification Badge */}
-        {notifications.filter((notif) => !notif.read).length > 0 && (
+        {notifications && notifications.length > 0 && (
+        notifications.filter((notif) => !notif.read).length > 0 && (
           <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
             {notifications.filter((notif) => !notif.read).length}
           </span>
-        )}
+        ))}
       </button>
 
       {/* Notification Dropdown */}
@@ -84,7 +87,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
           <div className="p-3">
             <h3 className="text-sm font-medium text-gray-700">Notifications</h3>
             <ul className="mt-2 space-y-2 max-h-64 overflow-y-auto no-scrollbar">
-              {notifications.length > 0 ? (
+              {notifications && notifications.length > 0 ? (
                 sortedNotifications.map((notification) => (
                   <li
                     key={notification._id}
