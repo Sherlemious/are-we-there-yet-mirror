@@ -142,32 +142,45 @@ async function cancelBooking(activity_id: string, booking_id: string) {
 }
 
 function ActivityCard({ activity,
-  onCardClick
+  onCardClick,
+  onCancelClick,
+
  }: { activity: Activity,
   onCardClick: () => void;
+  onCancelClick: () => void;
   }) {
-  const classes = "text-left text-[18px] text-ellipsis";
-
   return (
-    <div className="grid min-h-[8rem] w-full grid-cols-9 gap-8 rounded-lg border border-gray-300 bg-card px-4 py-4">
-      <div className={classes}>{activity.name}</div>
-      <div className={classes}>{activity.date}</div>
-      <div className={classes}>{activity.time}</div>
-      <div className={classes}>{activity.location.name}</div>
-      <div className={classes}>{activity.price}</div>
-      <div className={classes}>{renderStars(activity.ratings)}</div>
-      <div className="text-left text-base">{activity.specialDiscounts}%</div>
-      <div className="text-left text-base">
-        {activity.bookingOpen ? "Open" : "Closed"}
-      </div>
+    <div
+    className="grid h-full w-full cursor-pointer rounded-lg border border-gray-300 bg-card p-4 shadow-lg transition duration-200 hover:shadow-sm"
+    onClick={onCardClick}
+  >
+    {/* Activity Name */}
+    <div className="grid gap-3 px-6 pb-4 pt-2">
+    <div className="p-4 text-center text-lg font-semibold text-accent-dark-blue">
+      {activity.name}
+    </div>
+    <div className="text-center text-gray-600">
+      {activity.date} {activity.time} - {activity.location.name}
+    </div>
+    <div className="text-center text-gray-600">
+      ${activity.price} 
+    </div>
+    </div>
+    <div>
+    <div className="col-span-9 justify-self-end">
       <button
-        className="col-span-9 justify-self-end rounded bg-red-500 px-3 py-2 text-white"
-        onClick={onCardClick}
+        className="col-span-9 justify-self-end rounded bg-red-600 px-3 py-2 text-white hover:bg-red-800"
+        onClick={(event) => {
+          event.stopPropagation(); // Prevent the card's click event
+          onCancelClick(); // Call the cancel handler
+        }}
         disabled={!activity.bookingOpen}
       >
         Cancel
       </button>
-    </div>
+      </div>
+      </div>
+      </div>
   );
 }
 
@@ -260,7 +273,20 @@ export function ActivityBookingList() {
       }),
     );
   }, [searchQuery, budget, date, ratings, data]);
-
+  const handleRedirect = (activity: Activity) => {
+    const baseLink = window.location.origin;
+    // get the activity link
+    const activityLink: string = "/all-activities";
+    
+    // get the activity id
+    const activityId: string = activity._id;
+    console.log(activityId);
+    // format the actual link
+    const link: string = `${baseLink}${activityLink}/${activityId}`;
+    console.log(link);
+    // redirect to the link
+    window.location.href  = link;
+  };
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* tool bar */}
@@ -319,19 +345,6 @@ export function ActivityBookingList() {
           {sortingOption.isAscending ? "Ascending" : "Descending"}
         </button>
       </div>
-
-      {/* header */}
-      <div className="grid w-full grid-cols-9 rounded-lg border border-gray-300 bg-card px-4 py-4">
-        <div className="text-left text-lg font-semibold">Name</div>
-        <div className="text-left text-lg font-semibold">Date</div>
-        <div className="text-left text-lg font-semibold">Time</div>
-        <div className="text-left text-lg font-semibold">Location</div>
-        <div className="text-left text-lg font-semibold">Price</div>
-        <div className="text-left text-lg font-semibold">Ratings</div>
-        <div className="text-left text-lg font-semibold">Discount</div>
-        <div className="text-left text-lg font-semibold">Booking Status</div>
-      </div>
-
       {/* body */}
       {loading && (
         <div className="text-center text-xl font-semibold">Loading...</div>
@@ -341,15 +354,18 @@ export function ActivityBookingList() {
           {error}
         </div>
       )}
-      {filteredData ? (
+          <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredData ? (
         filteredData?.map((activity, index) => (
           <ActivityCard key={index} activity={activity} 
-          onCardClick={() => handleCancel(activity)}
+          onCardClick={() => handleRedirect(activity)}
+          onCancelClick={() => handleCancel(activity)}
           />
         ))
       ) : (
         <div className="text-center text-xl font-semibold">No data found</div>
       )}
     </div>
+        </div>
   );
 }

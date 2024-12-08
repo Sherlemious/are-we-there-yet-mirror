@@ -253,13 +253,12 @@ function ActivityModal({
   const handleShare = (activity: Activity) => {
     // get the base link
     const baseLink = window.location.origin;
-
     // get the activity link
     const activityLink: string = "/all-activities";
-
+    
     // get the activity id
-    const activityId: string = activity._id;
-
+    const activityId: string = activity.id;
+    
     // format the actual link
     const link: string = `${baseLink}${activityLink}/${activityId}`;
 
