@@ -216,6 +216,8 @@ function ItineraryModal({
 
   // function to handle booking
   const handlePayment = async (paymentMethod: string) => {
+    const promocode = localStorage.get("promocode");
+
     switch (paymentMethod) {
       case "cash":
       case "wallet":
@@ -224,6 +226,7 @@ function ItineraryModal({
             .post("/itineraries/bookings", {
               itinerary_id: itinerary.id,
               payment_method: paymentMethod,
+              promocode,
             })
             .finally(() => setIsOpen(false)),
           {

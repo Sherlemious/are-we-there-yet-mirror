@@ -255,6 +255,7 @@ function ActivityModal({
 
   // function to handle booking
   const handlePayment = async (paymentMethod: string) => {
+    const promocode = localStorage.get("promocode");
     switch (paymentMethod) {
       case "cash":
       case "wallet":
@@ -263,6 +264,7 @@ function ActivityModal({
             .post("/activities/bookings", {
               activity_id: activity.id,
               payment_method: paymentMethod,
+              promocode,
             })
             .finally(() => setIsOpen(false)),
           {
