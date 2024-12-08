@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Car,
   Bus,
@@ -7,11 +7,13 @@ import {
   CalendarCheck,
   Users,
   XCircle,
+  LocateFixed,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import Map, { Location } from "../../shared/components/Map"; // Import the Map component
 
 export default function Booking() {
   const [activeBooking, setActiveBooking] = useState<string | null>(null);
@@ -20,6 +22,10 @@ export default function Booking() {
     bus: { from: "", to: "", date: "", time: "", passengers: 1 },
     train: { from: "", to: "", date: "", time: "", passengers: 1 },
   });
+  const [selectedLocation, setSelectedLocation] = useState<{
+    type: string;
+    field: string;
+  } | null>(null);
 
   const cardStyle =
     "flex flex-col items-center rounded-lg bg-white/10 p-6 shadow-lg transition-shadow duration-300 hover:shadow-xl transition-transform duration-300 hover:transform hover:-translate-y-4";
@@ -31,7 +37,7 @@ export default function Booking() {
   const handleInputChange = (
     type: "car" | "bus" | "train",
     field: string,
-    value: string | number,
+    value: string | number
   ) => {
     setBookingDetails((prev) => ({
       ...prev,
@@ -42,137 +48,176 @@ export default function Booking() {
     }));
   };
 
-  const submitBooking = (type: string) => {
-    // Basic validation
-    const currentBooking = bookingDetails[type as keyof typeof bookingDetails];
-    const requiredFields = Object.values(currentBooking).filter(
-      (val) => val === "" || val === 0,
-    );
+  const handleLocationSelect = (location: Location) => {
+    if (selectedLocation) {
+      handleInputChange(
+        selectedLocation.type as "car" | "bus" | "train",
+        selectedLocation.field,
+        location.name
+      );
+      setSelectedLocation(null);
+    }
+  };
 
-    if (requiredFields.length > 0) {
-      toast.error("Please fill in all fields");
+  const openLocationMap = (
+    type: "car" | "bus" | "train",
+    field: string
+  ) => {
+    setSelectedLocation({ type, field });
+  };
+
+  const fetchLocation = async (
+    type: "car" | "bus" | "train",
+    field: string
+  ) => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser.");
       return;
     }
 
-    // Simulated booking submission
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        );
+        const data = await response.json();
+        const location =
+          data.display_name || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+
+        handleInputChange(type, field, location);
+      },
+      () => {
+        toast.error("Unable to retrieve your location.");
+      }
+    );
+  };
+
+  const renderLocationInput = (
+    type: "car" | "bus" | "train",
+    field: string,
+    placeholder: string
+  ) => (
+    <div className="flex items-center gap-2">
+      <Input
+        placeholder={placeholder}
+        value={bookingDetails[type][field] || ""}
+        onClick={() => openLocationMap(type, field)}
+        readOnly
+        className="cursor-pointer"
+      />
+      <button
+        type="button"
+        className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-400"
+        onClick={() => fetchLocation(type, field)}
+      >
+        <LocateFixed size={20} />
+      </button>
+    </div>
+  );
+
+  const submitBooking = (type: string) => {
+    const currentBooking = bookingDetails[type as keyof typeof bookingDetails];
+    const requiredFields = Object.values(currentBooking).filter(
+      (val) => val === "" || val === 0
+    );
+
+    if (requiredFields.length > 0) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
     toast.success(`Booking ${type} successful!`);
     setActiveBooking(null);
   };
 
-  const renderBookingForm = (type: string) => {
-    const commonInputs = (
-      <div className="space-y-4">
-        <div>
-          <Label className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            {type === "car" ? "Pickup Location" : "Departure"}
-          </Label>
-          <Input
-            placeholder={`Enter ${type === "car" ? "pickup" : "departure"} location`}
-            value={
-              bookingDetails[type as keyof typeof bookingDetails].from ||
-              bookingDetails[type as keyof typeof bookingDetails].pickup
-            }
-            onChange={(e) =>
-              handleInputChange(
-                type as "car" | "bus" | "train",
-                type === "car" ? "pickup" : "from",
-                e.target.value,
-              )
-            }
-          />
+  const renderBookingForm = (type: string) => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="relative w-full max-w-md rounded-lg bg-white p-8">
+        <button
+          onClick={() => setActiveBooking(null)}
+          className="absolute right-4 top-4 text-gray-500 hover:text-gray-800"
+        >
+          <XCircle className="h-6 w-6" />
+        </button>
+        <h2 className="mb-6 text-center text-2xl font-bold capitalize">
+          {type} Booking
+        </h2>
+        <div className="space-y-4">
+          {renderLocationInput(type as "car" | "bus" | "train", "pickup", "Enter pickup location")}
+          {renderLocationInput(type as "car" | "bus" | "train", "dropoff", "Enter drop-off location")}
+          <div>
+            <Label className="flex items-center gap-2">
+              <CalendarCheck className="h-4 w-4" /> Date
+            </Label>
+            <Input
+              type="date"
+              value={bookingDetails[type as keyof typeof bookingDetails].date}
+              onChange={(e) =>
+                handleInputChange(type as "car" | "bus" | "train", "date", e.target.value)
+              }
+            />
+          </div>
+          <div>
+            <Label className="flex items-center gap-2">
+              <CalendarCheck className="h-4 w-4" /> Time
+            </Label>
+            <Input
+              type="time"
+              value={bookingDetails[type as keyof typeof bookingDetails].time}
+              onChange={(e) =>
+                handleInputChange(type as "car" | "bus" | "train", "time", e.target.value)
+              }
+            />
+          </div>
+          <div>
+            <Label className="flex items-center gap-2">
+              <Users className="h-4 w-4" /> Passengers
+            </Label>
+            <Input
+              type="number"
+              min="1"
+              value={bookingDetails[type as keyof typeof bookingDetails].passengers}
+              onChange={(e) =>
+                handleInputChange(
+                  type as "car" | "bus" | "train",
+                  "passengers",
+                  parseInt(e.target.value)
+                )
+              }
+            />
+          </div>
         </div>
-        <div>
-          <Label className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            {type === "car" ? "Drop-off Location" : "Destination"}
-          </Label>
-          <Input
-            placeholder={`Enter ${type === "car" ? "drop-off" : "destination"} location`}
-            value={
-              bookingDetails[type as keyof typeof bookingDetails].to ||
-              bookingDetails[type as keyof typeof bookingDetails].dropoff
-            }
-            onChange={(e) =>
-              handleInputChange(
-                type as "car" | "bus" | "train",
-                type === "car" ? "dropoff" : "to",
-                e.target.value,
-              )
-            }
-          />
-        </div>
-        <div>
-          <Label className="flex items-center gap-2">
-            <CalendarCheck className="h-4 w-4" /> Date
-          </Label>
-          <Input
-            type="date"
-            value={bookingDetails[type as keyof typeof bookingDetails].date}
-            onChange={(e) =>
-              handleInputChange(
-                type as "car" | "bus" | "train",
-                "date",
-                e.target.value,
-              )
-            }
-          />
-        </div>
-        <div>
-          <Label className="flex items-center gap-2">
-            <CalendarCheck className="h-4 w-4" /> Time
-          </Label>
-          <Input
-            type="time"
-            value={bookingDetails[type as keyof typeof bookingDetails].time}
-            onChange={(e) =>
-              handleInputChange(
-                type as "car" | "bus" | "train",
-                "time",
-                e.target.value,
-              )
-            }
-          />
-        </div>
-        <div>
-          <Label className="flex items-center gap-2">
-            <Users className="h-4 w-4" /> Passengers
-          </Label>
-          <Input
-            type="number"
-            min="1"
-            value={
-              bookingDetails[type as keyof typeof bookingDetails].passengers
-            }
-            onChange={(e) =>
-              handleInputChange(
-                type as "car" | "bus" | "train",
-                "passengers",
-                parseInt(e.target.value),
-              )
-            }
-          />
+        <div className="mt-6">
+          <Button onClick={() => submitBooking(type)} className="w-full">
+            Confirm Booking
+          </Button>
         </div>
       </div>
-    );
+    </div>
+  );
+
+  const renderLocationMap = () => {
+    if (!selectedLocation) return null;
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-        <div className="relative w-full max-w-md rounded-lg bg-white p-8">
+        <div className="relative w-full max-w-xl rounded-lg bg-white p-8">
           <button
-            onClick={() => setActiveBooking(null)}
+            onClick={() => setSelectedLocation(null)}
             className="absolute right-4 top-4 text-gray-500 hover:text-gray-800"
           >
             <XCircle className="h-6 w-6" />
           </button>
           <h2 className="mb-6 text-center text-2xl font-bold capitalize">
-            {type} Booking
+            Select Location
           </h2>
-          {commonInputs}
-          <div className="mt-6">
-            <Button onClick={() => submitBooking(type)} className="w-full">
-              Confirm Booking
-            </Button>
+          <div className="h-96">
+            <Map
+              className="h-full w-full"
+              onChange={handleLocationSelect}
+            />
           </div>
         </div>
       </div>
@@ -243,6 +288,9 @@ export default function Booking() {
 
       {/* Booking Forms */}
       {activeBooking && renderBookingForm(activeBooking)}
+      
+      {/* Location Map */}
+      {renderLocationMap()}
     </div>
   );
 }
