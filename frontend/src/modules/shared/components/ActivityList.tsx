@@ -377,9 +377,9 @@ function ActivityModal({
                   {isUserTourist && (
                     <button
                       onClick={handleBooking}
-                      className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-10 py-3 font-bold text-white text-text-primary transition-all duration-150 hover:opacity-80"
+                      className="flex items-center gap-2 rounded-lg bg-accent-gold text-black px-10 py-3 font-bold text-text-primary transition-all duration-150 hover:opacity-80"
                       >                    
-                      <h4 className="text-sub-headings font-sub_headings text-white">
+                      <h4 className="text-sub-headings font-sub_headings ">
                         Book Now
                       </h4>
                     </button>

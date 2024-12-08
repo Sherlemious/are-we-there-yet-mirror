@@ -64,8 +64,8 @@ const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEditRat
         render: (id: string) => (
           <button
             onClick={() => onEditRating({ _id: id, type: "activities" })}
-            className="px-4 py-2 text-sm text-white bg-accent-dark-blue font-bold transition-all duration-150 hover:opacity-80"
-          >
+            className="px-4 py-2 text- bg-accent-gold font-bold transition-all duration-150 hover:opacity-80"
+            >
             Add Review
           </button>
         ),

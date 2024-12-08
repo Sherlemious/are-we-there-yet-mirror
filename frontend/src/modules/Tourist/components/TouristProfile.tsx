@@ -141,7 +141,7 @@ export default function TouristProfile({
                 min={0}
                 max={user.loyalty_points}
               />
-              <button className="mt-4 w-full rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80">
+              <button className="mt-4 w-full rounded-lg bg-accent-gold px-6 py-3 font-bold transition-all duration-150 hover:opacity-80">
                 Redeem Points
               </button>
             </form>
