@@ -1,8 +1,10 @@
+import toast from "react-hot-toast";
 import axiosInstance from "../../../shared/services/axiosInstance";
 import { useEffect, useState } from "react";
 
 interface Activity {
   _id: string;
+  name: string;
   booking_id: string;
   date: string;
   time: string;
@@ -46,7 +48,6 @@ async function getMyActivities() {
     const responseData = resPromise?.data;
 
     // Log the raw response to debug the data structure
-    console.log("Raw Response:", responseData);
 
     // Check if the expected properties exist
     const activityBookings = responseData?.data?.activities?.activity_bookings;
@@ -67,6 +68,7 @@ async function getMyActivities() {
           latitude: 0,
           longitude: 0,
         },
+        name: activity?.name ?? "N/A",
         price: activity?.price ?? -1,
         category: activity?.category ?? "N/A",
         tags: activity?.tags ?? [],
@@ -92,7 +94,7 @@ async function getMyActivities() {
         latitude: item.location.latitude ?? 0,
         longitude: item.location.longitude ?? 0,
       };
-
+      const name = item.name ?? "N/A";
       const tags = item.tags?.map((tag) => tag.name) ?? [];
       const ratings = Math.floor(Math.random() * 5) + 1; // Mock ratings
 
@@ -102,6 +104,7 @@ async function getMyActivities() {
         date,
         time,
         location,
+        name,
         ratings,
         price: item.price ?? -1,
         category: item.category ?? "N/A",
@@ -122,66 +125,62 @@ async function getMyActivities() {
 
 async function cancelBooking(activity_id: string, booking_id: string) {
   try {
-    console.log("Cancelling booking:", activity_id, booking_id);
-
     const response = await axiosInstance.patch("/users/cancelActivityBooking", {
       activity_id,
       booking_id,
     });
 
     if (response.status === 200) {
-      alert("Booking cancelled successfully!");
       return true;
     } else {
-      alert(response.data.message || "Failed to cancel booking.");
       return false;
     }
   } catch (error: any) {
     console.error("Error cancelling booking:", error.message);
-    alert("An error occurred while cancelling the booking.");
     return false;
   }
 }
 
-function ActivityCard({ activity }: { activity: Activity }) {
-  const classes = "text-left text-[18px] text-ellipsis";
+function ActivityCard({ activity,
+  onCardClick,
+  onCancelClick,
 
-  const handleCancel = async () => {
-    const confirmed = confirm("Are you sure you want to cancel this booking?");
-    if (confirmed) {
-      try {
-        const success = await cancelBooking(activity._id, activity.booking_id);
-        if (success) {
-          window.location.reload(); // Reload to refresh data if successful
-        } else {
-          alert("Failed to cancel booking.");
-        }
-      } catch (error) {
-        console.error("Error cancelling booking:", error);
-        alert("An error occurred while cancelling the booking.");
-      }
-    }
-  };
-
+ }: { activity: Activity,
+  onCardClick: () => void;
+  onCancelClick: () => void;
+  }) {
   return (
-    <div className="grid min-h-[8rem] w-full grid-cols-9 gap-8 rounded-lg border border-gray-300 bg-card px-4 py-4">
-      <div className={classes}>{activity.date}</div>
-      <div className={classes}>{activity.time}</div>
-      <div className={classes}>{activity.location.name}</div>
-      <div className={classes}>{activity.price}</div>
-      <div className={classes}>{renderStars(activity.ratings)}</div>
-      <div className="text-left text-base">{activity.specialDiscounts}%</div>
-      <div className="text-left text-base">
-        {activity.bookingOpen ? "Open" : "Closed"}
-      </div>
-      <button
-        className="col-span-9 justify-self-end rounded bg-red-500 px-3 py-2 text-white"
-        onClick={handleCancel}
-        // disabled={!activity.bookingOpen}
-      >
-        Cancel
-      </button>
+    <div
+    className="grid h-full w-full cursor-pointer rounded-lg border border-gray-300 bg-card p-4 shadow-lg transition duration-200 hover:shadow-sm"
+    onClick={onCardClick}
+  >
+    {/* Activity Name */}
+    <div className="grid gap-3 px-6 pb-4 pt-2">
+    <div className="p-4 text-center text-lg font-semibold text-accent-dark-blue">
+      {activity.name}
     </div>
+    <div className="text-center text-gray-600">
+      {activity.date} {activity.time} - {activity.location.name}
+    </div>
+    <div className="text-center text-gray-600">
+      ${activity.price.toFixed(2)} 
+    </div>
+    </div>
+    <div>
+    <div className="col-span-9 justify-self-end">
+      <button
+        className="col-span-9 justify-self-end px-3 py-3 rounded-lg border-red-200 text-lg text-red-600 hover:bg-red-50 hover:text-red-700"
+        onClick={(event) => {
+          event.stopPropagation(); // Prevent the card's click event
+          onCancelClick(); // Call the cancel handler
+        }}
+        disabled={!activity.bookingOpen}
+      >
+        Cancel Booking
+      </button>
+      </div>
+      </div>
+      </div>
   );
 }
 
@@ -199,7 +198,20 @@ export function ActivityBookingList() {
     isSortedByPrice: true,
     isAscending: true,
   });
-
+  const handleCancel = async (activity: Activity) => {
+      const loadingToastId = toast.loading("Processing");
+      try {
+        const success = await cancelBooking(activity._id, activity.booking_id);
+        if (success) {
+          setData(data.filter((item) => item._id !== activity._id));
+          toast.success("Booking cancelled successfully.", { id: loadingToastId });
+        } else {
+          toast.error("Failed to cancel booking.", { id: loadingToastId });
+        }
+      } catch (error) {
+        toast.error("An error occurred while cancelling the booking.", { id: loadingToastId });
+      }
+  };
   // useEffect to get the data
   useEffect(() => {
     getMyActivities()
@@ -261,7 +273,20 @@ export function ActivityBookingList() {
       }),
     );
   }, [searchQuery, budget, date, ratings, data]);
-
+  const handleRedirect = (activity: Activity) => {
+    const baseLink = window.location.origin;
+    // get the activity link
+    const activityLink: string = "home/all-activities";
+    
+    // get the activity id
+    const activityId: string = activity._id;
+    console.log(activityId);
+    // format the actual link
+    const link: string = `${baseLink}/${activityLink}/${activityId}`;
+    console.log(link);
+    // redirect to the link
+    window.location.href  = link;
+  };
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* tool bar */}
@@ -298,7 +323,7 @@ export function ActivityBookingList() {
           }
         />
         <button
-          className="col-span-1 rounded-md bg-accent-gold p-3 font-semibold text-white"
+          className="col-span-1 rounded-md bg-accent-dark-blue p-3 font-semibold text-white"
           onClick={() => {
             setSortingOption({
               isSortedByPrice: !sortingOption.isSortedByPrice,
@@ -309,7 +334,7 @@ export function ActivityBookingList() {
           Sort by {sortingOption.isSortedByPrice ? "Price" : "Ratings"}
         </button>
         <button
-          className="col-span-1 rounded-md bg-accent-gold p-3 font-semibold text-white"
+          className="col-span-1 rounded-md bg-accent-dark-blue p-3 font-semibold text-white"
           onClick={() =>
             setSortingOption({
               ...sortingOption,
@@ -320,18 +345,6 @@ export function ActivityBookingList() {
           {sortingOption.isAscending ? "Ascending" : "Descending"}
         </button>
       </div>
-
-      {/* header */}
-      <div className="grid w-full grid-cols-9 rounded-lg border border-gray-300 bg-card px-4 py-4">
-        <div className="text-left text-lg font-semibold">Date</div>
-        <div className="text-left text-lg font-semibold">Time</div>
-        <div className="text-left text-lg font-semibold">Location</div>
-        <div className="text-left text-lg font-semibold">Price</div>
-        <div className="text-left text-lg font-semibold">Ratings</div>
-        <div className="text-left text-lg font-semibold">Discount</div>
-        <div className="text-left text-lg font-semibold">Booking Status</div>
-      </div>
-
       {/* body */}
       {loading && (
         <div className="text-center text-xl font-semibold">Loading...</div>
@@ -341,13 +354,18 @@ export function ActivityBookingList() {
           {error}
         </div>
       )}
-      {filteredData ? (
+          <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredData ? (
         filteredData?.map((activity, index) => (
-          <ActivityCard key={index} activity={activity} />
+          <ActivityCard key={index} activity={activity} 
+          onCardClick={() => handleRedirect(activity)}
+          onCancelClick={() => handleCancel(activity)}
+          />
         ))
       ) : (
         <div className="text-center text-xl font-semibold">No data found</div>
       )}
     </div>
+        </div>
   );
 }

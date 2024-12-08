@@ -1,4 +1,4 @@
-import { BookOpenCheck, BookX, Tag, Share } from "lucide-react";
+import { BookOpenCheck, BookX, Tag, Share, Bookmark } from "lucide-react";
 import { useEffect, useState, useContext, useRef } from "react";
 import Modal, { ModalRef } from "@/modules/shared/components/Modal";
 import { UserContext } from "../../shared/store/user-context";
@@ -221,7 +221,27 @@ function ActivityModal({
     transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
     opacity: isVisible && !isClosing ? 1 : 0,
   };
-
+  const handleAddBookmark = async () => {
+    if (activity) {
+      try {
+        const payload = {
+          modelType: "activity",
+          modelId: activity.id,
+        };
+        console.log(payload);
+        await axiosInstance.post(`/users/bookmarks`, payload);
+        toast.success("Activity bookmarked successfully");
+      } catch (error) {
+        console.error("Error bookmarking activity:", error);
+        toast.error(
+          (error as any).response?.data?.message ||
+            "Failed to bookmark activity",
+        );
+      }
+    } else {
+      toast.error("No itinerary selected to  be bookmarked");
+    }
+  };
   // function to handle booking
   const handleBooking = async () => {
     try {
@@ -253,13 +273,12 @@ function ActivityModal({
   const handleShare = (activity: Activity) => {
     // get the base link
     const baseLink = window.location.origin;
-
     // get the activity link
     const activityLink: string = "/all-activities";
-
+    
     // get the activity id
-    const activityId: string = activity._id;
-
+    const activityId: string = activity.id;
+    
     // format the actual link
     const link: string = `${baseLink}${activityLink}/${activityId}`;
 
@@ -310,6 +329,9 @@ function ActivityModal({
                     }}
                     className="cursor-pointer transition-all duration-150 hover:scale-110"
                   />
+                   <button onClick={handleAddBookmark} className="cursor-pointer transition-all duration-150 hover:scale-110">
+                    <Bookmark size={20}/>
+                  </button>
                   <h2 className="text-headline font-headline text-accent-dark-blue">
                     {activity.name} {renderStars(activity.ratings)}
                   </h2>
@@ -319,7 +341,7 @@ function ActivityModal({
               <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:grid-rows-1 relative">
               <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
               {[
-                    { label: "Price", value: activity.price },
+                    { label: "Price", value: activity.price.toFixed(2) },
                     { label: "Category", value: activity.category.name || "N/A" },
                     { label: "Tags", value: activity.tags.join(", ") || "N/A"},
                     { label: "Special Discounts", value: activity.specialDiscounts },

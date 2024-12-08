@@ -55,7 +55,13 @@ const Cart = () => {
       console.error("Error fetching addresses:", error);
     }
   };
-
+  const handleRedirect = () => {
+    const baseLink = window.location.origin;
+    // format the actual link
+    const link: string = `${baseLink}/home/all-products/`;
+    // redirect to the link
+    window.location.href = link;
+  };
   const handleNewAddressSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const loadingToastId = toast.loading("Processing..."); // Show loading toast
@@ -201,6 +207,7 @@ const Cart = () => {
               <div key={index} /*className={customStyles.slide}}*/>
                 <GenericCard
                   item={item.product}
+                  onClick={() => {handleRedirect()}}
                   images={imageUrls[item.product._id] || [defaultImage]}
                   onRemove={() => {
                     setSelectedProduct(item.product); 
@@ -217,7 +224,7 @@ const Cart = () => {
                           </span>
                         </div>
                         <p className="mt-1 text-lg font-semibold text-primary-green">
-                          ${item.product.price}
+                          ${item.product.price.toFixed(2)}
                         </p>
                       </div>
                       <div className="rounded-lg bg-secondary-light_grey">
@@ -228,9 +235,10 @@ const Cart = () => {
                           </span>
                         </div>
                         <button
-                              onClick={() =>
+                              onClick={(event) => {
+                                event.stopPropagation();
                                 changeQuantity(item.product._id, item.quantity - 1)
-                              }
+                              }}
                               className="p-1 text-gray-400 hover:text-gray-800"
                               disabled={item.quantity <= 1} // Disable button if quantity is already 1
                             >
@@ -240,9 +248,10 @@ const Cart = () => {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() =>
+                              onClick={(event) => {
+                                event.stopPropagation();
                                 changeQuantity(item.product._id, item.quantity + 1)
-                              }
+                              }}
                               className="p-1 text-gray-400 hover:text-gray-800"
                             >
                               <Plus size={20} />

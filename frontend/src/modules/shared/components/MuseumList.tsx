@@ -472,15 +472,15 @@ export function MuseumList() {
                    <div className={customStyles.ticketRow}>
                     <div className={customStyles.ticketColumn}>
                       <p className={customStyles.slideText}>Foreigner</p>
-                      <p className={customStyles.slideText2}>${museum.ticket_prices.foreigner}</p>
+                      <p className={customStyles.slideText2}>${museum.ticket_prices.foreigner.toFixed(2)}</p>
                       </div>
                       <div className={customStyles.ticketColumn}>
                         <p className={customStyles.slideText}>Native</p>
-                        <p className={customStyles.slideText2}>${museum.ticket_prices.native}</p>
+                        <p className={customStyles.slideText2}>${museum.ticket_prices.native.toFixed(2)}</p>
                         </div>
                         <div className={customStyles.ticketColumn}>
                           <p className={customStyles.slideText}>Student</p>
-                          <p className={customStyles.slideText2}>${museum.ticket_prices.student}</p>
+                          <p className={customStyles.slideText2}>${museum.ticket_prices.student.toFixed(2)}</p>
                           </div>
                         </div>
                   <div className={`items-center justify-center mt-2`}>

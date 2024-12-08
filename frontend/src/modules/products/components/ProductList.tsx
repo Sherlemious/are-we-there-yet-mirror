@@ -3,7 +3,6 @@ import { Product } from "../types/product";
 import {
   DollarSign,
   ListPlus,
-  ListX,
   Package,
   Plus,
   ShoppingCart,
@@ -14,12 +13,11 @@ import ProductForm, { ProductFormDataSubmit } from "./ProductForm";
 import defaultPhoto from "../assets/defaultPhoto.png";
 import GenericCard from "../../shared/GenericCard/GenericCard";
 import axiosInstance from "../../shared/services/axiosInstance";
-import { getWishList } from "../Api/ProductService";
 import toast from "react-hot-toast";
 
 interface ProductListProps {
   products: Product[]; // All products
-  role: "admin" | "seller" | "tourist" | "wishlist"; // Define user roles
+  role: "admin" | "seller" | "tourist"; // Define user roles
   onEdit?: (product: Product) => void; // Admin/Seller functionality
   onDelete?: (productId: string) => void; // Admin/Seller functionality
   onCreate?: (productData: ProductFormDataSubmit) => void; // Admin/Seller functionality
@@ -96,31 +94,6 @@ const ProductList: React.FC<ProductListProps> = ({
       toast.error("No product selected to add to wishlist");
     }
   };
-
-  const handleRemoveWishlist = async () => {
-    if (selectedProduct) {
-      try {
-        const bookmarks = (await getWishList()).wishlist;
-        const bookmark = bookmarks.find(
-          (bookmark: any) => bookmark.product._id === selectedProduct._id,
-        );
-        const bookmarkId = bookmark?._id;
-        console.log(bookmarkId);
-        await axiosInstance.delete(`/users/bookmarks/${bookmarkId}`);
-        toast.success("Product removed from wishlist");
-        window.location.reload();
-      } catch (error) {
-        console.error("Error removing product from wishlist:", error);
-        toast.error(
-          (error as any).response?.data?.message ||
-            "Failed to remove product from wishlist",
-        );
-      }
-    } else {
-      toast.error("No product selected to remove from wishlist");
-    }
-  };
-
   // Function to add a product to the cart
   const handleAddCart = async () => {
     if (selectedProduct) {
@@ -190,7 +163,6 @@ const ProductList: React.FC<ProductListProps> = ({
   return (
     <div className={customStyles.container}>
       {/* Search and Filter Controls */}
-      {role !== "wishlist" && (
         <div className={customStyles.filterContainer}>
           <input
             type="text"
@@ -229,7 +201,6 @@ const ProductList: React.FC<ProductListProps> = ({
             )
           </button>
         </div>
-      )}
 
       {/* Product List */}
       <div className={customStyles.sliderContainer}>
@@ -277,20 +248,24 @@ const ProductList: React.FC<ProductListProps> = ({
                           </span>
                         </div>
                         <p className="mt-1 text-lg font-semibold text-primary-green">
-                          ${product.price}
+                          ${product.price.toFixed(2)}
                         </p>
                       </div>
 
                       <div className="rounded-lg bg-secondary-light_grey">
                         <div className="flex items-center gap-2 text-accent-dark-blue">
                           <Package size={16} className="text-primary-blue" />
-                          <span className="text-sm font-sub_headings">
-                            Quantity :
-                          </span>
-                        </div>
-                        <p className="mt-1 text-lg font-bold text-primary-blue">
-                          {product.available_quantity}
-                        </p>
+                          <span className="text-sm font-sub_headings">Quantity:</span>
+                            </div>
+                            {product.available_quantity > 0 ? (
+                              <p className="mt-1 text-lg font-bold text-primary-blue">
+                                {product.available_quantity}
+                              </p>
+                            ) : (
+                              <p className="mt-1 text-lg font-bold text-primary-blue">
+                                Out of stock
+                             </p>
+                            )}
                       </div>
                     </div>
 
@@ -335,7 +310,7 @@ const ProductList: React.FC<ProductListProps> = ({
       >
         {selectedProduct && (
           <div className="p-6">
-            {(role === "tourist" || role === "wishlist") && (
+            {(role === "tourist") && (
               <div className="space-y-6">
                 {/* Description */}
                 <div className="rounded-lg bg-secondary-light_grey p-4">
@@ -352,7 +327,7 @@ const ProductList: React.FC<ProductListProps> = ({
                       Unit price
                     </h3>
                     <p className="text-2xl font-bold text-primary-green">
-                      ${selectedProduct.price}
+                      ${selectedProduct.price.toFixed(2)}
                     </p>
                   </div>
                   <div className="rounded-lg bg-secondary-light_grey p-4">
@@ -446,24 +421,6 @@ const ProductList: React.FC<ProductListProps> = ({
                   <button
                     onClick={handleAddCart}
                     type="submit"
-                    className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
-                  >
-                    <ShoppingCart size={20} />
-                    Add to Cart
-                  </button>
-                </>
-              )}
-              {role === "wishlist" && (
-                <>
-                  <button
-                    onClick={handleRemoveWishlist}
-                    className="mr-2 flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
-                  >
-                    <ListX size={20} />
-                    Remove from wishlist
-                  </button>
-                  <button
-                    onClick={handleAddCart}
                     className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
                   >
                     <ShoppingCart size={20} />

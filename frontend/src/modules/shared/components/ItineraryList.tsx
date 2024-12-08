@@ -3,7 +3,7 @@ import { useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "../../shared/store/user-context";
 import { ModalRef } from "@/modules/shared/components/Modal";
 import Modal from "@/modules/shared/components/Modal";
-import { Share } from "lucide-react";
+import { Bookmark, Share } from "lucide-react";
 import toast from "react-hot-toast";
 import ShareLink from "./ShareLink";
 import Map from "./Map";
@@ -12,17 +12,14 @@ async function getMyItineraries() {
   try {
     // get the data via axios
     const resPromise = await axiosInstance.get("/itineraries/get");
-
     // format the data
     const res = await resPromise.data;
-    console.log(res.data.itineraries);
     const tempData: Itinerary[] = await res.data.itineraries.map(
       (item: any) => {
         const id = item._id;
         const name = item.name === null ? "N/A" : item.name;
         const category = item.category === null ? "N/A" : item.category;
         const tags = item.tags === null ? [] : item.tags.map((tag) => tag.name);
-        console.log(item.activities[0].activity.name);
         let activities = [];
         activities = item.activities.map((activity) => {
           if (activity.activity === null) {
@@ -54,8 +51,7 @@ async function getMyItineraries() {
         const pickupLocation = item.pick_up_location;
         const dropoffLocation = item.drop_off_location;
         const rating = item.average_rating;
-        console.log(item.activities[0].activity.name);
-        console.log(item);
+        const timeline = item.timeline === "" ? "N/A" : item.timeline;
         return {
           id,
           name,
@@ -69,6 +65,7 @@ async function getMyItineraries() {
           accessibilities,
           pickupLocation,
           dropoffLocation,
+          timeline,
         };
       },
     );
@@ -89,7 +86,6 @@ const handleLocation = (itinerary: Itinerary, isDrop: boolean) => {
     lng: itinerary.dropoffLocation.longitude,
     name: itinerary.dropoffLocation.name,
   };
-  console.log(value);
   return value;
 }
 else{
@@ -98,7 +94,6 @@ else{
     lng: itinerary.pickupLocation.longitude,
     name: itinerary.pickupLocation.name,
   };
-  console.log(value);
   return value;
 }
 }
@@ -148,7 +143,15 @@ const formatTime = (time: string) => {
   const parsedTime = new Date(time);
   return parsedTime.toLocaleTimeString("en-GB");
 };
-
+const formatTimeline = (timeline: string) => {
+  if(timeline=="N/A"){
+    return "N/A";
+  }
+  const [start, end] = timeline.split(" - ");
+  const formattedStart = `${formatDate(start)} ${formatTime(start)}`;
+  const formattedEnd = `${formatDate(end)} ${formatTime(end)}`;
+  return `${formattedStart} - ${formattedEnd}`;
+};
 // main components
 function ItineraryModal({
   itinerary,
@@ -189,7 +192,27 @@ function ItineraryModal({
     transform: isVisible && !isClosing ? "scale(1)" : "scale(0.95)",
     opacity: isVisible && !isClosing ? 1 : 0,
   };
-
+  const handleAddBookmark = async () => {
+    if (itinerary) {
+      try {
+        const payload = {
+          modelType: "itinerary",
+          modelId: itinerary.id,
+        };
+        console.log(payload);
+        await axiosInstance.post(`/users/bookmarks`, payload);
+        toast.success("Itinerary bookmarked successfully");
+      } catch (error) {
+        console.error("Error bookmarking itinerary:", error);
+        toast.error(
+          (error as any).response?.data?.message ||
+            "Failed to bookmark itinerary",
+        );
+      }
+    } else {
+      toast.error("No itinerary selected to  be bookmarked");
+    }
+  };
   // function to handle booking
   const handleBooking = async () => {
     try {
@@ -268,6 +291,10 @@ function ItineraryModal({
                     }}
                     className="cursor-pointer transition-all duration-150 hover:scale-110"
                   />
+                  <button onClick={handleAddBookmark} className="cursor-pointer transition-all duration-150 hover:scale-110">
+                    <Bookmark size={20}/>
+                  </button>
+
                   <h2 className="text-headline font-headline text-accent-dark-blue">
                     {itinerary.name} {renderStars(itinerary.rating)}
                   </h2>
@@ -281,9 +308,10 @@ function ItineraryModal({
                 <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
                   {[
                     { label: "Language", value: itinerary.language },
-                    { label: "Price", value: itinerary.price },
+                    { label: "Price", value: itinerary.price.toFixed(2) },
                     { label: "Category", value: itinerary.category.name },
                     { label: "Tags", value: itinerary.tags.join(", ") },
+                    { label: "Timeline", value: formatTimeline(itinerary.timeline) },
                     {
                       label: "Accessibilities",
                       value: itinerary.accessibilities ? "Yes" : "No",
@@ -487,7 +515,6 @@ export function ItineraryList() {
   // get the url
   const url = window.location.href;
   const itineraryID: string = url.split("/").pop() ?? "";
-
   // if the itineraryID from the query param is valid set the search filed to the itinerary name
   useEffect(() => {
     // early exit if data hasnt loaded

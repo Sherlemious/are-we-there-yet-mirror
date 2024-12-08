@@ -332,6 +332,39 @@ export default function NewNavBar({
                       My Complaints
                     </DropdownMenuItem>
                   )}
+                  {user.account_type === AccountType.Tourist && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate("/home/bookmarks");
+                      }}
+                      className={styles.actions.dropdownItem}
+                    >
+                      My Bookmarks
+                    </DropdownMenuItem>
+                  )}
+                  {user.account_type === AccountType.Tourist && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate("/home/wishlist");
+                      }}
+                      className={styles.actions.dropdownItem}
+                    >
+                      My Wishlist
+                    </DropdownMenuItem>
+                  )}
+                  {user.account_type === AccountType.Tourist && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setIsOpen(false);
+                        navigate("/home/cart");
+                      }}
+                      className={styles.actions.dropdownItem}
+                    >
+                      My Cart
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem
                     onClick={handleLogout}
                     className={styles.actions.dropdownItem}
