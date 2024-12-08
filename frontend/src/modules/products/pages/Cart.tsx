@@ -141,6 +141,8 @@ const Cart = () => {
   };
 
   const handlePayment = async (paymentMethod: string) => {
+    const promocode = localStorage.get("promocode");
+
     switch (paymentMethod) {
       case "cash":
       case "wallet":
@@ -149,6 +151,7 @@ const Cart = () => {
             .post("/orders/checkout", {
               address_id: selectedAddress?.id,
               payment_method: paymentMethod,
+              promocode,
             })
             .then(() => {
               setCart([]);
