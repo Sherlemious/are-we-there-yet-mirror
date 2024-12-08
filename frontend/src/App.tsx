@@ -69,8 +69,7 @@ import {
   confirmPayment,
   PaymentFailurePage,
   PaymentSuccessPage,
-  TestCheckout,
-} from "./modules/products/pages/Checkout";
+} from "./modules/products/components/CardPayment";
 import Cart from "./modules/products/pages/Cart";
 
 const BrowserRouter = createBrowserRouter([
@@ -145,11 +144,7 @@ const BrowserRouter = createBrowserRouter([
         path: "checkout",
         children: [
           {
-            path: "test",
-            element: <TestCheckout />,
-          },
-          {
-            path: "confirm/:sessionId",
+            path: "confirm/:type/:sessionId",
             element: <Outlet />,
             loader: confirmPayment,
           },

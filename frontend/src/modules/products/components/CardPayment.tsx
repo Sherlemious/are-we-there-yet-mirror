@@ -1,19 +1,31 @@
 import axiosInstance from "@/modules/shared/services/axiosInstance";
-import { loadStripe } from "@stripe/stripe-js";
 import { isAxiosError } from "axios";
 import { redirect, type LoaderFunctionArgs } from "react-router";
 import { CheckCircle, Gift, Sparkles } from "lucide-react";
 import { AlertTriangle, CreditCard } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export async function confirmPayment({ params }: LoaderFunctionArgs) {
-  if (!params.sessionId) {
+  if (!params.sessionId || !params.type) {
     throw new Error("Session id is required!!");
   }
 
+  console.log(params);
+
+  let apiEndpoint = "";
+  if (params.type === "cart") {
+    apiEndpoint = "/orders/checkout";
+  } else if (params.type === "activity") {
+    apiEndpoint = "/activities/bookings";
+  } else if (params.type === "itinerary") {
+    apiEndpoint = "/itineraries/bookings";
+  } else {
+    throw new Error("Invalid payment method");
+  }
+
   try {
-    await axiosInstance.post("/orders/checkout", {
+    await axiosInstance.post(apiEndpoint, {
       session_id: params.sessionId,
       payment_method: "card",
     });
@@ -100,53 +112,8 @@ export const PaymentFailurePage = () => {
               <p className="text-red-600">{error.current}</p>
             </div>
           </div>
-
-          <Link
-            to=""
-            className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-red-500 py-3 text-white transition-colors hover:from-orange-600 hover:to-red-600"
-          >
-            Go to Cart
-          </Link>
         </div>
       </div>
     </div>
   );
 };
-
-async function handlePaymentOnline(address_id: string) {
-  const pk = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-  const stripe = await loadStripe(pk);
-
-  if (!stripe) {
-    throw new Error("Failed to load stripe");
-  }
-
-  const domainName = window.location.origin;
-
-  const sessionResponse = await axiosInstance.post("/orders/payment/card", {
-    success_url: `${domainName} /home/checkout/confirm/{CHECKOUT_SESSION_ID}`,
-    cancel_url: `${domainName}/home/checkout/cancel`,
-    address_id,
-  });
-
-  const sessionId = sessionResponse.data.data.session.id;
-
-  const result = await stripe.redirectToCheckout({
-    sessionId,
-  });
-
-  if (result.error) {
-    throw new Error(result.error.message);
-  }
-}
-
-export function TestCheckout() {
-  return (
-    <div className="mt-4 flex flex-col items-center justify-center gap-4">
-      <h1>Payment</h1>
-      <button onClick={() => handlePaymentOnline("675027641bfecc90cd4ba8b5")}>
-        Pay Online
-      </button>
-    </div>
-  );
-}
