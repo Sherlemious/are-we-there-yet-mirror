@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 // import NavigationBar from "../components/NavigationBar";
 import { imgLinks } from "@/modules/shared/utils/constants";
 import { Outlet } from "react-router";
-import NewNavBar from "../../LandingPage/components/NewNavBar";
+import NewNavBar from "../components/NewNavBar";
 
 export default function LandingPageLayout() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
