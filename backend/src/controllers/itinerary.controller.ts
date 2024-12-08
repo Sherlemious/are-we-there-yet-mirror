@@ -14,6 +14,15 @@ const getItineraries = async (req: Request, res: Response) => {
   try {
     let itineraries = await ItineraryRepo.getItineraries();
 
+    // Get the number of sales per itinerary and the total revenue
+    for (const itinerary of itineraries) {
+      const itineraryId = itinerary._id.toString();
+      const sales = await BookingRepo.getNumberOfBookingsItinerary(itineraryId);
+      console.log(sales);
+      itinerary.sales = sales;
+      itinerary.revenue = itinerary.price * sales;
+    }
+
     itineraries = itineraries.filter((itinerary) => itinerary.active && !itinerary.flagged);
 
     // Check if there's currency in the body
@@ -95,7 +104,17 @@ const findItineraryById = async (req: Request, res: Response) => {
 
 const getItinerariesCreatedByUser = async (req: Request, res: Response) => {
   try {
-    const itineraries = await ItineraryRepo.getItinerariesByCreator(req.user.userId);
+    let itineraries = await ItineraryRepo.getItinerariesByCreator(req.user.userId);
+
+    // Get the number of sales per itinerary and the total revenue
+    for (const itinerary of itineraries) {
+      const itineraryId = itinerary._id.toString();
+      const sales = await BookingRepo.getNumberOfBookingsItinerary(itineraryId);
+      console.log(sales);
+      itinerary.sales = sales;
+      itinerary.revenue = itinerary.price * sales;
+    }
+
     const response = {
       message: 'Itineraries fetched successfully',
       data: { itineraries: itineraries },

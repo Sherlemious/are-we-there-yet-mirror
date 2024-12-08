@@ -47,6 +47,13 @@ const productSchema = new Schema(
     },
     sales: {
       type: Number,
+      default: 0,
+      required: true,
+    },
+    revenue: {
+      type: Number,
+      default: 0,
+      required: false,
     },
     archive: {
       type: Boolean,

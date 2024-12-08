@@ -3,6 +3,7 @@ import activityRepo from '../database/repositories/activity.repo';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import { ActivityType } from '../types/Activity.types';
+import BookingRepo from '../database/repositories/booking.repo';
 
 const createActivity = async (req: Request, res: Response) => {
   try {
@@ -60,6 +61,14 @@ const deleteActivity = async (req: Request, res: Response) => {
 const getAllActivities = async (req: Request, res: Response) => {
   try {
     const activities = await activityRepo.getAllActivities();
+
+    for (const activity of activities) {
+      const activityId = activity._id.toString();
+      const sales = await BookingRepo.getNumberOfBookingsActivity(activityId);
+      activity.sales = sales;
+      activity.revenue = activity.price * sales;
+    }
+
     res.status(ResponseStatusCodes.OK).json({ message: 'Activities fetched successfully', data: activities });
   } catch (error: any) {
     logger.error(`Error fetching activities: ${error.message}`);
@@ -70,6 +79,15 @@ const getAllActivities = async (req: Request, res: Response) => {
 const getActivitiesByCreator = async (req: Request, res: Response) => {
   try {
     const activities = await activityRepo.getActivitiesByCreator(req.user.userId);
+
+    // Map the sales amount to each activity
+    for (const activity of activities) {
+      const activityId = activity._id.toString();
+      const sales = await BookingRepo.getNumberOfBookingsActivity(activityId);
+      activity.sales = sales;
+      activity.revenue = activity.price * sales;
+    }
+
     res.status(ResponseStatusCodes.OK).json({ message: 'Activities fetched successfully', data: activities });
   } catch (error: any) {
     logger.error(`Error fetching activities: ${error.message}`);

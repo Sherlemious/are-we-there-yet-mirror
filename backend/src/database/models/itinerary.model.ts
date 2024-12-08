@@ -73,6 +73,16 @@ const itinerarySchema = new Schema(
       required: false,
       default: false,
     },
+    sales: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    revenue: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   {
     timestamps: true,

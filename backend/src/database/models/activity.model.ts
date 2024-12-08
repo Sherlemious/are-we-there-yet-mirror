@@ -58,6 +58,14 @@ const activitySchema = new Schema(
       type: Number,
       default: 0,
     },
+    sales: {
+      type: Number,
+      default: 0,
+    },
+    revenue: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

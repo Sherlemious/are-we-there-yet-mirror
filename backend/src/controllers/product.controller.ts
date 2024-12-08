@@ -9,6 +9,7 @@ import productRepo from '../database/repositories/product.repo';
 import currencyConverterService from '../services/currencyConverter.service';
 import userRepo from '../database/repositories/user.repo';
 import { accountType } from '../types/User.types';
+import { ProductType } from '../types/Product.types';
 
 const findProductById = async (req: Request, res: Response) => {
   try {
@@ -49,6 +50,12 @@ const getProducts = async (req: Request, res: Response) => {
 
     if (req.user.accountType != accountType.Admin) {
       products = products.filter((product) => !product.archive);
+    }
+
+    for (const product of products) {
+      const total = product.price ? product.price * product.sales : 0;
+      product.price = parseFloat(product.price.toFixed(2));
+      product.revenue = parseFloat(total.toFixed(2));
     }
 
     const currency: string = req.currency.currency;
@@ -254,6 +261,30 @@ async function getAvailableQuantityAndSales(req: Request, res: Response) {
   }
 }
 
+async function getMyProducts(req: Request, res: Response) {
+  try {
+    const userId = req.user.userId;
+    const products = await productRepo.filterProductsBySeller(userId);
+
+    // Calculate revenue for each product
+    for (const product of products) {
+      const total = product.price ? product.price * product.sales : 0;
+      product.price = parseFloat(product.price.toFixed(2));
+      product.revenue = parseFloat(total.toFixed(2));
+    }
+
+    const response = {
+      message: 'Products fetched successfully',
+      data: { products },
+    };
+
+    res.status(ResponseStatusCodes.OK).json(response);
+  } catch (error: any) {
+    logger.error(`Error fetching products: ${error.message}`);
+    res.status(ResponseStatusCodes.BAD_REQUEST).json({ message: error.message, data: [] });
+  }
+}
+
 async function buyProduct(req: Request, res: Response) {
   try {
     const productId = req.params.id;
@@ -346,4 +377,5 @@ export {
   buyProduct,
   archiveProduct,
   cancelProduct,
+  getMyProducts,
 };

@@ -14,6 +14,6 @@ export interface ProductType {
   modified_by?: number;
   createdAt?: Date;
   updatedAt?: Date;
-  sales?: number;
+  sales: number;
   archive: boolean;
 }

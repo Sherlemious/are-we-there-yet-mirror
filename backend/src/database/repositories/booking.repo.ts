@@ -1,7 +1,10 @@
 import { BookingStatusType } from '../../types/Booking.types';
 import { PaymentMethodType } from '../../types/Order.types';
 import { Booking } from '../models/booking.model';
+import { ObjectId } from 'mongodb';
 import { User } from '../models/user.model';
+import { Itinerary } from '../models/itinerary.model';
+import { Activity } from '../models/activity.model';
 
 class BookingRepo {
   async bookItinerary(userId: string, itineraryId: string, payment_method: PaymentMethodType) {
@@ -20,6 +23,20 @@ class BookingRepo {
 
   async cancelBooking(bookingId: string) {
     return await Booking.findByIdAndUpdate(bookingId, { status: BookingStatusType.CANCELLED });
+  }
+
+  async getNumberOfBookingsItinerary(itineraryId: string) {
+    // Update the Itinerary sales and revenue
+    const bookings = await Booking.find({ itinerary: itineraryId });
+    await Itinerary.findByIdAndUpdate(itineraryId, { sales: bookings.length });
+    return bookings.length;
+  }
+
+  async getNumberOfBookingsActivity(activityId: string) {
+    // Update the Activity sales and revenue
+    const bookings = await Booking.find({ activity: activityId });
+    await Activity.findByIdAndUpdate(activityId, { sales: bookings.length });
+    return bookings.length;
   }
 
   async checkItineraryBooked(itineraryId: string): Promise<boolean> {

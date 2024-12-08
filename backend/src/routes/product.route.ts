@@ -15,6 +15,7 @@ import {
   buyProduct,
   archiveProduct,
   unarchiveProduct,
+  getMyProducts,
   cancelProduct,
 } from '../controllers/product.controller';
 
@@ -24,6 +25,7 @@ productRouter.get('/price-ranges', getPriceRanges);
 productRouter.get('/filter-by-price', filterProductByPriceRange);
 productRouter.get('/filter-by-seller', filterProductsBySeller);
 productRouter.get('/available-quantity-sales/:id', getAvailableQuantityAndSales);
+productRouter.get('/myProducts', getMyProducts);
 
 productRouter.patch('/buy/:id', buyProduct);
 productRouter.patch('/archive/:id', archiveProduct);

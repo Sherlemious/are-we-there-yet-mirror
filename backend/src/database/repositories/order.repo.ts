@@ -57,5 +57,18 @@ class OrderRepo {
     await order.save();
     return order;
   }
+
+  async getProductOrderCount(productId: string): Promise<number> {
+    const orders = await Order.find({ 'products.product': productId });
+    let totalQuantity = 0;
+    orders.forEach((order) => {
+      order.products.forEach((product) => {
+        if (product.product.toString() === productId) {
+          totalQuantity += product.quantity;
+        }
+      });
+    });
+    return totalQuantity;
+  }
 }
 export default new OrderRepo();

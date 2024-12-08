@@ -18,8 +18,7 @@ export default class currencyConverterService {
   }
 
   static async convertPrices(prices: number[], to: string, from: string = 'EGP'): Promise<number[]> {
-    const conversionRate = await this.getConversionRate(to, from);
-    return prices.map((price) => price / conversionRate);
+    return Promise.all(prices.map((price) => this.convertPrice(price, to, from)));
   }
 
   static async convertPrice(price: number, to: string, from: string = 'EGP'): Promise<number> {
