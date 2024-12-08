@@ -256,7 +256,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           <button
             type="button"
             onClick={() => addModalRef.current?.close()}
-            className="mr-4 rounded-lg px-6 py-3 font-bold text-accent-dark-blue transition-colors hover:bg-secondary-light_grey"
+            className="mr-4 rounded-lg px-6 py-3 font-bold border-red-200 text-lg text-red-600 hover:bg-red-50 hover:text-red-700"
           >
             Cancel
           </button>
@@ -287,7 +287,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-lg bg-accent-dark-blue px-6 py-3 font-bold text-white transition-all duration-150 hover:opacity-80"
+            className="flex items-center gap-2 rounded-lg bg-accent-gold px-6 py-3 font-bold transition-all duration-150 hover:opacity-80"
           >
             <Package size={20} />
             {initialData?.name ? "Update Product" : "Add Product"}

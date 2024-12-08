@@ -50,8 +50,8 @@ const AddCategoryPopup: React.FC<AddCategoryProps> = ({ isOpen, onClose, onAdd, 
           <button
             className={`rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
               isFormValid
-                ? 'bg-accent-dark-blue text-white hover:bg-accent-dark-blue/80 focus:ring-gray-500'
-                : 'bg-accent-dark-blue text-white hover:bg-accent-dark-blue/80 focus:ring-gray-500'
+                 ? 'bg-accent-dark-gold hover:bg-accent-dark-blue/80 focus:ring-gray-500'
+                : 'border-red-200 text-lg text-red-600 hover:bg-red-50 hover:text-red-700'
             }`}
             onClick={handleButtonClick}
           >
@@ -70,7 +70,7 @@ const OpenPopupButton: React.FC<{
 }> = ({ onClick, children }) => (
   <button
     onClick={onClick}
-    className="rounded bg-accent-dark-blue px-4 py-2 text-white hover:bg-accent-dark-blue/80 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+    className="rounded bg-accent-dark-blue px-5 py-3 text-white hover:bg-accent-dark-blue/80 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
   >
     {children}
   </button>

@@ -73,7 +73,7 @@ const Table = ({
                       {actions.onDelete && (
                         <button
                           onClick={() => actions.onDelete?.(row._id)}
-                          className="rounded-lg p-2 text-primary-blue transition-all duration-200 hover:bg-secondary-light_grey hover:text-accent-dark-blue"
+                          className="rounded-lg p-2 text-primary-red transition-all duration-200 hover:bg-secondary-light_grey"
                           title="Delete"
                         >
                           <X size={20} />
