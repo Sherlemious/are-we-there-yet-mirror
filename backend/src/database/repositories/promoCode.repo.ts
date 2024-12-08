@@ -16,6 +16,10 @@ class PromoCodeRepo {
   async deletePromoCode(id: string) {
     return await PromoCode.findByIdAndDelete(id);
   }
+
+  async verifyPromoCode(code: string) {
+    return await PromoCode.findOne({ code });
+  }
 }
 
 export default new PromoCodeRepo();

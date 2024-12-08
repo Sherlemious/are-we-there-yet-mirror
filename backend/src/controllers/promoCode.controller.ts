@@ -29,6 +29,20 @@ class PromoCodeController {
     }
   }
 
+  async verifyPromoCode(req: Request, res: Response) {
+    try {
+      const promoCode = await PromoCodeRepo.verifyPromoCode(req.body.code);
+      if (!promoCode) {
+        res.status(ResponseStatusCodes.NOT_FOUND).json({ message: 'Promo code not found' });
+        return;
+      }
+      res.status(ResponseStatusCodes.OK).json(promoCode);
+    } catch (error: any) {
+      logger.error(`Error verifying promo code: ${error.message}`);
+      res.status(ResponseStatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    }
+  }
+
   async createPromoCode(req: Request, res: Response) {
     try {
       const promoCode = await PromoCodeRepo.createPromoCode(req.body);
