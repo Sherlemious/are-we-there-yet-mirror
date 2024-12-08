@@ -229,33 +229,19 @@ function ItineraryModal({
           <div>
             {/* Itinerary name */}
             <div className="my-8 w-full text-left text-xl font-bold">
+           <div className="mb-2 flex items-center gap-2 font-headings text-lg text-accent-dark-blue">Itinerary Name</div>
               <div className="flex justify-between">
                 <input
                   type="text"
-                  placeholder="Itinerary Name"
+                  placeholder="Name"
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value);
                     setIsEdited(true);
                   }}
-                  className="border-b-2 border-black"
+                  className="border border-borders-primary rounded-lg bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+                  //className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                 />
-                {itinerary ? (
-                  <button
-                    onClick={handleUpdate}
-                    className={`mt-4 rounded bg-green-500 p-2 text-white ${isEdited ? "" : "cursor-not-allowed opacity-50"}`}
-                    disabled={!isEdited}
-                  >
-                    Update
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleSave}
-                    className="mt-4 rounded bg-green-500 p-2 text-white"
-                  >
-                    Create
-                  </button>
-                )}
               </div>
               {itinerary && (
                 <div className="mt-7 flex space-x-4">
@@ -327,7 +313,7 @@ function ItineraryModal({
               {/* random info*/}
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-1">
-                  <div className="text-lg font-bold">Language</div>
+                  <div className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">Language</div>
                   <input
                     type="text"
                     placeholder="Language"
@@ -336,37 +322,11 @@ function ItineraryModal({
                       setLanguage(e.target.value);
                       setIsEdited(true);
                     }}
-                    className="w-full border-b-2 border-black"
-                  />
-                </div>
-                <div className="col-span-1">
-                  <div className="text-lg font-bold">Timeline From</div>
-                  <input
-                    type="datetime-local"
-                    value={timeline.split(" - ")[0]}
-                    onChange={(e) => {
-                      const to = timeline.split(" - ")[1];
-                      setTimeline(`${e.target.value} - ${to}`);
-                      setIsEdited(true);
-                    }}
-                    className="w-full border-b-2 border-black"
-                  />
-                </div>
-                <div className="col-span-1">
-                  <div className="text-lg font-bold">Timeline To</div>
-                  <input
-                    type="datetime-local"
-                    value={timeline.split(" - ")[1]}
-                    onChange={(e) => {
-                      const from = timeline.split(" - ")[0];
-                      setTimeline(`${from} - ${e.target.value}`);
-                      setIsEdited(true);
-                    }}
-                    className="w-full border-b-2 border-black"
-                  />
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+                    />
                 </div>
                 <div>
-                  <div className="text-lg font-bold">Price</div>
+                  <div className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">Price</div>
                   <input
                     type="number"
                     placeholder="Price"
@@ -375,35 +335,62 @@ function ItineraryModal({
                       setPrice(e.target.value);
                       setIsEdited(true);
                     }}
-                    className="w-full border-b-2 border-black"
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                     min="0"
                     onWheel={(e) => e.currentTarget.blur()}
                   />
                 </div>
+                <div className="col-span-1">
+                  <div className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">Timeline From</div>
+                  <input
+                    type="datetime-local"
+                    value={timeline.split(" - ")[0]}
+                    onChange={(e) => {
+                      const to = timeline.split(" - ")[1];
+                      setTimeline(`${e.target.value} - ${to}`);
+                      setIsEdited(true);
+                    }}
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+                    />
+                </div>
+                <div className="col-span-1">
+                  <div className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">Timeline To</div>
+                  <input
+                    type="datetime-local"
+                    value={timeline.split(" - ")[1]}
+                    onChange={(e) => {
+                      const from = timeline.split(" - ")[0];
+                      setTimeline(`${from} - ${e.target.value}`);
+                      setIsEdited(true);
+                    }}
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+                    />
+                </div>
+               
                 <div>
-                  <div className="text-lg font-bold">Dropoff Location</div>
+                  <div className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">Dropoff Location</div>
                   <input
                     type="text"
                     placeholder="Dropoff Location"
                     value={dropoffLocation.name}
-                    className="w-full border-b-2 border-black"
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                     onFocus={() => setMapToShow("dropoff")}
                     readOnly
                   />
                 </div>
                 <div>
-                  <div className="text-lg font-bold">Pickup Location</div>
+                  <div className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">Pickup Location</div>
                   <input
                     type="text"
                     placeholder="Pickup Location"
                     value={pickupLocation.name}
-                    className="w-full border-b-2 border-black"
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                     onFocus={() => setMapToShow("pickup")}
                     readOnly
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="category" className="mb-2 block font-bold">
+                  <label htmlFor="category" className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">
                     Category
                   </label>
                   <select
@@ -415,7 +402,7 @@ function ItineraryModal({
                       setCategory(e.target.value);
                       setIsEdited(true);
                     }}
-                    className="w-full rounded-md border border-gray-300 bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                   >
                     <option value="">--Please choose a category--</option>
                     {categories.map((category) => (
@@ -426,13 +413,13 @@ function ItineraryModal({
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="tag-select" className="font-bold">
+                  <label htmlFor="tag-select" className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">
                     Choose a tag:
                   </label>
                   <select
                     id="tag-select"
                     onChange={handleTagsChange}
-                    className="mb-4 w-full border-b-2 border-black"
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                   >
                     <option value="">--Please choose tag(s)--</option>
                     {tags.map((tag) => (
@@ -445,12 +432,12 @@ function ItineraryModal({
                     {selectedTags.map((tag) => (
                       <div
                         key={tag._id}
-                        className="m-1 rounded bg-gray-200 p-2"
+                        className="mt-3 rounded bg-accent-gold p-2"
                       >
                         {tag.name}
                         <button
                           onClick={() => handleRemoveTag(tag._id)}
-                          className="ml-2 text-red-500"
+                          className="ml-2 text-black"
                         >
                           x
                         </button>
@@ -459,10 +446,10 @@ function ItineraryModal({
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold">Accessibilities</div>
+                  <div className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">Accessibilities</div>
                   <div>
-                    <label>
-                      <input
+                  <label className="flex items-center gap-3">
+                  <input
                         type="checkbox"
                         name="wheelchairAccessible"
                         checked={accessibilities.wheelchairAccessible}
@@ -471,12 +458,14 @@ function ItineraryModal({
                           setIsEdited(true);
                         }}
                       />
+                    <span className="text-body text-text-primary">
                       Wheelchair Accessible
+                    </span>
                     </label>
                   </div>
                   <div>
-                    <label>
-                      <input
+                  <label className="flex items-center gap-3">
+                  <input
                         type="checkbox"
                         name="assistiveHearingDevices"
                         checked={accessibilities.assistiveHearingDevices}
@@ -485,12 +474,14 @@ function ItineraryModal({
                           setIsEdited(true);
                         }}
                       />
-                      Assistive Hearing Devices
+                      <span className="text-body text-text-primary">
+                        Assistive Hearing Devices
+                      </span>
                     </label>
                   </div>
                   <div>
-                    <label>
-                      <input
+                  <label className="flex items-center gap-3">
+                  <input
                         type="checkbox"
                         name="visualAidSupport"
                         checked={accessibilities.visualAidSupport}
@@ -499,12 +490,14 @@ function ItineraryModal({
                           setIsEdited(true);
                         }}
                       />
-                      Visual Aid Support
+                      <span className="text-body text-text-primary">
+                        Visual Aid Support
+                      </span>
                     </label>
                   </div>
                   <div>
-                    <label>
-                      <input
+                  <label className="flex items-center gap-3">
+                  <input
                         type="checkbox"
                         name="serviceAnimalAllowed"
                         checked={accessibilities.serviceAnimalAllowed}
@@ -513,12 +506,14 @@ function ItineraryModal({
                           setIsEdited(true);
                         }}
                       />
-                      Service Animal Allowed
+                      <span className="text-body text-text-primary">
+                        Service Animal Allowed
+                       </span>
                     </label>
                   </div>
                   <div>
-                    <label>
-                      <input
+                  <label className="flex items-center gap-3 mt-1">
+                  <input
                         type="checkbox"
                         name="accessibleParking"
                         checked={accessibilities.accessibleParking}
@@ -527,7 +522,7 @@ function ItineraryModal({
                           setIsEdited(true);
                         }}
                       />
-                      Accessible Parking
+                       <span className="text-body text-text-primary">Accessible Parking</span>
                     </label>
                   </div>
                 </div>
@@ -535,14 +530,14 @@ function ItineraryModal({
               {/* Activities */}
               <div className="mt-2">
                 <div>
-                  <label htmlFor="activity-select" className="font-bold">
+                  <label htmlFor="activity-select" className="mb-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">
                     Choose an activity:
                   </label>
                   <select
                     id="activity-select"
                     value={selectedActivityId}
                     onChange={handleActivityChange}
-                    className="mb-4 w-full border-b-2 border-black"
+                    className="w-full rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
                   >
                     <option value="">--Please choose an activity--</option>
                     {activities
@@ -558,7 +553,7 @@ function ItineraryModal({
                   </select>
                   <button
                     onClick={handleAddActivity}
-                    className="rounded bg-blue-500 p-2 text-white"
+                    className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
                   >
                     Add Activity
                   </button>
@@ -567,22 +562,26 @@ function ItineraryModal({
                   {selectedActivities.length > 0 && (
                     <table className="w-full border-collapse border-2 text-sm">
                       <thead>
-                        <tr className="border-b-2 text-center">
-                          <th className="w-1/3 p-4">Name</th>
-                          <th className="w-1/3 p-4">Actions</th>
+                        <tr className="bg-gradient-to-r from-primary-green to-primary-blue">
+                          <th className="text-nowrap p-5 text-center text-input_or_label font-headline text-secondary-white first:rounded-tl-lg">
+                            Name</th>
+                            <th className="text-nowrap p-5 text-center text-input_or_label font-headline text-secondary-white first:rounded-tl-lg">
+                            Actions</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        {selectedActivities.map((activity, index) => (
-                          <tr key={index} className="border-b-2 text-center">
-                            <td className="p-4">{activity.name}</td>
-                            <td className="p-4">
+                      <tbody className="divide-y divide-secondary-light_grey">
+                      {selectedActivities.map((activity, index) => (
+                          <tr key={index} 
+                className="text-center transition-colors duration-200 hover:bg-secondary-light_grey/50"
+                          >
+                            <td className="p-5 text-center text-body text-accent-dark-blue">{activity.name}</td>
+                            <td className="p-5 text-center">
                               <button
                                 onClick={() =>
                                   handleRemoveActivity(activity._id)
                                 }
-                                className="text-red-500"
-                              >
+                                className="mr-4 text-base	rounded-lg px-6 py-3 font-bold border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                >
                                 Remove
                               </button>
                             </td>
@@ -595,27 +594,31 @@ function ItineraryModal({
               </div>
               {/* Date and Time */}
               <div>
-                <div className="mt-2 text-lg font-bold">
+                <div className="flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">
                   Available Date & Time
                 </div>
                 <button
                   onClick={handleAddDateTime}
-                  className="my-4 rounded bg-blue-500 p-2 text-white"
+                  className="my-4 rounded bg-blue-500 px-4 py-2 text-white"
                 >
                   Add Date & Time
                 </button>
                 {availableDateTimes.length !== 0 ? (
                   <table className="w-full border-collapse border-2 text-sm">
                     <thead>
-                      <tr className="border-b-2 text-center">
-                        <th className="p-4">Date</th>
-                        <th className="p-4">Actions</th>
+                    <tr className="bg-gradient-to-r from-primary-green to-primary-blue">
+                    <th className="text-nowrap p-5 text-center text-input_or_label font-headline text-secondary-white first:rounded-tl-lg">
+                      Date</th>
+                      <th className="text-nowrap p-5 text-center text-input_or_label font-headline text-secondary-white first:rounded-tl-lg">
+                      Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {availableDateTimes.map((dateTime, index) => (
-                        <tr key={index} className="border-b-2 text-center">
-                          <td className="p-4">
+                    <tbody className="divide-y divide-secondary-light_grey">
+                    {availableDateTimes.map((dateTime, index) => (
+                        <tr key={index} 
+                        className="text-center transition-colors duration-200 hover:bg-secondary-light_grey/50"
+                        >
+                          <td className="p-5 text-center text-body text-accent-dark-blue">
                             <input
                               type="datetime-local"
                               value={dateTime}
@@ -625,14 +628,14 @@ function ItineraryModal({
                                 setAvailableDateTimes(newDateTimes);
                                 setIsEdited(true);
                               }}
-                              className="w-full border-b-2 border-black"
+                              className="w-96 border-b-2 border-black"
                             />
                           </td>
-                          <td className="p-4">
+                          <td className="p-5 text-center">
                             <button
                               onClick={() => handleRemoveDateTime(index)}
-                              className="text-red-500"
-                            >
+                              className="mr-4 text-base	rounded-lg px-6 py-3 font-bold border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                              >
                               Remove
                             </button>
                           </td>
@@ -641,13 +644,13 @@ function ItineraryModal({
                     </tbody>
                   </table>
                 ) : (
-                  <div>No available date and time</div>
+                  <div className="text-body text-text-primary">No available date and time</div>
                 )}
               </div>
               <div>
-                <div className="mt-2 text-lg font-bold">Locations</div>
+                <div className="mt-2 flex items-center gap-2 font-sub_headings text-lg text-accent-dark-blue">Locations</div>
                 <button
-                  className="mt-4 rounded bg-blue-500 p-2 text-white"
+                  className="mt-3 rounded bg-blue-500 px-4 py-2 text-white"
                   onClick={() => setMapToShow("locations")}
                 >
                   Add Location
@@ -656,24 +659,28 @@ function ItineraryModal({
                   {locations.length > 0 && (
                     <table className="w-full border-collapse border-2 text-sm">
                       <thead>
-                        <tr className="border-b-2 text-center">
-                          <th className="w-1/3 p-4">Name</th>
-                          <th className="w-1/3 p-4">Actions</th>
+                      <tr className="bg-gradient-to-r from-primary-green to-primary-blue">
+                      <th className="text-nowrap p-5 text-center text-input_or_label font-headline text-secondary-white first:rounded-tl-lg">
+                        Name</th>
+                        <th className="text-nowrap p-5 text-center text-input_or_label font-headline text-secondary-white first:rounded-tl-lg">
+                        Actions</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        {locations.map((activity, index) => (
-                          <tr key={index} className="border-b-2 text-center">
-                            <td className="p-4">{activity.name}</td>
-                            <td className="p-4">
+                      <tbody className="divide-y divide-secondary-light_grey">
+                      {locations.map((activity, index) => (
+                        <tr key={index} 
+                        className="text-center transition-colors duration-200 hover:bg-secondary-light_grey/50"
+                        >
+                            <td className="p-5 text-center text-body text-accent-dark-blue">{activity.name}</td>
+                            <td className="p-5 text-center">
                               <button
                                 onClick={() =>
                                   setLocations(
                                     locations.filter((_, i) => i !== index),
                                   )
                                 }
-                                className="text-red-500"
-                              >
+                                className="mr-4 text-base	 rounded-lg px-6 py-3 font-bold border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                >
                                 Remove
                               </button>
                             </td>
@@ -686,6 +693,31 @@ function ItineraryModal({
               </div>
             </div>
           </div>
+            <div className="col-span-2 flex justify-end">
+                  <button
+            type="button"
+            onClick={onClose}
+            className="mr-4 rounded-lg px-6 py-3 font-bold border-red-200 text-lg text-red-600 hover:bg-red-50 hover:text-red-700"
+          >
+            Cancel
+          </button>
+                  {itinerary ? (
+                  <button
+                    onClick={handleUpdate}
+                    className={`flex items-center gap-2 rounded-lg bg-accent-gold px-6 py-3 font-bold transition-all duration-150 hover:opacity-80 ${isEdited ? "" : "cursor-not-allowed opacity-50"}`}
+                    disabled={!isEdited}
+                  >
+                    Update
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSave}
+                    className="flex items-center gap-2 rounded-lg bg-accent-gold px-6 py-3 font-bold transition-all duration-150 hover:opacity-80"
+                    >
+                    Create
+                  </button>
+                )}
+                </div>
         </div>
       </div>
     </Modal>
