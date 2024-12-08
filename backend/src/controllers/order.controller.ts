@@ -60,6 +60,8 @@ class OrderController {
         await emailService.sendReceiptEmail(customerEmail, order);
       }
 
+      await cartRepo.clearCart(req.user.userId);
+
       res
         .status(ResponseStatusCodes.CREATED)
         .json({ message: 'Order checked out successfully', data: { order: order } });
