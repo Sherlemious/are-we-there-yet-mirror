@@ -26,6 +26,14 @@ export const TouristLinks = [
         name: "My Transportation",
         url: "/home/transportation-bookings",
       },
+      {
+        name: "Flights",
+        url: "/home/flight-bookings",
+      },
+      {
+        name: "Hotels",
+        url: "/home/hotel-bookings",
+      },
     ],
   },
   {

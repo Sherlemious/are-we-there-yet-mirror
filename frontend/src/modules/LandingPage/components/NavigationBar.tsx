@@ -245,6 +245,12 @@ export default function NavigationBar({ fontColor }: { fontColor: string }) {
                     >
                       View Transportation Bookings
                     </ListItem>
+                    <ListItem title="Flights" to="/home/flight-bookings">
+                      Book Flights
+                    </ListItem>
+                    <ListItem title="Hotels" to="/home/hotel-bookings">
+                      Book Hotels
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
