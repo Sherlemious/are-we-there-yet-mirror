@@ -131,7 +131,8 @@ export function FlightBookingList() {
           {commonInputs}
           <div className="mt-6">
             <Button onClick={() => submitBooking(type)}
-                className="flex items-center gap-2  ml-4 gap-3 rounded-lg bg-accent-dark-blue px-8 py-4 text-lg font-bold text-white transition-all duration-150 hover:opacity-80 ">                Confirm Booking
+              className="w-full bg-accent-dark-blue px-8 py-4 text-lg font-bold">
+                Confirm Booking
             </Button>
           </div>
         </div>
@@ -139,7 +140,7 @@ export function FlightBookingList() {
     );
   };
   
-  const API_KEY = "6526f0a2e065171b9fdf01f516e2735f"; // Replace with your API key
+  const API_KEY = "b844375bb47ddd9df02dfd32f66e681f"; // Replace with your API key
   const API_URL = `https://api.aviationstack.com/v1/flights`;
 
   useEffect(() => {
