@@ -59,23 +59,26 @@ export default function TouristProfile({
 
   return (
     <div className="flex w-full flex-col gap-10">
-      <div className="grid flex-1 grid-cols-1 gap-x-8 gap-y-6 pt-10 md:grid-cols-3">
-        <div className="space-y-6">
-          <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
-            Contact Details
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-slate-600">
-              <Phone className="h-5 w-5 flex-shrink-0 text-primary-blue" />
-              <span>{user.mobile_number || "NA"}</span>
-            </div>
-            <div className="flex items-center gap-3 text-slate-600">
-              <Mail className="h-5 w-5 flex-shrink-0 text-primary-blue" />
-              <span className="truncate">{user.email || "NA"}</span>
-            </div>
+      {/* Contact Details */}
+      <div className="space-y-6 pt-10">
+        <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
+          Contact Details
+        </h3>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 text-slate-600">
+            <Phone className="h-5 w-5 flex-shrink-0 text-primary-blue" />
+            <span>{user.mobile_number || "NA"}</span>
+          </div>
+          <div className="flex items-center gap-3 text-slate-600">
+            <Mail className="h-5 w-5 flex-shrink-0 text-primary-blue" />
+            <span className="truncate">{user.email || "NA"}</span>
           </div>
         </div>
+      </div>
 
+      {/* Personal Info and Payment Info Row */}
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        {/* Personal Info */}
         <div className="space-y-6">
           <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
             Personal Info
@@ -96,6 +99,7 @@ export default function TouristProfile({
           </div>
         </div>
 
+        {/* Payment Info */}
         <div className="space-y-6">
           <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
             Payment Info
@@ -141,13 +145,15 @@ export default function TouristProfile({
                 min={0}
                 max={user.loyalty_points}
               />
-              <button className="mt-4 w-full rounded-lg bg-accent-gold px-6 py-3 font-bold transition-all duration-150 hover:opacity-80">
+              <button className="mt-4 w-full rounded-lg bg-accent-gold px-6 py-3 font-semibold transition-all duration-150 hover:opacity-80">
                 Redeem Points
               </button>
             </form>
           </div>
         </div>
       </div>
+
+      {/* Preference Tags */}
       <div className="flex flex-col space-y-6">
         <h3 className="border-b border-secondary-light_grey pb-2 font-semibold text-accent-dark-blue">
           Preference Tags
