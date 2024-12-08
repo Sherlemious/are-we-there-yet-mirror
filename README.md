@@ -50,7 +50,6 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
     │   |   ├── constants
     │   |   ├── controllers
     │   |   ├── database
-    │   │   |   ├── repositories
     │   |   |   ├── models
     │   |   ├── exceptions
     │   |   ├── middlewares
