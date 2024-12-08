@@ -8,11 +8,10 @@ import { useSearchParams } from "react-router-dom";
 
 export async function confirmPayment({ params }: LoaderFunctionArgs) {
   if (!params.sessionId || !params.type) {
-    throw new Error("Session id is required!!");
+    throw new Error("Session id and type is required!!");
   }
 
-  console.log(params);
-
+  const promocode = localStorage.get("promocode")
   let apiEndpoint = "";
   if (params.type === "cart") {
     apiEndpoint = "/orders/checkout";
@@ -28,6 +27,7 @@ export async function confirmPayment({ params }: LoaderFunctionArgs) {
     await axiosInstance.post(apiEndpoint, {
       session_id: params.sessionId,
       payment_method: "card",
+      promocode,
     });
     return redirect("../success");
   } catch (e) {

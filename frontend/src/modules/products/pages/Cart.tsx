@@ -185,6 +185,8 @@ const verifyPromoCode = async () => {
   };
 
   const handlePayment = async (paymentMethod: string) => {
+    const promocode = localStorage.get("promocode");
+
     switch (paymentMethod) {
       case "cash":
       case "wallet":
@@ -193,6 +195,7 @@ const verifyPromoCode = async () => {
             .post("/orders/checkout", {
               address_id: selectedAddress?.id,
               payment_method: paymentMethod,
+              promocode,
             })
             .then(() => {
               setCart([]);

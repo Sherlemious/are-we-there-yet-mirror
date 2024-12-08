@@ -70,7 +70,7 @@ export default function RootLayout() {
             }}
           />
         ))}
-        <div className="absolute inset-0 bg-black opacity-50" />
+        <div className="absolute inset-0 bg-black opacity-30" />
       </div>
 
       {/* <NavigationBar fontColor={"text-black"} /> */}
