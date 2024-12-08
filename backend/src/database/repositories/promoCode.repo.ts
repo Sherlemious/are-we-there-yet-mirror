@@ -20,6 +20,10 @@ class PromoCodeRepo {
   async verifyPromoCode(code: string) {
     return await PromoCode.findOne({ code });
   }
+
+  async findPromoCodeByCode(code: string) {
+    return await PromoCode.findOne({ code });
+  }
 }
 
 export default new PromoCodeRepo();

@@ -9,6 +9,7 @@ import userRepo from '../database/repositories/user.repo';
 import emailService from '../services/email/email.service';
 import StripeService from '../services/stripe.service';
 import { OrderItemType, PaymentMethodType } from '../types/Order.types';
+import promoCodeRepo from '../database/repositories/promoCode.repo';
 
 class OrderController {
   constructor() {
@@ -28,10 +29,11 @@ class OrderController {
 
   async checkoutOrder(req: Request, res: Response) {
     try {
-      let { payment_method, address_id, session_id } = req.body;
+      let { payment_method, address_id, session_id, promocode } = req.body;
       const user = await cartRepo.getUserCart(req.user.userId);
       const customerEmail = user?.email;
       const cart = user?.cart ?? [];
+      let totalOrderPrice = await this.calculateTotalOrderPrice(cart);
 
       if (cart.length === 0) {
         throw new Error('Cart is empty');
@@ -40,9 +42,7 @@ class OrderController {
       if (!Object.values(PaymentMethodType).includes(payment_method)) {
         throw new Error('Invalid payment method');
       }
-
-      const totalOrderPrice = await this.calculateTotalOrderPrice(cart);
-
+      const promo = await promoCodeRepo.findPromoCodeByCode(promocode);
       switch (payment_method) {
         case PaymentMethodType.CARD:
           const metadata = await StripeService.getMetadata(session_id);
@@ -56,6 +56,13 @@ class OrderController {
       }
 
       const order = await orderRepo.checkoutOrder(req.user.userId, totalOrderPrice, address_id, payment_method, cart);
+      if (promo) {
+        const discount = (totalOrderPrice * promo.discountPercentage) / 100;
+        totalOrderPrice -= discount;
+        order.totalPrice = totalOrderPrice;
+        res.status(ResponseStatusCodes.OK).json({ message: 'Promo code applied successfully', data: { order:order } });
+        return;
+      }
       if (customerEmail) {
         await emailService.sendReceiptEmail(customerEmail, order);
       }
