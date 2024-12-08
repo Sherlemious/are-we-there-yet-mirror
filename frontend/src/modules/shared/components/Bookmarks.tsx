@@ -79,10 +79,10 @@ function ActivityCard({ activity,
         {activity.name}
       </div>
       <div className="text-center text-gray-600">
-        {activity.date} {activity.time} - {activity.location.name}
+        ${activity.price.toFixed(2)} 
       </div>
       <div className="text-center text-gray-600">
-        ${activity.price.toFixed(2)} 
+        {formatDate(activity.datetime)} {formatTime(activity.datetime)}
       </div>
       </div>
       <div>
@@ -125,11 +125,22 @@ function ActivityCard({ activity,
              </div>
             </div>
             </div>
-
+            </div>
+            <div className="space-y-4">
+                  {itinerary.available_datetimes.length !== 0 ? (
+                    <div className="overflow-hidden rounded-lg">
+                      <div>
+                      <div className="text-center text-body text-gray-600">
+                      {formatDate(itinerary.available_datetimes[0])} {formatTime(itinerary.available_datetimes[0])}
+                        </div>
+                   </div>
                   </div>
-                  <div className="text-center text-gray-600">
-        {itinerary.drop_off_location.name}
-      </div>
+                  ) : (
+                    <div className="rounded-lg bg-secondary-light_grey p-4 text-center text-body">
+                      No available dates and times
+                    </div>
+                  )}
+                </div>
         <div className="text-center text-gray-600">
           <div className="col-span-9 justify-self-end">
             <button
