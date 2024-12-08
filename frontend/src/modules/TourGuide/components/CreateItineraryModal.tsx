@@ -601,6 +601,7 @@ function ItineraryModal({
                 <button
                   onClick={handleAddDateTime}
                   className="my-4 rounded bg-blue-500 px-4 py-2 text-white"
+                  disabled={availableDateTimes.length>0}
                 >
                   Add Date & Time
                 </button>
@@ -645,7 +646,7 @@ function ItineraryModal({
                     </tbody>
                   </table>
                 ) : (
-                  <div className="text-body text-text-primary">No available date and time</div>
+                  <div></div>
                 )}
               </div>
               <div>
