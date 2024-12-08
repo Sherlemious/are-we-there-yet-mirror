@@ -26,7 +26,7 @@ import NotificationBell from "./NotificationBell";
 import NewTouristTut from "./NewTouristTut";
 
 const styles = {
-  nav: "relative z-10 flex h-[13vh] items-center bg-black/10 backdrop-blur-md",
+  nav: "relative z-10 flex h-[13vh] items-center bg-black/10 backdrop-blur-sm",
   logo: {
     wrapper: "flex justify-center ml-24",
     image: "h-32 w-40",
