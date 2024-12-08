@@ -277,7 +277,7 @@ const ProductList: React.FC<ProductListProps> = ({
                           </span>
                         </div>
                         <p className="mt-1 text-lg font-semibold text-primary-green">
-                          ${product.price}
+                          ${product.price.toFixed(2)}
                         </p>
                       </div>
 
@@ -352,7 +352,7 @@ const ProductList: React.FC<ProductListProps> = ({
                       Unit price
                     </h3>
                     <p className="text-2xl font-bold text-primary-green">
-                      ${selectedProduct.price}
+                      ${selectedProduct.price.toFixed(2)}
                     </p>
                   </div>
                   <div className="rounded-lg bg-secondary-light_grey p-4">

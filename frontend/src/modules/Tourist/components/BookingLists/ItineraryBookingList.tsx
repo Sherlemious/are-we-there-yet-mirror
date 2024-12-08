@@ -342,7 +342,7 @@ function ItineraryCard({
         <div className="overflow-hidden rounded-lg">
           <div>
            <div className="text-body text-text-primary">
-              {formatDate(itinerary.availableDateTimes[0].date)} {formatTime(itinerary.availableDateTimes[0].time)} - ${itinerary.price}
+              {formatDate(itinerary.availableDateTimes[0].date)} {formatTime(itinerary.availableDateTimes[0].time)} - ${itinerary.price.toFixed(2)}
            </div>
           </div>
           </div>

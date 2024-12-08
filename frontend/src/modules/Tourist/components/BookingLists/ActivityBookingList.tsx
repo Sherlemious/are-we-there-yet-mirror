@@ -163,7 +163,7 @@ function ActivityCard({ activity,
       {activity.date} {activity.time} - {activity.location.name}
     </div>
     <div className="text-center text-gray-600">
-      ${activity.price} 
+      ${activity.price.toFixed(2)} 
     </div>
     </div>
     <div>

@@ -217,7 +217,7 @@ const Cart = () => {
                           </span>
                         </div>
                         <p className="mt-1 text-lg font-semibold text-primary-green">
-                          ${item.product.price}
+                          ${item.product.price.toFixed(2)}
                         </p>
                       </div>
                       <div className="rounded-lg bg-secondary-light_grey">

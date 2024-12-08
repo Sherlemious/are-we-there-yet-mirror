@@ -32,7 +32,7 @@ function ActivityTable() {
     },
     {
       header: "Price",
-      accessor: "price",
+      accessor: "price.toFixed(2)",
     },
     {
       header: "Category",

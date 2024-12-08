@@ -318,7 +318,7 @@ function ActivityModal({
               <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:grid-rows-1 relative">
               <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
               {[
-                    { label: "Price", value: activity.price },
+                    { label: "Price", value: activity.price.toFixed(2) },
                     { label: "Category", value: activity.category.name || "N/A" },
                     { label: "Tags", value: activity.tags.join(", ") || "N/A"},
                     { label: "Special Discounts", value: activity.specialDiscounts },

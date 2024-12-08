@@ -281,7 +281,7 @@ function ItineraryModal({
                 <div className="space-y-6 rounded-lg bg-secondary-light_grey p-6 lg:col-span-2 lg:row-span-2">
                   {[
                     { label: "Language", value: itinerary.language },
-                    { label: "Price", value: itinerary.price },
+                    { label: "Price", value: itinerary.price.toFixed(2) },
                     { label: "Category", value: itinerary.category.name },
                     { label: "Tags", value: itinerary.tags.join(", ") },
                     {
