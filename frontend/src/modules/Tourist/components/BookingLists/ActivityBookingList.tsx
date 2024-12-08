@@ -276,13 +276,13 @@ export function ActivityBookingList() {
   const handleRedirect = (activity: Activity) => {
     const baseLink = window.location.origin;
     // get the activity link
-    const activityLink: string = "/all-activities";
+    const activityLink: string = "home/all-activities";
     
     // get the activity id
     const activityId: string = activity._id;
     console.log(activityId);
     // format the actual link
-    const link: string = `${baseLink}${activityLink}/${activityId}`;
+    const link: string = `${baseLink}/${activityLink}/${activityId}`;
     console.log(link);
     // redirect to the link
     window.location.href  = link;

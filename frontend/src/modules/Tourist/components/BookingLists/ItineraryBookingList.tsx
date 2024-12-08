@@ -451,7 +451,7 @@ export function ItineraryBookingList() {
   }, [isAscending, filteredData]);
   const handleRedirect = (itinerary: Itinerary) => {
     const baseLink = window.location.origin;
-    const link: string = `${baseLink}/all-itineraries/${itinerary._id}`;
+    const link: string = `${baseLink}/home/all-itineraries/${itinerary._id}`;
     console.log(link);
     // redirect to the link
     window.location.href  = link;
