@@ -309,7 +309,7 @@ function ItineraryModal({
                   {[
                     { label: "Language", value: itinerary.language },
                     { label: "Price", value: itinerary.price.toFixed(2) },
-                    { label: "Category", value: itinerary.category.name },
+                    { label: "Category", value: itinerary.category ? itinerary.category.name : "N/A" },
                     { label: "Tags", value: itinerary.tags.join(", ") },
                     { label: "Timeline", value: formatTimeline(itinerary.timeline) },
                     {
