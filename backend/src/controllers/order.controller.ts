@@ -60,6 +60,9 @@ class OrderController {
         const discount = (totalOrderPrice * promo.discountPercentage) / 100;
         totalOrderPrice -= discount;
         order.totalPrice = totalOrderPrice;
+        if (customerEmail) {
+          await emailService.sendReceiptEmail(customerEmail, order);
+        }
         res.status(ResponseStatusCodes.OK).json({ message: 'Promo code applied successfully', data: { order:order } });
         return;
       }
