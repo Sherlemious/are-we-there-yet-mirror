@@ -5,7 +5,7 @@ const promoCodeRouter = Router();
 
 promoCodeRouter.post('/', PromoCodeController.createPromoCode);
 promoCodeRouter.get('/', PromoCodeController.getAllPromoCodes);
-promoCodeRouter.get('/verify', PromoCodeController.verifyPromoCode);
+promoCodeRouter.post('/verify', PromoCodeController.verifyPromoCode);
 promoCodeRouter.get('/:id', PromoCodeController.getPromoCodeById);
 promoCodeRouter.delete('/:id', PromoCodeController.deletePromoCode);
 promoCodeRouter.patch('/:id', PromoCodeController.updatePromoCode);
