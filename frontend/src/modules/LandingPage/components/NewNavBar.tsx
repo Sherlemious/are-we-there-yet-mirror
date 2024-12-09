@@ -57,7 +57,7 @@ const styles = {
 export default function NewNavBar({
   isNewUser = false,
 }: {
-  isNewUser: boolean;
+  isNewUser?: boolean;
 }) {
   const { user, setUser } = useContext(UserContext);
   const { pathname } = useLocation();
@@ -335,15 +335,47 @@ export default function NewNavBar({
                     Profile
                   </DropdownMenuItem>
                   {user.account_type === AccountType.Admin && (
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setIsOpen(false);
-                        navigate("/home/admin-dashboard/admin-complaints");
-                      }}
-                      className={styles.actions.dropdownItem}
-                    >
-                      My Complaints
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setIsOpen(false);
+                          navigate("/home/admin-dashboard/admin-complaints");
+                        }}
+                        className={styles.actions.dropdownItem}
+                      >
+                        My Complaints
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setIsOpen(false);
+                          navigate("/home/admin-dashboard/preference-tags");
+                        }}
+                        className={styles.actions.dropdownItem}
+                      >
+                        Preference Tags
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setIsOpen(false);
+                          navigate("/home/admin-dashboard/flag-itineraries");
+                        }}
+                        className={styles.actions.dropdownItem}
+                      >
+                        Flag Itineraries
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setIsOpen(false);
+                          navigate("/home/admin-dashboard/promo-codes");
+                        }}
+                        className={styles.actions.dropdownItem}
+                      >
+                        Promo Codes
+                      </DropdownMenuItem>
+                    </>
                   )}
                   {user.account_type === AccountType.Tourist && (
                     <DropdownMenuItem
