@@ -43,6 +43,9 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
 ### File Structure
 
     ├── assets
+    │   ├── badges
+    │   ├── logo
+    │   ├── screenshots
     |
     ├── backend
     │   ├── src
@@ -51,6 +54,7 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
     │   |   ├── controllers
     │   |   ├── database
     │   |   |   ├── models
+    │   |   |   ├── repositories
     │   |   ├── exceptions
     │   |   ├── middlewares
     │   │   |   ├── auth
@@ -67,21 +71,16 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
     |   ├── tsconfig.test.json
     |
     ├── frontend
-    │   ├── components
-    │   ├── lib
-    │   ├── modules
-    │   |   ├── Activity
-    │   |   ├── Admin
-    │   |   ├── Advertiser
-    │   |   ├── Auth
-    │   |   ├── Booking
-    │   |   ├── Category
-    │   |   ├── shared
-    │   |   ├── etc.
+    │   ├── public
+    │   ├── src
+    │   |   ├── components
+    │   |   ├── lib
+    │   |   ├── modules
+    │   │   |   ├── Activity
+    │   │   |   ├── etc.
     ├── .gitignore
-    ├── README.md
-    ├── .ignore
     ├── .prettierrc
+    ├── README.md
 
 #### Backend .env template
 
@@ -114,21 +113,31 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
 
 ## Screenshots
 
+| ![ScreenShot1](assets/screenshots/01.png)  | ![ScreenShot2](assets/screenshots/02.png)  | ![ScreenShot3](assets/screenshots/03.png)  |
+| ------------------------------------------ | ------------------------------------------ | ------------------------------------------ |
+| ![ScreenShot4](assets/screenshots/04.png)  | ![ScreenShot5](assets/screenshots/05.png)  | ![ScreenShot6](assets/screenshots/06.png)  |
+| ![ScreenShot7](assets/screenshots/07.png)  | ![ScreenShot8](assets/screenshots/08.png)  | ![ScreenShot9](assets/screenshots/09.png)  |
+| ![ScreenShot10](assets/screenshots/10.png) | ![ScreenShot11](assets/screenshots/11.png) | ![ScreenShot12](assets/screenshots/12.png) |
+| ![ScreenShot13](assets/screenshots/13.png) | ![ScreenShot14](assets/screenshots/14.png) | ![ScreenShot15](assets/screenshots/15.png) |
+| ![ScreenShot16](assets/screenshots/16.png) | ![ScreenShot17](assets/screenshots/17.png) | ![ScreenShot18](assets/screenshots/18.png) |
+| ![ScreenShot19](assets/screenshots/19.png) | ![ScreenShot20](assets/screenshots/20.png) | ![ScreenShot21](assets/screenshots/21.png) |
+| ![ScreenShot22](assets/screenshots/22.png) | ![ScreenShot23](assets/screenshots/23.png) | ![ScreenShot24](assets/screenshots/24.png) |
+| ![ScreenShot25](assets/screenshots/25.png) | ![ScreenShot26](assets/screenshots/26.png) |                                            |
+
 ## Tech/Framework Used
 
-- Node.js
-- Express
-- React
-- MongoDB
-- TypeScript
-
-- Tailwind CSS
-- JWT
-- Jest
-- Stripe
-- Cloudinary
-- Nodemailer
-- Render
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-008CDD?style=for-the-badge&logo=stripe&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
+![Nodemailer](https://img.shields.io/badge/Nodemailer-0A1A2F?style=for-the-badge&logo=nodemailer&logoColor=white)
+![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
 
 ## Features
 
@@ -202,6 +211,13 @@ You can access it at [Are We There Yet](https://are-we-there-yet-mirror-1.onrend
 ## API References
 
 ## Tests
+
+This project uses Jest for unit testing. You can run the tests using the following command:
+
+```sh
+cd backend
+npm run test
+```
 
 ## How to Use
 
