@@ -11,7 +11,7 @@ export async function confirmPayment({ params }: LoaderFunctionArgs) {
     throw new Error("Session id and type is required!!");
   }
 
-  const promocode = localStorage.get("promocode")
+  const promocode = localStorage.getItem("promocode")
   let apiEndpoint = "";
   if (params.type === "cart") {
     apiEndpoint = "/orders/checkout";

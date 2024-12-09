@@ -33,6 +33,36 @@ const Cart = () => {
     zip: "",
     country: "",
   });
+const [promoCode, setPromoCode] = useState<string>("");
+const [isVerifying, setIsVerifying] = useState(false); // To indicate verification in progress
+const verifyPromoCode = async () => {
+  if (!promoCode.trim()) {
+    toast.error("Please enter a promo code.");
+    return;
+  }
+
+  const loadingToastId = toast.loading("Processing..."); // Show loading toast
+
+  try {
+    setIsVerifying(true);
+    console.log(promoCode);
+    const response = await axiosInstance.post(`/promoCodes/verify`, { code: promoCode });
+    console.log(response);
+    if (response.status === 200) {
+      toast.success("Promo code applied successfully!", { id: loadingToastId });
+      localStorage.setItem("promocode", promoCode)
+      // Update state or apply discount logic here if needed
+    }
+  } catch (error) {
+    if (error.response?.status === 404) {
+      toast.error("Invalid promo code. Please try again.", { id: loadingToastId });
+    } else {
+      toast.error("Error verifying promo code. Please try again later.", { id: loadingToastId });
+    }
+  } finally {
+    setIsVerifying(false);
+  }
+};
 
   const fetchAddresses = async () => {
     try {
@@ -113,18 +143,33 @@ const Cart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [imageUrls, setImageUrls] = useState<{ [key: string]: string[] }>({});
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null); // State to store the clicked product
-  const changeQuantity = (productId: string, newQuantity: number) => {
+  const changeQuantity = async (productId: string, newQuantity: number) => {
+    const loadingToastId = toast.loading("Processing..."); // Show loading toast
     if (newQuantity < 1) {
       newQuantity = 1; // Set the minimum quantity to 1
     }
+    try {
+      console.log(productId);
+      console.log(cart);
+      console.log(newQuantity);
+      await axiosInstance.post(`/users/cart/`, {
+      productId: productId,
+      quantity: newQuantity,
+    });
     setCart((prev) =>
       prev.map((item) =>
         item.product._id === productId
-          ? { ...item, quantity: Math.max(newQuantity, 1) } // Ensure quantity is at least 1
+          ? { ...item, quantity: Math.min(Math.max(newQuantity, 1), item.product.available_quantity) } // Ensure quantity is at least 1
           : item,
       ),
     );
+    toast.success("Quantity updated", { id: loadingToastId });
+  } catch (error) {
+    toast.error(
+      `Failed to update quantity ${(error as any).response.data.message}`, {id: loadingToastId}
+    );
   };
+};
   const handleRemoveCart = async () => {
     if (selectedProduct) {
       setCart((prevCart) =>
@@ -141,7 +186,7 @@ const Cart = () => {
   };
 
   const handlePayment = async (paymentMethod: string) => {
-    const promocode = localStorage.get("promocode");
+    const promocode = localStorage.getItem("promocode");
 
     switch (paymentMethod) {
       case "cash":
@@ -414,31 +459,60 @@ const Cart = () => {
               </div>
             )}
             {selectedAddress && (
-              <div className="col-span-2 flex justify-end">
-                {/* cash on delivery */}
-                <button
-                  className="mr-4 mt-10 flex items-center gap-3 rounded-lg bg-accent-gold px-8 py-4 text-lg font-bold transition-all duration-150 hover:opacity-80"
-                  onClick={() => handlePayment("cash")}
-                >
-                  <Coins size={30} />
-                  Cash On Delivery
-                </button>
-                <button
-                  className="mr-4 mt-10 flex w-fit items-center gap-3 rounded-lg bg-accent-gold px-8 py-4 text-lg font-bold transition-all duration-150 hover:opacity-80"
-                  onClick={() => handlePayment("wallet")}
-                >
-                  <Wallet2 size={30} />
-                  Pay By Wallet
-                </button>
-                <button
-                  className="ml-4 mt-10 flex items-center gap-3 rounded-lg bg-accent-gold px-8 py-4 text-lg font-bold transition-all duration-150 hover:opacity-80"
-                  onClick={() => handlePayment("card")}
-                >
-                  <CreditCard size={30} />
-                  Pay Online
-                </button>
-              </div>
-            )}
+  <div className="col-span-2 flex flex-col">
+  {/* Promo Code Input */}
+  <h4 className="text-md font-bold mb-3 mt-3">Enter your Promo Code</h4>
+  <div className="w-full mb-6 flex items-center gap-4">
+    <input
+      type="text"
+      placeholder="Promo Code"
+      required
+      value={promoCode}
+      onChange={(e) => setPromoCode(e.target.value)}
+      className="w-1/2 rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20"
+    />
+    <button
+      onClick={verifyPromoCode}
+      disabled={isVerifying}
+      className={`ml-2 rounded bg-blue-500 px-6 py-3 text-white font-bold transition-all duration-150 
+        ${isVerifying ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:opacity-80"}`}
+    >
+      {isVerifying ? "Verifying..." : "Verify"}
+    </button>
+  </div>
+
+    {/* Payment Buttons */}
+    <div className="flex justify-end">
+      {/* Cash on Delivery */}
+      <button
+        className="mr-4 flex items-center gap-3 rounded-lg bg-accent-gold px-8 py-4 text-lg font-bold transition-all duration-150 hover:opacity-80"
+        onClick={() => handlePayment("cash")}
+      >
+        <Coins size={30} />
+        Cash On Delivery
+      </button>
+
+      {/* Pay By Wallet */}
+      <button
+        className="mr-4 flex w-fit items-center gap-3 rounded-lg bg-accent-gold px-8 py-4 text-lg font-bold transition-all duration-150 hover:opacity-80"
+        onClick={() => handlePayment("wallet")}
+      >
+        <Wallet2 size={30} />
+        Pay By Wallet
+      </button>
+
+      {/* Pay Online */}
+      <button
+        className="ml-4 flex items-center gap-3 rounded-lg bg-accent-gold px-8 py-4 text-lg font-bold transition-all duration-150 hover:opacity-80"
+        onClick={() => handlePayment("card")}
+      >
+        <CreditCard size={30} />
+        Pay Online
+      </button>
+    </div>
+  </div>
+)}
+
           </div>
         </div>
       </div>

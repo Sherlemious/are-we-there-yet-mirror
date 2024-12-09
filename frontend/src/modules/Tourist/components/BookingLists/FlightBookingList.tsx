@@ -140,7 +140,7 @@ export function FlightBookingList() {
     );
   };
   
-  const API_KEY = "b844375bb47ddd9df02dfd32f66e681f"; // Replace with your API key
+  const API_KEY = import.meta.env.VITE_AVIATION_STACK_API_KEY;
   const API_URL = `https://api.aviationstack.com/v1/flights`;
 
   useEffect(() => {
