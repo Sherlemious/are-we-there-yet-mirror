@@ -50,6 +50,10 @@ export const AdvertiserLinks = [
         name: "My Activities",
         url: "/home/my-activities",
       },
+      {
+        name: "Sales Report",
+        url: "/home/advertiser-sales",
+      },
     ],
   },
 ];
@@ -66,6 +70,10 @@ export const SellerLinks = [
         name: "My Products",
         url: "/home/my-products-seller",
       },
+      {
+        name: "Sales Report",
+        url: "/home/seller-sales",
+      },
     ],
   },
 ];
@@ -81,6 +89,10 @@ export const TourGuideLinks = [
       {
         name: "My Itineraries",
         url: "/home/my-itineraries",
+      },
+      {
+        name: "Sales Report",
+        url: "/home/tour-guide-sales",
       },
     ],
   },
@@ -110,6 +122,10 @@ export const AdminLinks = [
       {
         name: "Manage Products",
         url: "/home/admin-dashboard/my-products-admin",
+      },
+      {
+        name: "Sales Report",
+        url: "/home/admin-sales",
       },
     ],
   },
