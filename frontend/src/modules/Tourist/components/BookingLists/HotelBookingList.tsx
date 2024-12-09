@@ -234,23 +234,25 @@ export function HotelBookingList() {
   return (
     <div className="p-4">
       <div className="mb-4">
-      <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="px-4 py-2 border rounded">
-              {CITY_CODES.find((city) => city.code === cityCode)?.name || "Select a City"}
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {CITY_CODES.map((city) => (
-              <DropdownMenuItem
-                key={city.code}
-                onClick={() => handleCityChange(city.code)}
-              >
-                {city.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex justify-center mb-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full max-w-md rounded-lg border border-borders-primary bg-secondary-light_grey px-4 py-3 outline-none transition-all focus:border-primary-blue focus:ring-2 focus:ring-primary-blue/20">
+                {CITY_CODES.find((city) => city.code === cityCode)?.name || "Select a City"}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {CITY_CODES.map((city) => (
+                <DropdownMenuItem
+                  key={city.code}
+                  onClick={() => handleCityChange(city.code)}
+                >
+                  {city.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       {loading && <p className="text-white text-body">Loading hotels...</p>}
       {error && <p className="text-red-500">{error}</p>}
