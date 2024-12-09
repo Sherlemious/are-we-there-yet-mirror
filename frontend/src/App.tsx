@@ -71,6 +71,7 @@ import AdminPromoCode, {
 import { Sales as AdvertisorSales } from "./modules/Advertiser/pages/Sales";
 import { Sales as TourGuideSales } from "./modules/TourGuide/pages/Sales";
 import { Sales as SellerSales } from "./modules/Seller/pages/Sales";
+import { Sales as AdminSales } from "./modules/Admin/pages/Sales";
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -311,6 +312,7 @@ const BrowserRouter = createBrowserRouter([
           },
         ],
       },
+      /* These have no route guards */
       {
         path: "advertiser-sales",
         element: <AdvertisorSales />,
@@ -323,6 +325,11 @@ const BrowserRouter = createBrowserRouter([
         path: "seller-sales",
         element: <SellerSales />,
       },
+      {
+        path: "admin-sales",
+        element: <AdminSales />,
+      },
+      /* These have no route guards */
     ],
   },
   {

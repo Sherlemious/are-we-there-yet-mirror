@@ -136,6 +136,10 @@ export const AdminLinks = [
         name: "Manage Products",
         url: "/home/admin-dashboard/my-products-admin",
       },
+      {
+        name: "Sales Report",
+        url: "/home/admin-sales",
+      },
     ],
   },
   {

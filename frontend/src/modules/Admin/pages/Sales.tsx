@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 async function getAllActivities() {
   try {
     // get the data via axios
-    const resPromise = await axiosInstance.get("/activities/mine");
+    const resPromise = await axiosInstance.get("/products");
 
     // format the data
     const res = resPromise.data.data.products;
@@ -42,7 +42,7 @@ function useActivityCleaner() {
   useEffect(() => {
     getAllActivities()
       .then((data) => {
-        data = data || [];
+        console.log(data);
         setActivities(cleanupActivities(data));
       })
       .catch((error) => {
