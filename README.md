@@ -210,6 +210,8 @@ You can access it at [Are We There Yet](https://are-we-there-yet-mirror-1.onrend
 
 ## API References
 
+[API Documentation](api.yaml)
+
 ## Tests
 
 This project uses Jest for unit testing. You can run the tests using the following command:
