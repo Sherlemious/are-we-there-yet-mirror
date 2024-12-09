@@ -345,7 +345,7 @@ We appreciate your contributions and look forward to collaborating with you to i
 - [Abdelrahman Mohammed](https://github.com/Sherlemious)
 - [Ahmed Gado](https://github.com/Hamada-Gado)
 - [Marwan Mohamed Elsisi](https://github.com/MarwanSiSi)
-- [MoGamal2](https://github.com/MoGamal2)
+- [Mohammed Gamal](https://github.com/MoGamal2)
 - [Mostafa Hisham Hamdy](https://github.com/mostafahisham03)
 - [Mohamed Ahmed El Sawy](https://github.com/Sawy03)
 - [Omar Goba](https://github.com/Omar-Goba)
@@ -362,12 +362,16 @@ We appreciate your contributions and look forward to collaborating with you to i
 - [React](https://reactjs.org/)
 - [Stripe](docs.stripe.com)
 - [axios](https://axios-http.com/docs/intro)
+- [Cloudinary](https://cloudinary.com/documentation/node_quickstart)
 
 #### Video tutorials
 
-| Description | Link                                                                                         |
-| ----------- | -------------------------------------------------------------------------------------------- |
-| Google Maps | [How to load Maps JavaScript API in React](https://youtu.be/PfZ4oLftItk?si=i8vNiaWh-pBzvdad) |
+| Description     | Link                                                                                    |
+| --------------- | --------------------------------------------------------------------------------------- |
+| Google Maps     | [How to load Maps JavaScript API in React](https://www.youtube.com/watch?v=PfZ4oLftItk) |
+| JWT Explanation | [What is JWT and Why Should You Use JWT](https://www.youtube.com/watch?v=7Q17ubqLfaM)   |
+| TypeScript      | [TypeScript Crash Course](https://www.youtube.com/watch?v=30LWjhZzg50)                  |
+
 
 ## License
 
@@ -375,7 +379,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+    [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
