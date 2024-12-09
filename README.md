@@ -31,6 +31,33 @@ You can access it at [Are We There Yet](https://are-we-there-yet-mirror-1.onrend
 Backend Deployment: [Backend](https://are-we-there-yet-mirror.onrender.com/api)
 Frontend Deployment: [Frontend](https://are-we-there-yet-mirror-1.onrender.com/)
 
+### Possible Deployment Issues and Solutions
+
+- **MongoDB Connection Error:**
+
+  - If you encounter a MongoDB connection error, ensure that your MongoDB connection URI is correctly configured in the `.env` file.
+  - MongoDB does not work on Orange network, so you may need to use a different network.
+
+- **Cloudinary Configuration Error:**
+
+  - If you face issues with Cloudinary configuration, verify that your Cloudinary URL is correctly set in the `.env` file.
+  - Ensure that your Cloudinary account is active and has the necessary permissions to upload and manage files.
+
+- **Testing Issues**
+
+  - Incomplete Test Coverage: If you encounter issues with test coverage, ensure that all critical components and functions are tested.
+  - CI/CD requires constant updates to the test suite to ensure that new features and changes are adequately tested.
+
+- **Missing Data On Flight or Hotel Pages**
+
+  - API limits may cause missing data on flight or hotel pages. Ensure that you have the necessary API keys and permissions to access the required data. Upgrading the API plan may help resolve this issue.
+
+- **Deployment Issues**
+
+  - If you face deployment issues, check the deployment logs for error messages and warnings. Common deployment issues include missing dependencies, incorrect environment variables, and network connectivity problems.
+
+  - The Free Tier of Render has limitations on the number of services and resources available.
+
 ## Code Style
 
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://prettier.io/)
@@ -150,6 +177,8 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
 ## Features
 
 - **User Authentication:** Secure user authentication using JWT.
+- **Logging:** Logging middleware for tracking requests and errors.
+- **Unit Testing:** Robust unit testing with Jest to ensure code quality and reliability.
 - **Booking Management:** Easy and efficient booking management system.
 - **Payment Processing:** Seamless payment processing with Stripe integration.
 - **Cloud Storage:** Store and manage documents and images using Cloudinary.
@@ -157,7 +186,6 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
 - **Admin Dashboard:** Comprehensive admin dashboard for managing users, bookings, and more.
 - **Email Notifications:** Automated email notifications for booking confirmations and updates.
 - **Search and Filter:** Advanced search and filter options for finding trips and activities.
-- **Unit Testing:** Robust unit testing with Jest to ensure code quality and reliability.
 
 ## Code Examples
 
@@ -524,7 +552,7 @@ We appreciate your contributions and look forward to collaborating with you to i
 - [Mostafa Hisham Hamdy](https://github.com/mostafahisham03)
 - [Mohamed Ahmed El Sawy](https://github.com/Sawy03)
 - [Omar Goba](https://github.com/Omar-Goba)
-- [RasheedAtia](https://github.com/RasheedAtia)
+- [Rasheed Atia](https://github.com/RasheedAtia)
 - [Seifeldin Khaled](https://github.com/SeifAbbas)
 - [Yousef Yasser](https://github.com/yousefyasser)
 
