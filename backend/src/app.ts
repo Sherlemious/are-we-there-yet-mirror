@@ -8,10 +8,13 @@ import { currencySetter } from './middlewares/currencySetter.middleware';
 import mongoose from 'mongoose';
 import fileupload from 'express-fileupload';
 import StripeService from './services/stripe.service';
+import BirthdayService from './services/birthday.service';
 
 const app = express();
 const mongoConnectionString = process.env.MONGO_URI || '';
+
 StripeService.getInstance();
+BirthdayService.getInstance();
 
 app.use(cors()); // Enable CORS
 app.use(fileupload({ useTempFiles: true })); // Enable file upload

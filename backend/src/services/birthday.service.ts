@@ -2,12 +2,24 @@ import { PromoCode } from '../database/models/promoCode.model';
 import { User } from '../database/models/user.model';
 import { PromoCodeType } from '../types/PromoCode.types';
 import emailService from './email/email.service';
-import cron from 'node-cron';
 
-class BirthdayService {
+export default class BirthdayService {
+  private static instance: BirthdayService;
+
   constructor() {
-    // Schedule the task to run every 2 minutes
-    cron.schedule('*/2 * * * *', this.sendBirthdayPromoCode.bind(this));
+    this.init();
+  }
+
+  private async init(): Promise<void> {
+    await this.sendBirthdayPromoCode();
+    this.scheduleBirthdayCheck();
+  }
+
+  public static getInstance(): BirthdayService {
+    if (!BirthdayService.instance) {
+      BirthdayService.instance = new BirthdayService();
+    }
+    return BirthdayService.instance;
   }
 
   async sendBirthdayPromoCode() {
@@ -15,12 +27,18 @@ class BirthdayService {
       const today = new Date();
       const todayMonthDay = `${today.getMonth() + 1}-${today.getDate()}`;
 
-      // Find users with birthdays today
-      const users = await User.find().where({
-        birthday: { $regex: `-${todayMonthDay}$` },
+      // Find all users
+      const users = await User.find();
+
+      // Filter users with birthdays today
+      const birthdayUsers = users.filter((user) => {
+        if (!user.dob) return false;
+        const dob = new Date(user.dob);
+        const dobMonthDay = `${dob.getMonth() + 1}-${dob.getDate()}`;
+        return dobMonthDay === todayMonthDay;
       });
 
-      for (const user of users) {
+      for (const user of birthdayUsers) {
         if (!user.email || !user.name) {
           throw new Error('User email not found');
         }
@@ -29,7 +47,6 @@ class BirthdayService {
         // Check if the promo code already exists
         const existingPromoCode = await PromoCode.findOne({
           code: promoCodeString,
-          created_by: user._id,
         });
 
         if (!existingPromoCode) {
@@ -51,6 +68,17 @@ class BirthdayService {
     } catch (error) {
       console.log('Error sending birthday promo code:', error);
     }
+  }
+
+  private scheduleBirthdayCheck(): void {
+    setTimeout(async () => {
+      try {
+        await this.sendBirthdayPromoCode();
+      } catch (error: any) {
+        console.log('Error refreshing access token:', error.message);
+      }
+      this.scheduleBirthdayCheck(); // Schedule the next refresh
+    }, 150000); // 2.5 minutes
   }
 }
 
