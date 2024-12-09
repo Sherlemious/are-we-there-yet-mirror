@@ -174,7 +174,7 @@ export function FlightBookingList() {
       header: "Price", 
       accessor: "name",
       render: () => (
-        <span className="p-5 text-center text-body text-accent-dark-blue">${Math.floor(Math.random() * 9) * 100 + 100 }</span>
+        <span className="p-5 text-center text-body text-accent-dark-blue">{Math.floor(Math.random() * 9) * 100 + 100 }</span>
       ) 
     },
     {
