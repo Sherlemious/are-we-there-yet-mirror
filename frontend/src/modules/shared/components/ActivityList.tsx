@@ -255,7 +255,7 @@ function ActivityModal({
 
   // function to handle booking
   const handlePayment = async (paymentMethod: string) => {
-    const promocode = localStorage.get("promocode");
+    const promocode = localStorage.getItem("promocode");
     switch (paymentMethod) {
       case "cash":
       case "wallet":
@@ -300,6 +300,7 @@ function ActivityModal({
       console.log(response);
       if (response.status === 200) {
         toast.success("Promo code applied successfully!", { id: loadingToastId });
+        localStorage.setItem("promocode", promoCode)
         // Update state or apply discount logic here if needed
       }
     } catch (error) {
