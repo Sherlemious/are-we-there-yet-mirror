@@ -23,6 +23,14 @@ The "Are We There Yet?" project aims to create a virtual trip planner that simpl
 
 ## Build Status
 
+### Deployment
+
+This project is deployed on Render.
+You can access it at [Are We There Yet](https://are-we-there-yet-mirror-1.onrender.com/).
+
+Backend Deployment: [Backend](https://are-we-there-yet-mirror.onrender.com/api)
+Frontend Deployment: [Frontend](https://are-we-there-yet-mirror-1.onrender.com/)
+
 ## Code Style
 
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://prettier.io/)
@@ -153,6 +161,178 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
 
 ## Code Examples
 
+### Authentication Middleware
+
+Below is an example of an authentication middleware using Express and JWT. This middleware verifies the JWT token and attaches the user payload to the request object. It also includes a function to allow certain paths to be accessed without authentication.
+
+```typescript
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { logger } from './logger.middleware';
+import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
+
+interface UserPayload {
+  userId: string;
+  accountType: string;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: UserPayload;
+    }
+  }
+}
+
+const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.header('Authorization')?.split(' ')[1];
+
+  if (!token) {
+    logger.error('Access Denied');
+    res.status(ResponseStatusCodes.UNAUTHORIZED).send('Access Denied');
+    return;
+  }
+
+  if (req.header('Authorization')?.split(' ')[0] !== 'Bearer') {
+    logger.error('Invalid Token');
+    res.status(ResponseStatusCodes.UNAUTHORIZED).send('Invalid Token');
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET as string) as UserPayload;
+    req.user = decoded;
+    next();
+  } catch (err) {
+    logger.error('Expired Token:', err instanceof Error ? err.message : 'Unknown error');
+    res.status(ResponseStatusCodes.FORBIDDEN).send('Expired Token');
+  }
+};
+
+const openPaths = [
+  { path: '/api/auth/register', methods: ['POST'] },
+  { path: '/api/auth/login', methods: ['POST'] },
+  { path: '/api/itineraries/get', methods: ['GET'] },
+  { path: '/api/museums/getall', methods: ['GET'] },
+  { path: '/api/activities', methods: ['GET'] },
+  { path: '/api/attachments', methods: ['POST'] },
+  { path: '/api/termsAndConditions', methods: ['GET'] },
+  { path: '/api/tags', methods: ['GET'] },
+  { path: '/api/categories', methods: ['GET'] },
+  { path: '/api/users/forgotPassword', methods: ['POST'] },
+  { path: '/api/users/verifyOTP', methods: ['POST'] },
+];
+
+const authenticateUnlessOpen = (req: Request, res: Response, next: NextFunction) => {
+  const isOpenPath = openPaths.some((route) => route.path === req.path && route.methods.includes(req.method));
+
+  if (isOpenPath) {
+    return next();
+  }
+
+  return authenticateToken(req, res, next);
+};
+
+export { authenticateToken, authenticateUnlessOpen };
+```
+
+### Activity Controller
+
+```typescript
+import { Request, Response } from 'express';
+import activityRepo from '../database/repositories/activity.repo';
+
+const createActivity = async (req: Request, res: Response) => {
+  try {
+    const activity = req.body;
+    activity.created_by = req.user.userId;
+    const newActivity = await activityRepo.createActivity(activity);
+    res.status(201).json({ message: 'Activity created successfully', data: { activityId: newActivity._id } });
+  } catch (error) {
+    res.status(400).json({ message: error.message, data: [] });
+  }
+};
+
+export { createActivity };
+```
+
+### React Component
+
+Below is an example of a React component that uses the Radix UI library to create a custom select dropdown with a trigger component.
+
+```tsx
+import * as React from 'react';
+import * as SelectPrimitive from '@radix-ui/react-select';
+import { Check, ChevronDown, ChevronUp } from 'lucide-react';
+
+const Select = SelectPrimitive.Root;
+
+const SelectTrigger = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Trigger
+    ref={ref}
+    className={`flex h-full w-full items-center justify-between rounded-md bg-background p-3 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-gold disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    {...props}
+  >
+    {children}
+    <SelectPrimitive.Icon asChild>
+      <ChevronDown className="h-4 w-4 opacity-50" />
+    </SelectPrimitive.Icon>
+  </SelectPrimitive.Trigger>
+));
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
+
+export { Select, SelectTrigger };
+```
+
+### Axios Instance
+
+```typescript
+import axios from 'axios';
+import { NavigateFunction } from 'react-router';
+
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_BACK_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    config.headers = config.headers || {};
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    const currency = localStorage.getItem('currency') || 'EGP';
+    config.headers['Currency'] = currency;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export const setupInterceptors = (navigate: NavigateFunction) => {
+  // Response Interceptor
+  axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && [401, 403].includes(error.response.status)) {
+        localStorage.removeItem('token');
+        navigate('/register');
+      }
+      return Promise.reject(error);
+    }
+  );
+};
+
+export default axiosInstance;
+```
+
 ## Installation
 
 1. **Clone the repository:**
@@ -202,11 +382,6 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
    cd ../frontend
    npm start
    ```
-
-## Deployment
-
-This project is deployed on Render.
-You can access it at [Are We There Yet](https://are-we-there-yet-mirror-1.onrender.com/).
 
 ## API References
 
@@ -372,6 +547,12 @@ We appreciate your contributions and look forward to collaborating with you to i
 | JWT Explanation | [What is JWT and Why Should You Use JWT](https://www.youtube.com/watch?v=7Q17ubqLfaM)   |
 | TypeScript      | [TypeScript Crash Course](https://www.youtube.com/watch?v=30LWjhZzg50)                  |
 
+### 3rd Party Services
+
+- [Cloudinary](https://cloudinary.com/)
+- [Stripe](https://stripe.com/)
+- [Amadeus](https://developers.amadeus.com/)
+- [AviationStack](https://aviationstack.com/)
 
 ## License
 
