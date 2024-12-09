@@ -1,4 +1,4 @@
-# Are We There Yet?
+# Are We There Yet? ![Are We There Yet Logo](assets/logo/Are%20We%20There%20Yet%20Logo-03.png)
 
 ## Table of Contents
 
