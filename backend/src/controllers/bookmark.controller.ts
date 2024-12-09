@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { logger } from '../middlewares/logger.middleware';
 import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import bookmarkRepo from '../database/repositories/bookmark.repo';
+import currencyConverterService from '../services/currencyConverter.service';
 
 class BookmarkController {
   async getBookmarks(req: Request, res: Response) {
@@ -11,6 +12,19 @@ class BookmarkController {
       const bookmarks = await bookmarkRepo.getBookmarks(req.user.userId, wishlist);
 
       if (wishlist) {
+        let products = bookmarks?.map((item: any) => item.product);
+        const currency: string = req.currency.currency;
+        if (products) {
+          products = await Promise.all(
+            products.map(async (product) => {
+              if (!product.price) {
+                product.price = 0;
+              }
+              product.price = await currencyConverterService.convertPrice(product.price, currency);
+              return product;
+            })
+          );
+        }
         res.status(ResponseStatusCodes.OK).json({ message: 'Wishlist fetched', data: { wishlist: bookmarks } });
         return;
       }
