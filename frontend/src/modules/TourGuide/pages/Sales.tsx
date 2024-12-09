@@ -5,10 +5,10 @@ import toast from "react-hot-toast";
 async function getAllActivities() {
   try {
     // get the data via axios
-    const resPromise = await axiosInstance.get("/activities/mine");
+    const resPromise = await axiosInstance.get("/itineraries/mine");
 
     // format the data
-    const res = resPromise.data.data;
+    const res = resPromise.data.data.itineraries;
 
     return res;
   } catch (error) {
@@ -24,6 +24,7 @@ function useActivityCleaner() {
   // define the cleanup function
   function cleanupActivities(activities) {
     // get the important data
+    console.log(activities);
     const cleanedActivities = activities.map((activity) => {
       return {
         id: activity._id,

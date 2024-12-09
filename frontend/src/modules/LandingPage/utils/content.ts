@@ -99,6 +99,10 @@ export const TourGuideLinks = [
         name: "My Itineraries",
         url: "/home/my-itineraries",
       },
+      {
+        name: "Sales Report",
+        url: "/home/tour-guide-sales",
+      },
     ],
   },
 ];
