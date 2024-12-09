@@ -63,6 +63,10 @@ export const AdvertiserLinks = [
         name: "My Activities",
         url: "/home/my-activities",
       },
+      {
+        name: "Sales Report",
+        url: "/home/advertiser-sales",
+      },
     ],
   },
 ];
