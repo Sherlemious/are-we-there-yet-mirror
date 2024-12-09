@@ -14,7 +14,18 @@ const formatDate = (date: string) => {
   const parsedDate = new Date(date);
   return parsedDate.toLocaleDateString("en-GB");
 };
-
+const renderStars = (rating: number) => {
+  const filledStars = "★".repeat(Math.floor(rating));
+  const halfStar = rating % 1 >= 0.5;
+  const emptyStars = "☆".repeat(5 - Math.floor(rating) - (halfStar ? 1 : 0));
+  return (
+    <span className="text-2xl text-yellow-500">
+      {filledStars}
+      {halfStar && "⯨"}
+      {emptyStars}
+    </span>
+  );
+  };
 const formatTime = (time: string) => {
   const parsedTime = new Date(time);
   return parsedTime.toLocaleTimeString("en-GB");
@@ -49,7 +60,7 @@ export function ItineraryCard({
         </button>
         {/* Itinerary name */}
         <div className="p-4 text-center text-lg font-semibold text-accent-dark-blue">
-        {itinerary.name}
+        {itinerary.name} {renderStars(itinerary.average_rating)}
         </div>
         <div className="grid gap-3 px-6 pb-4 pt-2">
         {itinerary.activities.length !== 0 ? (

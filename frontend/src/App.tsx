@@ -327,11 +327,11 @@ const BrowserRouter = createBrowserRouter([
       },
       {
         path: "my-activities",
-        element: (
-          <RouteGuard account_types={[AccountType.Advertiser]}>
-            <Outlet />,
-          </RouteGuard>
-        ),
+        // element: (
+        //   <RouteGuard account_types={[AccountType.Advertiser]}>
+        //     <Outlet />,
+        //   </RouteGuard>
+        // ),
         children: [
           {
             index: true,
