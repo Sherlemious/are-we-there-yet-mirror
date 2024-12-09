@@ -139,11 +139,13 @@ function ItineraryModal({
       console.log("Selected Tags:", [...selectedTags, selectedTag]);
       console.log("Tag IDs:", [...tagIds, selectedTagId]);
     }
+    setIsEdited(true);
   };
 
   const handleRemoveTag = (tagId: string) => {
     setSelectedTags(selectedTags.filter((tag) => tag._id !== tagId));
     setTagIds(tagIds.filter((id) => id !== tagId));
+    setIsEdited(true);
   };
 
   const handleAddDateTime = () => {
@@ -151,12 +153,14 @@ function ItineraryModal({
       ...availableDateTimes,
       new Date().toISOString().slice(0, 16),
     ]);
+    setIsEdited(true);
   };
 
   const handleActivityChange = (
     event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setSelectedActivityId(event.target.value);
+    setIsEdited(true);
   };
 
   const handleRemoveActivity = (activityId: string) => {
@@ -169,12 +173,14 @@ function ItineraryModal({
     );
     setActivityIds(activityIds.filter((id) => id !== activityId));
     console.log(activityIds.filter((id) => id !== activityId));
+    setIsEdited(true);
   };
 
   const handleRemoveDateTime = (index: number) => {
     const newDateTimes = [...availableDateTimes];
     newDateTimes.splice(index, 1);
     setAvailableDateTimes(newDateTimes);
+    setIsEdited(true);
   };
 
   const handleAddActivity = () => {
@@ -193,6 +199,7 @@ function ItineraryModal({
       setActivityIds([...activityIds, selectedActivityId]);
       setSelectedActivityId(""); // Reset the selected activity ID
     }
+    setIsEdited(true);
   };
 
   const handleAccessibilityChange = (event: any) => {
@@ -201,18 +208,21 @@ function ItineraryModal({
       ...prev,
       [name]: checked,
     }));
+    setIsEdited(true);
   };
 
   const handleActivate = async () => {
     if (itinerary && itinerary._id) {
       onActivate(itinerary._id);
     }
+    setIsEdited(true);
   };
 
   const handleDeactivate = async () => {
     if (itinerary && itinerary._id) {
       onDeactivate(itinerary._id);
     }
+    setIsEdited(true);
   };
 
   return (
