@@ -150,17 +150,20 @@ export function Sales() {
       0,
     );
 
+    // define a helper func
+    const round = (num) => Math.round(num * 100) / 100;
+
     // set the sales per month
     setSalesPerMonth([
       {
         month: 11,
-        sales: Math.floor(totalSales * 0.1),
-        revenue: Math.floor(totalRevenue * 0.1),
+        sales: Math.round(round(totalSales * 0.09)),
+        revenue: round(totalRevenue * 0.09),
       },
       {
         month: 12,
-        sales: Math.floor(totalSales * 1.0),
-        revenue: Math.floor(totalRevenue * 1.0),
+        sales: Math.round(round(totalSales * 0.91)),
+        revenue: round(totalRevenue * 0.91),
       },
     ]);
   }, [searchQuery, selectedMonth, activities]);
