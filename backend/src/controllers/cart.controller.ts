@@ -4,10 +4,24 @@ import { ResponseStatusCodes } from '../types/ResponseStatusCodes.types';
 import productRepo from '../database/repositories/product.repo';
 import { logger } from '../middlewares/logger.middleware';
 import userRepo from '../database/repositories/user.repo';
+import currencyConverterService from '../services/currencyConverter.service';
 
 class CartController {
   async getCart(req: Request, res: Response) {
     const user = await CartRepo.getUserCart(req.user.userId);
+    let products = user?.cart.map((item: any) => item.product);
+    const currency: string = req.currency.currency;
+    if (products) {
+      products = await Promise.all(
+        products.map(async (product) => {
+          if (!product.price) {
+            product.price = 0;
+          }
+          product.price = await currencyConverterService.convertPrice(product.price, currency);
+          return product;
+        })
+      );
+    }
 
     res.status(ResponseStatusCodes.OK).json({
       message: 'Cart fetched successfully',
