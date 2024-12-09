@@ -94,14 +94,14 @@ export default function AdminPromoCode() {
   return (
     <div className="container mx-auto space-y-5 p-4">
       <header className="flex items-center justify-between">
-        <div className="flex flex-col py-14 text-primary-blue">
+        <div className="flex flex-col py-14 text-white">
           <div className="w-full max-w-[50vw] divide-y-2 divide-primary-green">
-            <h3 className="py-4 text-2xl font-bold text-primary-blue">
+            <h3 className="py-4 text-4xl font-bold text-primary-blue">
               Promo Codes
             </h3>
           </div>
           <button
-            className="rounded-md bg-primary-green px-4 py-2 text-white"
+            className="rounded-md bg-accent-dark-blue px-4 py-3 text-white"
             onClick={() => ref.current?.open()}
           >
             Add Promo Code
@@ -117,7 +117,7 @@ export default function AdminPromoCode() {
       />
       <Modal ref={ref}>
         <div className="flex flex-col gap-4 p-4">
-          <h1 className="text-2xl font-bold text-primary-blue">
+          <h1 className="text-2xl font-bold text-primary-blue text-center">
             Add Promo Code
           </h1>
           <form
@@ -140,7 +140,7 @@ export default function AdminPromoCode() {
             />
             <button
               type="submit"
-              className="rounded-md bg-primary-green px-4 py-2 text-white"
+              className="rounded-md bg-accent-dark-blue px-4 py-2 text-white"
             >
               Add Promo Code
             </button>
