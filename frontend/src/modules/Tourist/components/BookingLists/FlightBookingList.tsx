@@ -164,16 +164,19 @@ export function FlightBookingList() {
         setLoading(false);
       });
   }, [limit, offset]);
-
-  const handleBookFlight = (flightNumber: string) => {
-    toast.success(`Flight ${flightNumber} has been booked!`);
-  };
   const columns: TableColumn[] = [
     { header: "Flight Number", accessor: "flight.number" },
     { header: "Airline", accessor: "airline.name" },
     { header: "Departure", accessor: "departure.timezone", render: (timezone) => (timezone !== undefined ? formatTimezone(timezone): "N/A"),
     },
     { header: "Arrival", accessor: "arrival.timezone", render: (timezone) => (timezone !== undefined ? formatTimezone(timezone): "N/A") },
+    { 
+      header: "Price", 
+      accessor: "name",
+      render: () => (
+        <span className="p-5 text-center text-body text-accent-dark-blue">${Math.floor(Math.random() * 9) * 100 + 100 }</span>
+      ) 
+    },
     {
       header: "Actions",
       accessor: "flight.number",
