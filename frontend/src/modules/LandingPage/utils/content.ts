@@ -83,6 +83,10 @@ export const SellerLinks = [
         name: "My Products",
         url: "/home/my-products-seller",
       },
+      {
+        name: "Sales Report",
+        url: "/home/seller-sales",
+      },
     ],
   },
 ];
