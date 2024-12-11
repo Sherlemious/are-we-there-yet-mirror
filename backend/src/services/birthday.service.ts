@@ -39,7 +39,7 @@ export default class BirthdayService {
       });
 
       for (const user of birthdayUsers) {
-        if (!user.email || !user.name) {
+        if (!user.email || !user.username) {
           throw new Error('User email not found');
         }
         const promoCodeString = `BDAY-${user.email.split('@')[0].toUpperCase()}`;
@@ -62,7 +62,7 @@ export default class BirthdayService {
           const promoCode = new PromoCode(promoCodeData);
           await promoCode.save();
 
-          emailService.sendBirthdayEmail(user.email, user.name, promoCodeString);
+          emailService.sendBirthdayEmail(user.email, user.username, promoCodeString);
         }
       }
     } catch (error) {
