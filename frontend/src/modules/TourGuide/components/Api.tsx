@@ -7,14 +7,15 @@ import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import type { ItineraryType } from "@/modules/shared/types/Itinerary.types";
 import type { ActivityType } from "@/modules/shared/types/Activity.types";
+import toast from "react-hot-toast";
 
 // Create an Itinerary
 export function useCreateMyItinerary() {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const createItinerary = async (newItinerary: ItineraryPostType) => {
-    setLoading(true);
+    setSuccess(null);
     setError(null);
 
     const url = `/itineraries`;
@@ -24,18 +25,7 @@ export function useCreateMyItinerary() {
 
       // Make POST request with axiosInstance
       const response = await axiosInstance.post(url, newItinerary);
-
-      console.log("Response status:", response.status);
-      console.log("Response data:", response.data);
-
-      if (response.status !== 201) {
-        console.error("Error:", response.data);
-        console.log("Response status:", response.status);
-        console.log("Response data:", response.data);
-        throw new Error("Failed to create itinerary");
-      }
-
-      setLoading(false);
+      setSuccess("Successfully created itinerary");
     } catch (err) {
       const axiosError = err as AxiosError;
       console.error(
@@ -43,18 +33,17 @@ export function useCreateMyItinerary() {
         axiosError.response?.data || axiosError.message,
       );
       setError("Failed to create itinerary");
-      setLoading(false);
+      ;
     }
   };
 
-  return { createItinerary, loading, error };
+  return { createItinerary, success, error };
 }
 
 // Get all Itineraries
 
 export function useGetMyItineraries() {
   const [data, setData] = useState<ItineraryType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
@@ -63,18 +52,12 @@ export function useGetMyItineraries() {
     try {
       const response = await axiosInstance.get(url);
 
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch data");
-      }
-
       const parsedData = response.data;
       const itineraries = parsedData.data.itineraries;
 
       setData(itineraries);
-      setLoading(false);
     } catch (error) {
       setError("Failed to fetch data");
-      setLoading(false);
     }
   };
 
@@ -82,75 +65,65 @@ export function useGetMyItineraries() {
     fetchData();
   }, []);
 
-  return { data, loading, error, fetchData };
+  return { data, error, fetchData };
 }
 
 export function useUpdateMyItinerary() {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const updateItinerary = async (
     itineraryId: string,
     updatedItinerary: Partial<ItineraryPostType>,
   ) => {
-    setLoading(true);
+    setSuccess(null);
     setError(null);
 
     const url = `/itineraries/${itineraryId}`;
 
     try {
       const response = await axiosInstance.put(url, updatedItinerary);
-
-      if (response.status !== 200) {
-        throw new Error("Failed to delete itinerary");
-      }
-
-      setLoading(false);
+      setSuccess("Successfully updated itinerary");
     } catch (error) {
-      setError("Failed to delete itinerary");
-      setLoading(false);
+      setError("Failed to update itinerary");
+      ;
     }
   };
 
-  return { updateItinerary, loading, error };
+  return { updateItinerary, success, error };
 }
 
 // Delete an Itinerary
 
 export function useDeleteMyItinerary() {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const deleteItinerary = async (itineraryId: string) => {
-    setLoading(true);
+    setSuccess(null);
     setError(null);
 
     const url = `/itineraries/${itineraryId}`;
 
     try {
       const response = await axiosInstance.delete(url);
-
-      if (response.status !== 200) {
-        throw new Error("Failed to delete itinerary");
-      }
-
-      setLoading(false);
+      setSuccess("Successfully deleted itinerary");
     } catch (error) {
       setError("Failed to delete itinerary");
-      setLoading(false);
+      ;
     }
   };
 
-  return { deleteItinerary, loading, error };
+  return { deleteItinerary, success, error };
 }
 
 // Activate an Itinerary
 export const useActivateItinerary = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const activateItinerary = async (itineraryId: string) => {
-    setLoading(true);
+    setSuccess(null);
     setError(null);
 
     const url = `/itineraries/${itineraryId}/activate`;
@@ -158,46 +131,39 @@ export const useActivateItinerary = () => {
     try {
       const response = await axiosInstance.patch(url);
 
-      if (response.status !== 200) {
-        throw new Error("Failed to activate itinerary");
-      }
 
-      setLoading(false);
+
+      setSuccess("Successfully activated itinerary");
     } catch (error) {
       setError("Failed to activate itinerary");
-      setLoading(false);
+      ;
     }
   };
 
-  return { activateItinerary, loading, error };
+  return { activateItinerary, success, error };
 };
 
 // Deactivate an Itinerary
 export const useDeactivateItinerary = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const deactivateItinerary = async (itineraryId: string) => {
-    setLoading(true);
+    setSuccess(null);
     setError(null);
 
     const url = `/itineraries/${itineraryId}/deactivate`;
 
     try {
       const response = await axiosInstance.patch(url);
-
-      if (response.status !== 200) {
-        throw new Error("Failed to deactivate itinerary");
-      }
-
-      setLoading(false);
+      setSuccess("Successfully deactivated itinerary");
     } catch (error) {
       setError("Failed to deactivate itinerary");
-      setLoading(false);
+      ;
     }
   };
 
-  return { deactivateItinerary, loading, error };
+  return { deactivateItinerary, success, error };
 };
 
 export const getTags = async (): Promise<TagType[]> => {
@@ -208,7 +174,7 @@ export const getTags = async (): Promise<TagType[]> => {
     return response.data.data.tags;
   } catch (error) {
     console.log("Error not working");
-    throw new Error("Error fetching tags");
+    toast.error("Error fetching tags");
   }
 };
 
@@ -220,7 +186,7 @@ export const getActivities = async (): Promise<ActivityType[]> => {
     return response.data.data;
   } catch (error) {
     console.log("Error not working", error);
-    throw new Error("Error fetching activities");
+    toast.error("Error fetching activities");
   }
 };
 

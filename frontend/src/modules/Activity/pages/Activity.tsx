@@ -2,14 +2,14 @@ import axiosInstance from "../../shared/services/axiosInstance";
 import { ActivityType } from "../../shared/types/Activity.types";
 import { ApiResponse } from "../../shared/types/Response.types";
 import ActivityTable from "../component/ActivityTable";
-import Header from "../component/Header";
 
 const Dashboard = () => {
   return (
-    <div className="w-full">
-      <Header />
+    <>
+    <div className="w-full p-5">
       <ActivityTable />
     </div>
+    </>
   );
 };
 
@@ -21,6 +21,7 @@ export interface LoaderDataType {
 export async function loader(): Promise<LoaderDataType> {
   const activites =
     await axiosInstance.get<ApiResponse<ActivityType[]>>("/activities/mine");
+    console.log(activites.data.data );
   return {
     activites: activites.data.data,
   };

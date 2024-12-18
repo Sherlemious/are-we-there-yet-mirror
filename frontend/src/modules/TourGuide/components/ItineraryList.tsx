@@ -12,6 +12,7 @@ import { ItineraryCard } from "./ItineraryCard";
 import type { ItineraryType } from "@/modules/shared/types/Itinerary.types";
 import type { ItineraryPostType } from "./Types";
 import { Plus } from "lucide-react";
+import toast from "react-hot-toast";
 
 function AddItineraryCard({ onAddClick }: { onAddClick: () => void }) {
   return (
@@ -27,24 +28,24 @@ function AddItineraryCard({ onAddClick }: { onAddClick: () => void }) {
 }
 
 export function ItineraryList() {
-  const { data, loading, error, fetchData } = useGetMyItineraries();
+  const { data, success, error, fetchData } = useGetMyItineraries();
   const { updateItinerary } = useUpdateMyItinerary();
   const {
     deleteItinerary,
-    loading: deleteLoading,
+    success: deleteSuccess,
     error: deleteError,
   } = useDeleteMyItinerary();
   const [selectedItinerary, setSelectedItinerary] =
     useState<ItineraryType | null>(null);
 
   // untestest
-
+  const loadingToastId = toast.toString();
   const { activateItinerary } = useActivateItinerary();
   const { deactivateItinerary } = useDeactivateItinerary();
   const [isCreating, setIsCreating] = useState(false);
   const {
     createItinerary,
-    loading: createLoading,
+    success: createSuccess,
     error: createError,
   } = useCreateMyItinerary(); // Extract createItinerary
 
@@ -62,7 +63,13 @@ export function ItineraryList() {
   };
 
   const handleSaveNewItinerary = async (newItinerary: ItineraryPostType) => {
+    try{
     await createItinerary(newItinerary);
+    toast.success("Created new itinerary", {id: loadingToastId});
+    } catch(error){
+      console.error(error);
+      toast.error("failed to create new itinerary", {id: loadingToastId});
+    }
     setIsCreating(false);
     setSelectedItinerary(null);
     fetchData();
@@ -75,37 +82,53 @@ export function ItineraryList() {
       console.error("No itinerary selected");
       return;
     }
+    try{
     await updateItinerary(selectedItinerary._id, updatedItinerary);
+    toast.success("Updated itinerary", {id: loadingToastId});
+    }catch(error){
+      console.error(error);
+      toast.error("failed to update itinerary", {id: loadingToastId});
+    }
     setIsCreating(false);
     setSelectedItinerary(null);
     fetchData();
   };
 
   const handleDeleteClick = async (itineraryId: string) => {
+    try{
     await deleteItinerary(itineraryId);
+    toast.success("Deleted itinerary", {id: loadingToastId});
+    }catch(error){
+      console.error(error);
+      toast.error("failed to delete itinerary", {id: loadingToastId});
+    }
     fetchData();
   };
 
   const handleActivateItinerary = async (itineraryId: string) => {
+    try{
     await activateItinerary(itineraryId);
+    toast.success("Activated itinerary", {id: loadingToastId});
+    }
+    catch(error){
+      console.error(error);
+      toast.error("failed to activate itinerary", {id: loadingToastId});
+    }
     setSelectedItinerary(null);
     fetchData();
   };
 
   const handleDeactivateItinerary = async (itineraryId: string) => {
+    try{
     await deactivateItinerary(itineraryId);
+    toast.success("Deactivated itinerary", {id: loadingToastId});
+    }catch(error){
+      console.error(error);
+      toast.error("failed to deactivate itinerary", {id: loadingToastId});
+    }
     setSelectedItinerary(null);
     fetchData();
   };
-
-  if (loading || deleteLoading || createLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error || deleteError || createError) {
-    return <div>Error: {error || deleteError || createError}</div>;
-  }
-
   return (
     <>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 bg-secondary-white p-12">
