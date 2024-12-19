@@ -176,16 +176,179 @@ This project uses Prettier for code formatting. Below is the Prettier configurat
 
 ## Features
 
-- **User Authentication:** Secure user authentication using JWT.
-- **Logging:** Logging middleware for tracking requests and errors.
-- **Unit Testing:** Robust unit testing with Jest to ensure code quality and reliability.
-- **Booking Management:** Easy and efficient booking management system.
-- **Payment Processing:** Seamless payment processing with Stripe integration.
-- **Cloud Storage:** Store and manage documents and images using Cloudinary.
-- **Responsive Design:** User-friendly and responsive design for all devices.
-- **Admin Dashboard:** Comprehensive admin dashboard for managing users, bookings, and more.
-- **Email Notifications:** Automated email notifications for booking confirmations and updates.
-- **Search and Filter:** Advanced search and filter options for finding trips and activities.
+### Guest (Non-registered User)
+
+- Browse and view all upcoming activities, itineraries, and historical places/museums
+- Filter activities by budget, date, category, and ratings
+- Sort activities and itineraries by price or ratings
+- Filter itineraries by budget, date, preferences, and language
+- Filter historical places/museums by tags
+- Register as a tourist (requires email, username, password, mobile number, nationality, DOB, job/student status)
+- Register as a tour guide, advertiser, or seller (requires username, email, password, and document verification)
+- Access step-by-step vacation planning guide
+- Choose activity categories
+- Search for specific museums, historical places, activities, or itineraries by name, category, or tag
+- View available products with details, prices, and reviews
+
+### Tourist
+
+All Guest features plus:
+
+- Secure login with username and password
+- Password management (change password, password recovery via email OTP)
+- Profile management (view/update personal information)
+- Wallet system integration with real-time balance updates
+
+#### Booking and Events
+
+- Book tickets for events, activities, or itineraries
+- Pay online using credit/debit cards (Stripe) or wallet
+- Receive payment receipts via email
+- Cancel bookings up to 48 hours before start time
+- View upcoming and past activities/itineraries
+- Choose preferred currency for price display
+- Bookmark events for later viewing
+- Request notifications for booking availability
+- Receive event reminders via app and email
+
+#### Ratings and Reviews
+
+- Rate and review tour guides after completed tours
+- Rate and review itineraries after completion
+- Rate and review attended events/activities
+- Rate and review purchased products
+
+#### Loyalty Program
+
+- Earn loyalty points on payments
+- Progress through three loyalty levels:
+  - Level 1: Up to 100K points (0.5× points per payment)
+  - Level 2: Up to 500K points (1× points per payment)
+  - Level 3: Over 500K points (1.5× points per payment)
+- Receive level-based badges
+- Redeem points for wallet cash (10000 points = 100 EGP)
+- Receive birthday promo codes
+
+#### Shopping Features
+
+- View and search products by name
+- Filter products by price
+- Sort products by ratings
+- Manage wishlist (add, remove, view items)
+- Shopping cart functionality:
+  - Add/remove items
+  - Adjust quantities
+  - Add items from wishlist
+- Multiple delivery addresses management
+- Flexible payment options (wallet, credit card, cash on delivery)
+- View order history and status
+- Cancel orders with wallet refund
+- Use promo codes
+
+#### Customer Support
+
+- File complaints with title, description, and date
+- Track complaint status (pending/resolved)
+- View personal complaint history
+
+### Tour Guide
+
+- Complete profile management (similar to LinkedIn individual profiles)
+- Profile picture upload
+- Create, view, update, and delete itineraries with detailed information:
+  - Activities and locations
+  - Timeline and duration
+  - Language options
+  - Pricing
+  - Available dates and times
+  - Accessibility details
+  - Pick-up/drop-off locations
+- Activate/deactivate itineraries
+- View all created itineraries
+- Access sales reports and revenue tracking
+- Filter sales reports by activity/itinerary/date/month
+- View tourist attendance reports
+- Receive notifications for flagged content
+- Account deletion request option
+
+### Advertiser
+
+- Company profile management (similar to LinkedIn company profiles)
+- Logo upload
+- Create, view, update, and delete activities with:
+  - Date and time
+  - Location (Google Maps integration)
+  - Pricing and special discounts
+  - Categories and tags
+  - Booking availability
+- View all created activities
+- Access sales reports and revenue tracking
+- Filter sales reports by activity/date/month
+- View tourist attendance reports
+- Receive notifications for flagged content
+- Account deletion request option
+
+### Seller
+
+- Basic profile management (name and description)
+- Logo upload
+- Product management:
+  - Add products with details, prices, and quantities
+  - Upload product images
+  - Edit product details and pricing
+  - Archive/unarchive products
+  - View available quantities and sales
+  - Receive out-of-stock notifications
+- View sales reports
+- Filter sales reports by product/date/month
+- Account deletion request option
+
+### Tourism Governor
+
+- Manage museums and historical places:
+  - Add descriptions and pictures
+  - Set locations and opening hours
+  - Configure ticket prices (foreign, native, student rates)
+  - Create and manage historical location tags
+- View all created locations and places
+
+### Administrator
+
+- User management:
+  - Add new administrators
+  - Add Tourism Governors
+  - Delete user accounts
+  - View total user counts and new user statistics
+
+#### Content management:
+
+- Review and verify registration documents
+- Accept/reject tour guides, advertisers, and sellers
+- Flag inappropriate events/itineraries
+- Create/manage activity categories
+- Create/manage preference tags
+- Create promo codes
+
+#### Complaint Management
+
+- View and sort complaints by date
+- Filter complaints by status
+- View complaint details
+- Update complaint status
+- Respond to complaints
+
+#### Product Management
+
+- Manage product listings
+- View product quantities and sales
+- Archive/unarchive products
+
+#### Financial tracking:
+
+- View comprehensive sales reports
+- Monitor revenue from events, itineraries, and gift shop
+- Filter sales reports by product/date/month
+- Track 10% platform commission on online bookings
 
 ## Code Examples
 
@@ -583,6 +746,8 @@ We appreciate your contributions and look forward to collaborating with you to i
 - [AviationStack](https://aviationstack.com/)
 
 ## License
+
+[License](LICENSE)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
